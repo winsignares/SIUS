@@ -21,14 +21,14 @@
 
                 <!-- Vista Inicio de Sesión -->
                 <div id="loginView" class="col-md-5 col-lg-4 offset-lg-1">
-                    <h2 class="text-center mb-3">SIUC - UNICORSALUD</h2>
+                    <h1 class="text-center mb-3">SIUC - UNICORSALUD</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud - SIUC</p>
                     <form>
                         <div class="form-outline mb-4">
-                            <input type="text" id="email" class="form-control" placeholder="Ingrese su correo electrónico">
+                            <input type="text" id="email" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
                         <div class="form-outline mb-4">
-                            <input type="password" id="password" class="form-control" placeholder="Ingrese su contraseña">
+                            <input type="password" id="password" class="form-control" placeholder="Ingrese su contraseña" required>
                         </div>
                         <div class="d-flex justify-content-end mb-4">
                             <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
@@ -44,15 +44,15 @@
                     <div class="d-flex align-items-center mb-4">
                         <a href="#" id="backToLogin" class="arrow-back">&#8592;</a>
                     </div>
-                    <h2 class="text-center mb-3">SIUC - UNICORSALUD</h2>
+                    <h1 class="text-center mb-3">SIUC - UNICORSALUD</h1>
                     <p class="text-center mb-4">LLene los siguientes campos para restablecer su contraseña</p>
                     <form>
                         <div class="form-outline mb-4">
-                            <input type="text" id="resetEmail" class="form-control" placeholder="Ingrese su correo electrónico">
+                            <input type="text" id="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
                         <div class="d-flex gap-3 mb-4">
-                            <input type="password" id="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña">
-                            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña">
+                            <input type="password" id="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña" required>
+                            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña" required>
                         </div>
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary btn-md w-50">Restablecer contraseña</button>

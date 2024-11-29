@@ -21,6 +21,8 @@ body {
     object-fit: cover;
     height: 100%;
     width: 100%;
+    padding: 10px;
+    border-radius: 30px;
 }
 
 /* Estilo general para formularios */
