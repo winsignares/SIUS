@@ -4,7 +4,8 @@
         pip install virtualenv
         virtualenv venv
         venv\Scripts\activate.bat
-        pip install django
+        pip install -r requirements.txt -- instalar las librerias
+        pip freeze > requirements.txt -- actualizar la lista de librerias
         
     2. Creación de la carpeta del proyecto
         django-admin startproject siuc .

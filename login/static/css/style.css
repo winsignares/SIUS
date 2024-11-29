@@ -1,0 +1,95 @@
+/* Colores del proyecto */
+:root {
+    --color-primario: #474745;
+    --color-secundario: #fef5f6;
+    --color-terciario: #ec5464;
+}
+
+body {
+    background-color: var(--color-secundario);
+    margin: 0;
+    height: 100vh;
+}
+
+.container-fluid {
+    height: 100vh;
+    display: flex;
+    padding: 0;
+}
+
+/* Imagen en el login */
+.img-fluid {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+}
+
+/* Estilos del loginView */
+#loginView {
+    background-color: var(--color-secundario);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+h2 {
+    color: var(--color-primario);
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+p {
+    color: var(--color-primario);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+a {
+    color: var(--color-primario);
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--color-terciario);
+}
+
+.btn-primary {
+    background-color: var(--color-terciario);
+    border-color: var(--color-terciario);
+    padding: 0.7rem 0;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primario);
+    border-color: var(--color-primario);
+}
+
+.form-control {
+    border: 1px solid var(--color-primario);
+    border-radius: 0.3rem;
+    font-size: 0.85rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-control::placeholder {
+    font-size: 0.8rem;
+    color: var(--color-primario);
+}
+
+.form-control:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
+.form-label {
+    color: var(--color-primario);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
