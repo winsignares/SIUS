@@ -11,51 +11,57 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <div class="container-fluid vh-100 d-flex p-0">
-        <div class="row w-100 m-0 g-0">
-            <div class="col-md-7 p-0">
-                <img src="{% static 'images/image_welcome.png' %}" alt="Unicorsalud" class="img-fluid h-100">
-            </div>
-            <div id="loginView" class="col-md-5 d-flex flex-column justify-content-center align-items-center p-5">
-                <h2 class="text-center mb-3">SIUC - UNICORSALUD</h2>
-                <p class="text-center">Bienvenido al Sistema de Información de Unicorsalud - SIUC</p>
-                <form class="w-75">
-                    <div class="mb-3">
-                        <input type="text" class="form-control" id="emailOrId" placeholder="Ingrese su correo electrónico / número de cédula">
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña">
-                    </div>
-                    <div class="text-end">
-                        <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary w-75 mt-4">Ingresar</button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="resetPasswordView" class="container-custom d-none">
-                <div class="d-flex align-items-center mb-3">
-                    <span id="backToLogin" class="arrow-back me-2">&#8592;</span>
-                    <h2 class="mb-0 text-primary">SIUC - UNICORSALUD</h2>
+    <section class="vh-100">
+        <div class="container-fluid h-custom">
+            <div class="row d-flex align-items-center h-100">
+                <!-- Imagen -->
+                <div class="col-md-6 col-lg-6 p-0">
+                    <img src="{% static 'images/image_welcome.jpg' %}" class="img-fluid h-100" alt="Unicorsalud">
                 </div>
-                <p>LLene los siguientes campos para restablecer su contraseña</p>
-                <form>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" id="resetEmailOrId" placeholder="Ingrese su correo electrónico / número de cédula">
+
+                <!-- Vista Inicio de Sesión -->
+                <div id="loginView" class="col-md-5 col-lg-4 offset-lg-1">
+                    <h2 class="text-center mb-3">SIUC - UNICORSALUD</h2>
+                    <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud - SIUC</p>
+                    <form>
+                        <div class="form-outline mb-4">
+                            <input type="text" id="email" class="form-control" placeholder="Ingrese su correo electrónico">
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="password" id="password" class="form-control" placeholder="Ingrese su contraseña">
+                        </div>
+                        <div class="d-flex justify-content-end mb-4">
+                            <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-md w-50">Ingresar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Vista Restablecer Contraseña -->
+                <div id="resetPasswordView" class="col-md-5 col-lg-4 offset-lg-1 d-none">
+                    <div class="d-flex align-items-center mb-4">
+                        <a href="#" id="backToLogin" class="arrow-back">&#8592;</a>
                     </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" id="newPassword" placeholder="Ingrese su nueva contraseña">
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" id="confirmPassword" placeholder="Confirmar contraseña">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-50 mt-3">Restablecer contraseña</button>
-                </form>
+                    <h2 class="text-center mb-3">SIUC - UNICORSALUD</h2>
+                    <p class="text-center mb-4">LLene los siguientes campos para restablecer su contraseña</p>
+                    <form>
+                        <div class="form-outline mb-4">
+                            <input type="text" id="resetEmail" class="form-control" placeholder="Ingrese su correo electrónico">
+                        </div>
+                        <div class="d-flex gap-3 mb-4">
+                            <input type="password" id="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña">
+                            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña">
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-md w-50">Restablecer contraseña</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
