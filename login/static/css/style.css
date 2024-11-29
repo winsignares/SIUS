@@ -138,21 +138,56 @@ p {
 }
 
 /* Adaptaciones responsivas */
-@media (max-width: 768px) {
-    .form-label {
-        font-size: 14px;
+/* Mejoras para pantallas pequeñas (iPhone) */
+@media (max-width: 576px) {
+    /* Contenedor general */
+    .h-custom {
+        height: auto;
+        padding: 1rem;
+    }
+
+    /* Imagen */
+    .img-fluid {
+        height: auto;
+        max-height: 250px;
+        width: 100%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+    }
+
+    /* Formulario */
+    #loginView, #resetPasswordView {
+        padding: 1rem;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 350px; /* Limitar el ancho del formulario */
+    }
+
+    /* Fuentes */
+    h1 {
+        font-size: 2rem; /* Reducir título */
+    }
+
+    p {
+        font-size: 1rem; /* Reducir tamaño del párrafo */
     }
 
     .form-control {
-        font-size: 14px;
+        font-size: 12px;
+        padding: 0.4rem;
     }
 
+    /* Botones */
     .btn-primary {
         font-size: 14px;
-        padding: 0.4rem 0.8rem;
+        padding: 0.5rem;
+        width: 100%; /* Hacer botones más anchos */
     }
 
-    .arrow-back {
-        font-size: 16px;
+    /* Enlaces */
+    #forgotPasswordLink, #backToLoginLink {
+        font-size: 0.9rem;
     }
 }
+
+
