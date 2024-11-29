@@ -61,7 +61,7 @@ p {
 #forgotPasswordLink {
     color: var(--color-primario);
     font-size: 1rem;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
 }
 
 #forgotPasswordLink:hover {
@@ -69,15 +69,23 @@ p {
     text-decoration: underline;
 }
 
+#forgotPasswordLink:active {
+    transform: scale(0.98);
+}
+
 #backToLoginLink {
     color: var(--color-primario);
     font-size: 1rem;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
 }
 
 #backToLoginLink:hover {
     color: var(--color-terciario);
     text-decoration: underline;
+}
+
+#backToLoginLink:active {
+    transform: scale(0.98);
 }
 
 /* Botones */
@@ -86,11 +94,15 @@ p {
     border: none;
     font-size: 14px;
     padding: 0.5rem 1rem;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 .btn-primary:hover {
     background-color: var(--color-primario);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
 }
 
 /* Animaciones de transición entre formularios */
