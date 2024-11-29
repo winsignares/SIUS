@@ -6,62 +6,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIUC - UNICORSALUD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Importar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <section class="vh-100">
         <div class="container-fluid h-custom">
             <div class="row d-flex align-items-center h-100">
                 <!-- Imagen -->
-                <div class="col-md-6 col-lg-6 p-0">
+                <div class="col-md-6 col-lg-6 p-0 h-100">
                     <img src="{% static 'images/image_welcome.jpg' %}" class="img-fluid h-100" alt="Unicorsalud">
                 </div>
 
                 <!-- Vista Inicio de Sesión -->
                 <div id="loginView" class="col-md-5 col-lg-4 offset-lg-1">
-                    <h1 class="text-center mb-3">SIUC - UNICORSALUD</h1>
-                    <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud - SIUC</p>
+                    <h1 class="text-center mb-2">SIUC - UNICORSALUD</h1>
+                    <p class="text-center mb-5">Bienvenido al Sistema de Información de Unicorsalud - SIUC</p>
                     <form>
                         <div class="form-outline mb-4">
                             <input type="text" id="email" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
-                        <div class="form-outline mb-4">
+                        <div class="form-outline mb-2">
                             <input type="password" id="password" class="form-control" placeholder="Ingrese su contraseña" required>
                         </div>
-                        <div class="d-flex justify-content-end mb-4">
+                        <div class="d-flex justify-content-end mb-5">
                             <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-md w-50">Ingresar</button>
+                            <button type="submit" class="btn btn-primary btn-md w-50">Iniciar sesión</button>
                         </div>
                     </form>
                 </div>
 
                 <!-- Vista Restablecer Contraseña -->
                 <div id="resetPasswordView" class="col-md-5 col-lg-4 offset-lg-1 d-none">
-                    <div class="d-flex align-items-center mb-4">
-                        <a href="#" id="backToLogin" class="arrow-back">&#8592;</a>
-                    </div>
-                    <h1 class="text-center mb-3">SIUC - UNICORSALUD</h1>
-                    <p class="text-center mb-4">LLene los siguientes campos para restablecer su contraseña</p>
+                    <h1 class="text-center mb-2">SIUC - UNICORSALUD</h1>
+                    <p class="text-center mb-5">LLene los siguientes campos para restablecer su contraseña</p>
                     <form>
                         <div class="form-outline mb-4">
                             <input type="text" id="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
-                        <div class="d-flex gap-3 mb-4">
+                        <div class="d-flex gap-3 mb-5">
                             <input type="password" id="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña" required>
                             <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña" required>
                         </div>
-                        <div class="text-center mt-4">
+                        <div class="text-center mb-2">
                             <button type="submit" class="btn btn-primary btn-md w-50">Restablecer contraseña</button>
+                        </div>                        
+                        <div class="d-flex justify-content-center">
+                            <a href="#" id="backToLoginLink" class="text-decoration-none">Regresar</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Importar Scripts -->
     <script src="{% static 'js/script.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

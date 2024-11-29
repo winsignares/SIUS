@@ -16,12 +16,21 @@ body {
     overflow: hidden;
 }
 
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+p {
+    font-size: 1.3rem;
+}
+
 /* Estilo para la imagen */
 .img-fluid {
     object-fit: cover;
     height: 100%;
     width: 100%;
-    padding: 10px;
+    padding: 0.5rem;
     border-radius: 30px;
 }
 
@@ -29,11 +38,6 @@ body {
 .form-outline {
     position: relative;
     margin-bottom: 1.5rem;
-}
-
-.form-label {
-    font-size: 18px;
-    color: var(--color-primario);
 }
 
 .form-control {
@@ -49,18 +53,29 @@ body {
 }
 
 .form-control::placeholder {
-    font-size: 12px;
+    font-size: 14px;
     color: #9c9c94;
 }
 
-/* Estilo de enlace Olvidar Contraseña */
+/* Estilo de enlaces */
 #forgotPasswordLink {
     color: var(--color-primario);
-    font-size: 14px;
+    font-size: 1rem;
     transition: color 0.3s ease;
 }
 
 #forgotPasswordLink:hover {
+    color: var(--color-terciario);
+    text-decoration: underline;
+}
+
+#backToLoginLink {
+    color: var(--color-primario);
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+#backToLoginLink:hover {
     color: var(--color-terciario);
     text-decoration: underline;
 }
@@ -78,16 +93,36 @@ body {
     background-color: var(--color-primario);
 }
 
-.arrow-back {
-    font-size: 20px;
-    color: var(--color-primario);
-    text-decoration: none;
-    cursor: pointer;
-    font-weight: bold;
+/* Animaciones de transición entre formularios */
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
 }
 
-.arrow-back:hover {
-    color: var(--color-terciario);
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+/* Definición de las animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
 }
 
 /* Adaptaciones responsivas */

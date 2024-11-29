@@ -2,15 +2,28 @@
 const loginView = document.getElementById('loginView');
 const resetPasswordView = document.getElementById('resetPasswordView');
 const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-const backToLogin = document.getElementById('backToLogin');
+const backToLoginLink = document.getElementById('backToLoginLink');
+
+// Función para cambiar entre vistas con animación
+function switchView(hideView, showView) {
+    hideView.classList.add('fade-out');
+    hideView.addEventListener('animationend', () => {
+        hideView.classList.add('d-none');
+        hideView.classList.remove('fade-out');
+        showView.classList.remove('d-none');
+        showView.classList.add('fade-in');
+        showView.addEventListener('animationend', () => {
+            showView.classList.remove('fade-in');
+        }, { once: true });
+    }, { once: true });
+}
 
 forgotPasswordLink.addEventListener('click', (e) => {
     e.preventDefault();
-    loginView.classList.add('d-none');
-    resetPasswordView.classList.remove('d-none');
+    switchView(loginView, resetPasswordView);
 });
 
-backToLogin.addEventListener('click', () => {
-    resetPasswordView.classList.add('d-none');
-    loginView.classList.remove('d-none');
+backToLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchView(resetPasswordView, loginView);
 });
