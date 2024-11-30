@@ -9,25 +9,12 @@
 
     2. Creación de modulos
         python manage.py startapp nombre_del_modulo
+
+    3. Creación de los modelos de la BD con el ORM de Django
+        python manage.py makemigrations -- migración de las tablas
+        python manage.py migrate -- creación de tablas en la BD
+
     
-    3. Ejecución
+    4. Ejecución
         python manage.py runserver
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    Base de datos
-        pip install psycopg2
+        
