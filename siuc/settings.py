@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'siuc.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "",
-        "USER": "",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": "5432",
+        "NAME": "b0fondckke95sat5hsjl",
+        "USER": "ujr0l50nlbusyfxjgdwt",
+        "PASSWORD": "YSIXJst7zSvME38UfUbsADs7cSiwAt",
+        "HOST": "b0fondckke95sat5hsjl-postgresql.services.clever-cloud.com",
+        "PORT": "50013",
     }
 }
 
