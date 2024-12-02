@@ -20,10 +20,12 @@ body {
 h1 {
     font-size: 3rem;
     font-weight: 700;
+    color: var(--color-primario);
 }
 
 p {
     font-size: 1.3rem;
+    color: var(--color-primario);
 }
 
 /* Estilo para la imagen */
@@ -138,8 +140,7 @@ p {
     }
 }
 
-/* Adaptaciones responsivas */
-/* Mejoras para pantallas pequeñas (iPhone) */
+/* Responsive para dispositivos móviles */
 @media (max-width: 576px) {
     /* Contenedor general */
     .h-custom {
@@ -156,21 +157,23 @@ p {
         margin-bottom: 1rem;
     }
 
-    /* Formulario */
+    /* Formularios */
     #loginView, #resetPasswordView {
         padding: 1rem;
         margin: 0 auto;
         width: 100%;
-        max-width: 350px; /* Limitar el ancho del formulario */
+        max-width: 350px;
     }
 
     /* Fuentes */
     h1 {
-        font-size: 2rem; /* Reducir título */
+        font-size: 2rem; /* Reducir tamaño del título */
+        text-align: center;
     }
 
     p {
         font-size: 1rem; /* Reducir tamaño del párrafo */
+        text-align: center;
     }
 
     .form-control {
@@ -182,7 +185,7 @@ p {
     .btn-primary {
         font-size: 14px;
         padding: 0.5rem;
-        width: 100%; /* Hacer botones más anchos */
+        width: 100%; /* Hacer los botones más anchos */
     }
 
     /* Enlaces */

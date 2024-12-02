@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'login',
     'dashboard_talento_humano',
     'dashboard_carga_academica',
+    'dashboard_administracion',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,3 +129,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Specifies the custom user model to use for authentication.
+# By default, Django uses the "auth_user" table for managing users.
+# Setting AUTH_USER_MODEL allows us to define a custom user model with our
+# own fields and logic while still integrating seamlessly with Django's
+# authentication framework.
+AUTH_USER_MODEL = 'login.CustomUser'
+
