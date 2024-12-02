@@ -135,5 +135,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Setting AUTH_USER_MODEL allows us to define a custom user model with our
 # own fields and logic while still integrating seamlessly with Django's
 # authentication framework.
-AUTH_USER_MODEL = 'login.CustomUser'
 
