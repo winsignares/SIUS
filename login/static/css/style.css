@@ -151,9 +151,9 @@ p {
     /* Imagen */
     .img-fluid {
         height: auto;
-        max-height: 250px;
+        max-height: 270px;
         width: 100%;
-        object-fit: cover;
+        object-fit: fill;
         margin-bottom: 1rem;
     }
 
