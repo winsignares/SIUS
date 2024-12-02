@@ -140,20 +140,21 @@ p {
 /* Adaptaciones responsivas */
 /* Mejoras para pantallas pequeñas (iPhone) */
 @media (max-width: 576px) {
-    /* Contenedor general */
+    /* Ajustar la imagen para que se ensanche más a los lados */
+    .img-fluid {
+        height: auto; /* Mantener la proporción */
+        max-height: 270px; /* Limitar la altura máxima */
+        width: 100%; /* Ensanchar ligeramente la imagen */
+        object-fit: fill; /* Asegurar que ocupe espacio visual */
+        margin-top: 0.1rem; /* Separación superior */
+    }
+
+    /* Ajustar el contenedor */
     .h-custom {
         height: auto;
         padding: 1rem;
     }
-
-    /* Imagen */
-    .img-fluid {
-        height: auto;
-        max-height: 250px;
-        width: 100%;
-        object-fit: cover;
-        margin-bottom: 1rem;
-    }
+}
 
     /* Formulario */
     #loginView, #resetPasswordView {
@@ -188,6 +189,8 @@ p {
     #forgotPasswordLink, #backToLoginLink {
         font-size: 0.9rem;
     }
-}
+
+
+
 
 
