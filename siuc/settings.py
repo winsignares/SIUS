@@ -32,7 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'login',
-    'dashboard',
+    'dashboard_talento_humano',
+    'dashboard_carga_academica',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

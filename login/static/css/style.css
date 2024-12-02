@@ -3,6 +3,7 @@
     --color-primario: #474745;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
+    --borde-redondo: 15px;
 }
 
 body {
@@ -31,7 +32,7 @@ p {
     height: 100%;
     width: 100%;
     padding: 0.5rem;
-    border-radius: 30px;
+    border-radius: var(--borde-redondo);
 }
 
 /* Estilo general para formularios */
@@ -42,7 +43,7 @@ p {
 
 .form-control {
     border: 1px solid var(--color-primario);
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 14px;
     padding: 0.5rem;
 }
@@ -92,7 +93,7 @@ p {
 .btn-primary {
     background-color: var(--color-terciario);
     border: none;
-    font-size: 14px;
+    font-size: 1rem;
     padding: 0.5rem 1rem;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
@@ -140,21 +141,20 @@ p {
 /* Adaptaciones responsivas */
 /* Mejoras para pantallas pequeñas (iPhone) */
 @media (max-width: 576px) {
-    /* Ajustar la imagen para que se ensanche más a los lados */
-    .img-fluid {
-        height: auto; /* Mantener la proporción */
-        max-height: 270px; /* Limitar la altura máxima */
-        width: 100%; /* Ensanchar ligeramente la imagen */
-        object-fit: fill; /* Asegurar que ocupe espacio visual */
-        margin-top: 0.1rem; /* Separación superior */
-    }
-
-    /* Ajustar el contenedor */
+    /* Contenedor general */
     .h-custom {
         height: auto;
         padding: 1rem;
     }
-}
+
+    /* Imagen */
+    .img-fluid {
+        height: auto;
+        max-height: 250px;
+        width: 100%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+    }
 
     /* Formulario */
     #loginView, #resetPasswordView {
@@ -189,8 +189,4 @@ p {
     #forgotPasswordLink, #backToLoginLink {
         font-size: 0.9rem;
     }
-
-
-
-
-
+}
