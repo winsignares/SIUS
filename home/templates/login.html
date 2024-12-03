@@ -17,15 +17,16 @@
         <div class="container-fluid h-custom">
             <div class="row d-flex align-items-center h-100">
                 <!-- Imagen -->
-                <div class="col-md-6 col-lg-6 p-0 h-100">
+                <div class="col-6 col-md-6 col-lg-6 p-0 h-100">
                     <img src="{% static 'images/image_welcome.jpg' %}" class="img-fluid h-100" alt="Unicorsalud">
                 </div>
 
                 <!-- Vista Inicio de Sesión -->
-                <div id="loginView" class="col-md-5 col-lg-4 offset-lg-1">
+                <div id="loginView" class="col-6 col-md-4 col-lg-4 offset-lg-1">
                     <h1 class="text-center mb-0">SIUC</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
                     <form>
+                        {% csrf_token %}
                         <div class="form-outline mb-3">
                             <input type="email" id="email" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
@@ -46,6 +47,7 @@
                     <h1 class="text-center mb-0">SIUC</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
                     <form>
+                        {% csrf_token %}
                         <div class="form-outline mb-3">
                             <input type="email" id="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>

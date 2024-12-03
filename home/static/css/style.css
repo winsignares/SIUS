@@ -140,15 +140,15 @@ p {
     }
 }
 
-/* Responsive para dispositivos móviles */
+/* Responsive para dispositivos móviles
 @media (max-width: 576px) {
-    /* Contenedor general */
+    /* Contenedor general 
     .h-custom {
         height: auto;
         padding: 1rem;
     }
 
-    /* Imagen */
+    /* Imagen 
     .img-fluid {
         height: auto;
         max-height: 270px;
@@ -157,7 +157,7 @@ p {
         margin-bottom: 1rem;
     }
 
-    /* Formularios */
+    /* Formularios 
     #loginView, #resetPasswordView {
         padding: 1rem;
         margin: 0 auto;
@@ -165,14 +165,14 @@ p {
         max-width: 350px;
     }
 
-    /* Fuentes */
+    /* Fuentes 
     h1 {
-        font-size: 2rem; /* Reducir tamaño del título */
+        font-size: 2rem; /* Reducir tamaño del título 
         text-align: center;
     }
 
     p {
-        font-size: 1rem; /* Reducir tamaño del párrafo */
+        font-size: 1rem; /* Reducir tamaño del párrafo
         text-align: center;
     }
 
@@ -181,15 +181,15 @@ p {
         padding: 0.4rem;
     }
 
-    /* Botones */
+    /* Botones 
     .btn-primary {
         font-size: 14px;
         padding: 0.5rem;
-        width: 100%; /* Hacer los botones más anchos */
+        width: 100%; /* Hacer los botones más anchos
     }
 
-    /* Enlaces */
+    /* Enlaces 
     #forgotPasswordLink, #backToLoginLink {
         font-size: 0.9rem;
     }
-}
+} */
