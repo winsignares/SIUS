@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'login',
+    'home',
     'dashboard_talento_humano',
     'dashboard_carga_academica',
     'dashboard_administracion',
