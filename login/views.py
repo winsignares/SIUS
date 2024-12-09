@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
-from dashboard_talento_humano.models.usuarios import Usuario
+from home.models.talento_humano.usuarios import Usuario
 
 # Create your views here.
 
-def login_view(request):
+def login(request):
+    return render(request, 'login.html')
+
+def autenticar_usuario(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -19,9 +22,11 @@ def login_view(request):
             try:
                 usuario = Usuario.objects.get(auth_user=user)
                 # Redirigir al dashboard
+                print("Inicio de sesión exitoso.")
                 return redirect('/dashboard/')
             except Usuario.DoesNotExist:
                 messages.error(request, "El usuario no está vinculado a un perfil válido.")
+                print("Inicio de sesión denegado.")
                 return redirect('/login/')
         else:
             # Mostrar mensaje de error si las credenciales no son válidas
