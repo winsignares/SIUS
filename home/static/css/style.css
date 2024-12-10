@@ -6,12 +6,12 @@
     --borde-redondo: 15px;
 }
 
+/* Estilo general */
 body {
     background-color: var(--color-secundario);
     font-family: Arial, sans-serif;
 }
 
-/* Estilo para el contenedor general */
 .h-custom {
     height: 100vh;
     overflow: hidden;
@@ -27,6 +27,10 @@ p {
     font-size: 1.3rem;
     color: var(--color-primario);
 }
+
+/* 
+--------------------------------------- LOGIN ---------------------------------------
+*/
 
 /* Estilo para la imagen */
 .img-fluid {
@@ -72,10 +76,6 @@ p {
     text-decoration: underline;
 }
 
-#forgotPasswordLink:active {
-    transform: scale(0.98);
-}
-
 #backToLoginLink {
     color: var(--color-primario);
     font-size: 1rem;
@@ -87,11 +87,15 @@ p {
     text-decoration: underline;
 }
 
-#backToLoginLink:active {
+#forgotPasswordLink:active ,#backToLoginLink:active {
     transform: scale(0.98);
 }
 
 /* Botones */
+.btn:focus {
+    background-color: var(--color-primario);
+}
+
 .btn-primary {
     background-color: var(--color-terciario);
     border: none;
@@ -138,4 +142,13 @@ p {
         opacity: 0;
         transform: translateY(-20px);
     }
+}
+
+/* 
+--------------------------------------- DASHBOARD BASE ---------------------------------------
+*/
+
+.side-panel {
+    background-color: var(--color-terciario);
+    color: var(--color-secundario);
 }

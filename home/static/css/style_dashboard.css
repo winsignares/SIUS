@@ -1,0 +1,51 @@
+/* Colores del proyecto */
+:root {
+    --color-primario: #474745;
+    --color-secundario: #fef5f6;
+    --color-terciario: #ec5464;
+    --borde-redondo: 15px;
+}
+
+/* Estilo general */
+body {
+    background-color: var(--color-secundario);
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-primario);
+}
+
+p {
+    font-size: 1.3rem;
+    color: var(--color-primario);
+}
+
+/* 
+--------------------------------------- DASHBOARD BASE ---------------------------------------
+*/
+
+.side-panel {
+    background-color: var(--color-terciario);
+    color: var(--color-secundario);
+}
+
+.nav-link, .logout {
+    color: var(--color-secundario);
+    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.nav-link:hover, .logout:hover {
+    color: var(--color-secundario);
+}
+
+.nav-link:active ,.logout:active {
+    transform: scale(0.98);
+}
+
+.nav-link:focus {
+    color: var(--color-secundario);
+    font-weight: 700;
+}

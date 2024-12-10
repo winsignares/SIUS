@@ -8,7 +8,15 @@ from home.models.talento_humano.usuarios import Usuario
 def login(request):
     return render(request, 'login.html')
 
+def dashboard(request):
+    return render(request, 'dashboard_base.html')
+
 def autenticar_usuario(request):
+    if request.method == 'GET':
+        login
+    else:
+        pass
+    
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -33,5 +41,9 @@ def autenticar_usuario(request):
             messages.error(request, "Credenciales inválidas. Intente de nuevo.")
             return redirect('/login/')
 
-    # Renderizar el formulario de inicio de sesión si es un GET
-    return render(request, 'login.html')
+def actualizar_contraseña(request):
+    if request.method == 'GET':
+        login
+        print("GET")
+    else:
+        pass
