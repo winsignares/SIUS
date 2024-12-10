@@ -1,6 +1,6 @@
 /* Colores del proyecto */
 :root {
-    --color-primario: #474745;
+    --color-primario: #232531;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
     --borde-redondo: 15px;
@@ -28,7 +28,7 @@ p {
 */
 
 .side-panel {
-    background-color: var(--color-terciario);
+    background-color: var(--color-primario);
     color: var(--color-secundario);
 }
 
@@ -48,4 +48,8 @@ p {
 .nav-link:focus {
     color: var(--color-secundario);
     font-weight: 700;
+}
+
+.logout {
+    margin-top: auto;
 }

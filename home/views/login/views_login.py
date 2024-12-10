@@ -1,49 +1,34 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib import messages
 from home.models.talento_humano.usuarios import Usuario
+from django.db import IntegrityError
 
 # Create your views here.
 
 def login(request):
     return render(request, 'login.html')
 
-def dashboard(request):
-    return render(request, 'dashboard_base.html')
-
 def autenticar_usuario(request):
     if request.method == 'GET':
         login
     else:
-        pass
-    
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        print(request.POST)
+        # user = authenticate(
+        #     request, username = request.POST['email'], password = request.POST['password'])
+        # if user is None:
+        #     return render(request, login, {"error": "Credenciales incorrectos. Intentelo nuevamente."})
 
-        # Autenticación del usuario
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            auth_login(request, user)
+        # auth_login(request, user)
+        # return redirect('dashboard')
+        login
+        
 
-            # Verificar si el usuario está relacionado con un perfil en "usuarios"
-            try:
-                usuario = Usuario.objects.get(auth_user=user)
-                # Redirigir al dashboard
-                print("Inicio de sesión exitoso.")
-                return redirect('/dashboard/')
-            except Usuario.DoesNotExist:
-                messages.error(request, "El usuario no está vinculado a un perfil válido.")
-                print("Inicio de sesión denegado.")
-                return redirect('/login/')
-        else:
-            # Mostrar mensaje de error si las credenciales no son válidas
-            messages.error(request, "Credenciales inválidas. Intente de nuevo.")
-            return redirect('/login/')
+def dashboard(request):
+    return render(request, 'dashboard.html')
 
 def actualizar_contraseña(request):
     if request.method == 'GET':
         login
-        print("GET")
     else:
         pass

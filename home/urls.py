@@ -5,6 +5,7 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('login/autenticar_usuario/', autenticar_usuario, name='autenticar_usuario'),
     
+    
     path('dashboard/', dashboard, name='dashboard'),
     
     # path('administracion/', administracion),

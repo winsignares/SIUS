@@ -25,7 +25,7 @@
                 <div id="loginView" class="col-6 col-md-4 col-lg-4 offset-lg-1">
                     <h1 class="text-center mb-0">SIUC</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
-                    <form method="POST" action="/login/autenticar_usuario/">
+                    <form method="POST" action="autenticar_usuario/">
                         {% csrf_token %}
                         <div class="form-outline mb-3">
                             <input type="email" id="email" class="form-control" placeholder="Ingrese su correo institucional" required>
@@ -33,8 +33,11 @@
                         <div class="form-outline mb-0">
                             <input type="password" id="password" class="form-control" placeholder="Ingrese su contraseña" required>
                         </div>
-                        <div class="d-flex justify-content-end mb-4">
+                        <div class="d-flex justify-content-end mb-1">
                             <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
+                        </div>
+                        <div class="mb-4">
+                            {{error}}
                         </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary btn-lg w-50">Iniciar sesión</button>
