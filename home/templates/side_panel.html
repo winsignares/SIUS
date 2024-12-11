@@ -1,0 +1,81 @@
+<div class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
+    <div>
+        <div class="d-flex flex-column align-items-center justify-content-center p-0">
+            <i class="bi bi-person-circle fs-1"></i>
+            <div class="d-flex flex-column align-items-center justify-content-center">
+                {% if usuario %}
+                    <p class="mb-0" id="nombre-usuario">{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</p>
+                {% else %}
+                    <p class="mb-0" id="nombre-usuario">Usuario desconocido</p>
+                {% endif %}
+                <p class="fst-italic" id="email-usuario">{{ usuario.cargo }}</p>
+            </div>
+        </div>
+        <hr class="w-100 m-1">
+        <ul class="nav flex-column">
+            <!-- Opción visible para todos los grupos -->
+            <li class="nav-item mb-2">
+                <a href="{% url 'dashboard' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-house-door-fill"></i></i>Inicio
+                </a>
+            </li>
+
+            <!-- Opciones específicas según el grupo -->
+
+            <!-- {% if "Director de Programa" in user_groups %}
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestionar_programa' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-folder2"></i>Gestión de Programa
+                </a>
+            </li>
+            {% endif %} -->
+            
+            {% if "Director Talento Humano" in user_groups %}
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_aspirantes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_empleados' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-people-fill"></i></i>Empleados
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="#" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-person-badge"></i>Opción #
+                </a>
+            </li>
+            {% endif %}
+            
+            {% if "Secretaria Talento Humano" in user_groups %}
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_aspirantes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_empleados' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-people-fill"></i></i>Empleados
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- Opción visible para todos los grupos -->
+            <li class="nav-item mb-2">
+                <a href="#" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-clipboard-data-fill"></i></i>Reportes
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="mt-auto">
+        <hr class="w-100">
+        <a href="{% url 'cerrar_sesion' %}" class="logout d-flex justify-content-center gap-2 text-decoration-none">
+            <i class="bi bi-box-arrow-left"></i> Cerrar sesión
+        </a>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 /* Colores del proyecto */
 :root {
-    --color-primario: #232531;
+    --color-primario: #383837;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
     --borde-redondo: 15px;
@@ -31,6 +31,10 @@ body {
 
 #email-usuario {
     font-size: 0.7rem;
+}
+
+.nav-link {
+    font-size: 1.2rem;
 }
 
 .nav-link, .logout {

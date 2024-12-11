@@ -1,6 +1,6 @@
 /* Colores del proyecto */
 :root {
-    --color-primario: #232531;
+    --color-primario: #383837;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
     --borde-redondo: 15px;
@@ -68,7 +68,7 @@ p {
 #forgotPasswordLink {
     color: var(--color-primario);
     font-size: 1rem;
-    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+    transition: color 0.3s ease-in-out, transform 0.1s ease-in;
 }
 
 #forgotPasswordLink:hover {
@@ -79,7 +79,7 @@ p {
 #backToLoginLink {
     color: var(--color-primario);
     font-size: 1rem;
-    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+    transition: color 0.3s ease-in-out, transform 0.1s ease-in;
 }
 
 #backToLoginLink:hover {
@@ -105,7 +105,7 @@ p {
     border: none;
     font-size: 1rem;
     padding: 0.5rem 1rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    transition: background-color 0.2s ease-in, transform 0.1s ease-in;
 }
 
 .btn-primary:hover {
@@ -114,36 +114,4 @@ p {
 
 .btn-primary:active {
     transform: scale(0.98);
-}
-
-/* Animaciones de transición entre formularios */
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.5s ease forwards;
-}
-
-/* Definición de las animaciones */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
 }

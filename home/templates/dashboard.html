@@ -15,47 +15,12 @@
 <body>
     <div class="d-flex">
         <!-- Panel lateral -->
-        <nav class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
-            <div>
-                <div class="d-flex flex-column align-items-center justify-content-center p-0">
-                    <i class="bi bi-person-circle fs-1"></i>
-                    <div class="d-flex flex-column align-items-center justify-content-center">
-                        {% if usuario %}
-                            <p class="mb-0" id="nombre-usuario">{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</p>
-                        {% else %}
-                            <p class="mb-0" id="nombre-usuario">Usuario desconocido</p>
-                        {% endif %}
-                        <p class="fst-italic" id="email-usuario">{{ usuario.cargo }}</p>
-                    </div>
-                </div>
-                <hr class="w-100 m-1">
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="d-flex gap-2 nav-link">
-                            <i class="bi bi-house-door"></i>Inicio
-                        </a>
-                    </li>
-                    {% if request.user.is_staff %}
-                    <li class="nav-item mb-2">
-                        {% comment %} href="{% url '' %}" {% endcomment %}
-                        <a href="#" class="d-flex gap-2 nav-link">
-                            <i class="bi bi-people"></i>Gestión de usuarios
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="mt-auto">
-                <hr class="w-100">
-                <a href="{% url 'cerrar_sesion' %}" class="logout d-flex justify-content-center gap-2 text-decoration-none">
-                    <i class="bi bi-box-arrow-left"></i> Cerrar sesión
-                </a>
-            </div>
-        </nav>
+        {% include "side_panel.html" %}
 
         <!-- Contenido principal -->
-        <div class="main-container flex-grow-1 p-4 col-md-9">
-            {% block content %} {% endblock %}
+        <div class="main-container d-flex justify-content-center align-items-center flex-grow-1 p-4 col-md-10">
+            {% block content %}
+            {% endblock %}
         </div>
     </div>
 
