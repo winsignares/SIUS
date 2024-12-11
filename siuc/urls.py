@@ -20,11 +20,15 @@ from home import views
 
 urlpatterns = [
     path('root/', admin.site.urls),
-    path('siuc/login/',views.welcome, name="welcome"),
-    path('siuc/login/iniciar_sesion/',views.iniciar_sesion, name="iniciar_sesion"),
-    path('siuc/login/actualizar_contraseña/',views.actualizar_contraseña, name="actualizar_contraseña"),
     
-    path('siuc/dashboard/', views.dashboard, name='dashboard' ),
+    path('siuc/login/',views.iniciar_sesion_form, name="iniciar_sesion_form"),
+    path('siuc/login/ingresar/',views.signin, name="signin"),
+    
+    path('siuc/restablecer_contraseña/',views.restablecer_contraseña_form, name="restablecer_contraseña_form"),
+    path('siuc/restablecer_contraseña/actualizar/',views.actualizar_contraseña, name="actualizar_contraseña"),
+    
+    path('siuc/dashboard/inicio/', views.dashboard, name='dashboard'),
+    path("siuc/dashboard/gestion_aspirantes/", views.gestion_aspirantes, name="gestion_aspirantes"),
+    path("siuc/dashboard/gestion_empleados/", views.gestion_empleados, name="gestion_empleados"),
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
-    
 ]
