@@ -17,14 +17,18 @@
         <!-- Panel lateral -->
         <nav class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
             <div>
-                <div class="d-flex align-items-center mb-4">
+                <div class="d-flex flex-column align-items-center justify-content-center p-0">
                     <i class="bi bi-person-circle fs-1"></i>
-                    <div class="ms-2">
-                        <p class="mb-0 fw-bold" id="userName">{{ request.usuarios.nombre }}</p>
-                        <small id="userEmail">{{ request.user.username }}</small>
+                    <div class="d-flex flex-column align-items-center justify-content-center">
+                        {% if usuario %}
+                            <p class="mb-0" id="nombre-usuario">{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</p>
+                        {% else %}
+                            <p class="mb-0" id="nombre-usuario">Usuario desconocido</p>
+                        {% endif %}
+                        <p class="fst-italic" id="email-usuario">{{ usuario.cargo }}</p>
                     </div>
                 </div>
-                <hr class="w-100">
+                <hr class="w-100 m-1">
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
                         <a href="#" class="d-flex gap-2 nav-link">
@@ -43,17 +47,15 @@
             </div>
             <div class="mt-auto">
                 <hr class="w-100">
-                <a href="#" class="logout d-flex justify-content-center gap-2 text-decoration-none">
+                <a href="{% url 'cerrar_sesion' %}" class="logout d-flex justify-content-center gap-2 text-decoration-none">
                     <i class="bi bi-box-arrow-left"></i> Cerrar sesión
                 </a>
             </div>
         </nav>
 
         <!-- Contenido principal -->
-        <div class="main-container flex-grow-1 p-4 col-md-10">
-            {% block content %}
-            <!-- Aquí se incluirá el contenido de cada vista -->
-            {% endblock %}
+        <div class="main-container flex-grow-1 p-4 col-md-9">
+            {% block content %} {% endblock %}
         </div>
     </div>
 

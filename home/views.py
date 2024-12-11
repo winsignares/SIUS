@@ -35,9 +35,18 @@ def actualizar_contraseña(request):
         return redirect('welcome')
 
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    usuario_autenticado = request.user
+    
+    try:
+        usuario = Usuario.objects.get(auth_user = usuario_autenticado)
+        usuario.primer_nombre = usuario.primer_nombre.capitalize()
+        usuario.primer_apellido = usuario.primer_apellido.capitalize()
+        usuario.cargo = usuario.cargo.upper()
+    except Usuario.DoesNotExist:
+        usuario = None
+    return render(request, 'dashboard.html', {'usuario': usuario})
 
 def cerrar_sesion(request):
     logout(request)
-    return redirect ('iniciar_sesion')
+    return redirect ('welcome')
 

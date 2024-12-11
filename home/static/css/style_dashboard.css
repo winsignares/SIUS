@@ -12,17 +12,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--color-primario);
-}
-
-p {
-    font-size: 1.3rem;
-    color: var(--color-primario);
-}
-
 /* 
 --------------------------------------- DASHBOARD BASE ---------------------------------------
 */
@@ -30,6 +19,18 @@ p {
 .side-panel {
     background-color: var(--color-primario);
     color: var(--color-secundario);
+}
+
+#nombre-usuario, #email-usuario {
+    color: var(--color-secundario);
+}
+
+#nombre-usuario {
+    font-size: 1rem;
+}
+
+#email-usuario {
+    font-size: 0.7rem;
 }
 
 .nav-link, .logout {
