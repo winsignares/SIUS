@@ -91,6 +91,10 @@ p {
     transform: scale(0.98);
 }
 
+.error {
+    font-size: 1rem;
+}
+
 /* Botones */
 .btn:focus {
     background-color: var(--color-primario);
@@ -142,13 +146,4 @@ p {
         opacity: 0;
         transform: translateY(-20px);
     }
-}
-
-/* 
---------------------------------------- DASHBOARD BASE ---------------------------------------
-*/
-
-.side-panel {
-    background-color: var(--color-terciario);
-    color: var(--color-secundario);
 }

@@ -25,21 +25,28 @@
                 <div id="loginView" class="col-6 col-md-4 col-lg-4 offset-lg-1">
                     <h1 class="text-center mb-0">SIUC</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
-                    <form method="POST" action="autenticar_usuario/">
+                    <form method="POST" action="iniciar_sesion/">
                         {% csrf_token %}
                         <div class="form-outline mb-3">
-                            <input type="email" id="email" class="form-control" placeholder="Ingrese su correo institucional" required>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
                         <div class="form-outline mb-0">
-                            <input type="password" id="password" class="form-control" placeholder="Ingrese su contraseña" required>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Ingrese su contraseña" required>
                         </div>
-                        <div class="d-flex justify-content-end mb-1">
+                        <div class="d-flex justify-content-end mb-2">
                             <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
                         </div>
-                        <div class="mb-4">
-                            {{error}}
-                        </div>
-                        <div class="text-center">
+
+                        <!-- Mostrar mensajes de error -->
+                        {% if messages %}
+                            <p class="text-danger error d-flex gap-1">
+                                {% for message in messages %}
+                                <i class="bi bi-info-circle"></i>{{ message }}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+
+                        <div class="text-center mt-2">
                             <button type="submit" class="btn btn-primary btn-lg w-50">Iniciar sesión</button>
                         </div>
                     </form>
@@ -49,14 +56,14 @@
                 <div id="resetPasswordView" class="col-md-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 offset-lg-1 d-none">
                     <h1 class="text-center mb-0">SIUC</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
-                    <form>
+                    <form method="POST" action="actualizar_contraseña/">
                         {% csrf_token %}
                         <div class="form-outline mb-3">
-                            <input type="email" id="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
+                            <input type="email" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
                         </div>
                         <div class="d-flex gap-3 mb-4">
-                            <input type="password" id="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña" required>
-                            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña" required>
+                            <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña" required>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirmar contraseña" required>
                         </div>
                         <div class="text-center mb-2">
                             <button type="submit" class="btn btn-primary btn-lg w-50">Restablecer contraseña</button>

@@ -74,27 +74,27 @@ WSGI_APPLICATION = 'siuc.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "bsp2ogzn0gcyxex5v839",           # Nombre de la base de datos
-#         "USER": "uuay7nvrorqugwhjaaoa",            # Usuario de la base de datos
-#         "PASSWORD": "ifR2omqJGm8o0Y8MjkiKtkHfm6Ag45", # Contraseña del usuario
-#         "HOST": "bsp2ogzn0gcyxex5v839-postgresql.services.clever-cloud.com",  # Host de la base de datos
-#         "PORT": "50013",                           # Puerto de conexión
-#     }
-# }
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db_siuc",
-        "USER": "postgres",
-        "PASSWORD": "qwerty78963",
-        "HOST": "10.20.1.192",
-        "PORT": "5432",
+        "NAME": "bsp2ogzn0gcyxex5v839",           # Nombre de la base de datos
+        "USER": "uuay7nvrorqugwhjaaoa",            # Usuario de la base de datos
+        "PASSWORD": "ifR2omqJGm8o0Y8MjkiKtkHfm6Ag45", # Contraseña del usuario
+        "HOST": "bsp2ogzn0gcyxex5v839-postgresql.services.clever-cloud.com",  # Host de la base de datos
+        "PORT": "50013",                           # Puerto de conexión
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "db_siuc",
+#         "USER": "postgres",
+#         "PASSWORD": "qwerty78963",
+#         "HOST": "10.20.1.192",
+#         "PORT": "5432",
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

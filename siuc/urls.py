@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from home import views
 
 urlpatterns = [
     path('root/', admin.site.urls),
-    path('siuc/', include('home.urls'))
+    path('siuc/login/',views.welcome, name="welcome"),
+    path('siuc/login/iniciar_sesion/',views.iniciar_sesion, name="iniciar_sesion"),
+    path('siuc/login/actualizar_contraseña/',views.actualizar_contraseña, name="actualizar_contraseña"),
+    
+    path('siuc/dashboard/', views.dashboard, name='dashboard' ),
+    path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
+    
 ]

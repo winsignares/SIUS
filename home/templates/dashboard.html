@@ -28,14 +28,14 @@
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
                         <a href="#" class="d-flex gap-2 nav-link">
-                            <i class="bi bi-house-door"></i> Inicio
+                            <i class="bi bi-house-door"></i>Inicio
                         </a>
                     </li>
                     {% if request.user.is_staff %}
                     <li class="nav-item mb-2">
                         {% comment %} href="{% url '' %}" {% endcomment %}
                         <a href="#" class="d-flex gap-2 nav-link">
-                            <i class="bi bi-people"></i> Gestión de usuarios
+                            <i class="bi bi-people"></i>Gestión de usuarios
                         </a>
                     </li>
                     {% endif %}
