@@ -3,13 +3,13 @@
 {% block content %}
     <div class="container mt-5">
         <div class="row mb-3">
-            <div class="col text-end gap-2">
+            <div class="col justify-content-end d-flex gap-2">
                 <!-- Botón para abrir el modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoAspiranteModal">
-                    Nuevo Aspirante
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoEmpleadoModal">
+                    Nuevo Empleado
                 </button>
 
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoAspiranteModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="">
                     Carga Masiva
                 </button>
             </div>
@@ -28,30 +28,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for aspirante in aspirantes %}
+                        {% for usuario in usuarios %}
                         <tr>
                             <td>
-                                {{ aspirante.primer_nombre }} 
-                                {{ aspirante.segundo_nombre }} 
-                                {{ aspirante.primer_apellido }} 
-                                {{ aspirante.segundo_apellido }}
+                                {{ usuario.primer_nombre }} 
+                                {{ usuario.segundo_nombre }} 
+                                {{ usuario.primer_apellido }} 
+                                {{ usuario.segundo_apellido }} 
                             </td>
-                            <td>{{ aspirante.cargo }}</td>
+                            <td>{{ usuario.cargo }} </td>
                             <td>
-                                {% if aspirante.estado_revision == 'Pendiente' %}
-                                    <span class="badge bg-warning text-dark">{{ aspirante.estado_revision }}</span>
-                                {% elif aspirante.estado_revision == 'Aceptado' %}
-                                    <span class="badge bg-success">{{ aspirante.estado_revision }}</span>
-                                {% else %}
-                                    <span class="badge bg-danger">{{ aspirante.estado_revision }}</span>
+                                {% if usuario.estado_revision == 'PENDIENTE' %}
+                                    <span class="badge bg-warning text-dark">{{ usuario.estado_revision }}</span>
+                                {% elif usuario.estado_revision == 'ACEPTADO' %}
+                                    <span class="badge bg-success">{{ usuario.estado_revision }}</span>
+                                {% elif usuario.estado_revision == 'RECHAZADO' %}
+                                    <span class="badge bg-danger">{{ usuario.estado_revision }}</span>
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{{ aspirante.url_hoja_de_vida }}" target="_blank" class="btn btn-info btn-sm">Ver</a>
+                                <a href="#" target="_blank" class="btn btn-info btn-sm">Ver</a>
                             </td>
                             <td>
-                                <a href="{% url 'editar_aspirante' aspirante.id %}" class="btn btn-warning btn-sm">Editar</a>
-                                <a href="{% url 'eliminar_aspirante' aspirante.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a href="#" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -62,16 +62,16 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="nuevoAspiranteModal" tabindex="-1" aria-labelledby="nuevoAspiranteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="nuevoEmpleadoModal" tabindex="-1" aria-labelledby="nuevoEmpleadoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="nuevoAspiranteModalLabel">Nuevo Aspirante</h5>
+                    <h5 class="modal-title" id="nuevoEmpleadoModalLabel">Nuevo Empleado</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Navegación entre pestañas -->
-                    <ul class="nav nav-tabs mb-3" id="aspiranteTab" role="tablist">
+                    <ul class="nav nav-tabs mb-3" id="empleadoTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="true">Información Personal</button>
                         </li>
@@ -84,7 +84,7 @@
                     </ul>
 
                     <!-- Contenido de las pestañas -->
-                    <div class="tab-content" id="aspiranteTabContent">
+                    <div class="tab-content" id="empleadoTabContent">
                         <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
                             <p>Contenido de Información Personal.</p>
                         </div>
