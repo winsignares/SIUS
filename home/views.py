@@ -60,23 +60,31 @@ def actualizar_contraseña(request):
         messages.success(request, "Contraseña actualizada exitosamente. Ingrese con sus nuevas credenciales.")
         return redirect('iniciar_sesion_form')
 
-@login_required
-def dashboard(request):
+def obtener_contexto_usuario(request):
+    """
+    Función auxiliar para obtener el contexto del usuario autenticado.
+    """
     usuario_autenticado = request.user
-    grupos_usuario = request.user.groups.values_list('name', flat=True)
-    
+    grupos_usuario = usuario_autenticado.groups.values_list('name', flat=True)
+
     try:
-        usuario = Usuario.objects.get(auth_user = usuario_autenticado)
-        
+        usuario = Usuario.objects.get(auth_user=usuario_autenticado)
         usuario.primer_nombre = usuario.primer_nombre.capitalize()
         usuario.primer_apellido = usuario.primer_apellido.capitalize()
         usuario.cargo = usuario.cargo.upper()
     except Usuario.DoesNotExist:
         usuario = None
-    return render(request, 'inicio.html', {
+
+    return {
         'usuario': usuario,
         'user_groups': grupos_usuario,
-        })
+    }
+
+@login_required
+def dashboard(request):
+    contexto = obtener_contexto_usuario(request)
+
+    return render(request, 'inicio.html', contexto)
 
 @login_required
 def cerrar_sesion(request):
@@ -85,57 +93,18 @@ def cerrar_sesion(request):
 
 @login_required
 def gestion_aspirantes(request):
-    usuario_autenticado = request.user
-    grupos_usuario = request.user.groups.values_list('name', flat=True)
-    
-    try:
-        usuario = Usuario.objects.get(auth_user=usuario_autenticado)
-        
-        usuario.primer_nombre = usuario.primer_nombre.capitalize()
-        usuario.primer_apellido = usuario.primer_apellido.capitalize()
-        usuario.cargo = usuario.cargo.upper()
-    except Usuario.DoesNotExist:
-        usuario = None
+    contexto = obtener_contexto_usuario(request)
 
-    return render(request, 'aspirantes.html', {
-        'usuario': usuario,
-        'user_groups': grupos_usuario,
-    })
+    return render(request, 'aspirantes.html', contexto)
 
 @login_required
 def gestion_empleados(request):
-    usuario_autenticado = request.user
-    grupos_usuario = request.user.groups.values_list('name', flat=True)
-    
-    try:
-        usuario = Usuario.objects.get(auth_user=usuario_autenticado)
-        
-        usuario.primer_nombre = usuario.primer_nombre.capitalize()
-        usuario.primer_apellido = usuario.primer_apellido.capitalize()
-        usuario.cargo = usuario.cargo.upper()
-    except Usuario.DoesNotExist:
-        usuario = None
+    contexto = obtener_contexto_usuario(request)
 
-    return render(request, 'empleados.html', {
-        'usuario': usuario,
-        'user_groups': grupos_usuario,
-    })
+    return render(request, 'empleados.html', contexto)
 
 @login_required
 def reportes(request):
-    usuario_autenticado = request.user
-    grupos_usuario = request.user.groups.values_list('name', flat=True)
-    
-    try:
-        usuario = Usuario.objects.get(auth_user=usuario_autenticado)
-        
-        usuario.primer_nombre = usuario.primer_nombre.capitalize()
-        usuario.primer_apellido = usuario.primer_apellido.capitalize()
-        usuario.cargo = usuario.cargo.upper()
-    except Usuario.DoesNotExist:
-        usuario = None
+    contexto = obtener_contexto_usuario(request)
 
-    return render(request, 'reportes.html', {
-        'usuario': usuario,
-        'user_groups': grupos_usuario,
-    })
+    return render(request, 'reportes.html', contexto)
