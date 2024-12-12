@@ -54,3 +54,24 @@ body {
 .logout {
     margin-top: auto;
 }
+
+/* Botones */
+.btn:focus {
+    background-color: var(--color-primario);
+}
+
+.btn-primary {
+    background-color: var(--color-terciario);
+    border: none;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primario);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
