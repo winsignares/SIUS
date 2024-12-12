@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'home.middleware.session_timeout_middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'siuc.urls'
@@ -133,6 +134,14 @@ STATIC_URL = 'static/'
 
 LOGIN_URL = '/siuc/login/'
 
+LOGOUT_REDIRECT_URL = '/siuc/login/'
+
+# Configuración de sesiones
+# https://docs.djangoproject.com/en/5.1/ref/settings/#sessions
+
+SESSION_COOKIE_AGE = 100
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -143,4 +152,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Setting AUTH_USER_MODEL allows us to define a custom user model with our
 # own fields and logic while still integrating seamlessly with Django's
 # authentication framework.
-
