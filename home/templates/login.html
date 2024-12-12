@@ -18,14 +18,14 @@
             <div class="row d-flex align-items-center h-100">
                 <!-- Imagen -->
                 <div class="col-md-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 p-0 h-100">
-                    <img src="{% static 'images/image_welcome.jpg' %}" class="img-fluid h-100" alt="Unicorsalud">
+                    <img src="{% static 'images/img_login.jpg' %}" class="img-fluid h-100" alt="Unicorsalud">
                 </div>
 
                 <!-- Vista Inicio de Sesión -->
                 <div id="loginView" class="col-6 col-md-4 col-lg-4 offset-lg-1">
                     <h1 class="text-center mb-0">SIUC</h1>
                     <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
-                    <form method="POST" action="iniciar_sesion/">
+                    <form method="POST" action="{% url 'signin' %}">
                         {% csrf_token %}
                         <div class="form-outline mb-3">
                             <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su correo institucional" required>
@@ -34,16 +34,25 @@
                             <input type="password" id="password" name="password" class="form-control" placeholder="Ingrese su contraseña" required>
                         </div>
                         <div class="d-flex justify-content-end mb-2">
-                            <a href="#" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
+                            <a href="{% url 'restablecer_contraseña_form' %}" id="forgotPasswordLink" class="text-decoration-none">¿Olvidó su contraseña?</a>
                         </div>
 
                         <!-- Mostrar mensajes de error -->
                         {% if messages %}
-                            <p class="text-danger error d-flex gap-1">
+                            <div>
                                 {% for message in messages %}
-                                <i class="bi bi-info-circle"></i>{{ message }}
+                                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} d-flex align-items-center gap-2">
+                                        {% if message.tags == 'success' %}
+                                            <i class="bi bi-check-circle"></i>
+                                        {% elif message.tags == 'error' %}
+                                            <i class="bi bi-exclamation-circle"></i>
+                                        {% else %}
+                                            <i class="bi bi-info-circle"></i>
+                                        {% endif %}
+                                        {{ message }}
+                                    </div>
                                 {% endfor %}
-                            </p>
+                            </div>
                         {% endif %}
 
                         <div class="text-center mt-2">
@@ -51,40 +60,11 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Vista Restablecer Contraseña -->
-                <div id="resetPasswordView" class="col-md-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 offset-lg-1 d-none">
-                    <h1 class="text-center mb-0">SIUC</h1>
-                    <p class="text-center mb-4">Bienvenido al Sistema de Información de Unicorsalud</p>
-                    <form method="POST" action="actualizar_contraseña/">
-                        {% csrf_token %}
-                        <div class="form-outline mb-3">
-                            <input type="email" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
-                        </div>
-                        <div class="d-flex gap-3 mb-4">
-                            <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña" required>
-                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirmar contraseña" required>
-                        </div>
-                        <div class="text-center mb-2">
-                            <button type="submit" class="btn btn-primary btn-lg w-50">Restablecer contraseña</button>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center divider">
-                            <hr class="w-25">
-                            <span class="mx-2">o</span>
-                            <hr class="w-25">
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <a href="#" id="backToLoginLink" class="text-decoration-none">Iniciar sesión</a>
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
     </section>
-    
 
     <!-- Importar Scripts -->
-    <script src="{% static 'js/script.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

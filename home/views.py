@@ -120,3 +120,22 @@ def gestion_empleados(request):
         'usuario': usuario,
         'user_groups': grupos_usuario,
     })
+
+@login_required
+def reportes(request):
+    usuario_autenticado = request.user
+    grupos_usuario = request.user.groups.values_list('name', flat=True)
+    
+    try:
+        usuario = Usuario.objects.get(auth_user=usuario_autenticado)
+        
+        usuario.primer_nombre = usuario.primer_nombre.capitalize()
+        usuario.primer_apellido = usuario.primer_apellido.capitalize()
+        usuario.cargo = usuario.cargo.upper()
+    except Usuario.DoesNotExist:
+        usuario = None
+
+    return render(request, 'reportes.html', {
+        'usuario': usuario,
+        'user_groups': grupos_usuario,
+    })

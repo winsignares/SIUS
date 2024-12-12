@@ -1,6 +1,6 @@
 /* Colores del proyecto */
 :root {
-    --color-primario: #232531;
+    --color-primario: #383837;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
     --borde-redondo: 15px;
@@ -21,21 +21,26 @@ body {
     color: var(--color-secundario);
 }
 
+.bi-person-circle {
+    font-size: 3rem;
+}
+
 #nombre-usuario, #email-usuario {
     color: var(--color-secundario);
 }
 
 #nombre-usuario {
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 
 #email-usuario {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
 }
 
 .nav-link, .logout {
     color: var(--color-secundario);
     transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+    font-size: 1.3rem;
 }
 
 .nav-link:hover, .logout:hover {
@@ -43,12 +48,7 @@ body {
 }
 
 .nav-link:active ,.logout:active {
-    transform: scale(0.98);
-}
-
-.nav-link:focus {
-    color: var(--color-secundario);
-    font-weight: 700;
+    transform: scale(0.95);
 }
 
 .logout {

@@ -1,7 +1,7 @@
 <div class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
     <div>
         <div class="d-flex flex-column align-items-center justify-content-center p-0">
-            <i class="bi bi-person-circle fs-1"></i>
+            <i class="bi bi-person-circle p-0"></i>
             <div class="d-flex flex-column align-items-center justify-content-center">
                 {% if usuario %}
                     <p class="mb-0" id="nombre-usuario">{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</p>
@@ -66,7 +66,7 @@
 
             <!-- Opción visible para todos los grupos -->
             <li class="nav-item mb-2">
-                <a href="#" class="d-flex gap-2 nav-link">
+                <a href="{% url 'reportes' %}" class="d-flex gap-2 nav-link">
                     <i class="bi bi-clipboard-data-fill"></i></i>Reportes
                 </a>
             </li>

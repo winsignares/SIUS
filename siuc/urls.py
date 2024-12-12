@@ -30,5 +30,6 @@ urlpatterns = [
     path('siuc/dashboard/inicio/', views.dashboard, name='dashboard'),
     path("siuc/dashboard/gestion_aspirantes/", views.gestion_aspirantes, name="gestion_aspirantes"),
     path("siuc/dashboard/gestion_empleados/", views.gestion_empleados, name="gestion_empleados"),
+    path("siuc/dashboard/reportes/", views.reportes, name="reportes"),
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
 ]

@@ -1,6 +1,6 @@
 /* Colores del proyecto */
 :root {
-    --color-primario: #232531;
+    --color-primario: #383837;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
     --borde-redondo: 15px;
@@ -87,8 +87,8 @@ p {
     text-decoration: underline;
 }
 
-#forgotPasswordLink:active ,#backToLoginLink:active {
-    transform: scale(0.98);
+#forgotPasswordLink:active ,#backToLoginLink:active {    
+    transform: scale(0.95);
 }
 
 .error {
@@ -114,36 +114,4 @@ p {
 
 .btn-primary:active {
     transform: scale(0.98);
-}
-
-/* Animaciones de transición entre formularios */
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.5s ease forwards;
-}
-
-/* Definición de las animaciones */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
 }
