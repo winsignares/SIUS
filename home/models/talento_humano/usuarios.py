@@ -31,6 +31,8 @@ class Usuario(models.Model):
     departamento_residencia = models.CharField(max_length=255)
     ciudad_residencia = models.CharField(max_length=255)
     barrio_residencia = models.CharField(max_length=255, null=True, blank=True)
+    ultimo_grado_academico = models.CharField(max_length=255, null=True, blank=True)
+    url_hoja_de_vida = models.URLField(blank=True, null=True) # Enlace a Hoja de Vida
     estado_revision = models.CharField(max_length=50)  # Pendiente - Rechazado - Aceptado
     activo = models.BooleanField(default=True) # True = Activo - False = Inactivo
     fk_creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='usuarios_creados', null=True, blank=True, on_delete=models.SET_NULL)
