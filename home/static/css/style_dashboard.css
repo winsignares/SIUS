@@ -25,33 +25,33 @@ body {
     font-size: 3rem;
 }
 
-#nombre-usuario, #email-usuario {
+.side-panel #nombre-usuario, .side-panel #email-usuario {
     color: var(--color-secundario);
 }
 
-#nombre-usuario {
+.side-panel #nombre-usuario {
     font-size: 1.5rem;
 }
 
-#email-usuario {
+.side-panel #email-usuario {
     font-size: 0.6rem;
 }
 
-.nav-link, .logout {
+.side-panel .nav-link, .side-panel .logout {
     color: var(--color-secundario);
     transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
     font-size: 1.3rem;
 }
 
-.nav-link:hover, .logout:hover {
+.side-panel .nav-link:hover, .side-panel .logout:hover {
     color: var(--color-secundario);
 }
 
-.nav-link:active ,.logout:active {
+.side-panel .nav-link:active, .side-panel .logout:active {
     transform: scale(0.95);
 }
 
-.logout {
+.side-panel .logout {
     margin-top: auto;
 }
 
@@ -74,4 +74,35 @@ body {
 
 .btn-primary:active {
     transform: scale(0.98);
+}
+
+/* 
+--------------------------------------- Modal Formularios ---------------------------------------
+*/
+span {
+    color: var(--color-terciario);
+}
+
+.modal-forms .modal-header,
+.modal-forms .modal-body,
+.modal-forms .modal-footer {
+    background-color: var(--color-secundario);
+    color: var(--color-primario);
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--color-primario);
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
+.form-control::placeholder .form-select::placeholder {
+    font-size: 14px;
+    color: #9c9c94;
 }

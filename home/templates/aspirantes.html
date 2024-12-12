@@ -47,7 +47,7 @@
                         </td>
                         <td>
                             <a href="#" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                            <a href="#" class="btn btn-danger btn-sm" disabled>Eliminar</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -60,7 +60,7 @@
 <!-- Modal -->
 <div class="modal fade" id="nuevoAspiranteModal" tabindex="-1" aria-labelledby="nuevoAspiranteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content">
+        <div class=" modal-forms modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="nuevoAspiranteModalLabel">Nuevo Aspirante</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -83,61 +83,62 @@
                 <div class="tab-content" id="aspiranteTabContent">
                     <!-- Información Personal -->
                     <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+                        <p>Los campos marcados con ' <span>*</span> ' son obligatorios.</p>                        
                         <form id="formPersonal">
                             <div class="row">
                                 <!-- Fila 1 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="fk_rol" class="form-label">Rol *</label>
-                                    <select class="form-select" id="fk_rol" name="fk_rol" required>
-                                        <option value="" disabled selected>Seleccione un rol</option>
-                                        <!-- Opciones dinámicas -->
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="fk_tipo_documento" class="form-label">Tipo de Documento *</label>
-                                    <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
-                                        <option value="" disabled selected>Seleccione un tipo</option>
-                                        <!-- Opciones dinámicas -->
-                                    </select>
-                                </div>
-                    
-                                <!-- Fila 2 -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="cargo" class="form-label">Cargo *</label>
-                                    <input type="text" class="form-control" id="cargo" name="cargo" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="primer_nombre" class="form-label">Primer Nombre *</label>
+                                    <label for="primer_nombre" class="form-label">Primer Nombre <span>*</span></label>
                                     <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
                                 </div>
-                    
-                                <!-- Fila 3 -->
                                 <div class="col-md-6 mb-3">
                                     <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
                                     <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
                                 </div>
+
+                                <!-- Fila 2 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="primer_apellido" class="form-label">Primer Apellido *</label>
+                                    <label for="primer_apellido" class="form-label">Primer Apellido <span>*</span></label>
                                     <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" required>
                                 </div>
-                    
-                                <!-- Fila 4 -->
                                 <div class="col-md-6 mb-3">
                                     <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
                                     <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido">
                                 </div>
+
+                                <!-- Fila 3 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento *</label>
-                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                                    <label for="fk_rol" class="form-label">Rol <span>*</span></label>
+                                    <select class="form-select" id="fk_rol" name="fk_rol" required>
+                                        <option value="" selected>Seleccione un rol</option>
+                                        <!-- Opciones dinámicas -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cargo" class="form-label">Cargo <span>*</span></label>
+                                    <input type="text" class="form-control" id="cargo" name="cargo" required>
                                 </div>
                     
-                                <!-- Fila 5 -->
+                                <!-- Fila 4 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <span>*</span></label>
+                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                                </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento</label>
                                     <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
                                 </div>
+
+                                <!-- Fila 5 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="numero_documento" class="form-label">Número de Documento *</label>
+                                    <label for="fk_tipo_documento" class="form-label">Tipo de Documento <span>*</span></label>
+                                    <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
+                                        <option value="" selected>Seleccione un tipo</option>
+                                        <!-- Opciones dinámicas -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="numero_documento" class="form-label">Número de Documento <span>*</span></label>
                                     <input type="number" class="form-control" id="numero_documento" name="numero_documento" required>
                                 </div>
                     
@@ -152,10 +153,22 @@
                                 </div>
                     
                                 <!-- Fila 7 -->
+                    
+                                <!-- Fila 6 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="sexo" class="form-label">Sexo *</label>
+                                    <label for="fecha_expedicion_documento" class="form-label">Fecha de Expedición del Documento</label>
+                                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lugar_expedicion_documento" class="form-label">Lugar de Expedición del Documento</label>
+                                    <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento">
+                                </div>
+                    
+                                <!-- Fila 7 -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="sexo" class="form-label">Sexo <span>*</span></label>
                                     <select class="form-select" id="sexo" name="sexo" required>
-                                        <option value="" disabled selected>Seleccione</option>
+                                        <option value="" selected>Seleccione</option>
                                         <option value="Masculino">Masculino</option>
                                         <option value="Femenino">Femenino</option>
                                     </select>
@@ -167,12 +180,12 @@
                     
                                 <!-- Fila 8 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="celular" class="form-label">Celular *</label>
+                                    <label for="celular" class="form-label">Celular <span>*</span></label>
                                     <input type="text" class="form-control" id="celular" name="celular" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="correo_personal" class="form-label">Correo Personal *</label>
-                                    <input type="email" class="form-control" id="correo_personal" name="correo_personal" required>
+                                    <label for="correo_personal" class="form-label">Correo Personal <span>*</span></label>
+                                    <input type="email" class="form-control" id="correo_personal" name="correo_personal" aria-describedby="basic-addon2" required>
                                 </div>
                     
                                 <!-- Fila 9 -->
@@ -187,17 +200,17 @@
                     
                                 <!-- Fila 10 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="eps" class="form-label">EPS *</label>
+                                    <label for="eps" class="form-label">EPS <span>*</span></label>
                                     <input type="text" class="form-control" id="eps" name="eps" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="arl" class="form-label">ARL *</label>
+                                    <label for="arl" class="form-label">ARL <span>*</span></label>
                                     <input type="text" class="form-control" id="arl" name="arl" required>
                                 </div>
                     
                                 <!-- Fila 11 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="afp" class="form-label">AFP *</label>
+                                    <label for="afp" class="form-label">AFP <span>*</span></label>
                                     <input type="text" class="form-control" id="afp" name="afp" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -207,17 +220,17 @@
                     
                                 <!-- Fila 12 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="direccion_residencia" class="form-label">Dirección de Residencia *</label>
+                                    <label for="direccion_residencia" class="form-label">Dirección de Residencia <span>*</span></label>
                                     <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="departamento_residencia" class="form-label">Departamento de Residencia *</label>
+                                    <label for="departamento_residencia" class="form-label">Departamento de Residencia <span>*</span></label>
                                     <input type="text" class="form-control" id="departamento_residencia" name="departamento_residencia" required>
                                 </div>
                     
                                 <!-- Fila 13 -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="ciudad_residencia" class="form-label">Ciudad de Residencia *</label>
+                                    <label for="ciudad_residencia" class="form-label">Ciudad de Residencia <span>*</span></label>
                                     <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -231,7 +244,7 @@
                                     <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="estado_revision" class="form-label">Estado de Revisión *</label>
+                                    <label for="estado_revision" class="form-label">Estado de Revisión <span>*</span></label>
                                     <select class="form-select" id="estado_revision" name="estado_revision" required>
                                         <option value="Pendiente">Pendiente</option>
                                         <option value="Aceptado">Aceptado</option>
@@ -245,6 +258,7 @@
 
                     <!-- Detalles Académicos -->
                     <div class="tab-pane fade" id="academico" role="tabpanel" aria-labelledby="academico-tab">
+                        <p>Los campos marcados con ' <span>*</span> ' son obligatorios.</p>
                         <form id="formAcademico">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -273,6 +287,7 @@
 
                     <!-- Experiencia Laboral -->
                     <div class="tab-pane fade" id="experiencia" role="tabpanel" aria-labelledby="experiencia-tab">
+                        <p>Los campos marcados con ' <span>*</span> ' son obligatorios.</p>
                         <form id="formExperiencia">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -301,7 +316,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-primary">Guardar Cambios</button>
             </div>
         </div>

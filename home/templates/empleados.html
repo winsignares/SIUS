@@ -64,7 +64,7 @@
     <!-- Modal -->
     <div class="modal fade" id="nuevoEmpleadoModal" tabindex="-1" aria-labelledby="nuevoEmpleadoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
-            <div class="modal-content">
+            <div class="modal-forms modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="nuevoEmpleadoModalLabel">Nuevo Empleado</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -85,19 +85,229 @@
 
                     <!-- Contenido de las pestañas -->
                     <div class="tab-content" id="empleadoTabContent">
+                        <!-- Información Personal -->
                         <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                            <p>Contenido de Información Personal.</p>
+                            <p>Los campos marcados con ' <span>*</span> ' son obligatorios.</p>                        
+                            <form id="formPersonal">
+                                <div class="row">
+                                    <!-- Fila 1 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fk_rol" class="form-label">Rol <span>*</span></label>
+                                        <select class="form-select" id="fk_rol" name="fk_rol" required>
+                                            <option value="" selected>Seleccione un rol</option>
+                                            <!-- Opciones dinámicas -->
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fk_tipo_documento" class="form-label">Tipo de Documento <span>*</span></label>
+                                        <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
+                                            <option value="" selected>Seleccione un tipo</option>
+                                            <!-- Opciones dinámicas -->
+                                        </select>
+                                    </div>
+                        
+                                    <!-- Fila 2 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cargo" class="form-label">Cargo <span>*</span></label>
+                                        <input type="text" class="form-control" id="cargo" name="cargo" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="primer_nombre" class="form-label">Primer Nombre <span>*</span></label>
+                                        <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
+                                    </div>
+                        
+                                    <!-- Fila 3 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
+                                        <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="primer_apellido" class="form-label">Primer Apellido <span>*</span></label>
+                                        <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" required>
+                                    </div>
+                        
+                                    <!-- Fila 4 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
+                                        <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento <span>*</span></label>
+                                        <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                                    </div>
+                        
+                                    <!-- Fila 5 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento</label>
+                                        <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="numero_documento" class="form-label">Número de Documento <span>*</span></label>
+                                        <input type="number" class="form-control" id="numero_documento" name="numero_documento" required>
+                                    </div>
+                        
+                                    <!-- Fila 6 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha_expedicion_documento" class="form-label">Fecha de Expedición del Documento</label>
+                                        <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lugar_expedicion_documento" class="form-label">Lugar de Expedición del Documento</label>
+                                        <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento">
+                                    </div>
+                        
+                                    <!-- Fila 7 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="sexo" class="form-label">Sexo <span>*</span></label>
+                                        <select class="form-select" id="sexo" name="sexo" required>
+                                            <option value="" selected>Seleccione</option>
+                                            <option value="Masculino">Masculino</option>
+                                            <option value="Femenino">Femenino</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="telefono_fijo" class="form-label">Teléfono Fijo</label>
+                                        <input type="text" class="form-control" id="telefono_fijo" name="telefono_fijo">
+                                    </div>
+                        
+                                    <!-- Fila 8 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="celular" class="form-label">Celular <span>*</span></label>
+                                        <input type="text" class="form-control" id="celular" name="celular" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="correo_personal" class="form-label">Correo Personal <span>*</span></label>
+                                        <input type="email" class="form-control" id="correo_personal" name="correo_personal" aria-describedby="basic-addon2" required>
+                                    </div>
+                        
+                                    <!-- Fila 9 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="estado_civil" class="form-label">Estado Civil</label>
+                                        <input type="text" class="form-control" id="estado_civil" name="estado_civil">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ultimo_nivel_estudio" class="form-label">Último Nivel de Estudio</label>
+                                        <input type="text" class="form-control" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio">
+                                    </div>
+                        
+                                    <!-- Fila 10 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="eps" class="form-label">EPS <span>*</span></label>
+                                        <input type="text" class="form-control" id="eps" name="eps" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="arl" class="form-label">ARL <span>*</span></label>
+                                        <input type="text" class="form-control" id="arl" name="arl" required>
+                                    </div>
+                        
+                                    <!-- Fila 11 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="afp" class="form-label">AFP <span>*</span></label>
+                                        <input type="text" class="form-control" id="afp" name="afp" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="caja_compensacion" class="form-label">Caja de Compensación</label>
+                                        <input type="text" class="form-control" id="caja_compensacion" name="caja_compensacion">
+                                    </div>
+                        
+                                    <!-- Fila 12 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="direccion_residencia" class="form-label">Dirección de Residencia <span>*</span></label>
+                                        <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="departamento_residencia" class="form-label">Departamento de Residencia <span>*</span></label>
+                                        <input type="text" class="form-control" id="departamento_residencia" name="departamento_residencia" required>
+                                    </div>
+                        
+                                    <!-- Fila 13 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ciudad_residencia" class="form-label">Ciudad de Residencia <span>*</span></label>
+                                        <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="barrio_residencia" class="form-label">Barrio de Residencia</label>
+                                        <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia">
+                                    </div>
+                        
+                                    <!-- Fila 14 -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="url_hoja_de_vida" class="form-label">URL Hoja de Vida</label>
+                                        <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="estado_revision" class="form-label">Estado de Revisión <span>*</span></label>
+                                        <select class="form-select" id="estado_revision" name="estado_revision" required>
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Aceptado">Aceptado</option>
+                                            <option value="Rechazado">Rechazado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
+                        
+
+                        <!-- Detalles Académicos -->
                         <div class="tab-pane fade" id="academico" role="tabpanel" aria-labelledby="academico-tab">
-                            <p>Contenido de Detalles Académicos.</p>
+                            <p>Los campos marcados con ' <span>*</span> ' son obligatorios.</p>
+                            <form id="formAcademico">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="institucion" class="form-label">Institución</label>
+                                        <input type="text" class="form-control" id="institucion" name="institucion" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="titulo_obtenido" class="form-label">Título Obtenido</label>
+                                        <input type="text" class="form-control" id="titulo_obtenido" name="titulo_obtenido" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="nivel_academico" class="form-label">Nivel Académico</label>
+                                        <select class="form-select" id="nivel_academico" name="nivel_academico" required>
+                                            <option value="Primaria">Primaria</option>
+                                            <option value="Secundaria">Secundaria</option>
+                                            <option value="Universidad">Universidad</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha_graduacion" class="form-label">Fecha de Graduación</label>
+                                        <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion" required>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
+
+                        <!-- Experiencia Laboral -->
                         <div class="tab-pane fade" id="experiencia" role="tabpanel" aria-labelledby="experiencia-tab">
-                            <p>Contenido de Experiencia Laboral.</p>
+                            <p>Los campos marcados con ' <span>*</span> ' son obligatorios.</p>
+                            <form id="formExperiencia">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="empresa" class="form-label">Empresa</label>
+                                        <input type="text" class="form-control" id="empresa" name="empresa" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cargo" class="form-label">Cargo</label>
+                                        <input type="text" class="form-control" id="cargo" name="cargo" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="anios_experiencia" class="form-label">Años de Experiencia</label>
+                                        <input type="number" class="form-control" id="anios_experiencia" name="anios_experiencia" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                                        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin">
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </div>
