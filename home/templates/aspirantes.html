@@ -144,8 +144,9 @@
                                     <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for tipo in tipos_documento %}
+                                            <option value="{{ tipo.id }}">{{ tipo.tipo_documento }} - {{ tipo.descripcion }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
@@ -194,7 +195,7 @@
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-control" id="departamento_residencia" name="departamento_residencia" required>
+                                    <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
                                         <option value="" selected>Seleccione</option>
                                         <option value="">Opción #</option>
                                         <!-- Agregar mas opciones -->
@@ -220,23 +221,24 @@
                                     <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for nivel in niveles_academicos %}
+                                            <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
 
                                 <!-- Fila 12 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-control" id="eps" name="eps" required>
+                                    <select class="form-select" id="eps" name="eps" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
+                                        <option value="Nueva EPS">Nueva EPS</option>
                                         <!-- Agregar mas opciones -->
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="arl" class="form-label mb-0">ARL <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-control" id="arl" name="arl" required>
+                                    <select type="text" class="form-select" id="arl" name="arl" required>
                                         <option value="" selected>Seleccione</option>
                                         <option value="">Opción #</option>
                                         <!-- Agregar mas opciones -->
@@ -246,7 +248,7 @@
                                 <!-- Fila 13 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="afp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-control" id="afp" name="afp" required>
+                                    <select type="text" class="form-select" id="afp" name="afp" required>
                                         <option value="" selected>Seleccione</option>
                                         <option value="">Opción #</option>
                                         <!-- Agregar mas opciones -->
@@ -254,7 +256,7 @@
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="caja_compensacion" class="form-label mb-0">Caja de Compensación<span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-control" id="caja_compensacion" name="caja_compensacion" required>
+                                    <select type="text" class="form-select" id="caja_compensacion" name="caja_compensacion" required>
                                         <option value="" selected>Seleccione</option>
                                         <option value="">Opción #</option>
                                         <!-- Agregar mas opciones -->

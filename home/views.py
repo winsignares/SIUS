@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from home.models.talento_humano.usuarios import Usuario
+from .models.talento_humano.usuarios import Usuario
+from .models.talento_humano.tipo_documentos import TipoDocumento
+from .models.talento_humano.niveles_academicos import NivelAcademico
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -60,7 +62,7 @@ def actualizar_contraseña(request):
         messages.success(request, "Contraseña actualizada exitosamente. Ingrese con sus nuevas credenciales.")
         return redirect('iniciar_sesion_form')
 
-def obtener_contexto_usuario(request):
+def obtener_contexto(request):
     """
     Función auxiliar para obtener el contexto del usuario autenticado.
     """
@@ -82,7 +84,7 @@ def obtener_contexto_usuario(request):
 
 @login_required
 def dashboard(request):
-    contexto = obtener_contexto_usuario(request)
+    contexto = obtener_contexto(request)
 
     return render(request, 'inicio.html', contexto)
 
@@ -93,18 +95,27 @@ def cerrar_sesion(request):
 
 @login_required
 def gestion_aspirantes(request):
-    contexto = obtener_contexto_usuario(request)
+    contexto = obtener_contexto(request)
+    tipos_documento = TipoDocumento.objects.all()
+    niveles_academicos = NivelAcademico.objects.all()
+    
+    # Agregar variable al contexto
+    contexto.update({
+        'tipos_documento': tipos_documento,
+        'niveles_academicos': niveles_academicos
+    })
+
 
     return render(request, 'aspirantes.html', contexto)
 
 @login_required
 def gestion_empleados(request):
-    contexto = obtener_contexto_usuario(request)
+    contexto = obtener_contexto(request)
 
     return render(request, 'empleados.html', contexto)
 
 @login_required
 def reportes(request):
-    contexto = obtener_contexto_usuario(request)
+    contexto = obtener_contexto(request)
 
     return render(request, 'reportes.html', contexto)
