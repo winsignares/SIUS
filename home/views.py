@@ -148,6 +148,7 @@ def gestion_aspirantes(request):
         'arl_list': arl_list,
         'caja_compensacion_list': caja_compensacion_list,
         'afp_list': afp_list,
+        'niveles_academicos': niveles_academicos,
     })
 
     return render(request, 'aspirantes.html', contexto)

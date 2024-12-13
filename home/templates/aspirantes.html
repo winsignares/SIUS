@@ -242,8 +242,9 @@
                                     <label for="arl" class="form-label mb-0">ARL <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="arl" name="arl" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for arl in arl_list %}
+                                            <option value="{{ arl.nombre }}">{{ arl.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
 
@@ -252,16 +253,18 @@
                                     <label for="afp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="afp" name="afp" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for afp in afp_list %}
+                                            <option value="{{ afp.nombre }}">{{ afp.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="caja_compensacion" class="form-label mb-0">Caja de Compensación<span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="caja_compensacion" name="caja_compensacion" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for caja_compensacion in caja_compensacion_list %}
+                                            <option value="{{ caja_compensacion.nombre }}">{{ caja_compensacion.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
 
