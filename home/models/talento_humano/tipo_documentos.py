@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class TipoDocumento(models.Model):
     id = models.AutoField(primary_key=True)
     tipo_documento = models.CharField(max_length=255)

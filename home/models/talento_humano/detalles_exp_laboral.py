@@ -1,9 +1,11 @@
 from django.db import models
 from .usuarios import Usuario
 
+
 class DetalleExperienciaLaboral(models.Model):
     id = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="detalles_experiencia_laboral")
+    usuario = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, related_name="detalles_experiencia_laboral")
     empresa = models.CharField(max_length=255)
     cargo = models.CharField(max_length=255)
     fecha_inicio = models.DateField(null=False, blank=False)

@@ -1,8 +1,10 @@
 from django.db import models
 from .niveles_academicos import NivelAcademico
 
+
 class Tarifa(models.Model):
-    nivel_academico = models.ForeignKey(NivelAcademico, on_delete=models.CASCADE, related_name="tarifas")
+    nivel_academico = models.ForeignKey(
+        NivelAcademico, on_delete=models.CASCADE, related_name="tarifas")
     anios_experiencia_min = models.PositiveIntegerField()
     anios_experiencia_max = models.PositiveIntegerField()
     tarifa_por_hora = models.DecimalField(max_digits=10, decimal_places=2)
@@ -12,7 +14,12 @@ class Tarifa(models.Model):
         db_table = 'tarifas'
         verbose_name = 'Tarifa'
         verbose_name_plural = 'Tarifas'
-        unique_together = ('nivel_academico', 'anios_experiencia_min', 'anios_experiencia_max', 'vigencia') # Evita duplicados para el mismo nivel académico, experiencia y año
+        # Evita duplicados para el mismo nivel académico, experiencia y año
+        unique_together = ('nivel_academico',
+                        'anios_experiencia_min',
+                        'anios_experiencia_max',
+                        'vigencia'
+        )
 
     def __str__(self):
         return f"{self.nivel_academico.nombre} ({self.vigencia}) - {self.anios_experiencia_min}-{self.anios_experiencia_max} años - ${self.tarifa_por_hora}/hora"
