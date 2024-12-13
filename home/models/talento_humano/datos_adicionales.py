@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class departamentos(models.Model):
+class Departamento(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255, unique=True)
 
@@ -14,7 +14,7 @@ class departamentos(models.Model):
         return f"{self.nombre}"
 
 
-class eps(models.Model):
+class EPS(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255, unique=True)
 
@@ -27,7 +27,7 @@ class eps(models.Model):
         return f"{self.nombre}"
 
 
-class arl(models.Model):
+class ARL(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255, unique=True)
 
@@ -40,7 +40,7 @@ class arl(models.Model):
         return f"{self.nombre}"
 
 
-class afp(models.Model):
+class AFP(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255, unique=True)
 
@@ -53,14 +53,14 @@ class afp(models.Model):
         return f"{self.nombre}"
 
 
-class cajas_compensacion(models.Model):
+class CajaCompensacion(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255, unique=True)
 
     class Meta:
         db_table = 'cajas_compensacion'
-        verbose_name = 'Caja de compensacion'
-        verbose_name_plural = 'Cajas de compensacion'
+        verbose_name = 'Caja de compensación'
+        verbose_name_plural = 'Cajas de compensación'
 
     def __str__(self):
         return f"{self.nombre}"

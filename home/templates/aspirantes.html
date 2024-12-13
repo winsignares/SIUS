@@ -197,8 +197,9 @@
                                     <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for departamento in departamento_list %}
+                                            <option value="{{ departamento.nombre }}">{{ departamento.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
 
@@ -232,8 +233,9 @@
                                     <label for="eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="eps" name="eps" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="Nueva EPS">Nueva EPS</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for eps in eps_list %}
+                                            <option value="{{ eps.nombre }}">{{ eps.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">

@@ -23,57 +23,9 @@
 
             {% endblock %}
         </div>
-
-        <!-- Modal de alerta de sesión expirada -->
-        <div class="modal fade" id="sessionExpiredModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="sessionExpiredModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="sessionExpiredModalLabel">Sesión expirada</h5>
-                    </div>
-                    <div class="modal-body">
-                        Se ha cerrado la sesión por inactividad por más de 10 minutos.
-                    </div>
-                    <div class="modal-footer">
-                        <a href="{% url 'iniciar_sesion_form' %}" class="btn btn-primary">Iniciar sesión nuevamente</a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Importar Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
-        // Tiempo de inactividad en milisegundos (15 minutos = 600000 ms)
-        const SESSION_TIMEOUT = 900000;
-
-        let timeout;
-
-        // Función para mostrar el modal
-        function showSessionExpiredModal() {
-            const modal = new bootstrap.Modal(document.getElementById('sessionExpiredModal'), {
-                backdrop: 'static',
-                keyboard: false
-            });
-            modal.show();
-        }        
-
-        // Reiniciar el temporizador de inactividad
-        function resetTimeout() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                // Mostrar el modal al expirar el tiempo
-                showSessionExpiredModal();
-            }, SESSION_TIMEOUT);
-        }
-
-        // Escuchar eventos de actividad del usuario
-        window.onload = resetTimeout;
-        window.onmousemove = resetTimeout;
-        window.onkeypress = resetTimeout;
-        window.onscroll = resetTimeout;
-    </script>
-
 </body>
 </html>
