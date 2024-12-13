@@ -67,8 +67,8 @@ p {
 /* Estilo de enlaces */
 #forgotPasswordLink {
     color: var(--color-primario);
-    font-size: 1rem;
-    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+    font-size: 0.95rem;
+    transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 #forgotPasswordLink:hover {
@@ -78,8 +78,8 @@ p {
 
 #backToLoginLink {
     color: var(--color-primario);
-    font-size: 1rem;
-    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+    font-size: 1.1rem;
+    transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 #backToLoginLink:hover {
@@ -96,20 +96,21 @@ p {
 }
 
 /* Botones */
-.btn:focus {
-    background-color: var(--color-primario);
+.btn:active {
+    background-color: var(--color-terciario) !important;
 }
 
 .btn-primary {
     background-color: var(--color-terciario);
     border: none;
-    font-size: 1rem;
+    font-size: 1.1rem;
     padding: 0.5rem 1rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out;
+    font-weight: 600;
 }
 
 .btn-primary:hover {
-    background-color: var(--color-primario);
+    background-color: var(--color-terciario);
 }
 
 .btn-primary:active {

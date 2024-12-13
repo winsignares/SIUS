@@ -56,20 +56,21 @@ body {
 }
 
 /* Botones */
-.btn:focus {
-    background-color: var(--color-primario);
+.btn:active {
+    background-color: var(--color-terciario) !important;
 }
 
 .btn-primary {
     background-color: var(--color-terciario);
     border: none;
-    font-size: 1rem;
+    font-size: 1.2rem;
     padding: 0.5rem 1rem;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    font-weight: 600;
 }
 
 .btn-primary:hover {
-    background-color: var(--color-primario);
+    background-color: var(--color-terciario);
 }
 
 .btn-primary:active {
@@ -77,16 +78,35 @@ body {
 }
 
 /* 
---------------------------------------- Modal Formularios ---------------------------------------
+--------------------------------------- MODAL FORMULARIOS ---------------------------------------
 */
 span {
-    color: var(--color-terciario);
+    color: var(--color-primario);
 }
 
-.modal-forms .modal-header,
-.modal-forms .modal-body,
+.modal-forms .modal-header {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+}
+
+.modal-forms .modal-header .btn-close:focus {
+    box-shadow: none !important;
+}
+
+.modal-forms .modal-body {
+    color: var(--color-primario);
+}
+
+.modal-forms .modal-body .nav-tabs .nav-link {
+    color: var(--color-primario);
+}
+
+.modal-forms .modal-body .nav-tabs .nav-link.active {
+    color: var(--color-terciario);
+    font-weight: 500;
+}
+
 .modal-forms .modal-footer {
-    background-color: var(--color-secundario);
     color: var(--color-primario);
 }
 
@@ -102,7 +122,7 @@ span {
     box-shadow: 0 0 5px var(--color-terciario);
 }
 
-.form-control::placeholder .form-select::placeholder {
+.form-control::placeholder, .form-select::placeholder {
     font-size: 14px;
     color: #9c9c94;
 }
