@@ -138,7 +138,7 @@
                                     <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
+                                    <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
                                 </div>
 
@@ -159,11 +159,11 @@
 
                                 <!-- Fila 6 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento<span class='fw-bold fs-4'></span></label>
+                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento">
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento<span class='fw-bold fs-4'></span></label>
+                                    <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento">
                                 </div>
 
@@ -212,14 +212,22 @@
                                     <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia<span class='fw-bold fs-4'></span></label>
+                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia">
                                 </div>
 
                                 <!-- Fila 11 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="estado_civil" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="estado_civil" name="estado_civil">
+                                    <label for="estado_civil" class="form-label mb-0">Estado Civil <span class='fw-bold fs-4'>*</span></label>
+                                    <select type="text" class="form-control" id="estado_civil" name="estado_civil">
+                                        <option value="" selected>Seleccione</option>
+                                        <option value="Soltero(a)">Soltero (a)</option>
+                                        <option value="Casado(a)">Casado (a)</option>
+                                        <option value="Unión Libre">Unión Libre</option>
+                                        <option value="Soltero(a)">Separado (a)</option>
+                                        <option value="Divorciado(a)">Divorciado (a)</option>
+                                        <option value="Viudo(a)">Viudo (a)</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
@@ -262,7 +270,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="caja_compensacion" class="form-label mb-0">Caja de Compensación<span class='fw-bold fs-4'>*</span></label>
+                                    <label for="caja_compensacion" class="form-label mb-0">Caja de Compensación <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="caja_compensacion" name="caja_compensacion" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for caja_compensacion in caja_compensacion_list %}
@@ -273,7 +281,7 @@
 
                                 <!-- Fila 14 -->
                                 <div class="col-md-8">
-                                    <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida<span class='fw-bold fs-4'>*</span></label>
+                                    <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
                                     <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
                                 </div>
                                 <div class="col-md-4">
@@ -311,7 +319,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'></span></label>
+                                    <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion">
                                 </div>
                             </div>
@@ -325,21 +333,21 @@
                             <div class="row">
                                 <!-- Fila 1 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="empresa" class="form-label mb-0">Empresa</label>
+                                    <label for="empresa" class="form-label mb-0">Empresa <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="empresa" name="empresa" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="cargo" class="form-label mb-0">Cargo</label>
+                                    <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="cargo" name="cargo" required>
                                 </div>
 
                                 <!-- Fila 2 -->
                                 <div class="col-md-6">
-                                    <label for="fecha_inicio" class="form-label mb-0">Fecha de Inicio</label>
+                                    <label for="fecha_inicio" class="form-label mb-0">Fecha de Inicio <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="fecha_fin" class="form-label mb-0">Fecha de Fin</label>
+                                    <label for="fecha_fin" class="form-label mb-0">Fecha de Fin <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
                                 </div>
                             </div>
