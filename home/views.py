@@ -7,6 +7,7 @@ from .models.talento_humano.usuarios import Usuario
 from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion
+from .models.talento_humano.roles import Rol
 from siuc import settings
 
 # Create your views here.
@@ -139,6 +140,7 @@ def gestion_aspirantes(request):
     arl_list = ARL.objects.all()
     caja_compensacion_list = CajaCompensacion.objects.all()
     afp_list = AFP.objects.all()
+    rol_list = Rol.objects.all()
 
     # Agregar variable al contexto
     contexto.update({
@@ -149,6 +151,7 @@ def gestion_aspirantes(request):
         'caja_compensacion_list': caja_compensacion_list,
         'afp_list': afp_list,
         'niveles_academicos': niveles_academicos,
+        'rol_list': rol_list
     })
 
     return render(request, 'aspirantes.html', contexto)

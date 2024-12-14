@@ -120,8 +120,11 @@
                                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_rol" name="fk_rol" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for rol in rol_list %}
+                                            <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
