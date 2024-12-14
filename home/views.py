@@ -97,15 +97,15 @@ def obtener_contexto(request):
     grupos_usuario = usuario_autenticado.groups.values_list('name', flat=True)
 
     try:
-        usuario = Usuario.objects.get(auth_user=usuario_autenticado)
-        usuario.primer_nombre = usuario.primer_nombre.capitalize()
-        usuario.primer_apellido = usuario.primer_apellido.capitalize()
-        usuario.cargo = usuario.cargo.upper()
+        usuario_log = Usuario.objects.get(auth_user=usuario_autenticado)
+        usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
+        usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
+        usuario_log.cargo = usuario_log.cargo.upper()
     except Usuario.DoesNotExist:
-        usuario = None
+        usuario_log = None
 
     return {
-        'usuario': usuario,
+        'usuario_log': usuario_log,
         'user_groups': grupos_usuario,
     }
 
@@ -133,6 +133,7 @@ def gestion_aspirantes(request):
     tiempo_expirado(request)
 
     contexto = obtener_contexto(request)
+    all_usuarios = Usuario.objects.all()
     tipos_documento = TipoDocumento.objects.all()
     niveles_academicos = NivelAcademico.objects.all()
     departamento_list = Departamento.objects.all()
@@ -144,6 +145,7 @@ def gestion_aspirantes(request):
 
     # Agregar variable al contexto
     contexto.update({
+        'all_usuarios': all_usuarios,
         'tipos_documento': tipos_documento,
         'departamento_list': departamento_list,
         'eps_list': eps_list,

@@ -65,24 +65,13 @@ p {
 }
 
 /* Estilo de enlaces */
-#forgotPasswordLink {
+#forgotPasswordLink, #backToLoginLink {
     color: var(--color-primario);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-#forgotPasswordLink:hover {
-    color: var(--color-terciario);
-    text-decoration: underline;
-}
-
-#backToLoginLink {
-    color: var(--color-primario);
-    font-size: 1.1rem;
-    transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
-}
-
-#backToLoginLink:hover {
+#forgotPasswordLink:hover, #backToLoginLink:hover {
     color: var(--color-terciario);
     text-decoration: underline;
 }

@@ -57,6 +57,7 @@ body {
 
 /* Botones */
 .btn:active {
+    color: var(--color-secundario);
     background-color: var(--color-terciario) !important;
 }
 
@@ -64,22 +65,69 @@ body {
     background-color: var(--color-terciario);
     border: none;
     font-size: 1.2rem;
-    padding: 0.5rem 1rem;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-    font-weight: 600;
 }
 
-.btn-primary:hover {
+.btn-acciones {
+    background-color: var(--color-terciario);
+    color: var(--color-secundario); 
+    border: none;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-primary:hover, .btn-acciones:hover {
+    color: var(--color-secundario);
     background-color: var(--color-terciario);
 }
 
-.btn-primary:active {
+.btn-primary:active, .btn-acciones:active {
+    color: var(--color-secundario);
     transform: scale(0.98);
+}
+
+/* Estilo del encabezado de la tabla */
+#tablaAspirantes thead {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+    font-weight: bold;
+}
+
+/* Bordes redondeados para la tabla */
+#tablaAspirantes {
+    border-radius: var(--borde-redondo);
+    overflow: hidden;
+}
+
+/* Estilo para las filas al pasar el mouse */
+#tablaAspirantes tbody tr:hover {
+    background-color: rgba(236, 84, 100, 0.1);
+}
+
+/* Alinear texto de los enlaces y botones */
+.table a, .table button {
+    text-align: center;
+}
+
+/* Estilo de enlaces */
+#revisarHojaDeVida {
+    color: var(--color-primario);
+    transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#revisarHojaDeVida:hover {
+    color: var(--color-terciario);
+    text-decoration: underline;
+}
+
+#revisarHojaDeVida:active {    
+    transform: scale(0.95);
 }
 
 /* 
 --------------------------------------- MODAL FORMULARIOS ---------------------------------------
 */
+
 span {
     color: var(--color-primario);
 }

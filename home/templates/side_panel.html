@@ -3,12 +3,12 @@
         <div class="d-flex flex-column align-items-center justify-content-center p-0">
             <i class="bi bi-person-circle p-0"></i>
             <div class="d-flex flex-column align-items-center justify-content-center">
-                {% if usuario %}
-                    <p class="mb-0" id="nombre-usuario">{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</p>
+                {% if usuario_log %}
+                    <p class="mb-0" id="nombre-usuario">{{ usuario_log.primer_nombre }} {{ usuario_log.primer_apellido }}</p>
                 {% else %}
                     <p class="mb-0" id="nombre-usuario">Usuario desconocido</p>
                 {% endif %}
-                <p class="fst-italic" id="email-usuario">{{ usuario.cargo }}</p>
+                <p class="fst-italic" id="email-usuario">{{ usuario_log.cargo }}</p>
             </div>
         </div>
         <hr class="w-100 m-1">
