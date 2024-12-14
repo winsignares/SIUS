@@ -305,8 +305,9 @@
                                     <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="nivel_academico" name="nivel_academico" required>
                                         <option value="" selected>Seleccione</option>
-                                        <option value="">Opción #</option>
-                                        <!-- Agregar mas opciones -->
+                                        {% for nivel in niveles_academicos %}
+                                            <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
