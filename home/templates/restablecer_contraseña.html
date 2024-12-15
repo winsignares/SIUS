@@ -28,7 +28,7 @@
                     <form method="POST" action="{% url 'actualizar_contraseña' %}">
                         {% csrf_token %}
                         <div class="form-outline mb-3">
-                            <input type="email" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" required>
+                            <input type="email" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" value="{{ reset_email|default:'' }}" required>
                         </div>
                         <div class="d-flex gap-3 mb-3">
                             <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="Ingrese su nueva contraseña" required>

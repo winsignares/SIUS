@@ -3,7 +3,7 @@
     --color-primario: #383837;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
-    --borde-redondo: 15px;
+    --borde-redondo: 10px;
 }
 
 /* Estilo general */
@@ -19,6 +19,10 @@ body {
 .side-panel {
     background-color: var(--color-primario);
     color: var(--color-secundario);
+    position: sticky;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
 }
 
 .bi-person-circle {
@@ -55,58 +59,45 @@ body {
     margin-top: auto;
 }
 
-/* Botones */
-.btn:active {
-    color: var(--color-secundario);
-    background-color: var(--color-terciario) !important;
+.main-container {
+    overflow-y: auto;
 }
 
-.btn-primary {
-    background-color: var(--color-terciario);
-    border: none;
-    font-size: 1.2rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-}
-
-.btn-acciones {
-    background-color: var(--color-terciario);
-    color: var(--color-secundario); 
-    border: none;
+/* Estilo del input de filtro */
+.filtro-input {
+    border-radius: 5px;
+    padding: 8px 12px;
     font-size: 1rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    color: var(--color-primario);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.btn-primary:hover, .btn-acciones:hover {
-    color: var(--color-secundario);
-    background-color: var(--color-terciario);
+.filtro-input:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 8px var(--color-terciario);
+    outline: none;
 }
 
-.btn-primary:active, .btn-acciones:active {
-    color: var(--color-secundario);
-    transform: scale(0.98);
+/* Estilo para los botones de paginación */
+.pagination .page-link {
+    color: var(--color-primario);
+    border: none;
+    box-shadow: none;
+    font-size: 1.3rem;
+    transition: all 0.1s ease-in-out;
 }
 
-/* Estilo del encabezado de la tabla */
-#tablaAspirantes thead {
+.pagination .page-link:hover {
     background-color: var(--color-primario);
     color: var(--color-secundario);
-    font-weight: bold;
 }
 
-/* Bordes redondeados para la tabla */
-#tablaAspirantes {
-    border-radius: var(--borde-redondo);
-    overflow: hidden;
+.pagination .page-link:active {
+    transform: scale(0.98);    
 }
 
-/* Estilo para las filas al pasar el mouse */
-#tablaAspirantes tbody tr:hover {
-    background-color: rgba(236, 84, 100, 0.1);
-}
-
-/* Alinear texto de los enlaces y botones */
-.table a, .table button {
-    text-align: center;
+.table-responsive {
+    overflow-x: auto;
 }
 
 /* Estilo de enlaces */
@@ -122,6 +113,40 @@ body {
 
 #revisarHojaDeVida:active {    
     transform: scale(0.95);
+}
+
+/* Botones */
+.btn:active {
+    background-color: var(--color-terciario) !important;
+}
+
+.btn-primary, .btn-editar {
+    background-color: var(--color-terciario);
+    color: var(--color-secundario) !important;
+    border: none;
+    font-size: 1.3rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-filtrar, .btn-ver-info {
+    background-color: var(--color-primario);
+    color: var(--color-secundario) !important;
+    border: none;
+    font-size: 1.3rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-primary:hover, .btn-editar:hover {
+    background-color: var(--color-terciario);
+}
+
+.btn-filtrar:hover, .btn-ver-info:hover {
+    background-color: var(--color-primario) !important;
+}
+
+.btn-primary:active, .btn-acciones:active , .btn-filtrar:active, .btn-editar:active, .btn-ver-info:active{
+    color: var(--color-secundario);
+    transform: scale(0.98);
 }
 
 /* 

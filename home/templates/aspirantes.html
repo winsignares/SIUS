@@ -2,7 +2,8 @@
 
 {% block content %}
 <div class="container-fluid m-4">
-    <div class="row">
+    <!-- Título y botón para agregar nuevo aspirante -->
+    <div class="row mb-3">
         <div class=" d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
             {% if "Secretaria Talento Humano" in user_groups %}
@@ -13,54 +14,193 @@
         </div>
     </div>
 
+    <!-- Tabla de aspirantes en estado 'Pendiente' -->
+    <h4 class="mb-2">Aspirantes Pendientes</h4>
+
+    <!-- Formulario de búsqueda -->
+    <form method="GET" class="mb-2">
+        <div class="row col d-flex justify-content-start align-items-center">
+            <div class="col-md-3">
+                <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ query }}">
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-filtrar">Buscar</button>    
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla de datos -->
     <div class="row">
         <div class="col-12">
-            <table id="tablaAspirantes" class="table table-striped table-hover mt-4 align-middle">
-                <thead class="thead-dark">
-                    <tr class="text-center">
-                        <th scope="col">Nombre Completo</th>
-                        <th scope="col">Rol</th>
-                        <th scope="col">Cargo</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Hoja de Vida</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for usuario in all_usuarios %}
-                    <tr>
-                        <td>
-                            {{ usuario.primer_nombre }}
-                            {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
-                            {{ usuario.primer_apellido }}
-                            {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
-                        </td>
-                        <td>
-                            {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
-                        </td>
-                        <td>
-                            {{ usuario.cargo }}
-                        </td>
-                        <td class="text-center">
-                            {{ usuario.estado_revision }}
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
-                        </td>
-                        <td class="d-flex justify-content-center gap-3">
-                            <a href="#" class="btn btn-acciones">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a href="#" class="btn btn-acciones">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-3 align-middle">
+                    <thead class="thead-dark">
+                        <tr class="text-center">
+                            <th scope="col">Nombre Completo</th>
+                            <th scope="col">Rol</th>
+                            <th scope="col">Cargo</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Hoja de Vida</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in all_usuarios %}
+                        <tr>
+                            <td>
+                                {{ usuario.primer_nombre }}
+                                {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
+                                {{ usuario.primer_apellido }}
+                                {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
+                            </td>
+                            <td>
+                                {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
+                            </td>
+                            <td>
+                                {{ usuario.cargo }}
+                            </td>
+                            <td class="text-center">
+                                {{ usuario.estado_revision }}
+                            </td>
+                            <td class="text-center">
+                                {% if usuario.url_hoja_de_vida %}
+                                <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
+                                {% else %}
+                                No Aplica
+                                {% endif %}
+                            </td>
+                            <td class="d-flex justify-content-center gap-3">
+                                <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <!-- Paginación -->
+    <nav class="mt-2">
+        <ul class="pagination justify-content-end">
+            {% if page_obj_pendientes.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.previous_page_number }}&aspirante_pendiente={{ query }}">
+                    <i class="bi bi-caret-left-fill"></i>
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Página {{ page_obj_pendientes.number }} de {{ page_obj_pendientes.paginator.num_pages }}</span>
+            </li>
+            {% if page_obj_pendientes.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.next_page_number }}&aspirante_pendiente={{ query }}">
+                    <i class="bi bi-caret-right-fill"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Tabla de aspirantes en estado 'Rechazado' -->
+    <h4 class="mb-2">Aspirantes Rechazados</h4>
+
+    <!-- Formulario de búsqueda -->
+    <form method="GET" class="mb-2">
+        <div class="row col d-flex justify-content-start align-items-center">
+            <div class="col-md-3">
+                <input type="text" name="aspirante_rechazado" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ query }}">
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-filtrar">Buscar</button>    
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla de datos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-3 align-middle">
+                    <thead class="thead-dark">
+                        <tr class="text-center">
+                            <th scope="col">Nombre Completo</th>
+                            <th scope="col">Rol</th>
+                            <th scope="col">Cargo</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Hoja de Vida</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios_rechazados %}
+                        <tr>
+                            <td>
+                                {{ usuario.primer_nombre }}
+                                {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
+                                {{ usuario.primer_apellido }}
+                                {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
+                            </td>
+                            <td>
+                                {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
+                            </td>
+                            <td>
+                                {{ usuario.cargo }}
+                            </td>
+                            <td class="text-center">
+                                {{ usuario.estado_revision }}
+                            </td>
+                            <td class="text-center">
+                                {% if usuario.url_hoja_de_vida %}
+                                <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
+                                {% else %}
+                                No Aplica
+                                {% endif %}
+                            </td>
+                            <td class="d-flex justify-content-center gap-3">
+                                <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginación para la tabla de aspirantes en estado 'Rechazado' -->
+    <nav class="mt-2">
+        <ul class="pagination justify-content-end">
+            {% if page_obj_rechazados.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.previous_page_number }}&aspirante_rechazados={{ query }}">
+                    <i class="bi bi-caret-left-fill"></i>
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Página {{ page_obj_rechazados.number }} de {{ page_obj_rechazados.paginator.num_pages }}</span>
+            </li>
+            {% if page_obj_rechazados.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.next_page_number }}&aspirante_rechazados={{ query }}">
+                    <i class="bi bi-caret-right-fill"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 
 <!-- Modal -->
@@ -151,7 +291,7 @@
                                     <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for tipo in tipos_documento %}
+                                        {% for tipo in tipos_documento_list %}
                                             <option value="{{ tipo.id }}">{{ tipo.tipo_documento }} - {{ tipo.descripcion }}</option>
                                         {% endfor %}
                                     </select>
@@ -225,19 +365,19 @@
                                     <label for="estado_civil" class="form-label mb-0">Estado Civil <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-control" id="estado_civil" name="estado_civil">
                                         <option value="" selected>Seleccione</option>
-                                        <option value="Soltero(a)">Soltero (a)</option>
-                                        <option value="Casado(a)">Casado (a)</option>
+                                        <option value="Soltero (a)">Soltero (a)</option>
+                                        <option value="Casado (a)">Casado (a)</option>
                                         <option value="Unión Libre">Unión Libre</option>
-                                        <option value="Soltero(a)">Separado (a)</option>
-                                        <option value="Divorciado(a)">Divorciado (a)</option>
-                                        <option value="Viudo(a)">Viudo (a)</option>
+                                        <option value="Soltero (a)">Separado (a)</option>
+                                        <option value="Divorciado (a)">Divorciado (a)</option>
+                                        <option value="Viudo (a)">Viudo (a)</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for nivel in niveles_academicos %}
+                                        {% for nivel in niveles_academicos_list %}
                                             <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
                                     </select>
@@ -317,7 +457,7 @@
                                     <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="nivel_academico" name="nivel_academico" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for nivel in niveles_academicos %}
+                                        {% for nivel in niveles_academicos_list %}
                                             <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
                                     </select>
@@ -365,17 +505,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Inicializar DataTables
-    document.addEventListener('DOMContentLoaded', function () {
-        $('#tablaAspirantes').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-            },
-            pageLength: 5
-        });
-    });
-</script>
 
 {% endblock %}

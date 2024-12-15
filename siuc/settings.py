@@ -46,8 +46,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'home.middleware.session_timeout_middleware.SessionTimeoutMiddleware',
+    'home.middleware.custom_login_redirect.CustomLoginRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'siuc.urls'
@@ -133,7 +132,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 LOGIN_URL = '/siuc/login/'
-
 LOGOUT_REDIRECT_URL = '/siuc/login/'
 
 # Configuración de sesiones

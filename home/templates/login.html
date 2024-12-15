@@ -28,7 +28,7 @@
                     <form method="POST" action="{% url 'signin' %}">
                         {% csrf_token %}
                         <div class="form-outline mb-3">
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su correo institucional" required>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su correo institucional" value="{{ email|default:'' }}" required>
                         </div>
                         <div class="form-outline mb-0">
                             <input type="password" id="password" name="password" class="form-control" placeholder="Ingrese su contraseña" required>

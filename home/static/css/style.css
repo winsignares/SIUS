@@ -105,14 +105,3 @@ p {
 .btn-primary:active {
     transform: scale(0.98);
 }
-
-/* 
---------------------------------------- Error 404 ---------------------------------------
-
-
-.error-container {
-    padding: 40px 15px;
-    text-align: center;
-}
-
-*/
