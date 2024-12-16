@@ -157,7 +157,7 @@ def dashboard(request):
     '''
     contexto = obtener_db_info(request)
 
-    return render(request, 'inicio.html', contexto)
+    return render(request, 'dashboard.html', contexto)
 
 
 @login_required
@@ -183,10 +183,10 @@ def gestion_aspirantes(request):
     # Capturar parámetros de búsqueda
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()
-    usuarios_aspirantes = Usuario.objects.filter(estado_revision='Pendiente')
+    usuarios_aspirantes = Usuario.objects.filter(estado_revision='Pendiente').order_by('-fecha_modificacion')
     # Término de búsqueda para aspirantes en estado 'Rechazado'
     aspirante_rechazado = request.GET.get('aspirante_rechazado', '').strip()
-    usuarios_rechazados = Usuario.objects.filter(estado_revision='Rechazado')
+    usuarios_rechazados = Usuario.objects.filter(estado_revision='Rechazado').order_by('-fecha_modificacion')
 
     # Filtrar datos si hay una búsqueda
     if aspirante_pendiente:
@@ -206,26 +206,26 @@ def gestion_aspirantes(request):
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
     paginator_pendientes = Paginator(
-        usuarios_aspirantes, 10)  # 10 registros por página
+        usuarios_aspirantes, 8)  # 5 registros por página
     page_number_pendientes = request.GET.get('page_pendientes')
     page_obj_pendientes = paginator_pendientes.get_page(page_number_pendientes)
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
     paginator_rechazados = Paginator(
-        usuarios_rechazados, 10)  # 10 registros por página
+        usuarios_rechazados, 8)  # 8 registros por página
     page_number_rechazados = request.GET.get('page_rechazados')
     page_obj_rechazados = paginator_rechazados.get_page(page_number_rechazados)
 
     # Actualizar el contexto
     contexto.update({
-        'all_usuarios': all_usuarios,
-        'usuarios_aspirantes': usuarios_aspirantes,
-        'usuarios_rechazados': usuarios_rechazados,
         'page_obj_pendientes': page_obj_pendientes,
         'page_obj_rechazados': page_obj_rechazados,
         'aspirante_pendiente': aspirante_pendiente,
         'aspirante_rechazado': aspirante_rechazado,
     })
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # AJAX request
+        return render(request, 'partials/aspirantes_content.html', contexto)
 
     return render(request, 'aspirantes.html', contexto)
 
@@ -238,6 +238,9 @@ def gestion_empleados(request):
 
     contexto = obtener_db_info(request)
 
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # AJAX request
+        return render(request, 'partials/empleados_content.html', contexto)
+
     return render(request, 'empleados.html', contexto)
 
 
@@ -248,5 +251,8 @@ def reportes(request):
     '''
 
     contexto = obtener_db_info(request)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # AJAX request
+        return render(request, 'partials/reportes_content.html', contexto)
 
     return render(request, 'reportes.html', contexto)

@@ -1,8 +1,10 @@
 {% extends "dashboard.html" %}
 
+{% block container_class %}justify-content-start align-items-start{% endblock %}
+
 {% block content %}
 <div class="container-fluid m-4">
-    <!-- Título y botón para agregar nuevo aspirante -->
+<!-- Título y botón para agregar nuevo aspirante -->
     <div class="row mb-3">
         <div class=" d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
@@ -10,11 +12,11 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoAspiranteModal">
                 Nuevo Aspirante
             </button>
-            {% endif %}            
+            {% endif %}
         </div>
     </div>
 
-    <!-- Tabla de aspirantes en estado 'Pendiente' -->
+<!-- Tabla de aspirantes en estado 'Pendiente' -->
     <h4 class="mb-2">Aspirantes Pendientes</h4>
 
     <!-- Formulario de búsqueda -->
@@ -45,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for usuario in usuarios_aspirantes %}
+                        {% for usuario in page_obj_pendientes %}
                         <tr>
                             <td>
                                 {{ usuario.primer_nombre }}
@@ -85,7 +87,7 @@
         </div>
     </div>
 
-    <!-- Paginación -->
+    <!-- Paginación para la tabla de aspirantes en estado 'Pendiente' -->
     <nav class="mt-2">
         <ul class="pagination justify-content-end">
             {% if page_obj_pendientes.has_previous %}
@@ -108,12 +110,12 @@
         </ul>
     </nav>
 
-    <!-- Separador -->
+<!-- Separador -->
     <div class="d-flex align-items-center justify-content-center divider mb-2">
         <hr class="w-100">
     </div>
 
-    <!-- Tabla de aspirantes en estado 'Rechazado' -->
+<!-- Tabla de aspirantes en estado 'Rechazado' -->
     <h4 class="mb-2">Aspirantes Rechazados</h4>
 
     <!-- Formulario de búsqueda -->
@@ -144,7 +146,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for usuario in usuarios_rechazados %}
+                        {% for usuario in page_obj_rechazados %}
                         <tr>
                             <td>
                                 {{ usuario.primer_nombre }}
@@ -211,40 +213,24 @@
 <!-- Modal -->
 <div class="modal fade" id="nuevoAspiranteModal" tabindex="-1" aria-labelledby="nuevoAspiranteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class=" modal-forms modal-content">
+        <div class="modal-forms modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="nuevoAspiranteModalLabel">Nuevo Aspirante</h3>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <!-- Navegación entre pestañas -->
-                <ul class="nav nav-tabs custom-tabs" id="aspiranteTab" role="tablist">
-                    <li class="nav-item fs-5" role="presentation">
-                        <button class="nav-link active d-flex gap-3" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="true">
-                            <i class="bi bi-person-vcard"></i>Información Personal
-                        </button>
-                    </li>
-                    <li class="nav-item fs-5" role="presentation">
-                        <button class="nav-link d-flex gap-3" id="academico-tab" data-bs-toggle="tab" data-bs-target="#academico" type="button" role="tab" aria-controls="academico" aria-selected="false">
-                            <i class="bi bi-mortarboard"></i>Detalles Académicos
-                        </button>
-                    </li>
-                    <li class="nav-item fs-5" role="presentation">
-                        <button class="nav-link d-flex gap-3" id="experiencia-tab" data-bs-toggle="tab" data-bs-target="#experiencia" type="button" role="tab" aria-controls="experiencia" aria-selected="false">
-                            <i class="bi bi-briefcase"></i></i>Experiencia Laboral
-                        </button>
-                    </li>
-                </ul>
-                
+            <div class="modal-body p-2">
+                <form id="formAspirante" method="POST">
+                    {% comment %} action="{% url 'agregar_aspirante' %}" {% endcomment %}
+                    {% csrf_token %}
 
-                <!-- Contenido de las pestañas -->
-                <div class="tab-content p-3" id="aspiranteTabContent">
-                    <!-- Información Personal -->
-                    <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
-                        <p class='mensaje-info fs-5 mb-2'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold fs-4'>*</span> ' son obligatorios.</p>                        
-                        <form id="formPersonal">
-                            <div class="row">
-                                <!-- Fila 1 -->
+                    <!-- Contenido de las pestañas -->
+                    <div class="container">
+                        <!-- Información Personal -->
+                        <div class="container mb-3">
+                            <div class="d-flex gap-3 fs-5 fw-bold">
+                                <i class="bi bi-person-vcard"></i>Información Personal
+                            </div>
+                            <div class="row px-3">
                                 <div class="col-md-6 mb-2">
                                     <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" placeholder="Ejemplo: ' Andrés '" required>
@@ -254,7 +240,6 @@
                                     <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" placeholder="Opcional">
                                 </div>
 
-                                <!-- Fila 2 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="primer_apellido" class="form-label mb-0">Primer Apellido <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" placeholder="Ejemplo: ' Pérez '" required>
@@ -264,16 +249,13 @@
                                     <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" placeholder="Opcional">
                                 </div>
 
-                                <!-- Fila 3 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_rol" name="fk_rol" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for rol in rol_list %}
                                             <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
                                         {% endfor %}
-                                    </select>
-                                    
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
@@ -281,21 +263,19 @@
                                     <input type="text" class="form-control" id="cargo" name="cargo" placeholder="Ejemplo: ' Secretaria '" required>
                                 </div>
 
-                                <!-- Fila 4 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="fecha_nacimiento" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
                                 </div>
 
-                                <!-- Fila 5 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for tipo in tipos_documento_list %}
                                             <option value="{{ tipo.id }}">{{ tipo.tipo_documento }} - {{ tipo.descripcion }}</option>
                                         {% endfor %}
@@ -306,21 +286,19 @@
                                     <input type="number" class="form-control" id="numero_documento" name="numero_documento" required>
                                 </div>
 
-                                <!-- Fila 6 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento<span class='fw-bold fs-4'>   </span></label>
                                     <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento">
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento">
                                 </div>
 
-                                <!-- Fila 7 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="sexo" class="form-label mb-0">Sexo <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="sexo" name="sexo" required>
-                                        <option value="" selected>Seleccione</option>
+                                    <label for="sexo" class="form-label mb-0">Sexo<span class='fw-bold fs-4'></span></label>
+                                    <select class="form-select" id="sexo" name="sexo">
+                                        <option value="" selected></option>
                                         <option value="Masculino">Masculino</option>
                                         <option value="Femenino">Femenino</option>
                                     </select>
@@ -330,46 +308,42 @@
                                     <input type="email" class="form-control" id="correo_personal" name="correo_personal" required>
                                 </div>
 
-                                <!-- Fila 8 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="celular" class="form-label mb-0">Celular <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="celular" name="celular" required>
+                                    <input type="number" class="form-control" id="celular" name="celular" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="telefono_fijo" class="form-label mb-0">Teléfono Fijo<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="telefono_fijo" name="telefono_fijo">
+                                    <input type="number" class="form-control" id="telefono_fijo" name="telefono_fijo">
                                 </div>
 
-                                <!-- Fila 9 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia" required>
+                                    <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia<span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia">
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for departamento in departamento_list %}
                                             <option value="{{ departamento.nombre }}">{{ departamento.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
-                                <!-- Fila 10 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" required>
+                                    <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia<span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia">
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia">
                                 </div>
 
-                                <!-- Fila 11 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="estado_civil" class="form-label mb-0">Estado Civil <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="estado_civil" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
                                     <select type="text" class="form-control" id="estado_civil" name="estado_civil">
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         <option value="Soltero (a)">Soltero (a)</option>
                                         <option value="Casado (a)">Casado (a)</option>
                                         <option value="Unión Libre">Unión Libre</option>
@@ -381,72 +355,55 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for nivel in niveles_academicos_list %}
                                             <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
-                                <!-- Fila 12 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="eps" name="eps" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for eps in eps_list %}
                                             <option value="{{ eps.nombre }}">{{ eps.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="arl" class="form-label mb-0">ARL <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-select" id="arl" name="arl" required>
-                                        <option value="" selected>Seleccione</option>
-                                        {% for arl in arl_list %}
-                                            <option value="{{ arl.nombre }}">{{ arl.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
 
-                                <!-- Fila 13 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="afp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="afp" name="afp" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for afp in afp_list %}
                                             <option value="{{ afp.nombre }}">{{ afp.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="caja_compensacion" class="form-label mb-0">Caja de Compensación <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-select" id="caja_compensacion" name="caja_compensacion" required>
-                                        <option value="" selected>Seleccione</option>
-                                        {% for caja_compensacion in caja_compensacion_list %}
-                                            <option value="{{ caja_compensacion.nombre }}">{{ caja_compensacion.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
 
-                                <!-- Fila 14 -->
                                 <div class="col-md-8">
                                     <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
                                     <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Pendiente (Por defecto)" disabled required>
+                                    <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Pendiente" disabled required>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    
+                        </div>
 
-                    <!-- Detalles Académicos -->
-                    <div class="tab-pane fade" id="academico" role="tabpanel" aria-labelledby="academico-tab">
-                        <p class='mensaje-info fs-5 mb-2'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold fs-4'>*</span> ' son obligatorios.</p>
-                        <form id="formAcademico">
-                            <div class="row">
+                        <!-- Separador -->
+                        <div class="d-flex align-items-center justify-content-center divider">
+                            <hr class="w-100">
+                        </div>
+
+                        <!-- Detalles Académicos -->
+                        <div class="container mb-3">
+                            <div class="d-flex gap-3 fs-5 fw-bold">
+                                <i class="bi bi-mortarboard"></i>Detalles Académicos
+                            </div>
+                            <div class="row px-3">
                                 <!-- Fila 1 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
@@ -461,7 +418,7 @@
                                 <div class="col-md-6">
                                     <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="nivel_academico" name="nivel_academico" required>
-                                        <option value="" selected>Seleccione</option>
+                                        <option value="" selected></option>
                                         {% for nivel in niveles_academicos_list %}
                                             <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
@@ -469,24 +426,29 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion">
+                                    <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion" required>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
 
-                    <!-- Experiencia Laboral -->
-                    <div class="tab-pane fade" id="experiencia" role="tabpanel" aria-labelledby="experiencia-tab">
-                        <p class='mensaje-info fs-5 mb-2'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold fs-4'>*</span> ' son obligatorios.</p>
-                        <form id="formExperiencia">
-                            <div class="row">
+                        <!-- Separador -->
+                        <div class="d-flex align-items-center justify-content-center divider">
+                            <hr class="w-100">
+                        </div>
+
+                        <!-- Experiencia Laboral -->
+                        <div class="container mb-2">
+                            <div class="d-flex gap-3 fs-5 fw-bold">
+                                <i class="bi bi-briefcase"></i></i>Experiencia Laboral
+                            </div>
+                            <div class="row px-3">
                                 <!-- Fila 1 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="empresa" class="form-label mb-0">Empresa <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="empresa" class="form-label mb-0">Empresa donde Laboró <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="empresa" name="empresa" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
+                                    <label for="cargo" class="form-label mb-0">Cargo Laborado <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="cargo" name="cargo" required>
                                 </div>
 
@@ -500,12 +462,17 @@
                                     <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Guardar Cambios</button>
+
+            <!-- Botón para enviar el formulario -->
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <!-- Nota -->
+                <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                <button type="submit" class="btn btn-primary" form="formAspirante">Enviar</button>
             </div>
         </div>
     </div>

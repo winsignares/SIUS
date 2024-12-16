@@ -5,10 +5,8 @@ from .niveles_academicos import NivelAcademico
 
 class DetalleAcademico(models.Model):
     id = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(
-        Usuario, on_delete=models.CASCADE, related_name="detalles_academicos")
-    nivel_academico = models.ForeignKey(
-        NivelAcademico, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="detalles_academicos")
+    nivel_academico = models.ForeignKey(NivelAcademico, on_delete=models.CASCADE)
     institucion = models.CharField(max_length=255)
     titulo_obtenido = models.CharField(max_length=255)
     fecha_graduacion = models.DateField(null=True, blank=True)

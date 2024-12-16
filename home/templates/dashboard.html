@@ -20,8 +20,13 @@
         </div>
 
         <!-- Contenido principal -->
-        <div class="main-container d-flex {% block container_class%} justify-content-start align-items-start {% endblock %} flex-grow-1 col-md-10 overflow-auto">
+        <div class="main-container d-flex {% block container_class%} justify-content-center align-items-center {% endblock %} flex-grow-1 col-md-10 overflow-auto">
+
             {% block content %}
+
+            <div class="p-5 h-auto">
+                <img src="{% static 'images/img_home.png' %}" class="img-fluid h-100" alt="Unicorsalud">
+            </div>
 
             {% endblock %}
         </div>
