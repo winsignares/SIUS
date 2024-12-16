@@ -44,10 +44,8 @@
                                 <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} d-flex align-items-center gap-2">
                                     {% if message.tags == 'success' %}
                                         <i class="bi bi-check-circle"></i>
-                                    {% elif message.tags == 'error' %}
+                                    {% elif message.tags == 'error' or message.tags == 'warning' %}
                                         <i class="bi bi-exclamation-circle"></i>
-                                    {% elif message.tags == 'warning' %}
-                                        <i class="bi bi-exclamation-triangle"></i>
                                     {% else %}
                                         <i class="bi bi-info-circle"></i>
                                     {% endif %}

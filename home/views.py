@@ -31,6 +31,13 @@ def restablecer_contraseña_form(request):
     return render(request, 'restablecer_contraseña.html')
 
 
+def error_404_view(request, exception):
+    """
+    Vista para manejar errores 404.
+    """
+    return render(request, '404.html', status=404)
+
+
 def signin(request):
     '''
         Función para manejar los datos enviados en el formulario de inicio de sesión.
@@ -59,7 +66,7 @@ def signin(request):
 
         if user is None:
             messages.error(
-                request, "La contraseña ingresada es incorrecta. Inténtelo nuevamente.")
+                request, "La contraseña ingresada es incorrecta.")
             return render(request, 'login.html', {'email': email})
 
         login(request, user)
@@ -172,11 +179,13 @@ def gestion_aspirantes(request):
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
     all_usuarios = Usuario.objects.all()
-    
+
     # Capturar parámetros de búsqueda
-    aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()  # Término de búsqueda para aspirantes en estado 'Pendiente'
+    # Término de búsqueda para aspirantes en estado 'Pendiente'
+    aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()
     usuarios_aspirantes = Usuario.objects.filter(estado_revision='Pendiente')
-    aspirante_rechazado = request.GET.get('aspirante_rechazados', '').strip()  # Término de búsqueda para aspirantes en estado 'Rechazado'
+    # Término de búsqueda para aspirantes en estado 'Rechazado'
+    aspirante_rechazado = request.GET.get('aspirante_rechazado', '').strip()
     usuarios_rechazados = Usuario.objects.filter(estado_revision='Rechazado')
 
     # Filtrar datos si hay una búsqueda
@@ -196,12 +205,14 @@ def gestion_aspirantes(request):
         )
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_pendientes = Paginator(all_usuarios, 4)  # 9 registros por página
+    paginator_pendientes = Paginator(
+        usuarios_aspirantes, 10)  # 10 registros por página
     page_number_pendientes = request.GET.get('page_pendientes')
     page_obj_pendientes = paginator_pendientes.get_page(page_number_pendientes)
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_rechazados = Paginator(usuarios_rechazados, 9)  # 9 registros por página
+    paginator_rechazados = Paginator(
+        usuarios_rechazados, 10)  # 10 registros por página
     page_number_rechazados = request.GET.get('page_rechazados')
     page_obj_rechazados = paginator_rechazados.get_page(page_number_rechazados)
 
@@ -212,6 +223,8 @@ def gestion_aspirantes(request):
         'usuarios_rechazados': usuarios_rechazados,
         'page_obj_pendientes': page_obj_pendientes,
         'page_obj_rechazados': page_obj_rechazados,
+        'aspirante_pendiente': aspirante_pendiente,
+        'aspirante_rechazado': aspirante_rechazado,
     })
 
     return render(request, 'aspirantes.html', contexto)

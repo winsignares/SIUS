@@ -3,8 +3,7 @@ from .niveles_academicos import NivelAcademico
 
 
 class Tarifa(models.Model):
-    nivel_academico = models.ForeignKey(
-        NivelAcademico, on_delete=models.CASCADE, related_name="tarifas")
+    nivel_academico = models.ForeignKey(NivelAcademico, on_delete=models.CASCADE, related_name="tarifas")
     anios_experiencia_min = models.PositiveIntegerField()
     anios_experiencia_max = models.PositiveIntegerField()
     tarifa_por_hora = models.DecimalField(max_digits=10, decimal_places=2)

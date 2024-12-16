@@ -21,10 +21,10 @@
     <form method="GET" class="mb-2">
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
-                <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ query }}">
+                <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
             </div>
             <div class="col-md-auto">
-                <button type="submit" class="btn btn-filtrar">Buscar</button>    
+                <button type="submit" class="btn btn-filtrar">Filtrar</button>
             </div>
         </div>
     </form>
@@ -45,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for usuario in all_usuarios %}
+                        {% for usuario in usuarios_aspirantes %}
                         <tr>
                             <td>
                                 {{ usuario.primer_nombre }}
@@ -108,6 +108,11 @@
         </ul>
     </nav>
 
+    <!-- Separador -->
+    <div class="d-flex align-items-center justify-content-center divider mb-2">
+        <hr class="w-100">
+    </div>
+
     <!-- Tabla de aspirantes en estado 'Rechazado' -->
     <h4 class="mb-2">Aspirantes Rechazados</h4>
 
@@ -115,10 +120,10 @@
     <form method="GET" class="mb-2">
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
-                <input type="text" name="aspirante_rechazado" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ query }}">
+                <input type="text" name="aspirante_rechazado" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
             </div>
             <div class="col-md-auto">
-                <button type="submit" class="btn btn-filtrar">Buscar</button>    
+                <button type="submit" class="btn btn-filtrar">Filtrar</button>
             </div>
         </div>
     </form>

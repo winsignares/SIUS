@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from home import views
+from django.conf.urls import handler404
 
 urlpatterns = [
     path('root/', admin.site.urls),
@@ -34,3 +35,6 @@ urlpatterns = [
     
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
 ]
+
+# Error 404 personalizado
+handler404 = 'home.views.error_404_view'
