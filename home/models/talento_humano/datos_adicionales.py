@@ -64,3 +64,20 @@ class CajaCompensacion(models.Model):
 
     def __str__(self):
         return f"{self.nombre}"
+
+
+class Institucion(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=255, null=True, blank=True)
+    nombre_institucion = models.CharField(max_length=255, null=True, blank=True)
+    principal_seccional = models.CharField(max_length=255, null=True, blank=True)
+    departamento_ubicacion = models.CharField(max_length=255, null=True, blank=True)
+    municipio_ubicacion = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        db_table = 'instituciones'
+        verbose_name = 'Institución'
+        verbose_name_plural = 'Instituciones'
+
+    def __str__(self):
+        return f"{self.nombre_institucion} - {self.departamento_ubicacion}, {self.municipio_ubicacion}"
