@@ -252,7 +252,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_rol" name="fk_rol" required>
-                                        <option value="" selected></option>
+                                        <option class="selected" selected>Seleccione</option>
                                         {% for rol in rol_list %}
                                             <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
                                         {% endfor %}
@@ -342,7 +342,7 @@
 
                                 <div class="col-md-6 mb-2">
                                     <label for="estado_civil" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
-                                    <select type="text" class="form-control" id="estado_civil" name="estado_civil">
+                                    <select type="text" class="form-select" id="estado_civil" name="estado_civil">
                                         <option value="" selected></option>
                                         <option value="Soltero (a)">Soltero (a)</option>
                                         <option value="Casado (a)">Casado (a)</option>

@@ -201,6 +201,7 @@ def gestion_aspirantes(request):
             models.Q(primer_nombre__icontains=aspirante_rechazado) |
             models.Q(primer_apellido__icontains=aspirante_rechazado) |
             models.Q(numero_documento__icontains=aspirante_rechazado) |
+            
             models.Q(fk_rol__rol__icontains=aspirante_rechazado)
         )
 
