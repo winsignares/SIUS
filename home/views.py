@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from .models.talento_humano.usuarios import Usuario
 from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
-from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion
+from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
 from .models.talento_humano.roles import Rol
 from siuc import settings
 
@@ -145,6 +145,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'afp_list': AFP.objects.all(),
             'niveles_academicos_list': NivelAcademico.objects.all(),
             'rol_list': Rol.objects.all(),
+            'instituciones_list': Institucion.objects.all().order_by('codigo'),
         })
 
     return contexto
@@ -192,17 +193,20 @@ def gestion_aspirantes(request):
     if aspirante_pendiente:
         usuarios_aspirantes = usuarios_aspirantes.filter(
             models.Q(primer_nombre__icontains=aspirante_pendiente) |
+            models.Q(segundo_nombre__icontains=aspirante_pendiente) |
             models.Q(primer_apellido__icontains=aspirante_pendiente) |
+            models.Q(segundo_apellido__icontains=aspirante_pendiente) |
             models.Q(numero_documento__icontains=aspirante_pendiente) |
-            models.Q(fk_rol__rol__icontains=aspirante_pendiente)
+            models.Q(fk_rol__descripcion__icontains=aspirante_pendiente)
         )
     elif aspirante_rechazado:
         usuarios_rechazados = usuarios_rechazados.filter(
             models.Q(primer_nombre__icontains=aspirante_rechazado) |
+            models.Q(segundo_nombre__icontains=aspirante_rechazado) |
             models.Q(primer_apellido__icontains=aspirante_rechazado) |
+            models.Q(segundo_apellido__icontains=aspirante_rechazado) |
             models.Q(numero_documento__icontains=aspirante_rechazado) |
-            
-            models.Q(fk_rol__rol__icontains=aspirante_rechazado)
+            models.Q(fk_rol__descripcion__icontains=aspirante_rechazado)
         )
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'

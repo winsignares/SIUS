@@ -195,7 +195,7 @@ span {
     box-shadow: 0 0 5px var(--color-terciario);
 }
 
-.form-control::placeholder, .selected {
+.form-control::placeholder {
     font-size: 14px;
     color: #9c9c94;
 }

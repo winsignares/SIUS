@@ -233,26 +233,26 @@
                             <div class="row px-3">
                                 <div class="col-md-6 mb-2">
                                     <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" placeholder="Ejemplo: ' Andrés '" required>
+                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="segundo_nombre" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" placeholder="Opcional">
+                                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
                                 </div>
 
                                 <div class="col-md-6 mb-2">
                                     <label for="primer_apellido" class="form-label mb-0">Primer Apellido <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" placeholder="Ejemplo: ' Pérez '" required>
+                                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" required>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="segundo_apellido" class="form-label mb-0">Segundo Apellido<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" placeholder="Opcional">
+                                    <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido">
                                 </div>
 
                                 <div class="col-md-6 mb-2">
                                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_rol" name="fk_rol" required>
-                                        <option class="selected" selected>Seleccione</option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for rol in rol_list %}
                                             <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
                                         {% endfor %}
@@ -260,7 +260,7 @@
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="cargo" name="cargo" placeholder="Ejemplo: ' Secretaria '" required>
+                                    <input type="text" class="form-control" id="cargo" name="cargo" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
@@ -275,7 +275,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for tipo in tipos_documento_list %}
                                             <option value="{{ tipo.id }}">{{ tipo.tipo_documento }} - {{ tipo.descripcion }}</option>
                                         {% endfor %}
@@ -298,7 +298,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="sexo" class="form-label mb-0">Sexo<span class='fw-bold fs-4'></span></label>
                                     <select class="form-select" id="sexo" name="sexo">
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         <option value="Masculino">Masculino</option>
                                         <option value="Femenino">Femenino</option>
                                     </select>
@@ -324,7 +324,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for departamento in departamento_list %}
                                             <option value="{{ departamento.nombre }}">{{ departamento.nombre }}</option>
                                         {% endfor %}
@@ -343,7 +343,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="estado_civil" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
                                     <select type="text" class="form-select" id="estado_civil" name="estado_civil">
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         <option value="Soltero (a)">Soltero (a)</option>
                                         <option value="Casado (a)">Casado (a)</option>
                                         <option value="Unión Libre">Unión Libre</option>
@@ -355,7 +355,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio" required>
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for nivel in niveles_academicos_list %}
                                             <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
@@ -365,7 +365,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="eps" name="eps" required>
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for eps in eps_list %}
                                             <option value="{{ eps.nombre }}">{{ eps.nombre }}</option>
                                         {% endfor %}
@@ -375,7 +375,7 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="afp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="afp" name="afp" required>
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for afp in afp_list %}
                                             <option value="{{ afp.nombre }}">{{ afp.nombre }}</option>
                                         {% endfor %}
@@ -407,7 +407,12 @@
                                 <!-- Fila 1 -->
                                 <div class="col-md-6 mb-2">
                                     <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="institucion" name="institucion" required>
+                                    <select class="form-select" id="institucion" name="institucion" required>
+                                        <option value="" selected>Seleccione</option>
+                                        {% for institucion in instituciones_list %}
+                                            <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
@@ -418,7 +423,7 @@
                                 <div class="col-md-6">
                                     <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="nivel_academico" name="nivel_academico" required>
-                                        <option value="" selected></option>
+                                        <option value="" selected>Seleccione</option>
                                         {% for nivel in niveles_academicos_list %}
                                             <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
