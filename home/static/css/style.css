@@ -131,3 +131,13 @@ p {
     font-size: 1.5rem;
     margin-bottom: 20px;
 }
+
+
+/* 
+--------------------------------------- SPINNER DE CARGA ---------------------------------------
+*/
+
+#loadingOverlay {
+    z-index: 1050;
+    background-color: var(--color-secundario);
+}
