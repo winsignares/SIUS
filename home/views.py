@@ -347,49 +347,70 @@ def gestion_empleados(request):
 
 @login_required
 def reportes(request):
-    '''
-        Función que maneja la vista de Reportes
-    '''
-
     contexto = obtener_db_info(request)
+    
+    fecha_creacion = request.GET.get('fecha_creacion')
+    estado = request.GET.get('estado')
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # AJAX request
-        return render(request, 'partials/reportes_content.html', contexto)
+    # Filtrar datos según los parámetros
+    usuarios = Usuario.objects.all()
+    if fecha_creacion:
+        usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
+    if estado:
+        usuarios = usuarios.filter(estado_revision=estado)
+
+    # Actualizar el contexto
+    contexto.update({
+        'usuarios': usuarios
+    })
 
     return render(request, 'reportes.html', contexto)
 
 
-# Generar reportes Excel Pdf
-
+@login_required
 def generar_reporte_excel(request):
-    # Crear el libro de Excel
+    # Capturar filtros de la URL
+    fecha_creacion = request.GET.get('fecha_creacion')
+    estado = request.GET.get('estado')
+
+    # Filtrar datos según los parámetros enviados
+    usuarios = Usuario.objects.all()
+    if fecha_creacion:
+        usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
+    if estado:
+        usuarios = usuarios.filter(estado_revision=estado)
+
+    # Crear libro de Excel
     workbook = openpyxl.Workbook()
     sheet = workbook.active
-    sheet.title = "Reporte de Usuarios"
+    sheet.title = "Reporte SNIES"
 
     # Encabezados
-    headers = [
-        "ID", "Nombre Completo", "Cargo", "Número Documento", "Correo Personal",
-        "Estado Revisión", "Activo", "Fecha Creación"
-    ]
-    for col_num, header in enumerate(headers, 1):
-        sheet.cell(row=1, column=col_num, value=header)
+    encabezados = ["ID", "Nombre Completo", "Cargo", "Número Documento", "Correo", "Estado", "Fecha Creación"]
+    sheet.append(encabezados)
 
-    # Datos de usuarios
-    usuarios = Usuario.objects.all().order_by('id')
-    for row_num, usuario in enumerate(usuarios, 2):
-        sheet.cell(row=row_num, column=1, value=usuario.id)
-        sheet.cell(row=row_num, column=2, value=f"{usuario.primer_nombre} {usuario.primer_apellido}")
-        sheet.cell(row=row_num, column=3, value=usuario.cargo)
-        sheet.cell(row=row_num, column=4, value=usuario.numero_documento)
-        sheet.cell(row=row_num, column=5, value=usuario.correo_personal)
-        sheet.cell(row=row_num, column=6, value=usuario.estado_revision)
-        sheet.cell(row=row_num, column=7, value="Activo" if usuario.activo else "Inactivo")
-        sheet.cell(row=row_num, column=8, value=usuario.fecha_creacion.strftime('%d/%m/%Y - %I:%M %p'))
+    # Insertar datos filtrados
+    for idx, usuario in enumerate(usuarios, start=1):
+        sheet.append([
+            idx,  # ID autoincremental
+            f"{usuario.primer_nombre} {usuario.primer_apellido}",
+            usuario.cargo,
+            usuario.numero_documento,
+            usuario.correo_personal,
+            usuario.estado_revision,
+            usuario.fecha_creacion.strftime("%Y-%m-%d"),
+        ])
 
-    # Respuesta HTTP para descargar el archivo
+    # Generar nombre de archivo personalizado
+    nombre_archivo = "reporte_snies.xlsx"
+    if estado:
+        nombre_archivo = f"reporte_snies_{estado.lower()}.xlsx"
+
+    # Respuesta HTTP
     response = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response['Content-Disposition'] = 'attachment; filename=reporte_usuarios.xlsx'
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = f'attachment; filename="{
+        nombre_archivo}"'
     workbook.save(response)
     return response

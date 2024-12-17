@@ -3,13 +3,80 @@
 {% block container_class %}justify-content-start align-items-start{% endblock %}
 
 {% block content %}
-<div class="container-fluid m-4">
-    <h1>Reportes</h1>
+<div class="container-fluid p-4">
+    <!-- Encabezado principal -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-primary">Generación de Reportes SNIES</h1>
+        <div class="mb-3">
+<a href="{% url 'reporte_excel' %}?fecha_creacion={{ request.GET.fecha_creacion }}&estado={{ request.GET.estado }}"class="btn btn-success me-2">
+    <i class="bi bi-file-earmark-excel"></i> Generar Reporte Excel
+</a>
+
 </div>
-    <!-- Botones para generar reportes -->
-    <div class="mb-3">
-        <a href="{% url 'reporte_excel' %}" class="btn btn-success me-2">
-            <i class="bi bi-file-earmark-excel"></i> Generar Excel</a>
+    </div>
+
+    <!-- Tarjeta de filtros para reportes -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title text-secondary">Filtros del Reporte</h5>
+            <form method="GET" action="" class="row g-3">
+                <div class="col-md-4">
+                    <label for="filtro_fecha" class="form-label">Fecha de Creación</label>
+                    <input type="date" id="filtro_fecha" name="fecha_creacion" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select id="estado" name="estado" class="form-select">
+                        <option value="" selected>Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Revisado">Revisado</option>
+                    </select>
+                </div>
+                <div class="col-md-4 align-self-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Completo</th>
+                    <th>Cargo</th>
+                    <th>Número Documento</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Fecha Creación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</td>
+                    <td>{{ usuario.cargo }}</td>
+                    <td>{{ usuario.numero_documento }}</td>
+                    <td>{{ usuario.correo_personal }}</td>
+                    <td>
+                        <span class="badge {% if usuario.estado_revision == 'Pendiente' %}bg-warning{% else %}bg-success{% endif %}">
+                            {{ usuario.estado_revision }}
+                        </span>
+                    </td>
+                    <td>{{ usuario.fecha_creacion|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-muted">No se encontraron datos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
