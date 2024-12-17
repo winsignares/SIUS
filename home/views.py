@@ -1,4 +1,7 @@
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
 from django.db import models
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,6 +13,8 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
 from .models.talento_humano.roles import Rol
+import openpyxl
+from xhtml2pdf import pisa
 from siuc import settings
 
 # Create your views here.
@@ -184,10 +189,12 @@ def gestion_aspirantes(request):
     # Capturar parámetros de búsqueda
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()
-    usuarios_aspirantes = Usuario.objects.filter(estado_revision='Pendiente').order_by('-fecha_modificacion')
+    usuarios_aspirantes = Usuario.objects.filter(
+        estado_revision='Pendiente').order_by('-fecha_modificacion')
     # Término de búsqueda para aspirantes en estado 'Rechazado'
     aspirante_rechazado = request.GET.get('aspirante_rechazado', '').strip()
-    usuarios_rechazados = Usuario.objects.filter(estado_revision='Rechazado').order_by('-fecha_modificacion')
+    usuarios_rechazados = Usuario.objects.filter(
+        estado_revision='Rechazado').order_by('-fecha_modificacion')
 
     # Filtrar datos si hay una búsqueda
     if aspirante_pendiente:
@@ -261,3 +268,61 @@ def reportes(request):
         return render(request, 'partials/reportes_content.html', contexto)
 
     return render(request, 'reportes.html', contexto)
+
+
+# Generar reportes Excel Pdf
+
+def generar_reporte_excel(request):
+    # Crear el libro de Excel
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Reporte de Usuarios"
+
+    # Encabezados
+    headers = [
+        "ID", "Nombre Completo", "Cargo", "Número Documento", "Correo Personal",
+        "Estado Revisión", "Activo", "Fecha Creación"
+    ]
+    for col_num, header in enumerate(headers, 1):
+        sheet.cell(row=1, column=col_num, value=header)
+
+    # Datos de usuarios
+    usuarios = Usuario.objects.all().order_by('id')
+    for row_num, usuario in enumerate(usuarios, 2):
+        sheet.cell(row=row_num, column=1, value=usuario.id)
+        sheet.cell(row=row_num, column=2, value=f"{
+                usuario.primer_nombre} {usuario.primer_apellido}")
+        sheet.cell(row=row_num, column=3, value=usuario.cargo)
+        sheet.cell(row=row_num, column=4, value=usuario.numero_documento)
+        sheet.cell(row=row_num, column=5, value=usuario.correo_personal)
+        sheet.cell(row=row_num, column=6, value=usuario.estado_revision)
+        sheet.cell(row=row_num, column=7,
+                value="Activo" if usuario.activo else "Inactivo")
+        sheet.cell(row=row_num, column=8,
+                value=usuario.fecha_creacion.strftime('%Y-%m-%d'))
+
+    # Respuesta HTTP para descargar el archivo
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response['Content-Disposition'] = 'attachment; filename=reporte_usuarios.xlsx'
+    workbook.save(response)
+    return response
+
+
+def generar_reporte_pdf(request):
+    # Obtener datos
+    usuarios = Usuario.objects.all().order_by('id')
+
+    # Renderizar plantilla
+    template_path = 'reporte_usuarios_pdf.html'
+    context = {'usuarios': usuarios}
+    html = render_to_string(template_path, context)
+
+    # Crear PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_usuarios.pdf"'
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    return response

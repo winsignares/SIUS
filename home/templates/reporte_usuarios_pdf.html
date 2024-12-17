@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Usuarios</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; text-align: center; }
+        th, td { padding: 8px; }
+        th { background-color: #f2f2f2; }
+        h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>Reporte de Usuarios</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Cargo</th>
+            <th>Número Documento</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Activo</th>
+            <th>Fecha Creación</th>
+        </tr>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.id }}</td>
+            <td>{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</td>
+            <td>{{ usuario.cargo }}</td>
+            <td>{{ usuario.numero_documento }}</td>
+            <td>{{ usuario.correo_personal }}</td>
+            <td>{{ usuario.estado_revision }}</td>
+            <td>{{ usuario.activo|yesno:"Sí,No" }}</td>
+            <td>{{ usuario.fecha_creacion|date:"Y-m-d" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
