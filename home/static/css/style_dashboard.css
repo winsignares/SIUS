@@ -199,3 +199,11 @@ span {
 .modal .link-modal {
     color: var(--color-terciario);
 }
+
+/* 
+--------------------------------------- ALERTAS ---------------------------------------
+*/
+
+#dynamic-alerts, #alert-container {
+    z-index: 1055;
+}
