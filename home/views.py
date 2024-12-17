@@ -1,6 +1,6 @@
 from django.template.loader import render_to_string
-from django.db import models
-from django.http import HttpResponse
+from django.db import models, IntegrityError
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -249,7 +249,74 @@ def gestion_aspirantes(request):
 @login_required
 def agregar_info_personal(request):
     print(request.POST)
-    pass
+    if request.method == 'POST':
+        # Extraer todos los datos del formulario
+        data = request.POST
+        try:
+            # Verificar si ya existe un usuario con el número de documento
+            if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe un aspirante con el número de cédula ingresado.'
+                }, status=400)
+
+            # Crear un nuevo usuario
+            nuevo_usuario = Usuario.objects.create(
+                # Campos obligatorios
+                fk_rol_id=data.get('fk_rol'),
+
+                fk_tipo_documento_id=data.get('fk_tipo_documento'),
+
+                cargo=data.get('cargo'),
+
+                primer_nombre=data.get('primer_nombre'),
+
+                primer_apellido=data.get('primer_apellido'),
+
+                numero_documento=data.get('numero_documento'),
+
+                correo_personal=data.get('correo_personal'),
+
+                # Campos opcionales
+                segundo_nombre=data.get('segundo_nombre') or None,
+                segundo_apellido=data.get('segundo_apellido') or None,
+                fecha_nacimiento=data.get('fecha_nacimiento') or None,
+                lugar_nacimiento=data.get('lugar_nacimiento') or None,
+                fecha_expedicion_documento=data.get('fecha_expedicion_documento') or None,
+                lugar_expedicion_documento=data.get('lugar_expedicion_documento') or None,
+                sexo=data.get('sexo') or None,
+                celular=data.get('celular') or None,
+                telefono_fijo=data.get('telefono_fijo') or None,
+                direccion_residencia=data.get('direccion_residencia') or None,
+                departamento_residencia=data.get('departamento_residencia') or None,
+                ciudad_residencia=data.get('ciudad_residencia') or None,
+                barrio_residencia=data.get('barrio_residencia') or None,
+                estado_civil=data.get('estado_civil') or None,
+                ultimo_nivel_estudio=data.get('ultimo_nivel_estudio') or None,
+                eps=data.get('eps') or None,
+                afp=data.get('afp') or None,
+                url_hoja_de_vida=data.get('url_hoja_de_vida') or None,
+                estado_revision="Pendiente",
+                fk_creado_por=request.user
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Aspirante agregado correctamente.',
+                'usuario_id': nuevo_usuario.id
+            })
+
+        except IntegrityError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de integridad al agregar el usuario. Revise los datos ingresados.'
+            }, status=400)
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                'status': 'error',
+                'message': f"Error inesperado: {e}"
+            }, status=500)
 
 
 def agregar_exp_laboral(request):

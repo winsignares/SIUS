@@ -627,4 +627,64 @@
     handleClearFilter(filtroInput, clearFilter); // Aspirantes Pendientes
     handleClearFilter(filtroRechazadosInput, clearRechazadosFilter); // Aspirantes Rechazados
 </script>
+
+<script>
+    document.getElementById("formInfoPersonal").addEventListener("submit", function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);
+    
+        fetch("{% url 'agregar_info_personal' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                // Mostrar alerta de éxito
+                showAlert(data.message, "success");
+                // Redirigir al modal con el ID del usuario
+                openNextModal(data.usuario_id);
+            } else {
+                // Mostrar alerta de error
+                showAlert(data.message, "error");
+            }
+        })
+        .catch(error => {
+            showAlert("Error en el servidor, intenta de nuevo.", "error");
+            console.error("Error:", error);
+        });
+    });
+
+    // Función para mostrar alertas dinámicas
+    function showAlert(message, type) {
+        let alertClass = type === "success" ? "alert-success" : "alert-danger";
+        let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+    
+        let alertHtml = `
+            <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
+                <i class="bi ${icon}"></i> ${message}
+            </div>
+        `;
+    
+        // Insertar la alerta en el contenedor dinámico
+        const alertContainer = document.getElementById('dynamic-alerts');
+        alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+    
+        // Ocultar la alerta automáticamente después de 3 segundos
+        setTimeout(() => {
+            alertContainer.firstElementChild?.remove();
+        }, 3000);
+    }    
+
+    // Función para abrir el siguiente modal con el ID del usuario
+    function openNextModal(usuarioId) {
+        // Puedes pasar el ID del usuario como atributo data a otro modal
+        let nextModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
+        nextModal.show();
+    }
+</script>    
 {% endblock %}
