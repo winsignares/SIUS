@@ -9,7 +9,7 @@
         <div class=" d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
             {% if "Secretaria Talento Humano" in user_groups %}
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">
                 Nuevo Aspirante
             </button>
             {% endif %}
@@ -51,40 +51,48 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for usuario in page_obj_pendientes %}
-                        <tr>
-                            <td>
-                                {{ usuario.primer_nombre }}
-                                {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
-                                {{ usuario.primer_apellido }}
-                                {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
-                            </td>
-                            <td>
-                                {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
-                            </td>
-                            <td>
-                                {{ usuario.cargo }}
-                            </td>
-                            <td class="text-center">
-                                {{ usuario.estado_revision }}
-                            </td>
-                            <td class="text-center">
-                                {% if usuario.url_hoja_de_vida %}
-                                <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
-                                {% else %}
-                                No Aplica
-                                {% endif %}
-                            </td>
-                            <td class="d-flex justify-content-center gap-3">
-                                <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if not page_obj_pendientes %}
+                            <tr>
+                                <td colspan="6" class="text-center">No se encontraron datos disponibles</td>
+                            </tr>
+                        {% else %}
+                            {% for usuario in page_obj_pendientes %}
+                            <tr>
+                                <td>
+                                    {{ usuario.primer_nombre }}
+                                    {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
+                                    {{ usuario.primer_apellido }}
+                                    {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
+                                </td>
+                                <td>
+                                    {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
+                                </td>
+                                <td>
+                                    {{ usuario.cargo }}
+                                </td>
+                                <td class="text-center">
+                                    <span class="alert alert-warning d-inline-block py-1 px-2 mb-0">
+                                        {{ usuario.estado_revision }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    {% if usuario.url_hoja_de_vida %}
+                                    <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
+                                    {% else %}
+                                    No Aplica
+                                    {% endif %}
+                                </td>
+                                <td class="d-flex justify-content-center gap-3">
+                                    <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -154,40 +162,48 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for usuario in page_obj_rechazados %}
-                        <tr>
-                            <td>
-                                {{ usuario.primer_nombre }}
-                                {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
-                                {{ usuario.primer_apellido }}
-                                {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
-                            </td>
-                            <td>
-                                {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
-                            </td>
-                            <td>
-                                {{ usuario.cargo }}
-                            </td>
-                            <td class="text-center">
-                                {{ usuario.estado_revision }}
-                            </td>
-                            <td class="text-center">
-                                {% if usuario.url_hoja_de_vida %}
-                                <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
-                                {% else %}
-                                No Aplica
-                                {% endif %}
-                            </td>
-                            <td class="d-flex justify-content-center gap-3">
-                                <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if not page_obj_rechazados %}
+                            <tr>
+                                <td colspan="6" class="text-center">No se encontraron datos disponibles</td>
+                            </tr>
+                        {% else %}
+                            {% for usuario in page_obj_rechazados %}
+                            <tr>
+                                <td>
+                                    {{ usuario.primer_nombre }}
+                                    {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
+                                    {{ usuario.primer_apellido }}
+                                    {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
+                                </td>
+                                <td>
+                                    {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
+                                </td>
+                                <td>
+                                    {{ usuario.cargo }}
+                                </td>
+                                <td class="text-center">
+                                    <span class="alert alert-danger d-inline-block py-1 px-2 mb-0">
+                                        {{ usuario.estado_revision }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    {% if usuario.url_hoja_de_vida %}
+                                    <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
+                                    {% else %}
+                                    No Aplica
+                                    {% endif %}
+                                </td>
+                                <td class="d-flex justify-content-center gap-3">
+                                    <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -412,7 +428,6 @@
     </div>
 </div>
 
-
 <!-- Modal Información Adicional -->
 <div class="modal fade" id="infoAdicionalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -436,9 +451,9 @@
                     
                         <!-- Tabla de Detalles Académicos -->
                         <div class="table-responsive px-2">
-                            <table class="table table-bordered table-hover mb-0">
-                                <thead>
-                                    <tr>
+                            <table class="table table-striped table-hover mb-3 align-middle">
+                                <thead class="thead-dark">
+                                    <tr class="text-center">
                                         <th>Institución</th>
                                         <th>Título Obtenido</th>
                                         <th>Nivel Académico</th>
@@ -447,8 +462,22 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tablaAcademica">
-                                    <!-- Aquí se agregarán dinámicamente los registros -->
-                                </tbody>
+                                    {% if not detalles_academicos %}
+                                        <tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>
+                                    {% else %}
+                                        {% for detalle in detalles_academicos %}
+                                        <tr>
+                                            <td>{{ detalle.institucion }}</td>
+                                            <td>{{ detalle.titulo_obtenido }}</td>
+                                            <td>{{ detalle.nivel_academico.nombre }}</td>
+                                            <td>{{ detalle.fecha_graduacion }}</td>
+                                            <td>
+                                                <!-- Acciones -->
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>                                
                             </table>
                         </div>
                     </div>
@@ -472,9 +501,9 @@
 
                         <!-- Tabla de Experiencia Laboral -->
                         <div class="table-responsive px-2">
-                            <table class="table table-bordered table-hover mb-0">
-                                <thead>
-                                    <tr>
+                            <table class="table table-striped table-hover mb-3 align-middle">
+                                <thead class="thead-dark">
+                                    <tr class="text-center">
                                         <th>Empresa</th>
                                         <th>Cargo</th>
                                         <th>Fecha de Inicio</th>
@@ -483,7 +512,21 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tablaExperiencia">
-                                    <!-- Aquí se agregarán dinámicamente los registros -->
+                                    {% if not detalles_academicos %}
+                                        <tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>
+                                    {% else %}
+                                        {% for detalle in detalles_academicos %}
+                                        <tr>
+                                            <td>{{ detalle.institucion }}</td>
+                                            <td>{{ detalle.titulo_obtenido }}</td>
+                                            <td>{{ detalle.nivel_academico.nombre }}</td>
+                                            <td>{{ detalle.fecha_graduacion }}</td>
+                                            <td>
+                                                <!-- Acciones -->
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>
@@ -518,7 +561,7 @@
                             <select class="form-select" id="institucion" name="institucion" required>
                                 <option value="" selected>Seleccione</option>
                                 {% for institucion in instituciones_list %}
-                                    <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
+                                    <option value="{{ institucion.id }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
                                 {% endfor %}
                             </select>
                         </div>

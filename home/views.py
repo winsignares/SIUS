@@ -410,7 +410,6 @@ def generar_reporte_excel(request):
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response['Content-Disposition'] = f'attachment; filename="{
-        nombre_archivo}"'
+    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
     workbook.save(response)
     return response
