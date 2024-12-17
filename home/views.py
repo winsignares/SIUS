@@ -14,6 +14,8 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
 from .models.talento_humano.roles import Rol
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 import openpyxl
 from siuc import settings
 
@@ -383,7 +385,7 @@ def generar_reporte_excel(request):
         sheet.cell(row=row_num, column=5, value=usuario.correo_personal)
         sheet.cell(row=row_num, column=6, value=usuario.estado_revision)
         sheet.cell(row=row_num, column=7, value="Activo" if usuario.activo else "Inactivo")
-        sheet.cell(row=row_num, column=8, value=usuario.fecha_creacion.strftime('%Y-%m-%d'))
+        sheet.cell(row=row_num, column=8, value=usuario.fecha_creacion.strftime('%d/%m/%Y - %I:%M %p'))
 
     # Respuesta HTTP para descargar el archivo
     response = HttpResponse(
@@ -394,4 +396,58 @@ def generar_reporte_excel(request):
 
 
 def generar_reporte_pdf(request):
-    pass
+    # Configurar la respuesta HTTP como un PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_usuarios.pdf"'
+
+    # Crear el lienzo PDF
+    p = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+
+    # Título
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(200, height - 50, "Reporte de Usuarios")
+
+    # Encabezados de la tabla
+    p.setFont("Helvetica-Bold", 12)
+    columnas = ["ID", "Nombre Completo", "Cargo", "Número Documento",
+                "Correo", "Estado", "Activo", "Fecha Creación"]
+    x_positions = [50, 100, 200, 300, 400, 500, 550, 600]
+
+    # Dibujar encabezados
+    y_position = height - 100
+    for i, columna in enumerate(columnas):
+        p.drawString(x_positions[i], y_position, columna)
+
+    # Obtener datos de la base de datos
+    usuarios = Usuario.objects.all().order_by('id')
+
+    # Dibujar datos de la tabla
+    p.setFont("Helvetica", 10)
+    for usuario in usuarios:
+        y_position -= 20  # Mover hacia abajo para cada fila
+        if y_position < 50:  # Salto de página si no hay espacio
+            p.showPage()
+            y_position = height - 100
+            for i, columna in enumerate(columnas):
+                p.drawString(x_positions[i], y_position, columna)
+            y_position -= 20
+
+        # Datos de usuario
+        p.drawString(x_positions[0], y_position, str(usuario.id))
+        p.drawString(x_positions[1], y_position, f"{
+                    usuario.primer_nombre} {usuario.primer_apellido}")
+        p.drawString(x_positions[2], y_position, usuario.cargo)
+        p.drawString(x_positions[3], y_position, str(usuario.numero_documento))
+        p.drawString(x_positions[4], y_position, usuario.correo_personal)
+        p.drawString(x_positions[5], y_position, usuario.estado_revision)
+        p.drawString(x_positions[6], y_position,
+                    "Sí" if usuario.activo else "No")
+        p.drawString(x_positions[7], y_position,
+                    usuario.fecha_creacion.strftime("%Y-%m-%d"))
+
+    # Finalizar el PDF
+    p.showPage()
+    p.save()
+
+    return response
