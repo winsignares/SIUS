@@ -22,8 +22,12 @@
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-2">
         <div class="row col d-flex justify-content-start align-items-center">
-            <div class="col-md-3">
+            <div class="position-relative col-md-3">
                 <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
+                    <!-- Icono de "X" para borrar el filtro -->
+    <span id="clearFilter" class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; display: none;">
+        <i class="bi bi-x-circle text-muted fs-5"></i>
+    </span>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-filtrar">Filtrar</button>
@@ -123,6 +127,10 @@
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
                 <input type="text" name="aspirante_rechazado" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
+                    <!-- Icono de "X" para borrar el filtro -->
+    <span id="clearRechazadosFilter" class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; display: none;">
+        <i class="bi bi-x-circle text-muted fs-5"></i>
+    </span>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-filtrar">Filtrar</button>
@@ -482,5 +490,46 @@
         </div>
     </div>
 </div>
+<script>
+    // Variables para Aspirantes Pendientes
+    const filtroInput = document.getElementById("filtroInput");
+    const clearFilter = document.getElementById("clearFilter");
+
+    // Variables para Aspirantes Rechazados
+    const filtroRechazadosInput = document.getElementById("filtroRechazadosInput");
+    const clearRechazadosFilter = document.getElementById("clearRechazadosFilter");
+
+    // Función General para manejar "X" en filtros
+    function handleClearFilter(input, clearIcon) {
+        // Mostrar la "X" si el input tiene texto
+        input.addEventListener("input", function () {
+            if (input.value) {
+                clearIcon.style.display = "block";
+            } else {
+                clearIcon.style.display = "none";
+            }
+        });
+
+        // Limpiar el input y recargar la página
+        clearIcon.addEventListener("click", function () {
+            input.value = ""; // Limpiar el input
+            clearIcon.style.display = "none";
+
+            // Recargar la página sin parámetros de filtro
+            window.location.href = window.location.pathname;
+        });
+
+        // Mostrar la "X" si el input ya tiene un valor preexistente
+        if (input.value) {
+            clearIcon.style.display = "block";
+        }
+    }
+
+    // Aplicar la funcionalidad a ambos filtros
+    handleClearFilter(filtroInput, clearFilter); // Aspirantes Pendientes
+    handleClearFilter(filtroRechazadosInput, clearRechazadosFilter); // Aspirantes Rechazados
+</script>
+
+
 
 {% endblock %}
