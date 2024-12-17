@@ -27,11 +27,13 @@
                 <div class="col-md-4">
                     <label for="estado" class="form-label">Estado</label>
                     <select id="estado" name="estado" class="form-select">
-                        <option value="" selected>Todos</option>
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="Revisado">Revisado</option>
+                        <option value="" {% if not request.GET.estado %}selected{% endif %}>Todos</option>
+                        <option value="Pendiente" {% if request.GET.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="Revisado" {% if request.GET.estado == 'Revisado' %}selected{% endif %}>Revisado</option>
+                        <option value="Rechazado" {% if request.GET.estado == 'Rechazado' %}selected{% endif %}>Rechazado</option>
                     </select>
                 </div>
+
                 <div class="col-md-4 align-self-end">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-search"></i> Filtrar Reporte
