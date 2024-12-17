@@ -3,6 +3,7 @@
     --color-primario: #383837;
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
+    --color-cuaternario: #9c9c94;
     --borde-redondo: 10px;
 }
 
@@ -166,17 +167,8 @@ span {
     box-shadow: none !important;
 }
 
-.modal-forms .modal-body {
+.modal-forms .modal-body .container {
     color: var(--color-primario);
-}
-
-.modal-forms .modal-body .nav-tabs .nav-link {
-    color: var(--color-primario);
-}
-
-.modal-forms .modal-body .nav-tabs .nav-link.active {
-    color: var(--color-terciario);
-    font-weight: 500;
 }
 
 .modal-forms .modal-footer {
@@ -190,11 +182,20 @@ span {
     padding: 0.5rem;
 }
 
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
 #clearFilter i, #clearRechazadosFilter i {
-    color: #999;
+    color: var(--color-cuaternario);
     transition: color 0.3s ease-in-out;
 }
 
 #clearFilter i:hover, #clearRechazadosFilter i:hover {
-    color: #333;
+    color: var(--color-primario);
+}
+
+.modal .link-modal {
+    color: var(--color-terciario);
 }

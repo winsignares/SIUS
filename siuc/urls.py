@@ -29,7 +29,13 @@ urlpatterns = [
     path('siuc/restablecer_contraseña/actualizar/',views.actualizar_contraseña, name="actualizar_contraseña"),
     
     path('siuc/dashboard/inicio/', views.dashboard, name='dashboard'),
+    
     path("siuc/dashboard/gestion_aspirantes/", views.gestion_aspirantes, name="gestion_aspirantes"),
+    path("siuc/dashboard/gestion_aspirantes/agregar_info_personal/", views.agregar_info_personal, name="agregar_info_personal"),
+    path("siuc/dashboard/gestion_aspirantes/agregar_exp_laboral/", views.agregar_exp_laboral, name="agregar_exp_laboral"),
+    path("siuc/dashboard/gestion_aspirantes/agregar_detalle_academico", views.agregar_detalle_academico, name="agregar_detalle_academico"),
+    
+    
     path("siuc/dashboard/gestion_empleados/", views.gestion_empleados, name="gestion_empleados"),
     path("siuc/dashboard/reportes/", views.reportes, name="reportes"),
     

@@ -1,5 +1,4 @@
 from django.template.loader import render_to_string
-from xhtml2pdf import pisa
 from django.db import models
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -14,7 +13,6 @@ from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
 from .models.talento_humano.roles import Rol
 import openpyxl
-from xhtml2pdf import pisa
 from siuc import settings
 
 # Create your views here.
@@ -175,6 +173,10 @@ def cerrar_sesion(request):
 
     return redirect('iniciar_sesion_form')
 
+#
+# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+#
+
 
 @login_required
 def gestion_aspirantes(request):
@@ -243,6 +245,22 @@ def gestion_aspirantes(request):
 
 
 @login_required
+def agregar_info_personal(request):
+    print(request.POST)
+    pass
+
+
+def agregar_exp_laboral(request):
+    print(request.POST)
+    pass
+
+
+def agregar_detalle_academico(request):
+    print(request.POST)
+    pass
+
+
+@login_required
 def gestion_empleados(request):
     '''
         Función que maneja la vista de Empleados
@@ -307,19 +325,4 @@ def generar_reporte_excel(request):
 
 
 def generar_reporte_pdf(request):
-    # Obtener datos
-    usuarios = Usuario.objects.all().order_by('id')
-
-    # Renderizar plantilla
-    template_path = 'reporte_usuarios_pdf.html'
-    context = {'usuarios': usuarios}
-    html = render_to_string(template_path, context)
-
-    # Crear PDF
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="reporte_usuarios.pdf"'
-    pisa_status = pisa.CreatePDF(html, dest=response)
-
-    if pisa_status.err:
-        return HttpResponse('Error al generar el PDF', status=500)
-    return response
+    pass

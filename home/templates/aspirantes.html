@@ -9,7 +9,7 @@
         <div class=" d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
             {% if "Secretaria Talento Humano" in user_groups %}
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoAspiranteModal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">
                 Nuevo Aspirante
             </button>
             {% endif %}
@@ -218,20 +218,17 @@
     </nav>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="nuevoAspiranteModal" tabindex="-1" aria-labelledby="nuevoAspiranteModalLabel" aria-hidden="true">
+<!-- Modal Información Personal -->
+<div class="modal fade" id="infoPersonalModal" tabindex="-1" aria-labelledby="infoPersonalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="nuevoAspiranteModalLabel">Nuevo Aspirante</h3>
+                <h4 class="modal-title" id="nuevoAspiranteModalLabel">Nuevo Aspirante</h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-2">
-                <form id="formAspirante" method="POST">
-                    {% comment %} action="{% url 'agregar_aspirante' %}" {% endcomment %}
+                <form id="formInfoPersonal" method="POST" action="{% url 'agregar_info_personal' %}">
                     {% csrf_token %}
-
-                    <!-- Contenido de las pestañas -->
                     <div class="container">
                         <!-- Información Personal -->
                         <div class="container mb-3">
@@ -399,79 +396,7 @@
                                     <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Pendiente" disabled required>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Separador -->
-                        <div class="d-flex align-items-center justify-content-center divider">
-                            <hr class="w-100">
-                        </div>
-
-                        <!-- Detalles Académicos -->
-                        <div class="container mb-3">
-                            <div class="d-flex gap-3 fs-5 fw-bold">
-                                <i class="bi bi-mortarboard"></i>Detalles Académicos
-                            </div>
-                            <!-- Botón para registrar información académica -->
-                            <div class="text-end mb-2 px-2">
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistrarAcademico">
-                                    Registrar información académica
-                                </button>
-                            </div>
-                        
-                            <!-- Tabla de Detalles Académicos -->
-                            <div class="table-responsive px-2">
-                                <table class="table table-bordered table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Institución</th>
-                                            <th>Título Obtenido</th>
-                                            <th>Nivel Académico</th>
-                                            <th>Fecha de Graduación</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tablaAcademica">
-                                        <!-- Aquí se agregarán dinámicamente los registros -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Separador -->
-                        <div class="d-flex align-items-center justify-content-center divider">
-                            <hr class="w-100">
-                        </div>
-
-                        <!-- Experiencia Laboral -->
-                        <div class="container mb-2">
-                            <div class="d-flex gap-3 fs-5 fw-bold">
-                                <i class="bi bi-briefcase"></i>Experiencia Laboral
-                            </div>
-                            <!-- Botón para registrar información laboral -->
-                            <div class="text-end mb-2 px-2">
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalRegistrarLaboral">
-                                    Registrar información laboral
-                                </button>
-                            </div>
-
-                            <!-- Tabla de Experiencia Laboral -->
-                            <div class="table-responsive px-2">
-                                <table class="table table-bordered table-hover mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Empresa</th>
-                                            <th>Cargo</th>
-                                            <th>Fecha de Inicio</th>
-                                            <th>Fecha de Fin</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tablaExperiencia">
-                                        <!-- Aquí se agregarán dinámicamente los registros -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        </div>                        
                     </div>
                 </form>
             </div>
@@ -481,22 +406,172 @@
                 <!-- Nota -->
                 <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
 
-                <button type="submit" class="btn btn-primary" form="formAspirante">Enviar</button>
+                <button type="submit" class="btn btn-primary" form="formInfoPersonal">Agregar y continuar</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Registrar Información Laboral -->
-<div class="modal fade" id="modalRegistrarLaboral" tabindex="-1" aria-labelledby="modalRegistrarLaboralLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+
+<!-- Modal Información Adicional -->
+<div class="modal fade" id="infoAdicionalModal" tabindex="-1" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalRegistrarLaboralLabel">Registrar Información Laboral</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h4 class="modal-title" id="infoAdicionalModalLabel">Información Adicional</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2">
+                <div class="container">
+                    <!-- Detalles Académicos -->
+                    <div class="container mb-3">
+                        <div class="d-flex gap-3 fs-5 fw-bold">
+                            <i class="bi bi-mortarboard"></i>Detalles Académicos
+                        </div>
+                        <!-- Botón para registrar información académica -->
+                        <div class="text-end mb-2 px-2">
+                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formDetalleAcademicoModal">
+                                <i class="bi bi-plus-circle"></i> Agregar Detalle Académico
+                            </a>
+                        </div>
+                    
+                        <!-- Tabla de Detalles Académicos -->
+                        <div class="table-responsive px-2">
+                            <table class="table table-bordered table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Institución</th>
+                                        <th>Título Obtenido</th>
+                                        <th>Nivel Académico</th>
+                                        <th>Fecha de Graduación</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaAcademica">
+                                    <!-- Aquí se agregarán dinámicamente los registros -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Separador -->
+                    <div class="d-flex align-items-center justify-content-center divider">
+                        <hr class="w-100">
+                    </div>
+
+                    <!-- Experiencia Laboral -->
+                    <div class="container mb-2">
+                        <div class="d-flex gap-3 fs-5 fw-bold">
+                            <i class="bi bi-briefcase"></i>Experiencia Laboral
+                        </div>
+                        <!-- Botón para registrar información laboral -->
+                        <div class="text-end mb-2 px-2">
+                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formExpLaboralModal">
+                                <i class="bi bi-plus-circle"></i> Agregar Experiencia Laboral
+                            </a>
+                        </div>
+
+                        <!-- Tabla de Experiencia Laboral -->
+                        <div class="table-responsive px-2">
+                            <table class="table table-bordered table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Cargo</th>
+                                        <th>Fecha de Inicio</th>
+                                        <th>Fecha de Fin</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaExperiencia">
+                                    <!-- Aquí se agregarán dinámicamente los registros -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón para enviar el formulario -->
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <!-- Nota -->
+                <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                <button type="submit" class="btn btn-primary">Finalizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Modal Formulario Detalle Académico -->
+<div class="modal fade" id="formDetalleAcademicoModal" tabindex="-1" aria-labelledby="formDetalleAcademicoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
+            <div class="modal-header">
+                <div class="d-flex gap-3 fs-5 fw-bold">
+                    <i class="bi bi-mortarboard"></i>
+                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="formLaboral">
+                <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}">
+                    {% csrf_token %}
+                    <div class="row px-3">
+                        <!-- Fila 1 -->
+                        <div class="mb-2">
+                            <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
+                            <select class="form-select" id="institucion" name="institucion" required>
+                                <option value="" selected>Seleccione</option>
+                                {% for institucion in instituciones_list %}
+                                    <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" class="form-control" id="titulo_obtenido" name="titulo_obtenido" required>
+                        </div>
+
+                        <!-- Fila 2 -->
+                        <div class="">
+                            <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
+                            <select class="form-select" id="nivel_academico" name="nivel_academico" required>
+                                <option value="" selected>Seleccione</option>
+                                {% for nivel in niveles_academicos_list %}
+                                    <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="">
+                            <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
+                            <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formDetalleAcademico">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Formulario Exp Laboral -->
+<div class="modal fade" id="formExpLaboralModal" tabindex="-1" aria-labelledby="formExpLaboralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
+            <div class="modal-header">
+                <div class="d-flex gap-3 fs-5 fw-bold">
+                    <i class="bi bi-mortarboard"></i>
+                    <h5 class="modal-title" id="modalRegistrarAcademicoLabel">Agregar Detalle Académico</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
                         <label for="empresa" class="form-label">Empresa</label>
                         <input type="text" class="form-control" id="empresa" name="empresa" required>
@@ -516,52 +591,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="guardarLaboral">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Registrar Información Académica -->
-<div class="modal fade" id="modalRegistrarAcademico" tabindex="-1" aria-labelledby="modalRegistrarAcademicoLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalRegistrarAcademicoLabel">Registrar Información Académica</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formAcademico">
-                    <div class="mb-3">
-                        <label for="institucion" class="form-label">Institución</label>
-                        <input type="text" class="form-control" id="institucion" name="institucion" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tituloObtenido" class="form-label">Título Obtenido</label>
-                        <input type="text" class="form-control" id="tituloObtenido" name="tituloObtenido" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nivelAcademico" class="form-label">Nivel Académico</label>
-                        <select class="form-select" id="nivelAcademico" name="nivelAcademico" required>
-                            <option value="" selected>Seleccione</option>
-                            <option value="Primaria">Primaria</option>
-                            <option value="Secundaria">Secundaria</option>
-                            <option value="Técnico">Técnico</option>
-                            <option value="Tecnológico">Tecnológico</option>
-                            <option value="Profesional">Profesional</option>
-                            <option value="Posgrado">Posgrado</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fechaGraduacion" class="form-label">Fecha de Graduación</label>
-                        <input type="date" class="form-control" id="fechaGraduacion" name="fechaGraduacion" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="guardarAcademico">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formExpLaboral">Guardar</button>
             </div>
         </div>
     </div>
@@ -606,81 +637,4 @@
     handleClearFilter(filtroInput, clearFilter); // Aspirantes Pendientes
     handleClearFilter(filtroRechazadosInput, clearRechazadosFilter); // Aspirantes Rechazados
 </script>
-
-<script>
-    document.getElementById("guardarLaboral").addEventListener("click", function () {
-        // Obtener valores del formulario
-        const empresa = document.getElementById("empresa").value;
-        const cargo = document.getElementById("cargo").value;
-        const fechaInicio = document.getElementById("fechaInicio").value;
-        const fechaFin = document.getElementById("fechaFin").value || "Actual";
-
-        // Crear una nueva fila en la tabla
-        const nuevaFila = `
-            <tr>
-                <td>${empresa}</td>
-                <td>${cargo}</td>
-                <td>${fechaInicio}</td>
-                <td>${fechaFin}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button>
-                </td>
-            </tr>
-        `;
-    
-        // Insertar la fila en la tabla
-        document.getElementById("tablaExperiencia").insertAdjacentHTML("beforeend", nuevaFila);
-    
-        // Limpiar el formulario y cerrar el modal
-        document.getElementById("formLaboral").reset();
-        bootstrap.Modal.getInstance(document.getElementById("modalRegistrarLaboral")).hide();
-    });
-    
-    // Función para eliminar una fila
-    function eliminarFila(boton) {
-        boton.closest("tr").remove();
-    }    
-</script>
-
-<script>
-    document.getElementById("guardarAcademico").addEventListener("click", function () {
-        // Obtener valores del formulario
-        const institucion = document.getElementById("institucion").value;
-        const tituloObtenido = document.getElementById("tituloObtenido").value;
-        const nivelAcademico = document.getElementById("nivelAcademico").value;
-        const fechaGraduacion = document.getElementById("fechaGraduacion").value;
-    
-        // Validación básica
-        if (!institucion || !tituloObtenido || !nivelAcademico || !fechaGraduacion) {
-            alert("Por favor complete todos los campos obligatorios.");
-            return;
-        }
-    
-        // Crear una nueva fila en la tabla
-        const nuevaFila = `
-            <tr>
-                <td>${institucion}</td>
-                <td>${tituloObtenido}</td>
-                <td>${nivelAcademico}</td>
-                <td>${fechaGraduacion}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button>
-                </td>
-            </tr>
-        `;
-    
-        // Insertar la fila en la tabla
-        document.getElementById("tablaAcademica").insertAdjacentHTML("beforeend", nuevaFila);
-    
-        // Limpiar el formulario y cerrar el modal
-        document.getElementById("formAcademico").reset();
-        bootstrap.Modal.getInstance(document.getElementById("modalRegistrarAcademico")).hide();
-    });
-    
-    // Función para eliminar una fila
-    function eliminarFila(boton) {
-        boton.closest("tr").remove();
-    }    
-</script>
-
 {% endblock %}
