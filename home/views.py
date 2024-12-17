@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import Paginator
 from .models.talento_humano.usuarios import Usuario
+from .models.talento_humano.detalles_academicos import DetalleAcademico
+from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
 from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion

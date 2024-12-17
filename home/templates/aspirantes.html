@@ -9,7 +9,7 @@
         <div class=" d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
             {% if "Secretaria Talento Humano" in user_groups %}
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal">
                 Nuevo Aspirante
             </button>
             {% endif %}
@@ -219,7 +219,7 @@
 </div>
 
 <!-- Modal Información Personal -->
-<div class="modal fade" id="infoPersonalModal" tabindex="-1" aria-labelledby="infoPersonalModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoPersonalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoPersonalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
@@ -414,12 +414,11 @@
 
 
 <!-- Modal Información Adicional -->
-<div class="modal fade" id="infoAdicionalModal" tabindex="-1" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoAdicionalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="infoAdicionalModalLabel">Información Adicional</h4>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-2">
                 <div class="container">
@@ -504,21 +503,16 @@
 </div>
 
 <!-- Modal Modal Formulario Detalle Académico -->
-<div class="modal fade" id="formDetalleAcademicoModal" tabindex="-1" aria-labelledby="formDetalleAcademicoModalLabel" aria-hidden="true">
+<div class="modal fade" id="formDetalleAcademicoModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formDetalleAcademicoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
-                <div class="d-flex gap-3 fs-5 fw-bold">
-                    <i class="bi bi-mortarboard"></i>
-                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
             </div>
             <div class="modal-body">
                 <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}">
                     {% csrf_token %}
-                    <div class="row px-3">
-                        <!-- Fila 1 -->
+                    <div class="row p-2">
                         <div class="mb-2">
                             <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
                             <select class="form-select" id="institucion" name="institucion" required>
@@ -532,9 +526,7 @@
                             <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
                             <input type="text" class="form-control" id="titulo_obtenido" name="titulo_obtenido" required>
                         </div>
-
-                        <!-- Fila 2 -->
-                        <div class="">
+                        <div class="mb-2">
                             <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
                             <select class="form-select" id="nivel_academico" name="nivel_academico" required>
                                 <option value="" selected>Seleccione</option>
@@ -543,7 +535,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="">
+                        <div class="mb-2">
                             <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
                             <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion" required>
                         </div>
@@ -559,34 +551,32 @@
 </div>
 
 <!-- Modal Formulario Exp Laboral -->
-<div class="modal fade" id="formExpLaboralModal" tabindex="-1" aria-labelledby="formExpLaboralModalLabel" aria-hidden="true">
+<div class="modal fade" id="formExpLaboralModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formExpLaboralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
-                <div class="d-flex gap-3 fs-5 fw-bold">
-                    <i class="bi bi-mortarboard"></i>
-                    <h5 class="modal-title" id="modalRegistrarAcademicoLabel">Agregar Detalle Académico</h5>
+                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Experiencia Laboral</h5>
                 </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
                 <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="empresa" class="form-label">Empresa</label>
-                        <input type="text" class="form-control" id="empresa" name="empresa" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="cargo" class="form-label">Cargo</label>
-                        <input type="text" class="form-control" id="cargo" name="cargo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fechaFin" class="form-label">Fecha de Fin</label>
-                        <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                    <div class="row p-2">
+                        <div class="mb-2">
+                            <label for="empresa" class="form-label mb-0">Empresa donde Laboró <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" class="form-control" id="empresa" name="empresa" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="cargo" class="form-label mb-0">Cargo Laborado <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" class="form-control" id="cargo" name="cargo" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="fecha_inicio" class="form-label mb-0">Fecha de Inicio <span class='fw-bold fs-4'>*</span></label>
+                            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="fecha_fin" class="form-label mb-0">Fecha de Fin <span class='fw-bold fs-4'>*</span></label>
+                            <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                        </div>
                     </div>
                 </form>
             </div>
