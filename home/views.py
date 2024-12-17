@@ -290,16 +290,13 @@ def generar_reporte_excel(request):
     usuarios = Usuario.objects.all().order_by('id')
     for row_num, usuario in enumerate(usuarios, 2):
         sheet.cell(row=row_num, column=1, value=usuario.id)
-        sheet.cell(row=row_num, column=2, value=f"{
-                usuario.primer_nombre} {usuario.primer_apellido}")
+        sheet.cell(row=row_num, column=2, value=f"{usuario.primer_nombre} {usuario.primer_apellido}")
         sheet.cell(row=row_num, column=3, value=usuario.cargo)
         sheet.cell(row=row_num, column=4, value=usuario.numero_documento)
         sheet.cell(row=row_num, column=5, value=usuario.correo_personal)
         sheet.cell(row=row_num, column=6, value=usuario.estado_revision)
-        sheet.cell(row=row_num, column=7,
-                value="Activo" if usuario.activo else "Inactivo")
-        sheet.cell(row=row_num, column=8,
-                value=usuario.fecha_creacion.strftime('%Y-%m-%d'))
+        sheet.cell(row=row_num, column=7, value="Activo" if usuario.activo else "Inactivo")
+        sheet.cell(row=row_num, column=8, value=usuario.fecha_creacion.strftime('%Y-%m-%d'))
 
     # Respuesta HTTP para descargar el archivo
     response = HttpResponse(
