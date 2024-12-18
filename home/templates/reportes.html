@@ -6,10 +6,17 @@
 <div class="container-fluid p-4">
     <!-- Encabezado principal -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold m-0">Generación de Reportes SNIES</h3>
-        <a href="{% url 'reporte_excel' %}?fecha_creacion={{ fecha_creacion }}&estado={{ estado }}" class="btn btn-success">
+        <h3 class="fw-bold m-0">Generación de Reportes SNIES</h3> 
+        <a href="{% url 'reporte_excel' %}?fecha_creacion={{ fecha_creacion }}&estado={{ estado }}" class="btn btn-success" id="btn-generar-excel">
             <i class="bi bi-file-earmark-excel"></i> Generar Reporte Excel
         </a>
+    </div>
+        <!-- Spinner -->
+    <div id="spinner-excel" class="text-center d-none mt-3">
+        <div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Generando reporte...</span>
+        </div>
+        <p class="mt-2 fw-bold text-success">Generando Reporte, por favor espere...</p>
     </div>
 
     <!-- Filtros -->
@@ -118,29 +125,79 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Paginación dentro del contenedor -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-end">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if fecha_creacion %}&fecha_creacion={{ fecha_creacion }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
+                    <i class="bi bi-caret-left-fill"></i>
+                </a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if fecha_creacion %}&fecha_creacion={{ fecha_creacion }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
+                    <i class="bi bi-caret-right-fill"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 
-<!-- Paginación -->
-<nav class="mt-4">
-    <ul class="pagination justify-content-end">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if fecha_creacion %}&fecha_creacion={{ fecha_creacion }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
-                <i class="bi bi-caret-left-fill"></i>
-            </a>
-        </li>
-        {% endif %}
-        <li class="page-item disabled">
-            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if fecha_creacion %}&fecha_creacion={{ fecha_creacion }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
-                <i class="bi bi-caret-right-fill"></i>
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-</div>
+<!-- Script para el Spinner -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const generarExcelBtn = document.getElementById("btn-generar-excel");
+        const spinnerExcel = document.getElementById("spinner-excel");
+
+        generarExcelBtn.addEventListener("click", function (e) {
+            e.preventDefault(); // Evita la navegación normal
+
+            // Mostrar el spinner
+            spinnerExcel.classList.remove("d-none");
+
+            // Realizar una petición fetch para descargar el archivo
+            fetch(generarExcelBtn.href, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob(); // Convertir la respuesta en un archivo
+                } else {
+                    throw new Error("Error al generar el reporte.");
+                }
+            })
+            .then(blob => {
+                // Crear un enlace temporal para descargar el archivo
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "reporte_snies.xlsx"; // Nombre del archivo
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            })
+            .catch(error => {
+                alert("Hubo un problema al generar el reporte.");
+                console.error(error);
+            })
+            .finally(() => {
+                // Ocultar el spinner
+                spinnerExcel.classList.add("d-none");
+            });
+        });
+    });
+</script>
+
+
 {% endblock %}
