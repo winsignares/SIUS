@@ -17,13 +17,13 @@
     </div>
 
 <!-- Tabla de aspirantes en estado 'Pendiente' -->
-    <h4 class="mb-2">Aspirantes Pendientes</h4>
+    <h4 class="mb-3">Aspirantes Pendientes</h4>
 
     <!-- Formulario de búsqueda -->
-    <form method="GET" class="mb-2">
+    <form method="GET" class="mb-3">
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="position-relative col-md-3">
-                <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
+                <input type="text" name="aspirante_pendiente" id="filtroAspPenInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -96,7 +96,7 @@
     </div>
 
     <!-- Paginación para la tabla de aspirantes en estado 'Pendiente' -->
-    <nav class="mt-2">
+    <nav class="mt-0">
         <ul class="pagination justify-content-end">
             {% if page_obj_pendientes.has_previous %}
             <li class="page-item">
@@ -127,7 +127,7 @@
     <h4 class="mb-2">Aspirantes Rechazados</h4>
 
     <!-- Formulario de búsqueda -->
-    <form method="GET" class="mb-2">
+    <form method="GET" class="mb-3">
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
                 <input type="text" name="aspirante_rechazado" id="filtroRechazadosInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
@@ -203,7 +203,7 @@
     </div>
 
     <!-- Paginación para la tabla de aspirantes en estado 'Rechazado' -->
-    <nav class="mt-2">
+    <nav class="mt-0">
         <ul class="pagination justify-content-end">
             {% if page_obj_rechazados.has_previous %}
             <li class="page-item">
