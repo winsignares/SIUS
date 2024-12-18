@@ -7,33 +7,29 @@
     <!-- Encabezado principal -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 text-primary">Generación de Reportes SNIES</h1>
-        <div class="mb-3">
-<a href="{% url 'reporte_excel' %}?fecha_creacion={{ request.GET.fecha_creacion }}&estado={{ request.GET.estado }}"class="btn btn-success me-2">
-    <i class="bi bi-file-earmark-excel"></i> Generar Reporte Excel
-</a>
-
-</div>
+        <a href="{% url 'reporte_excel' %}?fecha_creacion={{ fecha_creacion }}&estado={{ estado }}" class="btn btn-success">
+            <i class="bi bi-file-earmark-excel"></i> Generar Reporte Excel
+        </a>
     </div>
 
-    <!-- Tarjeta de filtros para reportes -->
+    <!-- Filtros -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h5 class="card-title text-secondary">Filtros del Reporte</h5>
             <form method="GET" action="" class="row g-3">
                 <div class="col-md-4">
                     <label for="filtro_fecha" class="form-label">Fecha de Creación</label>
-                    <input type="date" id="filtro_fecha" name="fecha_creacion" class="form-control">
+                    <input type="date" id="filtro_fecha" name="fecha_creacion" class="form-control" value="{{ fecha_creacion }}">
                 </div>
                 <div class="col-md-4">
                     <label for="estado" class="form-label">Estado</label>
                     <select id="estado" name="estado" class="form-select">
-                        <option value="" {% if not request.GET.estado %}selected{% endif %}>Todos</option>
-                        <option value="Pendiente" {% if request.GET.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
-                        <option value="Revisado" {% if request.GET.estado == 'Revisado' %}selected{% endif %}>Revisado</option>
-                        <option value="Rechazado" {% if request.GET.estado == 'Rechazado' %}selected{% endif %}>Rechazado</option>
+                        <option value="" {% if not estado %}selected{% endif %}>Todos</option>
+                        <option value="Pendiente" {% if estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="Rechazado" {% if estado == 'Rechazado' %}selected{% endif %}>Rechazado</option>
+                        <option value="Revisado" {% if estado == 'Revisado' %}selected{% endif %}>Revisado</option>
                     </select>
                 </div>
-
                 <div class="col-md-4 align-self-end">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-search"></i> Filtrar Reporte
@@ -58,7 +54,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for usuario in usuarios %}
+                {% for usuario in page_obj %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</td>
@@ -66,7 +62,7 @@
                     <td>{{ usuario.numero_documento }}</td>
                     <td>{{ usuario.correo_personal }}</td>
                     <td>
-                        <span class="alert {% if usuario.estado_revision == 'Pendiente' %}alert-warning{% elif usuario.estado_revision == 'Rechazado' %}alert-danger{% else %}alert-success{% endif %} d-inline-block py-1 px-2 mb-0">
+                        <span class="badge {% if usuario.estado_revision == 'Pendiente' %}bg-warning{% elif usuario.estado_revision == 'Rechazado' %}bg-danger{% else %}bg-success{% endif %}">
                             {{ usuario.estado_revision }}
                         </span>
                     </td>
@@ -80,5 +76,28 @@
             </tbody>
         </table>
     </div>
+
+<!-- Paginación -->
+<nav class="mt-4">
+    <ul class="pagination justify-content-end">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if fecha_creacion %}&fecha_creacion={{ fecha_creacion }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
+                <i class="bi bi-caret-left-fill"></i>
+            </a>
+        </li>
+        {% endif %}
+        <li class="page-item disabled">
+            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if fecha_creacion %}&fecha_creacion={{ fecha_creacion }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}">
+                <i class="bi bi-caret-right-fill"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
 </div>
 {% endblock %}

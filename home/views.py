@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils.dateparse import parse_date
 from django.contrib import messages
 from django.core.paginator import Paginator
 from .models.talento_humano.usuarios import Usuario
@@ -348,9 +349,16 @@ def gestion_empleados(request):
 @login_required
 def reportes(request):
     contexto = obtener_db_info(request)
-    
+
     fecha_creacion = request.GET.get('fecha_creacion')
     estado = request.GET.get('estado')
+    page = request.GET.get('page', 1)  # Página actual, por defecto 1
+
+    # Validar formato de fecha
+    if fecha_creacion:
+        fecha_creacion = parse_date(fecha_creacion)
+        if not fecha_creacion:
+            fecha_creacion = None
 
     # Filtrar datos según los parámetros
     usuarios = Usuario.objects.all()
@@ -359,12 +367,20 @@ def reportes(request):
     if estado:
         usuarios = usuarios.filter(estado_revision=estado)
 
-    # Actualizar el contexto
+    # Paginación: 5 registros por página
+    paginator = Paginator(usuarios, 10)
+    page_obj = paginator.get_page(page)
+
+    # Actualizar el contexto con la paginación y filtros
     contexto.update({
-        'usuarios': usuarios
+        'page_obj': page_obj,
+        # Mantener el filtro
+        'fecha_creacion': request.GET.get('fecha_creacion', ''),
+        'estado': request.GET.get('estado', '')  # Mantener el filtro
     })
 
     return render(request, 'reportes.html', contexto)
+
 
 
 @login_required
