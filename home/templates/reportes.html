@@ -62,7 +62,7 @@
                     <td>{{ usuario.numero_documento }}</td>
                     <td>{{ usuario.correo_personal }}</td>
                     <td>
-                        <span class="badge {% if usuario.estado_revision == 'Pendiente' %}bg-warning{% elif usuario.estado_revision == 'Rechazado' %}bg-danger{% else %}bg-success{% endif %}">
+                        <span class="alert {% if usuario.estado_revision == 'Pendiente' %}alert-warning{% elif usuario.estado_revision == 'Rechazado' %}alert-danger{% else %}alert-success{% endif %} d-inline-block py-1 px-2 mb-0">
                             {{ usuario.estado_revision }}
                         </span>
                     </td>

@@ -25,12 +25,12 @@
             <div class="position-relative col-md-3">
                 <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
                 <!-- Icono de "X" para borrar el filtro -->
-                <span id="clearFilter" class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; display: none;">
+                <span id="clearFilter" class="cancelar-filtro position-absolute top-50 end-0 translate-middle-y">
                     <i class="bi bi-x-circle text-muted fs-5"></i>
                 </span>
             </div>
             <div class="col-md-auto">
-                <button type="submit" class="btn btn-filtrar">Filtrar</button>
+                <button type="submit" class="btn btn-alterno-dark">Buscar</button>
             </div>
         </div>
     </form>
@@ -57,7 +57,7 @@
                             </tr>
                         {% else %}
                             {% for usuario in page_obj_pendientes %}
-                            <tr>
+                            <tr class="text-center">
                                 <td>
                                     {{ usuario.primer_nombre }}
                                     {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
@@ -70,12 +70,12 @@
                                 <td>
                                     {{ usuario.cargo }}
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     <span class="alert alert-warning d-inline-block py-1 px-2 mb-0">
                                         {{ usuario.estado_revision }}
                                     </span>
-                                </td>
-                                <td class="text-center">
+                                </td=>
+                                <td>
                                     {% if usuario.url_hoja_de_vida %}
                                     <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
                                     {% else %}
@@ -83,10 +83,10 @@
                                     {% endif %}
                                 </td>
                                 <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
+                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
+                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
@@ -134,14 +134,14 @@
     <form method="GET" class="mb-2">
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
-                <input type="text" name="aspirante_rechazado" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
+                <input type="text" name="aspirante_rechazado" id="filtroRechazadosInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
                     <!-- Icono de "X" para borrar el filtro -->
-                <span id="clearRechazadosFilter" class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; display: none;">
+                <span id="clearRechazadosFilter" class="cancelar-filtro position-absolute top-50 end-0 translate-middle-y me-3">
                     <i class="bi bi-x-circle text-muted fs-5"></i>
                 </span>
             </div>
             <div class="col-md-auto">
-                <button type="submit" class="btn btn-filtrar">Filtrar</button>
+                <button type="submit" class="btn btn-alterno-dark">Buscar</button>
             </div>
         </div>
     </form>
@@ -168,7 +168,7 @@
                             </tr>
                         {% else %}
                             {% for usuario in page_obj_rechazados %}
-                            <tr>
+                            <tr class="text-center">
                                 <td>
                                     {{ usuario.primer_nombre }}
                                     {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
@@ -181,12 +181,12 @@
                                 <td>
                                     {{ usuario.cargo }}
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     <span class="alert alert-danger d-inline-block py-1 px-2 mb-0">
                                         {{ usuario.estado_revision }}
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     {% if usuario.url_hoja_de_vida %}
                                     <a href="{{ usuario.url_hoja_de_vida }}" id="revisarHojaDeVida" target="_blank" class="text-decoration-none">Revisar</a>
                                     {% else %}
@@ -194,10 +194,10 @@
                                     {% endif %}
                                 </td>
                                 <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-editar d-flex justify-content-center align-items-center">
+                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a href="#" class="btn btn-ver-info d-flex justify-content-center align-items-center">
+                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
@@ -539,7 +539,7 @@
                 <!-- Nota -->
                 <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
 
-                <button type="submit" class="btn btn-primary">Finalizar</button>
+                <button type="submit" class="btn btn-primary" id="btnFinalizar">Finalizar</button>
             </div>
         </div>
     </div>
@@ -586,7 +586,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" ide="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
                 <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formDetalleAcademico">Guardar</button>
             </div>
         </div>
@@ -624,7 +624,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" id="cancelarFormExpLaboral" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
                 <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formExpLaboral">Guardar</button>
             </div>
         </div>
@@ -690,7 +690,7 @@
                 // Mostrar alerta de éxito
                 showAlert(data.message, "success");
                 // Redirigir al modal con el ID del usuario
-                openNextModal(data.usuario_id);
+                openNextModal(data.nuevo_usuario_id);
             } else {
                 // Mostrar alerta de error
                 showAlert(data.message, "error");
@@ -732,5 +732,5 @@
         const nextModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
         nextModal.show();
     }    
-</script>    
+</script>
 {% endblock %}

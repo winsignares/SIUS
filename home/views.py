@@ -43,6 +43,7 @@ def error_404_view(request, exception):
     """
     Vista para manejar errores 404.
     """
+
     return render(request, '404.html', status=404)
 
 
@@ -243,9 +244,6 @@ def gestion_aspirantes(request):
         'aspirante_rechazado': aspirante_rechazado,
     })
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # AJAX request
-        return render(request, 'partials/aspirantes_content.html', contexto)
-
     return render(request, 'aspirantes.html', contexto)
 
 
@@ -260,8 +258,7 @@ def agregar_info_personal(request):
             if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe un aspirante con el número de cédula ingresado.'
-                }, status=400)
+                    'message': 'Ya existe un aspirante con el número de cédula ingresado.'}, status=400)
 
             # Crear un nuevo usuario
             nuevo_usuario = Usuario.objects.create(
@@ -285,13 +282,16 @@ def agregar_info_personal(request):
                 segundo_apellido=data.get('segundo_apellido') or None,
                 fecha_nacimiento=data.get('fecha_nacimiento') or None,
                 lugar_nacimiento=data.get('lugar_nacimiento') or None,
-                fecha_expedicion_documento=data.get('fecha_expedicion_documento') or None,
-                lugar_expedicion_documento=data.get('lugar_expedicion_documento') or None,
+                fecha_expedicion_documento=data.get(
+                    'fecha_expedicion_documento') or None,
+                lugar_expedicion_documento=data.get(
+                    'lugar_expedicion_documento') or None,
                 sexo=data.get('sexo') or None,
                 celular=data.get('celular') or None,
                 telefono_fijo=data.get('telefono_fijo') or None,
                 direccion_residencia=data.get('direccion_residencia') or None,
-                departamento_residencia=data.get('departamento_residencia') or None,
+                departamento_residencia=data.get(
+                    'departamento_residencia') or None,
                 ciudad_residencia=data.get('ciudad_residencia') or None,
                 barrio_residencia=data.get('barrio_residencia') or None,
                 estado_civil=data.get('estado_civil') or None,
@@ -306,7 +306,7 @@ def agregar_info_personal(request):
             return JsonResponse({
                 'status': 'success',
                 'message': 'Aspirante agregado correctamente.',
-                'usuario_id': nuevo_usuario.id
+                'nuevo_usuario_id': nuevo_usuario.id
             })
 
         except IntegrityError:
@@ -322,14 +322,21 @@ def agregar_info_personal(request):
             }, status=500)
 
 
+@login_required
+def agregar_detalle_academico(request):
+    print(request.POST)
+    pass
+
+
+@login_required
 def agregar_exp_laboral(request):
     print(request.POST)
     pass
 
 
-def agregar_detalle_academico(request):
-    print(request.POST)
-    pass
+#
+# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+#
 
 
 @login_required
@@ -340,10 +347,11 @@ def gestion_empleados(request):
 
     contexto = obtener_db_info(request)
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # AJAX request
-        return render(request, 'partials/empleados_content.html', contexto)
-
     return render(request, 'empleados.html', contexto)
+
+#
+# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+#
 
 
 @login_required
@@ -367,7 +375,7 @@ def reportes(request):
     if estado:
         usuarios = usuarios.filter(estado_revision=estado)
 
-    # Paginación: 5 registros por página
+    # Paginación: 20 registros por página
     paginator = Paginator(usuarios, 10)
     page_obj = paginator.get_page(page)
 
@@ -380,7 +388,6 @@ def reportes(request):
     })
 
     return render(request, 'reportes.html', contexto)
-
 
 
 @login_required

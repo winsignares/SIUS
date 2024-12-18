@@ -36,9 +36,10 @@ urlpatterns = [
     path("siuc/dashboard/gestion_aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"),
     
     
-    path("siuc/dashboard/gestion_empleados/", views.gestion_empleados, name="gestion_empleados"),
-    path("siuc/dashboard/reportes/", views.reportes, name="reportes"),
     
+    path("siuc/dashboard/gestion_empleados/", views.gestion_empleados, name="gestion_empleados"),
+    
+    path("siuc/dashboard/reportes/", views.reportes, name="reportes"),    
     path("siuc/dashboard/reporte/excel", views.generar_reporte_excel, name="reporte_excel"),
     
     

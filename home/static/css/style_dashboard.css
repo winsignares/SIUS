@@ -121,7 +121,7 @@ body {
     background-color: var(--color-terciario) !important;
 }
 
-.btn-primary, .btn-editar {
+.btn-primary, .btn-alterno-red {
     background-color: var(--color-terciario);
     color: var(--color-secundario) !important;
     border: none;
@@ -129,7 +129,7 @@ body {
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.btn-filtrar, .btn-ver-info {
+.btn-alterno-dark {
     background-color: var(--color-primario);
     color: var(--color-secundario) !important;
     border: none;
@@ -137,17 +137,26 @@ body {
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.btn-primary:hover, .btn-editar:hover {
+.btn-primary:hover, .btn-alterno-red:hover {
     background-color: var(--color-terciario);
 }
 
-.btn-filtrar:hover, .btn-ver-info:hover {
+.btn-alterno-dark:hover {
     background-color: var(--color-primario) !important;
 }
 
-.btn-primary:active, .btn-acciones:active , .btn-filtrar:active, .btn-editar:active, .btn-ver-info:active{
+.btn-primary:active, .btn-acciones:active , .btn-alterno-red:active, .btn-alterno-dark:active{
     color: var(--color-secundario);
     transform: scale(0.98);
+}
+
+/* 
+--------------------------------------- GESTIÓN ASPIRTANTES ---------------------------------------
+*/
+
+.cancelar-filtro {
+    cursor: pointer;
+    display: none;
 }
 
 /* 
