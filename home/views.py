@@ -194,8 +194,6 @@ def gestion_aspirantes(request):
     # Obtener contexto con datos adicionales
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    all_usuarios = Usuario.objects.all()
-
     # Capturar parámetros de búsqueda
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()
@@ -365,6 +363,7 @@ def agregar_detalle_academico(request):
 
 
 @login_required
+@csrf_exempt
 def agregar_exp_laboral(request):
     if request.method == "POST":
         print(request.POST)
@@ -414,10 +413,57 @@ def gestion_empleados(request):
     '''
         Función que maneja la vista de Empleados
     '''
+    # Obtener contexto con datos adicionales
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    contexto = obtener_db_info(request)
+    # Capturar parámetros de búsqueda
+    # Término de búsqueda para aspirantes en estado 'Pendiente'
+    empleado_activo = request.GET.get('empleado_activo', '').strip()
+    empleados_activos = Usuario.objects.filter(activo=True, estado_revision='Contratado').order_by('-fecha_modificacion')
+    # Término de búsqueda para aspirantes en estado 'Rechazado'
+    empleado_inactivo = request.GET.get('empleado_inactivo', '').strip()
+    empleados_inactivos = Usuario.objects.filter(activo=False, estado_revision='Contratado').order_by('-fecha_modificacion')
+
+    # Filtrar datos si hay una búsqueda
+    if empleado_activo:
+        empleados_activos = empleados_activos.filter(
+            models.Q(primer_nombre__icontains=empleado_activo) |
+            models.Q(segundo_nombre__icontains=empleado_activo) |
+            models.Q(primer_apellido__icontains=empleado_activo) |
+            models.Q(segundo_apellido__icontains=empleado_activo) |
+            models.Q(numero_documento__icontains=empleado_activo) |
+            models.Q(fk_rol__descripcion__icontains=empleado_activo)
+        )
+    elif empleado_inactivo:
+        empleados_inactivos = empleados_inactivos.filter(
+            models.Q(primer_nombre__icontains=empleado_inactivo) |
+            models.Q(segundo_nombre__icontains=empleado_inactivo) |
+            models.Q(primer_apellido__icontains=empleado_inactivo) |
+            models.Q(segundo_apellido__icontains=empleado_inactivo) |
+            models.Q(numero_documento__icontains=empleado_inactivo) |
+            models.Q(fk_rol__descripcion__icontains=empleado_inactivo)
+        )
+
+    # Paginación para la tabla de aspirantes en estado 'Pendiente'
+    paginator_activos = Paginator(empleados_activos, 8)  # 5 registros por página
+    page_number_activos = request.GET.get('page_activos')
+    page_obj_activos = paginator_activos.get_page(page_number_activos)
+
+    # Paginación para la tabla de aspirantes en estado 'Pendiente'
+    paginator_inactivos = Paginator(empleados_inactivos, 8)  # 8 registros por página
+    page_number_inactivos = request.GET.get('page_inactivos')
+    page_obj_inactivos = paginator_inactivos.get_page(page_number_inactivos)
+
+    # Actualizar el contexto
+    contexto.update({
+        'page_obj_activos': page_obj_activos,
+        'page_obj_inactivos': page_obj_inactivos,
+        'empleado_activo': empleado_activo,
+        'empleado_inactivo': empleado_inactivo,
+    })
 
     return render(request, 'empleados.html', contexto)
+
 
 #
 # ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
@@ -474,11 +520,9 @@ def generar_reporte_excel(request):
     if fecha_creacion:
         try:
             # Convertir la fecha a rango con zona horaria local
-            fecha_inicio = zona_horaria_local.localize(
-                datetime.strptime(fecha_creacion, "%Y-%m-%d"))
+            fecha_inicio = zona_horaria_local.localize(datetime.strptime(fecha_creacion, "%Y-%m-%d"))
             fecha_fin = fecha_inicio + timedelta(days=1)
-            usuarios = usuarios.filter(
-                fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
+            usuarios = usuarios.filter(fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
         except ValueError:
             fecha_creacion = None
 
@@ -508,14 +552,12 @@ def generar_reporte_excel(request):
         ])
 
     # Generar nombre de archivo personalizado
-    nombre_archivo = f"reporte_snies_{
-        fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
+    nombre_archivo = f"reporte_snies_{fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
 
     # Respuesta HTTP
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response['Content-Disposition'] = f'attachment; filename="{
-        nombre_archivo}"'
+    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
     workbook.save(response)
     return response
