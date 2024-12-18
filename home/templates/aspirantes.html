@@ -24,10 +24,6 @@
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="position-relative col-md-3">
                 <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
-                <!-- Icono de "X" para borrar el filtro -->
-                <span id="clearFilter" class="cancelar-filtro position-absolute top-50 end-0 translate-middle-y">
-                    <i class="bi bi-x-circle text-muted fs-5"></i>
-                </span>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -135,10 +131,6 @@
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
                 <input type="text" name="aspirante_rechazado" id="filtroRechazadosInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
-                    <!-- Icono de "X" para borrar el filtro -->
-                <span id="clearRechazadosFilter" class="cancelar-filtro position-absolute top-50 end-0 translate-middle-y me-3">
-                    <i class="bi bi-x-circle text-muted fs-5"></i>
-                </span>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
