@@ -617,6 +617,7 @@
     </div>
 </div>
 
+<!-- Filtrado de datos -->
 <script>
     // Variables para Aspirantes Pendientes
     const filtroInput = document.getElementById("filtroInput");
@@ -657,6 +658,7 @@
     handleClearFilter(filtroRechazadosInput, clearRechazadosFilter); // Aspirantes Rechazados
 </script>
 
+<!-- Agregar Aspirantes -->
 <script>
     document.getElementById("formInfoPersonal").addEventListener("submit", function(e) {
         e.preventDefault();
@@ -710,7 +712,7 @@
         // Ocultar la alerta automáticamente después de 3 segundos
         setTimeout(() => {
             alertContainer.firstElementChild?.remove();
-        }, 5000);
+        }, 435345345000);
     }    
 
     function openNextModal(usuarioId) {
@@ -841,6 +843,17 @@
                 showAlert("Error en el servidor, intenta de nuevo.", "error");
                 console.error("Error:", error);
             });
+    });
+</script>
+
+<script>
+    document.getElementById("btnFinalizar").addEventListener("click", function () {
+        // Cerrar el modal actual
+        const infoAdicionalModal = bootstrap.Modal.getInstance(document.getElementById("infoAdicionalModal"));
+        infoAdicionalModal.hide();
+    
+        // Redirigir a la vista principal
+        window.location.href = "{% url 'gestion_aspirantes' %}";
     });
 </script>
 {% endblock %}
