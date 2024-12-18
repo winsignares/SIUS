@@ -101,6 +101,11 @@ body {
     overflow-x: auto;
 }
 
+.table-responsive .custom-header {
+    background-color: var(--color-primario) !important;
+    color: var(--color-secundario) !important;
+}
+
 /* Estilo de enlaces */
 #revisarHojaDeVida {
     color: var(--color-primario);

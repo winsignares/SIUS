@@ -1,7 +1,8 @@
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -302,7 +303,6 @@ def agregar_info_personal(request):
                 estado_revision="Pendiente",
                 fk_creado_por=request.user
             )
-
             return JsonResponse({
                 'status': 'success',
                 'message': 'Aspirante agregado correctamente.',
@@ -323,90 +323,84 @@ def agregar_info_personal(request):
 
 
 @login_required
+@csrf_exempt
 def agregar_detalle_academico(request):
-    if request.method == 'POST':
+    if request.method == "POST":
+        print(request.POST)
+        usuario_id = request.POST.get("usuario_id")
+        institucion = request.POST.get("institucion")
+        titulo_obtenido = request.POST.get("titulo_obtenido")
+        nivel_academico_id = request.POST.get("nivel_academico")
+        fecha_graduacion = request.POST.get("fecha_graduacion")
+
         try:
-            usuario_id = request.POST.get('usuario_id')
-            if not usuario_id:
-                return JsonResponse({'status': 'error', 'message': 'El usuario_id es requerido.'}, status=400)
+            # Validar que el usuario existe
+            usuario = get_object_or_404(Usuario, id=usuario_id)
 
-            usuario = Usuario.objects.get(id=usuario_id)
-
+            # Crear el detalle académico
             detalle = DetalleAcademico.objects.create(
                 usuario=usuario,
-                nivel_academico_id=request.POST.get('nivel_academico'),
-                institucion=request.POST.get('institucion'),
-                titulo_obtenido=request.POST.get('titulo_obtenido'),
-                fecha_graduacion=request.POST.get('fecha_graduacion')
+                institucion=institucion,
+                titulo_obtenido=titulo_obtenido,
+                nivel_academico_id=nivel_academico_id,
+                fecha_graduacion=fecha_graduacion
             )
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Detalle académico agregado correctamente.',
-                'detalle': {
-                    'institucion': detalle.institucion,
-                    'titulo_obtenido': detalle.titulo_obtenido,
-                    'nivel_academico': detalle.nivel_academico.nombre,
-                    'fecha_graduacion': detalle.fecha_graduacion
+            contexto = {
+                "detalle": {
+                    "institucion": detalle.institucion,
+                    "titulo_obtenido": detalle.titulo_obtenido,
+                    "nivel_academico": detalle.nivel_academico.nombre,
+                    "fecha_graduacion": detalle.fecha_graduacion,
                 }
-            })
-        except Usuario.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'El usuario no existe.'}, status=400)
+            }
+
+            return JsonResponse({"status": "success", "message": "Detalle académico agregado exitosamente.", "detalle": contexto["detalle"]})
+
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            return JsonResponse({"status": "error", "message": f"Error al agregar el detalle académico: {e}"})
+
+    return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
+
 
 @login_required
 def agregar_exp_laboral(request):
-    if request.method == 'POST':
+    if request.method == "POST":
+        print(request.POST)
+        usuario_id = request.POST.get("usuario_id")
+        empresa = request.POST.get("empresa")
+        cargo = request.POST.get("cargo")
+        fecha_inicio = request.POST.get("fecha_inicio")
+        fecha_fin = request.POST.get("fecha_fin")
+
         try:
-            usuario_id = request.POST.get('usuario_id')
-            if not usuario_id:
-                return JsonResponse({'status': 'error', 'message': 'El usuario_id es requerido.'}, status=400)
+            # Validar que el usuario existe
+            usuario = get_object_or_404(Usuario, id=usuario_id)
 
-            usuario = Usuario.objects.get(id=usuario_id)
-
-            experiencia = DetalleExperienciaLaboral.objects.create(
+            # Crear el detalle de experiencia laboral
+            detalle = DetalleExperienciaLaboral.objects.create(
                 usuario=usuario,
-                empresa=request.POST.get('empresa'),
-                cargo=request.POST.get('cargo'),
-                fecha_inicio=request.POST.get('fecha_inicio'),
-                fecha_fin=request.POST.get('fecha_fin')
+                empresa=empresa,
+                cargo=cargo,
+                fecha_inicio=fecha_inicio,
+                fecha_fin=fecha_fin
             )
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Experiencia laboral agregada correctamente.',
-                'detalle': {
-                    'empresa': experiencia.empresa,
-                    'cargo': experiencia.cargo,
-                    'fecha_inicio': experiencia.fecha_inicio,
-                    'fecha_fin': experiencia.fecha_fin
+            contexto = {
+                "detalle": {
+                    "empresa": detalle.empresa,
+                    "cargo": detalle.cargo,
+                    "fecha_inicio": detalle.fecha_inicio,
+                    "fecha_fin": detalle.fecha_fin,
                 }
-            })
-        except Usuario.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'El usuario no existe.'}, status=400)
+            }
+
+            return JsonResponse({"status": "success", "message": "Experiencia laboral agregada exitosamente.", "detalle": contexto["detalle"]})
+
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            return JsonResponse({"status": "error", "message": f"Error al agregar la experiencia laboral: {e}"})
 
-
-@login_required
-def obtener_detalles_usuario(request, usuario_id):
-    try:
-        # Obtener detalles académicos y laborales
-        detalles_academicos = DetalleAcademico.objects.filter(usuario_id=usuario_id).values(
-            'institucion', 'titulo_obtenido', 'nivel_academico__nombre', 'fecha_graduacion'
-        )
-        detalles_experiencia = DetalleExperienciaLaboral.objects.filter(usuario_id=usuario_id).values(
-            'empresa', 'cargo', 'fecha_inicio', 'fecha_fin'
-        )
-
-        return JsonResponse({
-            'status': 'success',
-            'detalles_academicos': list(detalles_academicos),
-            'detalles_experiencia': list(detalles_experiencia)
-        })
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
 
 
 #
