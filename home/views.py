@@ -1,5 +1,6 @@
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
+from datetime import datetime, timedelta
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -16,9 +17,9 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
 from .models.talento_humano.roles import Rol
-
-
+from django.utils import timezone
 import openpyxl
+import pytz
 from siuc import settings
 
 # Create your views here.
@@ -465,10 +466,22 @@ def generar_reporte_excel(request):
     fecha_creacion = request.GET.get('fecha_creacion')
     estado = request.GET.get('estado')
 
+    # Configuración de la zona horaria local
+    zona_horaria_local = pytz.timezone('America/Bogota')
+
     # Filtrar datos según los parámetros enviados
     usuarios = Usuario.objects.all()
     if fecha_creacion:
-        usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
+        try:
+            # Convertir la fecha a rango con zona horaria local
+            fecha_inicio = zona_horaria_local.localize(
+                datetime.strptime(fecha_creacion, "%Y-%m-%d"))
+            fecha_fin = fecha_inicio + timedelta(days=1)
+            usuarios = usuarios.filter(
+                fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
+        except ValueError:
+            fecha_creacion = None
+
     if estado:
         usuarios = usuarios.filter(estado_revision=estado)
 
@@ -478,30 +491,31 @@ def generar_reporte_excel(request):
     sheet.title = "Reporte SNIES"
 
     # Encabezados
-    encabezados = ["ID", "Nombre Completo", "Cargo", "Número Documento", "Correo", "Estado", "Fecha Creación"]
-    sheet.append(encabezados)
+    sheet.append(["ID", "Nombre Completo", "Cargo", "Número Documento", "Correo", "Estado", "Fecha Creación"])
 
     # Insertar datos filtrados
     for idx, usuario in enumerate(usuarios, start=1):
+        fecha_local = usuario.fecha_creacion.astimezone(zona_horaria_local)
         sheet.append([
-            idx,  # ID autoincremental
+            idx,
             f"{usuario.primer_nombre} {usuario.primer_apellido}",
             usuario.cargo,
             usuario.numero_documento,
             usuario.correo_personal,
             usuario.estado_revision,
-            usuario.fecha_creacion.strftime("%Y-%m-%d"),
+            # Mostrar en la zona local
+            fecha_local.strftime("%d-%m-%Y %H:%M:%S")
         ])
 
     # Generar nombre de archivo personalizado
-    nombre_archivo = "reporte_snies.xlsx"
-    if estado:
-        nombre_archivo = f"reporte_snies_{estado.lower()}.xlsx"
+    nombre_archivo = f"reporte_snies_{
+        fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
 
     # Respuesta HTTP
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+    response['Content-Disposition'] = f'attachment; filename="{
+        nombre_archivo}"'
     workbook.save(response)
     return response
