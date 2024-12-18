@@ -492,7 +492,7 @@ def reportes(request):
         usuarios = usuarios.filter(estado_revision=estado)
 
     # Paginación: 20 registros por página
-    paginator = Paginator(usuarios, 10)
+    paginator = Paginator(usuarios, 25)
     page_obj = paginator.get_page(page)
 
     # Actualizar el contexto con la paginación y filtros
