@@ -9,7 +9,7 @@
         <div class=" d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
             {% if "Secretaria Talento Humano" in user_groups %}
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal">
                 Nuevo Aspirante
             </button>
             {% endif %}
@@ -24,10 +24,6 @@
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="position-relative col-md-3">
                 <input type="text" name="aspirante_pendiente" id="filtroInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
-                <!-- Icono de "X" para borrar el filtro -->
-                <span id="clearFilter" class="cancelar-filtro position-absolute top-50 end-0 translate-middle-y">
-                    <i class="bi bi-x-circle text-muted fs-5"></i>
-                </span>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -135,10 +131,6 @@
         <div class="row col d-flex justify-content-start align-items-center">
             <div class="col-md-3">
                 <input type="text" name="aspirante_rechazado" id="filtroRechazadosInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
-                    <!-- Icono de "X" para borrar el filtro -->
-                <span id="clearRechazadosFilter" class="cancelar-filtro position-absolute top-50 end-0 translate-middle-y me-3">
-                    <i class="bi bi-x-circle text-muted fs-5"></i>
-                </span>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -462,9 +454,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tablaAcademica">
-                                    {% if not detalles_academicos %}
-                                        <tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>
-                                    {% else %}
+                                    {% if detalles_academicos %}
                                         {% for detalle in detalles_academicos %}
                                         <tr>
                                             <td>{{ detalle.institucion }}</td>
@@ -476,6 +466,8 @@
                                             </td>
                                         </tr>
                                         {% endfor %}
+                                    {% else %}
+                                        <tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>
                                     {% endif %}
                                 </tbody>                                
                             </table>
@@ -512,20 +504,20 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tablaExperiencia">
-                                    {% if not detalles_academicos %}
-                                        <tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>
-                                    {% else %}
-                                        {% for detalle in detalles_academicos %}
+                                    {% if detalles_experiencia %}
+                                        {% for detalle in detalles_experiencia %}
                                         <tr>
-                                            <td>{{ detalle.institucion }}</td>
-                                            <td>{{ detalle.titulo_obtenido }}</td>
-                                            <td>{{ detalle.nivel_academico.nombre }}</td>
-                                            <td>{{ detalle.fecha_graduacion }}</td>
+                                            <td>{{ detalle.empresa }}</td>
+                                            <td>{{ detalle.cargo }}</td>
+                                            <td>{{ detalle.fecha_inicio }}</td>
+                                            <td>{{ detalle.fecha_fin }}</td>
                                             <td>
                                                 <!-- Acciones -->
                                             </td>
                                         </tr>
                                         {% endfor %}
+                                    {% else %}
+                                        <tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>
                                     {% endif %}
                                 </tbody>
                             </table>
@@ -555,6 +547,7 @@
             <div class="modal-body">
                 <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}">
                     {% csrf_token %}
+                    <input type="hidden" name="usuario_id" id="detalleAcademicoUsuarioId">
                     <div class="row p-2">
                         <div class="mb-2">
                             <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
@@ -603,6 +596,7 @@
             <div class="modal-body">
                 <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}">
                     {% csrf_token %}
+                    <input type="hidden" name="usuario_id" id="expLaboralUsuarioId">
                     <div class="row p-2">
                         <div class="mb-2">
                             <label for="empresa" class="form-label mb-0">Empresa donde Laboró <span class='fw-bold fs-4'>*</span></label>
@@ -631,7 +625,8 @@
     </div>
 </div>
 
-<script>
+<!-- Limpiar campos de filtrado --> 
+{% comment %} <script>
     // Variables para Aspirantes Pendientes
     const filtroInput = document.getElementById("filtroInput");
     const clearFilter = document.getElementById("clearFilter");
@@ -669,8 +664,9 @@
     // Aplicar la funcionalidad a ambos filtros
     handleClearFilter(filtroInput, clearFilter); // Aspirantes Pendientes
     handleClearFilter(filtroRechazadosInput, clearRechazadosFilter); // Aspirantes Rechazados
-</script>
+</script> {% endcomment %}
 
+<!-- Manejo de errores y redireeccionamiento al modal de Información Adicional -->
 <script>
     document.getElementById("formInfoPersonal").addEventListener("submit", function(e) {
         e.preventDefault();
@@ -732,5 +728,132 @@
         const nextModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
         nextModal.show();
     }    
+</script>
+
+<!-- Cerrar modal de Información Adicional -->
+<script>
+    document.getElementById("btnFinalizar").addEventListener("click", function () {
+        const infoAdicionalModal = bootstrap.Modal.getInstance(document.getElementById("infoAdicionalModal"));
+        infoAdicionalModal.hide();
+    });    
+</script>
+
+<!--  -->
+<script>
+    function resetForm(formId) {
+        document.getElementById(formId).reset();
+    }
+    
+    document.getElementById("cancelarFormDetalleAcademico").addEventListener("click", function () {
+        resetForm("formDetalleAcademico");
+    });
+    
+    document.getElementById("cancelarFormExpLaboral").addEventListener("click", function () {
+        resetForm("formExpLaboral");
+    });
+</script>
+
+<!-- Actualizar tablas -->
+<script>
+    function updateTables(usuarioId) {
+        const url = `{% url 'obtener_detalles_usuario' 0 %}`.replace('0', usuarioId); // Reemplaza 0 con el ID real del usuario
+    
+        fetch(url, {
+            method: "GET",
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                document.getElementById("tablaAcademica").innerHTML = data.html_academicos;
+                document.getElementById("tablaExperiencia").innerHTML = data.html_experiencia;
+                showAlert("Tablas actualizadas correctamente.", "success");
+            } else {
+                showAlert(data.message, "error");
+            }
+        });
+    }    
+</script>
+
+<script>
+    function openAcademicDetailsModal(usuarioId) {
+        document.getElementById("detalleAcademicoUsuarioId").value = usuarioId;
+        const academicModal = new bootstrap.Modal(document.getElementById("formDetalleAcademicoModal"));
+        academicModal.show();
+    }
+    
+    // Llamada a esta función al presionar el botón para agregar detalle académico
+    openAcademicDetailsModal(usuarioId);
+    
+
+    function openWorkExperienceModal(usuarioId) {
+        document.getElementById("expLaboralUsuarioId").value = usuarioId;
+        const workExperienceModal = new bootstrap.Modal(document.getElementById("formExpLaboralModal"));
+        workExperienceModal.show();
+    }
+    
+    // Llamada a esta función al presionar el botón para agregar experiencia laboral
+    openWorkExperienceModal(usuarioId);
+</script>
+
+<script>
+    function updateTables(usuarioId) {
+        const url = `{% url 'obtener_detalles_usuario' 0 %}`.replace('0', usuarioId);
+    
+        fetch(url, {
+            method: "GET",
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                // Actualizar tabla académica
+                const tablaAcademica = document.getElementById("tablaAcademica");
+                tablaAcademica.innerHTML = ""; // Limpiar contenido actual
+                if (data.detalles_academicos.length > 0) {
+                    data.detalles_academicos.forEach(detalle => {
+                        const row = `
+                            <tr>
+                                <td>${detalle.institucion}</td>
+                                <td>${detalle.titulo_obtenido}</td>
+                                <td>${detalle.nivel_academico__nombre}</td>
+                                <td>${detalle.fecha_graduacion}</td>
+                                <td><!-- Acciones aquí --></td>
+                            </tr>
+                        `;
+                        tablaAcademica.insertAdjacentHTML("beforeend", row);
+                    });
+                } else {
+                    tablaAcademica.innerHTML = `<tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>`;
+                }
+    
+                // Actualizar tabla de experiencia laboral
+                const tablaExperiencia = document.getElementById("tablaExperiencia");
+                tablaExperiencia.innerHTML = ""; // Limpiar contenido actual
+                if (data.detalles_experiencia.length > 0) {
+                    data.detalles_experiencia.forEach(detalle => {
+                        const row = `
+                            <tr>
+                                <td>${detalle.empresa}</td>
+                                <td>${detalle.cargo}</td>
+                                <td>${detalle.fecha_inicio}</td>
+                                <td>${detalle.fecha_fin}</td>
+                                <td><!-- Acciones aquí --></td>
+                            </tr>
+                        `;
+                        tablaExperiencia.insertAdjacentHTML("beforeend", row);
+                    });
+                } else {
+                    tablaExperiencia.innerHTML = `<tr><td colspan="5" class="text-center">No se encontraron datos disponibles</td></tr>`;
+                }
+            } else {
+                showAlert(data.message, "error");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            showAlert("No se pudieron actualizar las tablas. Intenta de nuevo.", "error");
+        });
+    }
 </script>
 {% endblock %}

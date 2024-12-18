@@ -306,7 +306,7 @@ def agregar_info_personal(request):
             return JsonResponse({
                 'status': 'success',
                 'message': 'Aspirante agregado correctamente.',
-                'nuevo_usuario_id': nuevo_usuario.id
+                'usuario_id': nuevo_usuario.id
             })
 
         except IntegrityError:
@@ -324,14 +324,89 @@ def agregar_info_personal(request):
 
 @login_required
 def agregar_detalle_academico(request):
-    print(request.POST)
-    pass
+    if request.method == 'POST':
+        try:
+            usuario_id = request.POST.get('usuario_id')
+            if not usuario_id:
+                return JsonResponse({'status': 'error', 'message': 'El usuario_id es requerido.'}, status=400)
 
+            usuario = Usuario.objects.get(id=usuario_id)
+
+            detalle = DetalleAcademico.objects.create(
+                usuario=usuario,
+                nivel_academico_id=request.POST.get('nivel_academico'),
+                institucion=request.POST.get('institucion'),
+                titulo_obtenido=request.POST.get('titulo_obtenido'),
+                fecha_graduacion=request.POST.get('fecha_graduacion')
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Detalle académico agregado correctamente.',
+                'detalle': {
+                    'institucion': detalle.institucion,
+                    'titulo_obtenido': detalle.titulo_obtenido,
+                    'nivel_academico': detalle.nivel_academico.nombre,
+                    'fecha_graduacion': detalle.fecha_graduacion
+                }
+            })
+        except Usuario.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'El usuario no existe.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 @login_required
 def agregar_exp_laboral(request):
-    print(request.POST)
-    pass
+    if request.method == 'POST':
+        try:
+            usuario_id = request.POST.get('usuario_id')
+            if not usuario_id:
+                return JsonResponse({'status': 'error', 'message': 'El usuario_id es requerido.'}, status=400)
+
+            usuario = Usuario.objects.get(id=usuario_id)
+
+            experiencia = DetalleExperienciaLaboral.objects.create(
+                usuario=usuario,
+                empresa=request.POST.get('empresa'),
+                cargo=request.POST.get('cargo'),
+                fecha_inicio=request.POST.get('fecha_inicio'),
+                fecha_fin=request.POST.get('fecha_fin')
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Experiencia laboral agregada correctamente.',
+                'detalle': {
+                    'empresa': experiencia.empresa,
+                    'cargo': experiencia.cargo,
+                    'fecha_inicio': experiencia.fecha_inicio,
+                    'fecha_fin': experiencia.fecha_fin
+                }
+            })
+        except Usuario.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'El usuario no existe.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@login_required
+def obtener_detalles_usuario(request, usuario_id):
+    try:
+        # Obtener detalles académicos y laborales
+        detalles_academicos = DetalleAcademico.objects.filter(usuario_id=usuario_id).values(
+            'institucion', 'titulo_obtenido', 'nivel_academico__nombre', 'fecha_graduacion'
+        )
+        detalles_experiencia = DetalleExperienciaLaboral.objects.filter(usuario_id=usuario_id).values(
+            'empresa', 'cargo', 'fecha_inicio', 'fecha_fin'
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'detalles_academicos': list(detalles_academicos),
+            'detalles_experiencia': list(detalles_experiencia)
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
 #
