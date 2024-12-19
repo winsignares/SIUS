@@ -139,5 +139,10 @@ p {
 
 #loadingOverlay {
     z-index: 1050;
-    background-color: var(--color-secundario);
+    background-color: var(--color-secundario) !important;
+}
+
+#loadingOverlay .spinner-border {
+    color: var(--color-terciario) !important;
+    font-weight: bold;
 }
