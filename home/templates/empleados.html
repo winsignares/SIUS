@@ -68,6 +68,7 @@
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
+                <button type="button" id="clearFilterActivos" class="btn btn-alterno-red">Limpiar</button>
             </div>
         </div>
     </form>
@@ -177,6 +178,7 @@
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
+                <button type="button" id="clearFilterInactivos" class="btn btn-alterno-red">Limpiar</button>
             </div>
         </div>
     </form>
@@ -571,5 +573,93 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Botón para limpiar filtro de Empleados Activos
+        const clearFilterActivos = document.getElementById("clearFilterActivos");
+        if (clearFilterActivos) {
+            clearFilterActivos.addEventListener("click", function () {
+                // Limpiar el input del filtro
+                const filtroInputActivos = document.getElementById("filtroEmpActInput");
+                if (filtroInputActivos) {
+                    filtroInputActivos.value = ""; // Vaciar el campo de texto
+                }
+
+                // Recargar la página sin parámetros de búsqueda
+                const url = new URL(window.location.href);
+                url.searchParams.delete("empleado_activo"); // Eliminar el parámetro de búsqueda
+                window.history.pushState({}, '', url); // Actualizar la URL sin recargar
+                location.reload(); // Recargar la página
+            });
+        }
+
+        // Botón para limpiar filtro de Empleados Inactivos
+        const clearFilterInactivos = document.getElementById("clearFilterInactivos");
+        if (clearFilterInactivos) {
+            clearFilterInactivos.addEventListener("click", function () {
+                // Limpiar el input del filtro
+                const filtroInputInactivos = document.getElementById("filtroEmpInacInput");
+                if (filtroInputInactivos) {
+                    filtroInputInactivos.value = ""; // Vaciar el campo de texto
+                }
+
+                // Recargar la página sin parámetros de búsqueda
+                const url = new URL(window.location.href);
+                url.searchParams.delete("empleado_inactivo"); // Eliminar el parámetro de búsqueda
+                window.history.pushState({}, '', url); // Actualizar la URL sin recargar
+                location.reload(); // Recargar la página
+            });
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Función para realizar scroll automático a una sección específica
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+
+        // Detectar y manejar filtros aplicados en la URL
+        function handleFilterScroll() {
+            const searchParams = new URLSearchParams(window.location.search);
+
+            // Si hay filtro para Empleados Activos
+            const empleadoActivo = searchParams.get("empleado_activo");
+            if (empleadoActivo) {
+                scrollToSection("empleadosActivos");
+            }
+
+            // Si hay filtro para Empleados Inactivos
+            const empleadoInactivo = searchParams.get("empleado_inactivo");
+            if (empleadoInactivo) {
+                scrollToSection("empleadosInactivos");
+            }
+        }
+
+        // Manejar los botones de limpiar filtro
+        function handleClearFilter(buttonId, targetSectionId) {
+            const clearButton = document.getElementById(buttonId);
+            if (clearButton) {
+                clearButton.addEventListener("click", function () {
+                    // Limpiar el filtro y desplazarse automáticamente
+                    window.location.href = window.location.pathname + `#${targetSectionId}`;
+                });
+            }
+        }
+
+        // Ejecutar scroll automático si hay filtros aplicados
+        handleFilterScroll();
+
+        // Configurar botones de limpiar filtro
+        handleClearFilter("clearFilterActivos", "empleadosActivos");
+        handleClearFilter("clearFilterInactivos", "empleadosInactivos");
+    });
+</script>
+
 
 {% endblock %}

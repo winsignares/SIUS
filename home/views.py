@@ -446,12 +446,12 @@ def gestion_empleados(request):
         )
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_activos = Paginator(empleados_activos, 8)  # 5 registros por página
+    paginator_activos = Paginator(empleados_activos, 10)  # 5 registros por página
     page_number_activos = request.GET.get('page_activos')
     page_obj_activos = paginator_activos.get_page(page_number_activos)
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_inactivos = Paginator(empleados_inactivos, 8)  # 8 registros por página
+    paginator_inactivos = Paginator(empleados_inactivos, 10)  # 8 registros por página
     page_number_inactivos = request.GET.get('page_inactivos')
     page_obj_inactivos = paginator_inactivos.get_page(page_number_inactivos)
 
@@ -475,8 +475,10 @@ def gestion_empleados(request):
 def reportes(request):
     contexto = obtener_db_info(request)
 
+    # Capturar parámetros del request
     fecha_creacion = request.GET.get('fecha_creacion')
     estado = request.GET.get('estado')
+    activo = request.GET.get('activo')  # Nuevo filtro
     page = request.GET.get('page', 1)  # Página actual, por defecto 1
 
     # Validar formato de fecha
@@ -489,22 +491,34 @@ def reportes(request):
     usuarios = Usuario.objects.all()
     if fecha_creacion:
         usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
+
+    # Filtrar por estado
     if estado:
         usuarios = usuarios.filter(estado_revision=estado)
 
-    # Paginación: 20 registros por página
+    # Filtrar por activo/inactivo
+    if activo:
+        if activo == "Activo":
+            usuarios = usuarios.filter(activo= True)
+        elif activo == "Inactivo":
+            usuarios = usuarios.filter(activo= False)
+
+    # Paginación: 25 registros por página
     paginator = Paginator(usuarios, 25)
     page_obj = paginator.get_page(page)
 
     # Actualizar el contexto con la paginación y filtros
     contexto.update({
         'page_obj': page_obj,
-        # Mantener el filtro
         'fecha_creacion': request.GET.get('fecha_creacion', ''),
-        'estado': request.GET.get('estado', '')  # Mantener el filtro
+        'estado': request.GET.get('estado', ''),
+        'activo': request.GET.get('activo', '')  # Nuevo campo en el contexto
     })
 
     return render(request, 'reportes.html', contexto)
+
+
+
 
 
 @login_required
