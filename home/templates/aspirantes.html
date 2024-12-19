@@ -15,9 +15,9 @@
             {% endif %}
         </div>
     </div>
-
+    
 <!-- Tabla de aspirantes en estado 'Pendiente' -->
-    <h4 class="mb-3">Aspirantes Pendientes</h4>
+    <h4 id="aspirantesPendientes" class="mb-3">Aspirantes Pendientes</h4>
 
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
@@ -27,6 +27,7 @@
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
+                <button type="button" id="clearFilterPendientes" class="btn btn-alterno-red">Limpiar</button>
             </div>
         </div>
     </form>
@@ -124,7 +125,7 @@
     </div>
 
 <!-- Tabla de aspirantes en estado 'Rechazado' -->
-    <h4 class="mb-2">Aspirantes Rechazados</h4>
+    <h4 id="aspirantesRechazados" class="mb-3">Aspirantes Rechazados</h4>
 
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
@@ -134,6 +135,7 @@
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
+                <button type="button" id="clearFilterRechazados" class="btn btn-alterno-red">Limpiar</button>
             </div>
         </div>
     </form>
@@ -856,4 +858,96 @@
         window.location.href = "{% url 'gestion_aspirantes' %}";
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Botón para limpiar filtro de Aspirantes Pendientes
+        const clearFiltroPendientes = document.getElementById("clearFiltroPendientes");
+        if (clearFiltroPendientes) {
+            clearFiltroPendientes.addEventListener("click", function () {
+                // Limpiar el input del filtro
+                const filtroInputPendientes = document.getElementById("filtroAspPenInput");
+                if (filtroInputPendientes) {
+                    filtroInputPendientes.value = ""; // Vaciar el campo de texto
+                }
+
+                // Recargar la página sin parámetros de búsqueda
+                const url = new URL(window.location.href);
+                url.searchParams.delete("aspirante_pendiente"); // Eliminar el parámetro de búsqueda
+                window.history.pushState({}, '', url); // Actualizar la URL sin recargar
+                location.reload(); // Recargar la página
+            });
+        }
+
+        // Botón para limpiar filtro de Aspirantes Rechazados
+        const clearFiltroRechazados = document.getElementById("clearFiltroRechazados");
+        if (clearFiltroRechazados) {
+            clearFiltroRechazados.addEventListener("click", function () {
+                // Limpiar el input del filtro
+                const filtroInputRechazados = document.getElementById("filtroRechazadosInput");
+                if (filtroInputRechazados) {
+                    filtroInputRechazados.value = ""; // Vaciar el campo de texto
+                }
+
+                // Recargar la página sin parámetros de búsqueda
+                const url = new URL(window.location.href);
+                url.searchParams.delete("aspirante_rechazado"); // Eliminar el parámetro de búsqueda
+                window.history.pushState({}, '', url); // Actualizar la URL sin recargar
+                location.reload(); // Recargar la página
+            });
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Función para realizar scroll automático a una sección específica
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+
+        // Detectar y manejar filtros aplicados en la URL
+        function handleFilterScroll() {
+            const searchParams = new URLSearchParams(window.location.search);
+
+            // Si hay filtro para Aspirantes Rechazados
+            const aspiranteRechazado = searchParams.get("aspirante_rechazado");
+            if (aspiranteRechazado) {
+                scrollToSection("aspirantesRechazados");
+            }
+
+            // Si hay filtro para Aspirantes Pendientes
+            const aspirantePendiente = searchParams.get("aspirante_pendiente");
+            if (aspirantePendiente) {
+                scrollToSection("aspirantesPendientes");
+            }
+        }
+
+        // Manejar los botones de limpiar filtro
+        function handleClearFilter(buttonId, targetSectionId) {
+            const clearButton = document.getElementById(buttonId);
+            if (clearButton) {
+                clearButton.addEventListener("click", function () {
+                    // Limpiar el filtro y desplazarse automáticamente
+                    window.location.href = window.location.pathname + `#${targetSectionId}`;
+                });
+            }
+        }
+
+        // Ejecutar scroll automático si hay filtros aplicados
+        handleFilterScroll();
+
+        // Configurar botones de limpiar filtro
+        handleClearFilter("clearFilterPendientes", "aspirantesPendientes");
+        handleClearFilter("clearFilterRechazados", "aspirantesRechazados");
+    });
+</script>
+
+
+
+
+
 {% endblock %}
