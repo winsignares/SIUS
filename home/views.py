@@ -20,6 +20,7 @@ from .models.talento_humano.roles import Rol
 from django.utils import timezone
 import openpyxl
 import pytz
+import pandas
 from siuc import settings
 
 # Create your views here.
@@ -561,3 +562,85 @@ def generar_reporte_excel(request):
     response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
     workbook.save(response)
     return response
+
+
+@login_required
+@csrf_exempt
+def cargar_empleados_masivamente(request):
+    if request.method == 'POST' and 'archivoExcel' in request.FILES:
+        archivo = request.FILES['archivoExcel']
+        try:
+            # Leer el archivo Excel usando pandas
+            import pandas as pd
+            datos = pd.read_excel(archivo)
+
+            # Validar que las columnas requeridas existan en el archivo
+            columnas_requeridas = [
+                'primer_nombre', 'primer_apellido', 'fk_rol', 'cargo',
+                'fecha_nacimiento', 'fk_tipo_documento', 'numero_documento',
+                'correo_personal', 'celular', 'departamento_residencia',
+                'ultimo_nivel_estudio', 'eps', 'afp'
+            ]
+            if not all(col in datos.columns for col in columnas_requeridas):
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f"El archivo debe contener las columnas: {', '.join(columnas_requeridas)}"
+                }, status=400)
+
+            # Validar que todos los roles en el Excel existen
+            roles_no_encontrados = set(
+                datos['fk_rol']) - set(Rol.objects.values_list('descripcion', flat=True))
+            if roles_no_encontrados:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f"Los siguientes roles no existen en la base de datos: {', '.join(roles_no_encontrados)}"
+                }, status=400)
+
+            # Iterar sobre las filas del archivo y crear empleados
+            for _, fila in datos.iterrows():
+                try:
+                    # Validar que el rol existe
+                    rol = Rol.objects.get(descripcion=fila['fk_rol'])
+                    tipo_documento = TipoDocumento.objects.get(
+                        descripcion=fila['fk_tipo_documento'])
+
+                    # Crear o actualizar el usuario
+                    Usuario.objects.update_or_create(
+                        numero_documento=fila['numero_documento'],
+                        defaults={
+                            'primer_nombre': fila['primer_nombre'],
+                            'primer_apellido': fila['primer_apellido'],
+                            'fk_rol': rol,
+                            'cargo': fila['cargo'],
+                            'fecha_nacimiento': fila['fecha_nacimiento'],
+                            'fk_tipo_documento': tipo_documento,
+                            'correo_personal': fila['correo_personal'],
+                            'celular': fila['celular'],
+                            'departamento_residencia': fila['departamento_residencia'],
+                            'ultimo_nivel_estudio': fila['ultimo_nivel_estudio'],
+                            'eps': fila['eps'],
+                            'afp': fila['afp'],
+                            'estado_revision': 'Contratado',
+                            'activo': True,
+                            'fk_creado_por': request.user
+                        }
+                    )
+                except Rol.DoesNotExist:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Rol '{fila['fk_rol']}' no encontrado. Verifica que el rol exista en la base de datos."
+                    }, status=400)
+                except TipoDocumento.DoesNotExist:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Tipo de Documento '{fila['fk_tipo_documento']}' no encontrado. Verifica que exista en la base de datos."
+                    }, status=400)
+
+            return JsonResponse({'status': 'success', 'message': 'Carga masiva realizada con éxito.'})
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f"Error al procesar el archivo: {e}"
+            }, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
