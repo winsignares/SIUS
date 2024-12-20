@@ -49,6 +49,7 @@
                 <table class="table table-striped table-hover mb-3 align-middle">
                     <thead>
                         <tr class="text-center">
+                            <th scope="col"></th>
                             <th scope="col">Nombre Completo</th>
                             <th scope="col">Rol</th>
                             <th scope="col">Cargo</th>
@@ -65,6 +66,7 @@
                         {% else %}
                             {% for usuario in page_obj_activos %}
                             <tr class="text-center">
+                                <td>{{ forloop.counter0|add:page_obj_activos.start_index }}</td>
                                 <td>
                                     {{ usuario.primer_nombre }}
                                     {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
@@ -159,6 +161,7 @@
                 <table class="table table-striped table-hover mb-3 align-middle">
                     <thead>
                         <tr class="text-center">
+                            <th scope="col"></th>
                             <th scope="col">Nombre Completo</th>
                             <th scope="col">Rol</th>
                             <th scope="col">Cargo</th>
@@ -175,6 +178,7 @@
                         {% else %}
                             {% for usuario in page_obj_inactivos %}
                             <tr class="text-center">
+                                <td>{{ forloop.counter0|add:page_obj_inactivos.start_index }}</td>
                                 <td>
                                     {{ usuario.primer_nombre }}
                                     {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
@@ -222,6 +226,11 @@
     <nav class="mt-0">
         <ul class="pagination justify-content-end">
             {% if page_obj_inactivos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page_inactivos=1&aspirante_rechazados={{ query }}">
+                    <i class="bi bi-skip-backward-fill"></i>
+                </a>
+            </li>
             <li class="page-item">
                 <a class="page-link" href="?page_inactivos={{ page_obj_inactivos.previous_page_number }}&aspirante_rechazados={{ query }}">
                     <i class="bi bi-caret-left-fill"></i>
