@@ -11,6 +11,7 @@
 body {
     background-color: var(--color-secundario);
     font-family: Arial, sans-serif;
+    color: var(--color-primario);
 }
 
 /* 
@@ -241,6 +242,7 @@ table.table thead th {
     color: var(--color-secundario);
     font-weight: bold;
     text-transform: uppercase;
+    text-align: center;
 }
 
 /* Row content styling */

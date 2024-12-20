@@ -24,39 +24,6 @@
         </div>
     </div>
 
-{% load static %}
-
-<!-- Modal para Carga Masiva -->
-<div class="modal fade" id="cargaMasivaModal" tabindex="-1" aria-labelledby="cargaMasivaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cargaMasivaModalLabel">Carga Masiva de Empleados</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formCargaMasiva" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="archivoExcel" class="form-label">Seleccione el archivo Excel</label>
-                        <input type="file" id="archivoExcel" name="archivoExcel" class="form-control" accept=".xlsx, .xls" required>
-                        <small class="form-text text-muted">El archivo debe contener las columnas: Nombre, Rol, Cargo, Documento, Correo.</small>
-                        <br>
-                        <a href="{% static 'css/plantilla_empleados.xlsx' %}" class="btn btn-link">Descargar plantilla</a>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="submit" class="btn btn-primary" form="formCargaMasiva">Cargar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 <!-- Tabla de empleados en estado 'Contratado' y 'Activo' -->
 <h4 class="mb-3">Empleados Activos</h4>
 
@@ -66,7 +33,7 @@
             <div class="position-relative col-md-3">
                 <input type="text" name="empleado_activo" id="filtroEmpActInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ empleado_activo }}">
             </div>
-            <div class="col-md-auto">
+            <div class="col-md-auto d-flex gap-2">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
                 <button type="button" id="clearFilterActivos" class="btn btn-alterno-red">Limpiar</button>
             </div>
@@ -176,7 +143,7 @@
             <div class="col-md-3">
                 <input type="text" name="empleado_inactivo" id="filtroEmpInacInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ empleado_inactivo }}">
             </div>
-            <div class="col-md-auto">
+            <div class="col-md-auto d-flex gap-2">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
                 <button type="button" id="clearFilterInactivos" class="btn btn-alterno-red">Limpiar</button>
             </div>
@@ -546,6 +513,34 @@
     </div>
 </div>
 
+<!-- Modal para Carga Masiva -->
+<div class="modal fade" id="cargaMasivaModal" tabindex="-1" aria-labelledby="cargaMasivaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cargaMasivaModalLabel">Carga Masiva de Empleados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCargaMasiva" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="archivoExcel" class="form-label">Seleccione el archivo Excel</label>
+                        <input type="file" id="archivoExcel" name="archivoExcel" class="form-control" accept=".xlsx, .xls" required>
+                        <small class="form-text text-muted">El archivo debe contener las columnas: Nombre, Rol, Cargo, Documento, Correo.</small>
+                        <br>
+                        <a href="{% static 'css/plantilla_empleados.xlsx' %}" class="btn btn-link">Descargar plantilla</a>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary" form="formCargaMasiva">Cargar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.getElementById("formCargaMasiva").addEventListener("submit", function (e) {
         e.preventDefault();
@@ -660,6 +655,4 @@
         handleClearFilter("clearFilterInactivos", "empleadosInactivos");
     });
 </script>
-
-
 {% endblock %}
