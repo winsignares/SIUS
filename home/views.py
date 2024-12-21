@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
 from datetime import datetime, timedelta
@@ -17,6 +18,8 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
 from .models.talento_humano.roles import Rol
+from django.http import HttpResponseNotFound
+
 from django.utils import timezone
 import openpyxl
 import pytz
@@ -658,3 +661,34 @@ def cargar_empleados_masivamente(request):
             }, status=500)
 
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
+
+
+#
+# ----------------------------  VISTA DE BOTÓN ASPIRANTES EMPLEADOS ---------------------------------
+#
+
+
+@login_required
+def detalle_usuario(request, tipo, usuario_id):
+    """
+    Muestra los detalles de un aspirante o empleado según el tipo y el estado del usuario.
+    """
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    if tipo == "aspirante" and usuario.estado_revision in ["Pendiente", "Rechazado"]:
+        template = "partials/detalle_aspirante.html"
+        detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
+        detalles_laborales = DetalleExperienciaLaboral.objects.filter(
+            usuario=usuario)
+    elif tipo == "empleado" and usuario.estado_revision in ["Activo", "Inactivo", "Contratado"]:
+        template = "partials/detalle_empleado.html"
+        detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
+        detalles_laborales = DetalleExperienciaLaboral.objects.filter(
+            usuario=usuario)
+    else:
+        return HttpResponseNotFound("No se puede mostrar la información solicitada.")
+
+    return render(request, template, {
+        "usuario": usuario,
+        "detalles_academicos": detalles_academicos,
+        "detalles_laborales": detalles_laborales,
+    })

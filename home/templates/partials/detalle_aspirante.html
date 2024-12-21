@@ -1,0 +1,28 @@
+<div>
+    <h5>Nombre Completo: {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}</h5>
+    <p>Rol: {{ usuario.fk_rol.rol }}</p>
+    <p>Cargo: {{ usuario.cargo }}</p>
+    <p>Estado: {{ usuario.estado_revision }}</p>
+    <p>Número de Documento: {{ usuario.numero_documento }}</p>
+    <p>Fecha de Nacimiento: {{ usuario.fecha_nacimiento }}</p>
+    <p>Correo: {{ usuario.correo_personal }}</p>
+    <p>Celular: {{ usuario.celular }}</p>
+    <p>Dirección: {{ usuario.direccion_residencia }}</p>
+    <!-- Más campos si los tienes -->
+    
+    <h5>Detalles Académicos</h5>
+    {% for detalle in detalles_academicos %}
+        <p>Institución: {{ detalle.institucion }}</p>
+        <p>Título: {{ detalle.titulo_obtenido }}</p>
+        <p>Nivel Académico: {{ detalle.nivel_academico.nombre }}</p>
+        <p>Fecha de Graduación: {{ detalle.fecha_graduacion }}</p>
+    {% endfor %}
+    
+    <h5>Experiencia Laboral</h5>
+    {% for experiencia in detalles_laborales %}
+        <p>Empresa: {{ experiencia.empresa }}</p>
+        <p>Cargo: {{ experiencia.cargo }}</p>
+        <p>Fecha Inicio: {{ experiencia.fecha_inicio }}</p>
+        <p>Fecha Fin: {{ experiencia.fecha_fin }}</p>
+    {% endfor %}
+</div>
