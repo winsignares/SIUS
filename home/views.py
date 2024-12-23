@@ -521,9 +521,6 @@ def reportes(request):
     return render(request, 'reportes.html', contexto)
 
 
-
-
-
 @login_required
 def generar_reporte_excel(request):
     # Capturar filtros de la URL
@@ -674,16 +671,10 @@ def detalle_usuario(request, tipo, usuario_id):
     Muestra los detalles de un aspirante o empleado según el tipo y el estado del usuario.
     """
     usuario = get_object_or_404(Usuario, id=usuario_id)
-    if tipo == "aspirante" and usuario.estado_revision in ["Pendiente", "Rechazado"]:
-        template = "partials/detalle_aspirante.html"
+    if usuario:
+        template = "partials/detalle_usuario.html"
         detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
-        detalles_laborales = DetalleExperienciaLaboral.objects.filter(
-            usuario=usuario)
-    elif tipo == "empleado" and usuario.estado_revision in ["Activo", "Inactivo", "Contratado"]:
-        template = "partials/detalle_empleado.html"
-        detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
-        detalles_laborales = DetalleExperienciaLaboral.objects.filter(
-            usuario=usuario)
+        detalles_laborales = DetalleExperienciaLaboral.objects.filter(usuario=usuario)
     else:
         return HttpResponseNotFound("No se puede mostrar la información solicitada.")
 

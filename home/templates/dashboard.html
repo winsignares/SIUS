@@ -32,6 +32,7 @@
         </div>
     </div>
 
+    <!-- Mensaje de errores -->
     {% if messages %}
     <div id="alert-container" class="position-fixed bottom-0 end-0 m-3">
         {% for message in messages %}
@@ -50,24 +51,22 @@
         {% endfor %}
     </div>
     {% endif %}
-<!-- Modal genérico para vista previa -->
-<div class="modal fade" id="detalleUsuarioModal" tabindex="-1" aria-labelledby="detalleUsuarioLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detalleUsuarioLabel">Detalle del Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="detalleUsuarioContent">
-                <!-- El contenido se cargará dinámicamente -->
-                <div class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
+
+    <!-- Modal genérico para vista previa -->
+    <div class="modal fade" id="detalleUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="detalleUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-forms modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="detalleUsuarioLabel">Detalle del Usuario</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-2" id="detalleUsuarioContent">
+                    <!-- El contenido se cargará dinámicamente -->
                 </div>
             </div>
         </div>
     </div>
+<<<<<<< Updated upstream
 </div>
 
 <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
@@ -90,6 +89,8 @@
 </div>
 
 
+=======
+>>>>>>> Stashed changes
 
     <!-- Aquí se generarán alertas dinámicas del frontend -->
     <div id="dynamic-alerts" class="position-fixed bottom-0 end-0 mb-1 me-2"></div>
@@ -97,26 +98,28 @@
 
     <!-- Importar Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Detalles de un usuario -->
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const detalleModal = document.getElementById('detalleUsuarioModal');
-        detalleModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-id');
-            const userType = button.getAttribute('data-tipo');
-            const modalContent = document.getElementById('detalleUsuarioContent');
+        document.addEventListener("DOMContentLoaded", function() {
+            const detalleModal = document.getElementById('detalleUsuarioModal');
+            detalleModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const userId = button.getAttribute('data-id');
+                const userType = button.getAttribute('data-tipo');
+                const modalContent = document.getElementById('detalleUsuarioContent');
 
-            // Mostrar el spinner mientras se carga la información
-            modalContent.innerHTML = `
-                <div class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
+                // Mostrar el spinner mientras se carga la información
+                modalContent.innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
 
-            // Hacer una solicitud AJAX para obtener los detalles
-            fetch(`/siuc/dashboard/detalle_usuario/${userType}/${userId}/`)
+                // Hacer una solicitud AJAX para obtener los detalles
+                fetch(`/siuc/dashboard/detalle_usuario/${userType}/${userId}/`)
                 .then(response => response.text())
                 .then(data => {
                     modalContent.innerHTML = data;
@@ -125,7 +128,9 @@
                     modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
                     console.error('Error:', error);
                 });
+            });
         });
+<<<<<<< Updated upstream
     });
 </script>
 
@@ -163,5 +168,8 @@
 </script>
 
 
+=======
+    </script>
+>>>>>>> Stashed changes
 </body>
 </html>

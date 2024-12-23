@@ -1,0 +1,67 @@
+
+<div class="container">
+    <div class="container mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex gap-3 fs-5 fw-bold mb-2">
+                <i class="bi bi-person-vcard"></i>Información Personal
+            </div>
+            <a href="#" id="descargarCVInstitucional" class="d-flex gap-2 text-decoration-none">
+                <i class="bi bi-download"></i>Descargar CV Institucional
+            </a>
+        </div>
+        <dl class="row px-2">
+            <dt class="col-md-3 mb-2">Nombre Completo:</dt>
+            <dd class="col-md-9 mb-2">{{ usuario.primer_nombre }}{% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %} {{ usuario.primer_apellido }}{% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}</dd>
+            <dt class="col-md-2 mb-2">Rol:</dt>
+            <dd class="col-md-5 mb-2">{{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}</dd>
+            <dt class="col-md-2 mb-2">Cargo:</dt>
+            <dd class="col-md-3 mb-2">{{ usuario.cargo }}</dd>
+            <dd class="col-md-9 mb-2"></dd>
+            <dt class="col-md-3 mb-2"></dt>
+            <dd class="col-md-9 mb-2"></dd>
+            <dt class="col-md-3 mb-2"></dt>
+            <dt class="col-md-3 mb-2"></dt>
+            <dd class="col-md-9 mb-2"></dd>
+            <dt class="col-md-3 mb-2"></dt>
+            <dd class="col-md-9 mb-2"></dd>
+            <p>Cargo: {{ usuario.cargo }}</p>
+            <p>Estado: {{ usuario.estado_revision }}</p>
+            <p>Número de Documento: {{ usuario.numero_documento }}</p>
+            <p>Fecha de Nacimiento: {{ usuario.fecha_nacimiento }}</p>
+            <p>Correo: {{ usuario.correo_personal }}</p>
+            <p>Celular: {{ usuario.celular }}</p>
+            <p>Dirección: {{ usuario.direccion_residencia }}</p>
+            <!-- Más campos si los tienes -->
+        </dl>
+    </div>
+    <div class="container mb-3">
+        <div class="d-flex gap-3 fs-5 fw-bold mb-2">
+            <i class="bi bi-mortarboard"></i>Detalles Académicos
+        </div>
+        {% if not detalles_academicos %}
+            <p class="text-center mb-2">No se ha encontrado información relacionada</p>
+        {% else %}
+            {% for detalle in detalles_academicos %}
+                <p>Institución: {{ detalle.institucion }}</p>
+                <p>Título: {{ detalle.titulo_obtenido }}</p>
+                <p>Nivel Académico: {{ detalle.nivel_academico.nombre }}</p>
+                <p>Fecha de Graduación: {{ detalle.fecha_graduacion }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="container mb-3">
+        <div class="d-flex gap-3 fs-5 fw-bold mb-2">
+            <i class="bi bi-briefcase"></i>Experiencia Laboral
+        </div>
+        {% if not detalles_laborales %}
+            <p class="text-center mb-2">No se ha encontrado información relacionada</p>
+        {% else %}
+            {% for experiencia in detalles_laborales %}
+                <p>Empresa: {{ experiencia.empresa }}</p>
+                <p>Cargo: {{ experiencia.cargo }}</p>
+                <p>Fecha Inicio: {{ experiencia.fecha_inicio }}</p>
+                <p>Fecha Fin: {{ experiencia.fecha_fin }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

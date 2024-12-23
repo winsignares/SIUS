@@ -108,17 +108,17 @@ body {
 }
 
 /* Estilo de enlaces */
-#revisarHojaDeVida {
+#revisarHojaDeVida, #descargarCVInstitucional {
     color: var(--color-primario);
     transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-#revisarHojaDeVida:hover {
+#revisarHojaDeVida:hover, #descargarCVInstitucional:hover {
     color: var(--color-terciario);
     text-decoration: underline;
 }
 
-#revisarHojaDeVida:active {    
+#revisarHojaDeVida:active, #descargarCVInstitucional:active {    
     transform: scale(0.95);
 }
 
@@ -257,3 +257,5 @@ table.table tbody td {
     font-weight: bold;
     border-radius: 10px;
 }
+
+

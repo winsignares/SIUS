@@ -27,7 +27,7 @@
     </div>
 
 <!-- Tabla de empleados en estado 'Contratado' y 'Activo' -->
-<h4 class="mb-3">Empleados Activos</h4>
+    <h4 class="mb-3">Empleados Activos</h4>
 
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
@@ -209,10 +209,12 @@
                                     {% endif %}
                                 </td>
                                 <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center">
+                                    <a class="btn btn-alterno-red d-flex justify-content-center align-items-center">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center">
+                                    <a href="" class="btn btn-alterno-dark d-flex justify-content-center align-items-center"
+                                    data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal"
+                                    data-id="{{ usuario.id }}" data-tipo="aspirante">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
