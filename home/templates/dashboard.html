@@ -66,35 +66,28 @@
             </div>
         </div>
     </div>
-<<<<<<< Updated upstream
-</div>
 
-<div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editarUsuarioLabel">Editar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="editarUsuarioContent">
-                <!-- Contenido dinámico cargado por AJAX -->
-                <div class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
+    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarUsuarioLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editarUsuarioContent">
+                    <!-- Contenido dinámico cargado por AJAX -->
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-=======
->>>>>>> Stashed changes
 
     <!-- Aquí se generarán alertas dinámicas del frontend -->
     <div id="dynamic-alerts" class="position-fixed bottom-0 end-0 mb-1 me-2"></div>
-
 
     <!-- Importar Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -130,46 +123,39 @@
                 });
             });
         });
-<<<<<<< Updated upstream
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const editarModal = document.getElementById("editarUsuarioModal");
-
-        editarModal.addEventListener("show.bs.modal", function (event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute("data-id");
-            const userType = button.getAttribute("data-tipo");
-            const modalContent = document.getElementById("editarUsuarioContent");
-
-            // Mostrar un spinner mientras se cargan los datos
-            modalContent.innerHTML = `
-                <div class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            `;
-
-            // Realizar la solicitud AJAX para cargar los datos
-            fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`)
-                .then(response => response.text())
-                .then(data => {
-                    modalContent.innerHTML = data;
-                })
-                .catch(error => {
-                    modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
-                    console.error("Error:", error);
-                });
-        });
-    });
-</script>
-
-
-=======
     </script>
->>>>>>> Stashed changes
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editarModal = document.getElementById("editarUsuarioModal");
+    
+            editarModal.addEventListener("show.bs.modal", function (event) {
+                const button = event.relatedTarget;
+                const userId = button.getAttribute("data-id");
+                const userType = button.getAttribute("data-tipo");
+                const modalContent = document.getElementById("editarUsuarioContent");
+    
+                // Mostrar un spinner mientras se cargan los datos
+                modalContent.innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                `;
+    
+                // Realizar la solicitud AJAX para cargar los datos
+                fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`)
+                    .then(response => response.text())
+                    .then(data => {
+                        modalContent.innerHTML = data;
+                    })
+                    .catch(error => {
+                        modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
+                        console.error("Error:", error);
+                    });
+            });
+        });
+    </script>    
 </body>
 </html>
