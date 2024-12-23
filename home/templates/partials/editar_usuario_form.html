@@ -1,13 +1,59 @@
 <form method="POST" action="{% url 'guardar_usuario' tipo=tipo usuario_id=usuario.id %}">
     {% csrf_token %}
-    <div class="mb-3">
-        <label for="primer_nombre" class="form-label">Primer Nombre</label>
-        <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{{ usuario.primer_nombre }}">
+    <div class="container">
+        <div class="container mb-3">
+            <div class="d-flex gap-3 fs-5 fw-bold">
+                <i class="bi bi-person-vcard"></i>Editar Información Personal
+            </div>
+            <div class="row px-3">
+                <!-- Campos de texto -->
+                <div class="col-md-6 mb-2">
+                    <label for="primer_nombre" class="form-label">Primer Nombre</label>
+                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{{ usuario.primer_nombre }}">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
+                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" value="{{ usuario.segundo_nombre }}">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="primer_apellido" class="form-label">Primer Apellido</label>
+                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" value="{{ usuario.primer_apellido }}">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
+                    <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" value="{{ usuario.segundo_apellido }}">
+                </div>
+                <!-- Otros campos -->
+                <div class="col-md-6 mb-2">
+                    <label for="numero_documento" class="form-label">Número de Documento</label>
+                    <input type="number" class="form-control" id="numero_documento" name="numero_documento" value="{{ usuario.numero_documento }}">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="correo_personal" class="form-label">Correo Personal</label>
+                    <input type="email" class="form-control" id="correo_personal" name="correo_personal" value="{{ usuario.correo_personal }}">
+                </div>
+                <!-- Selects dinámicos -->
+                <div class="col-md-6 mb-2">
+                    <label for="fk_rol" class="form-label">Rol</label>
+                    <select class="form-select" id="fk_rol" name="fk_rol">
+                        {% for rol in rol_list %}
+                            <option value="{{ rol.id }}" {% if usuario.fk_rol.id == rol.id %}selected{% endif %}>{{ rol.rol }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="fk_tipo_documento" class="form-label">Tipo de Documento</label>
+                    <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento">
+                        {% for tipo in tipos_documento_list %}
+                            <option value="{{ tipo.id }}" {% if usuario.fk_tipo_documento.id == tipo.id %}selected{% endif %}>
+                                {{ tipo.tipo_documento }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Continuar con más campos según sea necesario -->
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="primer_apellido" class="form-label">Primer Apellido</label>
-        <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" value="{{ usuario.primer_apellido }}">
-    </div>
-    <!-- Agrega más campos según sea necesario -->
     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
 </form>

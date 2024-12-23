@@ -688,28 +688,52 @@ def detalle_usuario(request, tipo, usuario_id):
 @login_required
 def editar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
-    if tipo not in ["aspirante", "empleado"]:
-        return HttpResponseNotFound("Tipo de usuario no válido.")
+    rol_list = Rol.objects.all()
+    tipos_documento_list = TipoDocumento.objects.all()
 
-    return render(request, "partials/editar_usuario_form.html", {"usuario": usuario, "tipo": tipo})
+    return render(
+        request,
+        "partials/editar_usuario_form.html",
+        {"usuario": usuario, "tipo": tipo, "rol_list": rol_list,
+            "tipos_documento_list": tipos_documento_list},
+    )
 
 
 @login_required
 def guardar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     if request.method == "POST":
+        # Actualización de campos de texto
         usuario.primer_nombre = request.POST.get(
             "primer_nombre", usuario.primer_nombre)
+        usuario.segundo_nombre = request.POST.get(
+            "segundo_nombre", usuario.segundo_nombre)
         usuario.primer_apellido = request.POST.get(
             "primer_apellido", usuario.primer_apellido)
-        # Actualiza otros campos según sea necesario
+        usuario.segundo_apellido = request.POST.get(
+            "segundo_apellido", usuario.segundo_apellido)
+        usuario.numero_documento = request.POST.get(
+            "numero_documento", usuario.numero_documento)
+        usuario.correo_personal = request.POST.get(
+            "correo_personal", usuario.correo_personal)
+
+        # Actualización de campos relacionales
+        rol_id = request.POST.get("fk_rol")
+        tipo_documento_id = request.POST.get("fk_tipo_documento")
+        if rol_id:
+            usuario.fk_rol_id = rol_id
+        if tipo_documento_id:
+            usuario.fk_tipo_documento_id = tipo_documento_id
+
+        # Guardar los cambios
         usuario.save()
         messages.success(request, "Los cambios se guardaron correctamente.")
-        # Redirige a la página correspondiente según el tipo
+        # Redirigir según el tipo
         if tipo == "aspirante":
             return redirect(reverse("gestion_aspirantes"))
         elif tipo == "empleado":
             return redirect(reverse("gestion_empleados"))
-        else:
-            return redirect("dashboard")
+        return redirect("dashboard")
+
+
 
