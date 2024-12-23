@@ -684,6 +684,9 @@ def detalle_usuario(request, tipo, usuario_id):
         "detalles_laborales": detalles_laborales,
     })
 
+#
+# ----------------------------  VISTA DE BOTÓN EDITAR ASPIRANTES EMPLEADOS ---------------------------------
+#
 
 @login_required
 def editar_usuario(request, tipo, usuario_id):
