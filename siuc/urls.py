@@ -45,6 +45,9 @@ urlpatterns = [
     path("siuc/dashboard/reporte/excel", views.generar_reporte_excel, name="reporte_excel"),
     path('cargar_empleados/', views.cargar_empleados_masivamente, name='cargar_empleados'),
     path('siuc/dashboard/detalle_usuario/<str:tipo>/<int:usuario_id>/', detalle_usuario, name='detalle_usuario'),
+    
+    path("siuc/dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", views.editar_usuario, name="editar_usuario"),
+    path("siuc/dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.guardar_usuario, name="guardar_usuario"),
 
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
 ]

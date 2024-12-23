@@ -1,0 +1,13 @@
+<form method="POST" action="{% url 'guardar_usuario' tipo=tipo usuario_id=usuario.id %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="primer_nombre" class="form-label">Primer Nombre</label>
+        <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{{ usuario.primer_nombre }}">
+    </div>
+    <div class="mb-3">
+        <label for="primer_apellido" class="form-label">Primer Apellido</label>
+        <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" value="{{ usuario.primer_apellido }}">
+    </div>
+    <!-- Agrega más campos según sea necesario -->
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>

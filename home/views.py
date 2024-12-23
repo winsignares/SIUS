@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.db import models, IntegrityError
 from datetime import datetime, timedelta
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -692,3 +692,33 @@ def detalle_usuario(request, tipo, usuario_id):
         "detalles_academicos": detalles_academicos,
         "detalles_laborales": detalles_laborales,
     })
+
+
+@login_required
+def editar_usuario(request, tipo, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    if tipo not in ["aspirante", "empleado"]:
+        return HttpResponseNotFound("Tipo de usuario no válido.")
+
+    return render(request, "partials/editar_usuario_form.html", {"usuario": usuario, "tipo": tipo})
+
+
+@login_required
+def guardar_usuario(request, tipo, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    if request.method == "POST":
+        usuario.primer_nombre = request.POST.get(
+            "primer_nombre", usuario.primer_nombre)
+        usuario.primer_apellido = request.POST.get(
+            "primer_apellido", usuario.primer_apellido)
+        # Actualiza otros campos según sea necesario
+        usuario.save()
+        messages.success(request, "Los cambios se guardaron correctamente.")
+        # Redirige a la página correspondiente según el tipo
+        if tipo == "aspirante":
+            return redirect(reverse("gestion_aspirantes"))
+        elif tipo == "empleado":
+            return redirect(reverse("gestion_empleados"))
+        else:
+            return redirect("dashboard")
+
