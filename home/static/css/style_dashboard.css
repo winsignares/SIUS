@@ -113,6 +113,9 @@ body {
     transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
+#descargarCVInstitucional {
+    font-size: 0.7rem;
+}
 #revisarHojaDeVida:hover, #descargarCVInstitucional:hover {
     color: var(--color-terciario);
     text-decoration: underline;
@@ -234,6 +237,7 @@ table.table {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
 }
 
 /* Header styling */
