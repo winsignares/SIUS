@@ -689,17 +689,32 @@ def detalle_usuario(request, tipo, usuario_id):
 # ----------------------------  VISTA DE BOTÓN EDITAR ASPIRANTES EMPLEADOS ---------------------------------
 #
 
+
 @login_required
 def editar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     rol_list = Rol.objects.all()
     tipos_documento_list = TipoDocumento.objects.all()
+    departamentos_list = Departamento.objects.all()
+    niveles_academicos_list = NivelAcademico.objects.all()
+    eps_list = EPS.objects.all()
+    afp_list = AFP.objects.all()
+    sedes_list = Sedes.objects.all()
 
     return render(
         request,
         "partials/editar_usuario_form.html",
-        {"usuario": usuario, "tipo": tipo, "rol_list": rol_list,
-            "tipos_documento_list": tipos_documento_list},
+        {
+            "usuario": usuario,
+            "tipo": tipo,
+            "rol_list": rol_list,
+            "tipos_documento_list": tipos_documento_list,
+            "departamentos_list": departamentos_list,
+            "niveles_academicos_list": niveles_academicos_list,
+            "eps_list": eps_list,
+            "afp_list": afp_list,
+            "sedes_list": sedes_list,
+        },
     )
 
 
@@ -720,14 +735,48 @@ def guardar_usuario(request, tipo, usuario_id):
             "numero_documento", usuario.numero_documento)
         usuario.correo_personal = request.POST.get(
             "correo_personal", usuario.correo_personal)
+        usuario.fecha_expedicion_documento = request.POST.get(
+            "fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+        usuario.lugar_expedicion_documento = request.POST.get(
+            "lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+        usuario.sexo = request.POST.get("sexo", usuario.sexo)
+        usuario.celular = request.POST.get("celular", usuario.celular)
+        usuario.telefono_fijo = request.POST.get(
+            "telefono_fijo", usuario.telefono_fijo)
+        usuario.direccion_residencia = request.POST.get(
+            "direccion_residencia", usuario.direccion_residencia)
+        usuario.departamento_residencia = request.POST.get(
+            "departamento_residencia", usuario.departamento_residencia)
+        usuario.ciudad_residencia = request.POST.get(
+            "ciudad_residencia", usuario.ciudad_residencia)
+        usuario.barrio_residencia = request.POST.get(
+            "barrio_residencia", usuario.barrio_residencia)
+        usuario.estado_civil = request.POST.get(
+            "estado_civil", usuario.estado_civil)
+        usuario.ultimo_nivel_estudio = request.POST.get(
+            "ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
+        usuario.estado_revision = request.POST.get(
+            "estado_revision", usuario.estado_revision)
+        usuario.url_hoja_de_vida = request.POST.get(
+            "url_hoja_de_vida", usuario.url_hoja_de_vida)
 
         # Actualización de campos relacionales
         rol_id = request.POST.get("fk_rol")
         tipo_documento_id = request.POST.get("fk_tipo_documento")
+        eps_id = request.POST.get("fk_eps")
+        afp_nombre = request.POST.get("afp")
+        sede_id = request.POST.get("fk_sede")
+
         if rol_id:
             usuario.fk_rol_id = rol_id
         if tipo_documento_id:
             usuario.fk_tipo_documento_id = tipo_documento_id
+        if eps_id:
+            usuario.fk_eps_id = eps_id
+        if afp_nombre:
+            usuario.afp = afp_nombre
+        if sede_id:
+            usuario.sede_donde_labora_id = sede_id
 
         # Guardar los cambios
         usuario.save()
