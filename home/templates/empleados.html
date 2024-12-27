@@ -32,8 +32,8 @@
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
         <div class="row col d-flex justify-content-start align-items-center">
-            <div class="position-relative col-md-3">
-                <input type="text" name="empleado_activo" id="filtroEmpActInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ empleado_activo }}">
+            <div class="position-relative col-md-4">
+                <input type="text" name="empleado_activo" id="filtroEmpActInput" class="form-control filtro-input" placeholder="Buscar por nombre o número de documento" value="{{ empleado_activo }}">
             </div>
             <div class="col-md-auto d-flex gap-2">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -147,8 +147,8 @@
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
         <div class="row col d-flex justify-content-start align-items-center">
-            <div class="col-md-3">
-                <input type="text" name="empleado_inactivo" id="filtroEmpInacInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ empleado_inactivo }}">
+            <div class="col-md-4">
+                <input type="text" name="empleado_inactivo" id="filtroEmpInacInput" class="form-control filtro-input" placeholder="Buscar por nombre o número de documento" value="{{ empleado_inactivo }}">
             </div>
             <div class="col-md-auto d-flex gap-2">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -299,7 +299,7 @@
                                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_rol" name="fk_rol" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for rol in rol_list %}
+                                        {% for rol in roles_list %}
                                             <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
                                         {% endfor %}
                                     </select>
@@ -371,7 +371,7 @@
                                     <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for departamento in departamento_list %}
+                                        {% for departamento in departamentos_list %}
                                             <option value="{{ departamento.nombre }}">{{ departamento.nombre }}</option>
                                         {% endfor %}
                                     </select>

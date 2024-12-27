@@ -22,8 +22,8 @@
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
         <div class="row col d-flex justify-content-start align-items-center">
-            <div class="position-relative col-md-3">
-                <input type="text" name="aspirante_pendiente" id="filtroAspPenInput" class="form-control filtro-input" placeholder="Buscar por nombre, número de documento o rol" value="{{ aspirante_pendiente }}">
+            <div class="position-relative col-md-4">
+                <input type="text" name="aspirante_pendiente" id="filtroAspPenInput" class="form-control filtro-input" placeholder="Buscar por nombre o número de documento" value="{{ aspirante_pendiente }}">
             </div>
             <div class="col-md-auto d-flex gap-2">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -144,8 +144,8 @@
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
         <div class="row col d-flex justify-content-start align-items-center">
-            <div class="col-md-3">
-                <input type="text" name="aspirante_rechazado" id="filtroRechazadosInput" class="form-control filtro-input" placeholder="Buscar por nombre, documento o rol" value="{{ aspirante_rechazado }}">
+            <div class="col-md-4">
+                <input type="text" name="aspirante_rechazado" id="filtroRechazadosInput" class="form-control filtro-input" placeholder="Buscar por nombre o número de documento" value="{{ aspirante_rechazado }}">
             </div>
             <div class="col-md-auto d-flex gap-2">
                 <button type="submit" class="btn btn-alterno-dark">Buscar</button>
@@ -266,6 +266,7 @@
                                     <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="segundo_nombre" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
@@ -275,6 +276,7 @@
                                     <label for="primer_apellido" class="form-label mb-0">Primer Apellido <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" required>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="segundo_apellido" class="form-label mb-0">Segundo Apellido<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido">
@@ -284,11 +286,12 @@
                                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="fk_rol" name="fk_rol" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for rol in rol_list %}
+                                        {% for rol in roles_list %}
                                             <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="cargo" name="cargo" required>
@@ -298,6 +301,7 @@
                                     <label for="fecha_nacimiento" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
@@ -312,28 +316,31 @@
                                         {% endfor %}
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="numero_documento" class="form-label mb-0">Número de Documento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="number" class="form-control" id="numero_documento" name="numero_documento" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento<span class='fw-bold fs-4'>   </span></label>
-                                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento">
+                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento" required>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento">
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="sexo" class="form-label mb-0">Sexo<span class='fw-bold fs-4'></span></label>
-                                    <select class="form-select" id="sexo" name="sexo">
+                                    <label for="sexo" class="form-label mb-0">Sexo <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="sexo" name="sexo" required>
                                         <option value="" selected>Seleccione</option>
                                         <option value="Masculino">Masculino</option>
                                         <option value="Femenino">Femenino</option>
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="correo_personal" class="form-label mb-0">Correo Personal <span class='fw-bold fs-4'>*</span></label>
                                     <input type="email" class="form-control" id="correo_personal" name="correo_personal" required>
@@ -343,6 +350,7 @@
                                     <label for="celular" class="form-label mb-0">Celular <span class='fw-bold fs-4'>*</span></label>
                                     <input type="number" class="form-control" id="celular" name="celular" required>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="telefono_fijo" class="form-label mb-0">Teléfono Fijo<span class='fw-bold fs-4'></span></label>
                                     <input type="number" class="form-control" id="telefono_fijo" name="telefono_fijo">
@@ -352,11 +360,12 @@
                                     <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia">
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
                                     <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for departamento in departamento_list %}
+                                        {% for departamento in departamentos_list %}
                                             <option value="{{ departamento.nombre }}">{{ departamento.nombre }}</option>
                                         {% endfor %}
                                     </select>
@@ -366,6 +375,7 @@
                                     <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia">
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia<span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia">
@@ -383,6 +393,7 @@
                                         <option value="Viudo (a)">Viudo (a)</option>
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
                                     <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio" required>
@@ -394,11 +405,11 @@
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="eps" name="eps" required>
+                                    <label for="fk_eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_eps" name="fk_eps" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for eps in eps_list %}
-                                            <option value="{{ eps.nombre }}">{{ eps.nombre }}</option>
+                                            <option value="{{ eps.id }}">{{ eps.nombre }} {% if eps.regimen %} ({{ eps.regimen }}) {% endif %}{% if eps.codigo_eps %}- {{ eps.codigo_eps }}{% endif %}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -413,11 +424,22 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
                                     <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
                                 </div>
-                                <div class="col-md-4">
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="fk_sede" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_sede" name="fk_sede" required>
+                                        <option value="" selected>Seleccione</option>
+                                        {% for sede in sedes_list %}
+                                            <option value="{{ sede.id }}">{{ sede.ubicacion }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
                                     <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
                                     <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Pendiente" disabled required>
                                 </div>

@@ -198,6 +198,7 @@ span {
     border-radius: 5px;
     font-size: 14px;
     padding: 0.5rem;
+    text-transform: uppercase;
 }
 
 .form-control:focus, .form-select:focus {

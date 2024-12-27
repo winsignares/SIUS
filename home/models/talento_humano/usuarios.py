@@ -1,6 +1,7 @@
 from django.db import models
 from .roles import Rol
 from .tipo_documentos import TipoDocumento
+from .datos_adicionales import Sedes, EPS
 from django.conf import settings
 
 
@@ -38,7 +39,7 @@ class Usuario(models.Model):
     celular = models.CharField(max_length=15, null=True, blank=True)
     estado_civil = models.CharField(max_length=255, null=True, blank=True)
     ultimo_nivel_estudio = models.CharField(max_length=255, null=True, blank=True)
-    eps = models.CharField(max_length=255, null=True, blank=True)
+    fk_eps = models.ForeignKey(EPS, on_delete= models.CASCADE, null=True, blank=True)
     arl = models.CharField(max_length=255, null=True, blank=True)
     afp = models.CharField(max_length=255, null=True, blank=True)
     caja_compensacion = models.CharField(max_length=255, null=True, blank=True)
@@ -46,6 +47,7 @@ class Usuario(models.Model):
     departamento_residencia = models.CharField(max_length=255, null=True, blank=True)
     ciudad_residencia = models.CharField(max_length=255, null=True, blank=True)
     barrio_residencia = models.CharField(max_length=255, null=True, blank=True)
+    sede_donde_labora = models.ForeignKey(Sedes, on_delete=models.CASCADE, null=True, blank=True)
 
     # Enlace a Hoja de Vida
     url_hoja_de_vida = models.URLField(blank=True, null=True)

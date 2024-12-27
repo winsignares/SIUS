@@ -16,7 +16,7 @@ from .models.talento_humano.detalles_academicos import DetalleAcademico
 from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
 from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
-from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion
+from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sedes
 from .models.talento_humano.roles import Rol
 from django.http import HttpResponseNotFound
 
@@ -153,14 +153,15 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     if incluir_datos_adicionales:
         contexto.update({
             'tipos_documento_list': TipoDocumento.objects.all(),
-            'departamento_list': Departamento.objects.all(),
-            'eps_list': EPS.objects.all(),
+            'departamentos_list': Departamento.objects.all(),
+            'eps_list': EPS.objects.all().order_by('id'),
             'arl_list': ARL.objects.all(),
-            'caja_compensacion_list': CajaCompensacion.objects.all(),
+            'cajas_compensacion_list': CajaCompensacion.objects.all(),
             'afp_list': AFP.objects.all(),
             'niveles_academicos_list': NivelAcademico.objects.all(),
-            'rol_list': Rol.objects.all(),
+            'roles_list': Rol.objects.all(),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
+            'sedes_list': Sedes.objects.all()
         })
 
     return contexto
@@ -300,7 +301,7 @@ def agregar_info_personal(request):
                 barrio_residencia=data.get('barrio_residencia') or None,
                 estado_civil=data.get('estado_civil') or None,
                 ultimo_nivel_estudio=data.get('ultimo_nivel_estudio') or None,
-                eps=data.get('eps') or None,
+                fk_eps_id=data.get('fk_eps') or None,
                 afp=data.get('afp') or None,
                 url_hoja_de_vida=data.get('url_hoja_de_vida') or None,
                 estado_revision="Pendiente",

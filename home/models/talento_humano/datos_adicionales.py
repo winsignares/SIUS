@@ -16,7 +16,9 @@ class Departamento(models.Model):
 
 class EPS(models.Model):
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=255, unique=True)
+    codigo_eps = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    nombre = models.CharField(max_length=255, null=False, blank=False)
+    regimen = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = 'eps'
@@ -81,3 +83,16 @@ class Institucion(models.Model):
 
     def __str__(self):
         return f"{self.nombre_institucion} - {self.departamento_ubicacion}, {self.municipio_ubicacion}"
+
+
+class Sedes(models.Model):
+    id = models.AutoField(primary_key=True)
+    ubicacion = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        db_table = 'sedes'
+        verbose_name = 'Sede'
+        verbose_name_plural = 'Sedes'
+
+    def __str__(self):
+        return f"{self.ubicacion}"
