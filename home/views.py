@@ -726,89 +726,44 @@ def editar_usuario(request, tipo, usuario_id):
 def guardar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     if request.method == "POST":
-        # Actualización de campos de texto
-        usuario.primer_nombre = request.POST.get(
-            "primer_nombre", usuario.primer_nombre)
-        usuario.segundo_nombre = request.POST.get(
-            "segundo_nombre", usuario.segundo_nombre)
-        usuario.primer_apellido = request.POST.get(
-            "primer_apellido", usuario.primer_apellido)
-        usuario.segundo_apellido = request.POST.get(
-            "segundo_apellido", usuario.segundo_apellido)
-        usuario.numero_documento = request.POST.get(
-            "numero_documento", usuario.numero_documento)
-        usuario.fecha_expedicion_documento = request.POST.get(
-            "fecha_expedicion_documento", usuario.fecha_expedicion_documento
-        )
-        usuario.lugar_expedicion_documento = request.POST.get(
-            "lugar_expedicion_documento", usuario.lugar_expedicion_documento
-        )
-        usuario.sexo = request.POST.get("sexo", usuario.sexo)
-        usuario.celular = request.POST.get("celular", usuario.celular)
-        usuario.telefono_fijo = request.POST.get(
-            "telefono_fijo", usuario.telefono_fijo)
-        usuario.direccion_residencia = request.POST.get(
-            "direccion_residencia", usuario.direccion_residencia
-        )
-        usuario.departamento_residencia = request.POST.get(
-            "departamento_residencia", usuario.departamento_residencia
-        )
-        usuario.ciudad_residencia = request.POST.get(
-            "ciudad_residencia", usuario.ciudad_residencia
-        )
-        usuario.barrio_residencia = request.POST.get(
-            "barrio_residencia", usuario.barrio_residencia
-        )
-        usuario.estado_civil = request.POST.get(
-            "estado_civil", usuario.estado_civil)
-        usuario.fecha_nacimiento = request.POST.get(
-            "fecha_nacimiento", usuario.fecha_nacimiento)
-        usuario.lugar_nacimiento = request.POST.get(
-            "lugar_nacimiento", usuario.lugar_nacimiento)
-        usuario.cargo = request.POST.get("cargo", usuario.cargo)
-        usuario.ultimo_nivel_estudio = request.POST.get(
-            "ultimo_nivel_estudio", usuario.ultimo_nivel_estudio
-        )
-        usuario.estado_revision = request.POST.get(
-            "estado_revision", usuario.estado_revision)
-        usuario.url_hoja_de_vida = request.POST.get(
-            "url_hoja_de_vida", usuario.url_hoja_de_vida)
+        try:
+            # Actualización de campos de texto
+            usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
+            usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
+            usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
+            usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
+            usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
+            usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+            usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+            usuario.sexo = request.POST.get("sexo", usuario.sexo)
+            usuario.celular = request.POST.get("celular", usuario.celular)
+            usuario.telefono_fijo = request.POST.get("telefono_fijo", usuario.telefono_fijo)
+            usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
+            usuario.departamento_residencia = request.POST.get("departamento_residencia", usuario.departamento_residencia)
+            usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
+            usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
+            usuario.estado_civil = request.POST.get("estado_civil", usuario.estado_civil)
+            usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
+            usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
+            usuario.cargo = request.POST.get("cargo", usuario.cargo)
+            usuario.ultimo_nivel_estudio = request.POST.get("ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
+            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
+            usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
 
-        # Actualización de campos relacionales
-        rol_id = request.POST.get("fk_rol")
-        tipo_documento_id = request.POST.get("fk_tipo_documento")
-        eps_id = request.POST.get("fk_eps")
-        afp_nombre = request.POST.get("afp")
-        sede_id = request.POST.get("fk_sede")
-        institucion_id = request.POST.get("institucion")
-        nivel_academico_id = request.POST.get("nivel_academico")
+            # Actualización de campos relacionales
+            rol_id = request.POST.get("fk_rol")
+            tipo_documento_id = request.POST.get("fk_tipo_documento")
+            eps_id = request.POST.get("fk_eps")
+            afp_nombre = request.POST.get("afp")
+            sede_id = request.POST.get("fk_sede")
+            institucion_id = request.POST.get("institucion")
+            nivel_academico_id = request.POST.get("nivel_academico")
 
-        if rol_id:
-            usuario.fk_rol_id = rol_id
-        if tipo_documento_id:
-            usuario.fk_tipo_documento_id = tipo_documento_id
-        if eps_id:
-            usuario.fk_eps_id = eps_id
-        if afp_nombre:
-            usuario.afp = afp_nombre
-        if sede_id:
-            usuario.sede_donde_labora_id = sede_id
-        if institucion_id:
-            usuario.institucion_id = institucion_id
-        if nivel_academico_id:
-            usuario.nivel_academico_id = nivel_academico_id
+            # Guardar cambios
+            usuario.save()
 
-        # Guardar los cambios
-        usuario.save()
-        messages.success(request, "Los cambios se guardaron correctamente.")
-        # Redirigir según el tipo
-        if tipo == "aspirante":
-            return redirect(reverse("gestion_aspirantes"))
-        elif tipo == "empleado":
-            return redirect(reverse("gestion_empleados"))
-        return redirect("dashboard")
-
-
-
-
-
+            # Respuesta en formato JSON para manejo en el frontend
+            return JsonResponse({'status': 'success', 'message': 'Usuario actualizado correctamente.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error al actualizar el usuario: {e}'})
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})

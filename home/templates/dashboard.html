@@ -76,11 +76,6 @@
                 </div>
                 <div class="modal-body" id="editarUsuarioContent">
                     <!-- Contenido dinámico cargado por AJAX -->
-                    <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -156,6 +151,32 @@
                     });
             });
         });
-    </script>    
+    </script>
+
+    <script>
+        document.getElementById("form-editar-usuario").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevenir el envío tradicional del formulario
+            
+            const formData = new FormData(this);
+            const url = this.action; // URL definida en el atributo 'action' del formulario
+            
+            fetch(url, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    showAlert(data.message, "success");
+                } else {
+                    showAlert(data.message, "error");
+                }
+            })
+            .catch(error => {
+                showAlert("Error al procesar la solicitud", "error");
+                console.error(error);
+            });
+        });
+    </script>
 </body>
 </html>
