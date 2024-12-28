@@ -700,6 +700,8 @@ def editar_usuario(request, tipo, usuario_id):
     eps_list = EPS.objects.all()
     afp_list = AFP.objects.all()
     sedes_list = Sedes.objects.all()
+    instituciones_list = Institucion.objects.all()  # Nueva lista
+    roles_list = Rol.objects.all()  # Nueva lista de roles
 
     return render(
         request,
@@ -714,6 +716,8 @@ def editar_usuario(request, tipo, usuario_id):
             "eps_list": eps_list,
             "afp_list": afp_list,
             "sedes_list": sedes_list,
+            "instituciones_list": instituciones_list,
+            "roles_list": roles_list,
         },
     )
 
@@ -733,28 +737,38 @@ def guardar_usuario(request, tipo, usuario_id):
             "segundo_apellido", usuario.segundo_apellido)
         usuario.numero_documento = request.POST.get(
             "numero_documento", usuario.numero_documento)
-        usuario.correo_personal = request.POST.get(
-            "correo_personal", usuario.correo_personal)
         usuario.fecha_expedicion_documento = request.POST.get(
-            "fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+            "fecha_expedicion_documento", usuario.fecha_expedicion_documento
+        )
         usuario.lugar_expedicion_documento = request.POST.get(
-            "lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+            "lugar_expedicion_documento", usuario.lugar_expedicion_documento
+        )
         usuario.sexo = request.POST.get("sexo", usuario.sexo)
         usuario.celular = request.POST.get("celular", usuario.celular)
         usuario.telefono_fijo = request.POST.get(
             "telefono_fijo", usuario.telefono_fijo)
         usuario.direccion_residencia = request.POST.get(
-            "direccion_residencia", usuario.direccion_residencia)
+            "direccion_residencia", usuario.direccion_residencia
+        )
         usuario.departamento_residencia = request.POST.get(
-            "departamento_residencia", usuario.departamento_residencia)
+            "departamento_residencia", usuario.departamento_residencia
+        )
         usuario.ciudad_residencia = request.POST.get(
-            "ciudad_residencia", usuario.ciudad_residencia)
+            "ciudad_residencia", usuario.ciudad_residencia
+        )
         usuario.barrio_residencia = request.POST.get(
-            "barrio_residencia", usuario.barrio_residencia)
+            "barrio_residencia", usuario.barrio_residencia
+        )
         usuario.estado_civil = request.POST.get(
             "estado_civil", usuario.estado_civil)
+        usuario.fecha_nacimiento = request.POST.get(
+            "fecha_nacimiento", usuario.fecha_nacimiento)
+        usuario.lugar_nacimiento = request.POST.get(
+            "lugar_nacimiento", usuario.lugar_nacimiento)
+        usuario.cargo = request.POST.get("cargo", usuario.cargo)
         usuario.ultimo_nivel_estudio = request.POST.get(
-            "ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
+            "ultimo_nivel_estudio", usuario.ultimo_nivel_estudio
+        )
         usuario.estado_revision = request.POST.get(
             "estado_revision", usuario.estado_revision)
         usuario.url_hoja_de_vida = request.POST.get(
@@ -766,6 +780,8 @@ def guardar_usuario(request, tipo, usuario_id):
         eps_id = request.POST.get("fk_eps")
         afp_nombre = request.POST.get("afp")
         sede_id = request.POST.get("fk_sede")
+        institucion_id = request.POST.get("institucion")
+        nivel_academico_id = request.POST.get("nivel_academico")
 
         if rol_id:
             usuario.fk_rol_id = rol_id
@@ -777,6 +793,10 @@ def guardar_usuario(request, tipo, usuario_id):
             usuario.afp = afp_nombre
         if sede_id:
             usuario.sede_donde_labora_id = sede_id
+        if institucion_id:
+            usuario.institucion_id = institucion_id
+        if nivel_academico_id:
+            usuario.nivel_academico_id = nivel_academico_id
 
         # Guardar los cambios
         usuario.save()
@@ -787,6 +807,8 @@ def guardar_usuario(request, tipo, usuario_id):
         elif tipo == "empleado":
             return redirect(reverse("gestion_empleados"))
         return redirect("dashboard")
+
+
 
 
 

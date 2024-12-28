@@ -23,7 +23,6 @@
                     <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
                     <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" value="{{ usuario.segundo_apellido }}">
                 </div>
-                <!-- Otros campos -->
                 <div class="col-md-6 mb-2">
                     <label for="numero_documento" class="form-label">Número de Documento</label>
                     <input type="number" class="form-control" id="numero_documento" name="numero_documento" value="{{ usuario.numero_documento }}">
@@ -34,7 +33,7 @@
                 </div>
                 <div class="col-md-6 mb-2">
                     <label for="fecha_expedicion_documento" class="form-label">Fecha de Expedición del Documento</label>
-                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento" value="{{ usuario.fecha_expedicion_documento }}">
+                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento" value="{{ usuario.fecha_expedicion_documento|date:'Y-m-d' }}">
                 </div>
                 <div class="col-md-6 mb-2">
                     <label for="lugar_expedicion_documento" class="form-label">Lugar de Expedición del Documento</label>
@@ -142,6 +141,98 @@
                 <div class="col-md-6">
                     <label for="estado_revision" class="form-label">Estado de Revisión</label>
                     <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="{{ usuario.estado_revision }}" disabled>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_rol" name="fk_rol" required>
+                        <option value="" {% if not usuario.fk_rol %}selected{% endif %}>Seleccione</option>
+                        {% for rol in roles_list %}
+                            <option value="{{ rol.id }}" {% if usuario.fk_rol.id == rol.id %}selected{% endif %}>
+                                {{ rol.rol }} - {{ rol.descripcion }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="cargo" name="cargo" required>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="fecha_nacimiento" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
+                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ usuario.fecha_nacimiento|date:'Y-m-d' }}" required>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
+                    <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ usuario.lugar_nacimiento }}">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
+                        <option value="" {% if not usuario.fk_tipo_documento %}selected{% endif %}>Seleccione</option>
+                        {% for tipo in tipos_documento_list %}
+                            <option value="{{ tipo.id }}" {% if usuario.fk_tipo_documento.id == tipo.id %}selected{% endif %}>
+                                {{ tipo.tipo_documento }} - {{ tipo.descripcion }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
+                </div>
+                <div class="mb-2">
+                    <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="institucion" name="institucion" required>
+                        <option value="" {% if not usuario.institucion %}selected{% endif %}>Seleccione</option>
+                        {% for institucion in instituciones_list %}
+                            <option value="{{ institucion.id }}" {% if usuario.institucion and usuario.institucion.id == institucion.id %}selected{% endif %}>
+                                {{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="titulo_obtenido" name="titulo_obtenido" required>
+                </div>
+                <div class="mb-2">
+                    <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="nivel_academico" name="nivel_academico" required>
+                        <option value="" {% if not usuario.nivel_academico %}selected{% endif %}>Seleccione</option>
+                        {% for nivel in niveles_academicos_list %}
+                            <option value="{{ nivel.id }}" {% if usuario.nivel_academico and usuario.nivel_academico.id == nivel.id %}selected{% endif %}>
+                                {{ nivel.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
+                    <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion" required>
+                </div>
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Experiencia Laboral</h5>
+                </div>
+                    <input type="hidden" id="usuario_id" name="usuario_id" value="" />
+                        <div class="row p-2">
+                            <div class="mb-2">
+                                <label for="empresa" class="form-label mb-0">Empresa donde Laboró <span class='fw-bold fs-4'>*</span></label>
+                                <input type="text" class="form-control" id="empresa" name="empresa" required>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
+                                <input type="text" class="form-control" id="cargo" name="cargo" value="{{ usuario.cargo }}" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="fecha_inicio" class="form-label mb-0">Fecha de Inicio <span class='fw-bold fs-4'>*</span></label>
+                                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ usuario.fecha_inicio|date:'Y-m-d' }}" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="fecha_fin" class="form-label mb-0">Fecha de Fin <span class='fw-bold fs-4'>*</span></label>
+                                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ usuario.fecha_fin|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
