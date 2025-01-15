@@ -16,22 +16,16 @@
             <dd class="col-md-5 mb-2">{{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}</dd>
             <dt class="col-md-2 mb-2">Cargo:</dt>
             <dd class="col-md-3 mb-2">{{ usuario.cargo }}</dd>
-            <dd class="col-md-9 mb-2"></dd>
-            <dt class="col-md-3 mb-2"></dt>
-            <dd class="col-md-9 mb-2"></dd>
-            <dt class="col-md-3 mb-2"></dt>
-            <dt class="col-md-3 mb-2"></dt>
-            <dd class="col-md-9 mb-2"></dd>
-            <dt class="col-md-3 mb-2"></dt>
-            <dd class="col-md-9 mb-2"></dd>
-            <p>Cargo: {{ usuario.cargo }}</p>
-            <p>Estado: {{ usuario.estado_revision }}</p>
-            <p>Número de Documento: {{ usuario.numero_documento }}</p>
-            <p>Fecha de Nacimiento: {{ usuario.fecha_nacimiento }}</p>
-            <p>Correo: {{ usuario.correo_personal }}</p>
-            <p>Celular: {{ usuario.celular }}</p>
-            <p>Dirección: {{ usuario.direccion_residencia }}</p>
-            <!-- Más campos si los tienes -->
+            <dt class="col-md-9 mb-2">Número de Documento:</dt>
+            <dd class="col-md-3 mb-2">{{ usuario.numero_documento }}</dd>
+            <dt class="col-md-9 mb-2">Fecha de Nacimiento:</dt>
+            <dd class="col-md-3 mb-2">{{ usuario.fecha_nacimiento }}</dd>
+            <dt class="col-md-3 mb-2">Correo personal:</dt>
+            <dd class="col-md-9 mb-2">{{ usuario.correo_personal }}</dd>
+            <dt class="col-md-3 mb-2">Celular:</dt>
+            <dd class="col-md-9 mb-2">{{ usuario.celular }}</dd>
+            <dt class="col-md-3 mb-2">Dirección:</dt>
+            <dd class="col-md-9 mb-2">{{ usuario.direccion_residencia }}</dd>
         </dl>
     </div>
     <div class="container mb-3">
