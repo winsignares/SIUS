@@ -90,7 +90,7 @@ DATABASES = {
         "NAME": "db_siuc",
         "USER": "postgres",
         "PASSWORD": "qwerty78963",
-        "HOST": "10.20.1.192",
+        "HOST": "192.168.1.29",
         "PORT": "5432",
     }
 }
