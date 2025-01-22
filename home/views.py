@@ -767,3 +767,17 @@ def guardar_usuario(request, tipo, usuario_id):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': f'Error al actualizar el usuario: {e}'})
     return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
+
+
+#
+# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+#
+
+@login_required
+def gestion_carga_academica(request):    
+    '''
+        Función para mostrar la gestión de carga academica.
+    '''
+    contexto = obtener_db_info(request)
+
+    return render(request, 'carga_academica.html', contexto)

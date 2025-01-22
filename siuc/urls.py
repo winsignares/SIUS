@@ -37,18 +37,19 @@ urlpatterns = [
     path("siuc/dashboard/gestion_aspirantes/agregar_exp_laboral/", views.agregar_exp_laboral, name="agregar_exp_laboral"),
     path("siuc/dashboard/gestion_aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"),
     
-    
-    
     path("siuc/dashboard/gestion_empleados/", views.gestion_empleados, name="gestion_empleados"),
     
     path("siuc/dashboard/reportes/", views.reportes, name="reportes"),    
     path("siuc/dashboard/reporte/excel", views.generar_reporte_excel, name="reporte_excel"),
     path('cargar_empleados/', views.cargar_empleados_masivamente, name='cargar_empleados'),
-    path('siuc/dashboard/detalle_usuario/<str:tipo>/<int:usuario_id>/', detalle_usuario, name='detalle_usuario'),
-    
+
+    path('siuc/dashboard/detalle_usuario/<str:tipo>/<int:usuario_id>/', detalle_usuario, name='detalle_usuario'),    
     path("siuc/dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", views.editar_usuario, name="editar_usuario"),
-    # path("siuc/dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.guardar_usuario, name="guardar_usuario"),
     path("siuc/dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.guardar_usuario, name="guardar_usuario"),
+    
+    path("siuc/dashboard/gestion_carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"),
+    
+    
 
 
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
