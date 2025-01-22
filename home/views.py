@@ -2,12 +2,13 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
 from datetime import datetime, timedelta
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -18,13 +19,11 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sedes
 from .models.talento_humano.roles import Rol
-from django.http import HttpResponseNotFound
-
-from django.utils import timezone
+from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
+from siuc import settings
 import openpyxl
 import pytz
 import pandas
-from siuc import settings
 
 # Create your views here.
 

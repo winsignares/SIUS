@@ -7,7 +7,7 @@ from django.conf import settings
 
 class Usuario(models.Model):
 
-# Campos obligatorios
+    # Campos obligatorios
     id = models.AutoField(primary_key=True)
 
     fk_rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
@@ -39,7 +39,7 @@ class Usuario(models.Model):
     celular = models.CharField(max_length=15, null=True, blank=True)
     estado_civil = models.CharField(max_length=255, null=True, blank=True)
     ultimo_nivel_estudio = models.CharField(max_length=255, null=True, blank=True)
-    fk_eps = models.ForeignKey(EPS, on_delete= models.CASCADE, null=True, blank=True)
+    fk_eps = models.ForeignKey(EPS, on_delete=models.CASCADE, null=True, blank=True)
     arl = models.CharField(max_length=255, null=True, blank=True)
     afp = models.CharField(max_length=255, null=True, blank=True)
     caja_compensacion = models.CharField(max_length=255, null=True, blank=True)
