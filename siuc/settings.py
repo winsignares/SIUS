@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure--&js*@pz_m^6-@8_$7ca*fh6!om!wuc3r+6i^%-z-eez9xr#=a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['190.242.60.213', 'localhost']
+ALLOWED_HOSTS = ['*']
+
+# Habilitar cuando se ejecte en el servidor
+# ALLOWED_HOSTS = ['192.168.1.29', '190.242.60.212']
 
 # Application definition
 
@@ -90,7 +93,7 @@ DATABASES = {
         "NAME": "db_siuc",
         "USER": "postgres",
         "PASSWORD": "qwerty78963",
-        "HOST": "192.168.1.29",
+        "HOST": "190.242.60.212",
         "PORT": "5436",
     }
 }
