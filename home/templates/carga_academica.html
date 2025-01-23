@@ -1,0 +1,107 @@
+{% extends "dashboard.html" %}
+
+{% block title %}SIUC - Gestión Carga Acádemica {% endblock %}
+{% block container_class %}justify-content-start align-items-start{% endblock %}
+
+{% block content %}
+<div class="container-fluid m-4">
+    <!-- Título y botón para agregar cargas academicas -->
+        <div class="row mb-3">
+            <div class=" d-flex col justify-content-between align-items-center">
+                <h3 class="fw-bold m-0">Gestión de Carga Acádemica</h3>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaCargaModal">
+                    Nueva Carga Acádemica
+                </button>
+            </div>
+        </div>
+        
+    <!-- Tabla de cargas del periodo en curso 
+        <h4 id="cargasAcademicas" class="mb-3">Cargas Acádemicas (Periodo en curso)</h4> -->
+
+    <!-- Tabla de datos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-3 align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">xxxxxxx</th>
+                            <th scope="col">xxxxxxx</th>
+                            <th scope="col">xxxxxxx</th>
+                            <th scope="col">xxxxxxx</th>
+                            <th scope="col">xxxxxxx</th>
+                            <th scope="col">xxxxxxx</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not cargas_academicas %}
+                            <tr>
+                                <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
+                            </tr>
+                        {% else %}
+                            {% for carga_academica in cargas_academicas %}
+                            <tr class="text-center">
+                                <td>{{ forloop.counter0|add:cargas_academicas.start_index }}</td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nueva Carga Académica -->
+<div class="modal fade" id="nuevaCargaModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="nuevaCargaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="nuevaCargaModalLabel">Nuevo Carga Acádemica</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2">
+                <form id="formCargaAcademica" method="POST"  action="#">
+                    {# Asegúrate de agregar la vista correspondiente en el archivo urls.py más adelante #}
+                    {% csrf_token %}
+                    <div class="container">
+                        <div class="container mb-3">
+                            <div class="d-flex gap-3 fs-5 fw-bold">
+                                <i class="bi bi-file-earmark-text"></i>Detalles
+                            </div>
+                            <div class="row px-3">
+                                <div class="col-md-6 mb-2">
+                                    <label for="primer_nombre" class="form-label mb-0">xxxxxxxxxxxxx <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="fk_rol" class="form-label mb-0">xxxxxxxxxxxxx <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_rol" name="fk_rol" required>
+                                        <option value="" selected>Seleccione</option>
+                                        {% for rol in roles_list %}
+                                            <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </form>
+            </div>
+
+            <!-- Botón para enviar el formulario -->
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <!-- Nota -->
+                <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                <button type="submit" class="btn btn-primary" form="formCargaAcademica">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

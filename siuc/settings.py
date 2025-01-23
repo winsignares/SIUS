@@ -93,6 +93,8 @@ DATABASES = {
         #"HOST": "10.20.1.192",
         "PASSWORD": "123456789",
         "HOST": "localhost",
+       # "PASSWORD": "qwerty78963",
+       # "HOST": "192.168.1.29",
         "PORT": "5432",
     }
 }

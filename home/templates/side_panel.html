@@ -7,7 +7,7 @@
             {% else %}
                 <p class="mb-0" id="nombre-usuario">Usuario desconocido</p>
             {% endif %}
-            <p class="fst-italic" id="email-usuario">{{ usuario_log.cargo }}</p>
+            <p class="fst-italic text-center" id="email-usuario">{{ usuario_log.cargo }}</p>
         </div>
     </div>
     <hr class="w-100 m-1">
@@ -21,13 +21,13 @@
 
         <!-- Opciones específicas según el grupo -->
 
-        <!-- {% if "Director de Programa" in user_groups %}
+        {% if "Director de Programa" in user_groups %}
         <li class="nav-item mb-2">
-            <a href="{% url 'gestionar_programa' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-folder2"></i>Gestión de Programa
+            <a href="{% url 'gestion_carga_academica' %}" class="lh-sm d-flex gap-2 nav-link align-items-center">
+                <i class="bi bi-file-earmark-medical-fill"></i>Carga Acádemica
             </a>
         </li>
-        {% endif %} -->
+        {% endif %}
         
         {% if "Director Talento Humano" in user_groups %}
         <li class="nav-item mb-2">

@@ -1,5 +1,6 @@
 {% extends "dashboard.html" %}
 
+{% block title %}SIUC - Gestión Aspirantes {% endblock %}
 {% block container_class %}justify-content-start align-items-start{% endblock %}
 
 {% block content %}
@@ -51,7 +52,7 @@
                     <tbody>
                         {% if not page_obj_pendientes %}
                             <tr>
-                                <td colspan="6" class="text-center">No se encontraron datos disponibles</td>
+                                <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
                             </tr>
                         {% else %}
                             {% for usuario in page_obj_pendientes %}
