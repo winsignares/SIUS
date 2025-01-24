@@ -67,15 +67,23 @@
         </div>
     </div>
 
-    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
+    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-forms modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editarUsuarioLabel">Editar Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h4 class="modal-title" id="editarUsuarioLabel">Editar Usuario</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="editarUsuarioContent">
                     <!-- Contenido dinámico cargado por AJAX -->
+                </div>               
+
+                <!-- Botón para enviar el formulario -->
+                <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <!-- Nota -->
+                    <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                    <button type="submit" class="btn btn-primary" form="formInfoPersonal">Guardar Cambios</button>
                 </div>
             </div>
         </div>

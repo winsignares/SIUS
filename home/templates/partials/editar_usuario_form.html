@@ -3,24 +3,26 @@
     <div class="container">
         <div class="container mb-3">
             <div class="d-flex gap-3 fs-5 fw-bold">
-                <i class="bi bi-person-vcard"></i>Editar Información Personal
+                <i class="bi bi-person-vcard"></i> Información Personal
             </div>
             <div class="row px-3">
-                <!-- Campos de texto -->
                 <div class="col-md-6 mb-2">
-                    <label for="primer_nombre" class="form-label">Primer Nombre</label>
-                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{{ usuario.primer_nombre }}">
+                    <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{{ usuario.primer_nombre }}" required>
                 </div>
+
                 <div class="col-md-6 mb-2">
-                    <label for="segundo_nombre" class="form-label">Segundo Nombre</label>
+                    <label for="segundo_nombre" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
                     <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" value="{{ usuario.segundo_nombre }}">
                 </div>
+
                 <div class="col-md-6 mb-2">
-                    <label for="primer_apellido" class="form-label">Primer Apellido</label>
-                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" value="{{ usuario.primer_apellido }}">
+                    <label for="primer_apellido" class="form-label mb-0">Primer Apellido <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" value="{{ usuario.primer_apellido }}" required>
                 </div>
+
                 <div class="col-md-6 mb-2">
-                    <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
+                    <label for="segundo_apellido" class="form-label mb-0">Segundo Apellido<span class='fw-bold fs-4'></span></label>
                     <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" value="{{ usuario.segundo_apellido }}">
                 </div>
                 <div class="col-md-6 mb-2">
@@ -237,5 +239,4 @@
             </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
 </form>

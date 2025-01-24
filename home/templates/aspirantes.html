@@ -60,9 +60,9 @@
                                 <td>{{ forloop.counter0|add:page_obj_pendientes.start_index }}</td>
                                 <td>
                                     {{ usuario.primer_nombre }}
-                                    {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
+                                    {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }} {% endif %}
                                     {{ usuario.primer_apellido }}
-                                    {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
+                                    {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }} {% endif %}
                                 </td>
                                 <td>
                                     {{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}
@@ -360,8 +360,8 @@
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia">
+                                    <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
@@ -375,13 +375,13 @@
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia">
+                                    <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia">
+                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
