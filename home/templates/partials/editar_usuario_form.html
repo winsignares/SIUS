@@ -8,12 +8,12 @@
             <div class="row px-3">
                 <div class="col-md-6 mb-2">
                     <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
-                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{{ usuario.primer_nombre }}" required>
+                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{% if usuario.primer_nombre %} {{ usuario.primer_nombre }} {% endif %}" required>
                 </div>
 
                 <div class="col-md-6 mb-2">
                     <label for="segundo_nombre" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
-                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" value="{{ usuario.segundo_nombre }}">
+                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" value="{% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }} {% endif %}">
                 </div>
 
                 <div class="col-md-6 mb-2">
