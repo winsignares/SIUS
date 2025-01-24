@@ -155,7 +155,7 @@
                 </div>
                 <div class="col-md-6 mb-2">
                     <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
-                    <input type="text" class="form-control" id="cargo" name="cargo" required>
+                    <input type="text" class="form-control" id="cargo" name="cargo" value="{{ usuario.cargo }}" required>
                 </div>
 
                 <div class="col-md-6 mb-2">
@@ -177,7 +177,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="modal-header">
+                <!-- <div class="modal-header">
                     <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
                 </div>
                 <div class="mb-2">
@@ -233,7 +233,7 @@
                                 <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ usuario.fecha_fin|date:'Y-m-d' }}" required>
                             </div>
                         </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
