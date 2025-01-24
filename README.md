@@ -15,6 +15,9 @@
         python manage.py migrate -- creación de tablas en la BD
 
     
-    4. Ejecución
+    4. Ejecución local
         python manage.py runserver
     
+
+    5. Ejecución local
+        python manage.py runserver 0.0.0.0:8000
