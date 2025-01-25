@@ -1,19 +1,20 @@
-<form method="POST" action="{% url 'guardar_usuario' tipo=tipo usuario_id=usuario.id %}">
+<form method="POST" id="formEditarUsuario" action="{% url 'guardar_usuario' tipo=tipo usuario_id=usuario.id %}">
     {% csrf_token %}
     <div class="container">
         <div class="container mb-3">
             <div class="d-flex gap-3 fs-5 fw-bold">
                 <i class="bi bi-person-vcard"></i> Información Personal
             </div>
+
             <div class="row px-3">
                 <div class="col-md-6 mb-2">
                     <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
-                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{% if usuario.primer_nombre %} {{ usuario.primer_nombre }} {% endif %}" required>
+                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" value="{% if usuario.primer_nombre %}{{ usuario.primer_nombre }}{% endif %}" required>
                 </div>
 
                 <div class="col-md-6 mb-2">
                     <label for="segundo_nombre" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
-                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" value="{% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }} {% endif %}">
+                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre" value="{% if usuario.segundo_nombre %}{{ usuario.segundo_nombre }}{% endif %}">
                 </div>
 
                 <div class="col-md-6 mb-2">
@@ -25,125 +26,7 @@
                     <label for="segundo_apellido" class="form-label mb-0">Segundo Apellido<span class='fw-bold fs-4'></span></label>
                     <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido" value="{{ usuario.segundo_apellido }}">
                 </div>
-                <div class="col-md-6 mb-2">
-                    <label for="numero_documento" class="form-label">Número de Documento</label>
-                    <input type="number" class="form-control" id="numero_documento" name="numero_documento" value="{{ usuario.numero_documento }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="correo_personal" class="form-label">Correo Personal</label>
-                    <input type="email" class="form-control" id="correo_personal" name="correo_personal" value="{{ usuario.correo_personal }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="fecha_expedicion_documento" class="form-label">Fecha de Expedición del Documento</label>
-                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento" value="{{ usuario.fecha_expedicion_documento|date:'Y-m-d' }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="lugar_expedicion_documento" class="form-label">Lugar de Expedición del Documento</label>
-                    <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento" value="{{ usuario.lugar_expedicion_documento }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="sexo" class="form-label">Sexo</label>
-                    <select class="form-select" id="sexo" name="sexo">
-                        <option value="" {% if not usuario.sexo %}selected{% endif %}>Seleccione</option>
-                        <option value="Masculino" {% if usuario.sexo == "Masculino" %}selected{% endif %}>Masculino</option>
-                        <option value="Femenino" {% if usuario.sexo == "Femenino" %}selected{% endif %}>Femenino</option>
-                    </select>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="celular" class="form-label">Celular</label>
-                    <input type="number" class="form-control" id="celular" name="celular" value="{{ usuario.celular }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="telefono_fijo" class="form-label">Teléfono Fijo</label>
-                    <input type="number" class="form-control" id="telefono_fijo" name="telefono_fijo" value="{{ usuario.telefono_fijo }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="direccion_residencia" class="form-label">Dirección de Residencia</label>
-                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia" value="{{ usuario.direccion_residencia }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="departamento_residencia" class="form-label">Departamento de Residencia</label>
-                    <select class="form-select" id="departamento_residencia" name="departamento_residencia">
-                        <option value="" {% if not usuario.departamento_residencia %}selected{% endif %}>Seleccione</option>
-                        {% for departamento in departamentos_list %}
-                            <option value="{{ departamento.nombre }}" {% if usuario.departamento_residencia == departamento.nombre %}selected{% endif %}>
-                                {{ departamento.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="ciudad_residencia" class="form-label">Ciudad de Residencia</label>
-                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" value="{{ usuario.ciudad_residencia }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="barrio_residencia" class="form-label">Barrio de Residencia</label>
-                    <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia" value="{{ usuario.barrio_residencia }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="estado_civil" class="form-label">Estado Civil</label>
-                    <select class="form-select" id="estado_civil" name="estado_civil">
-                        <option value="" {% if not usuario.estado_civil %}selected{% endif %}>Seleccione</option>
-                        <option value="Soltero (a)" {% if usuario.estado_civil == "Soltero (a)" %}selected{% endif %}>Soltero (a)</option>
-                        <option value="Casado (a)" {% if usuario.estado_civil == "Casado (a)" %}selected{% endif %}>Casado (a)</option>
-                        <option value="Unión Libre" {% if usuario.estado_civil == "Unión Libre" %}selected{% endif %}>Unión Libre</option>
-                        <option value="Separado (a)" {% if usuario.estado_civil == "Separado (a)" %}selected{% endif %}>Separado (a)</option>
-                        <option value="Divorciado (a)" {% if usuario.estado_civil == "Divorciado (a)" %}selected{% endif %}>Divorciado (a)</option>
-                        <option value="Viudo (a)" {% if usuario.estado_civil == "Viudo (a)" %}selected{% endif %}>Viudo (a)</option>
-                    </select>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="ultimo_nivel_estudio" class="form-label">Último Nivel de Estudio</label>
-                    <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio">
-                        <option value="" {% if not usuario.ultimo_nivel_estudio %}selected{% endif %}>Seleccione</option>
-                        {% for nivel in niveles_academicos_list %}
-                            <option value="{{ nivel.nombre }}" {% if usuario.ultimo_nivel_estudio == nivel.nombre %}selected{% endif %}>
-                                {{ nivel.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="fk_eps" class="form-label">EPS</label>
-                    <select class="form-select" id="fk_eps" name="fk_eps">
-                        <option value="" {% if not usuario.fk_eps %}selected{% endif %}>Seleccione</option>
-                        {% for eps in eps_list %}
-                            <option value="{{ eps.id }}" {% if usuario.fk_eps and usuario.fk_eps.id == eps.id %}selected{% endif %}>
-                                {{ eps.nombre }} {% if eps.regimen %}({{ eps.regimen }}){% endif %}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="afp" class="form-label">AFP</label>
-                    <select class="form-select" id="afp" name="afp">
-                        <option value="" {% if not usuario.afp %}selected{% endif %}>Seleccione</option>
-                        {% for afp in afp_list %}
-                            <option value="{{ afp.nombre }}" {% if usuario.afp == afp.nombre %}selected{% endif %}>
-                                {{ afp.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-12">
-                    <label for="url_hoja_de_vida" class="form-label">URL Hoja de Vida</label>
-                    <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" value="{{ usuario.url_hoja_de_vida }}">
-                </div>
-                <div class="col-md-6 mb-2">
-                    <label for="fk_sede" class="form-label">Sede donde laborará</label>
-                    <select class="form-select" id="fk_sede" name="fk_sede">
-                        <option value="" {% if not usuario.sede_donde_labora %}selected{% endif %}>Seleccione</option>
-                        {% for sede in sedes_list %}
-                            <option value="{{ sede.id }}" {% if usuario.sede_donde_labora and usuario.sede_donde_labora.id == sede.id %}selected{% endif %}>
-                                {{ sede.ubicacion }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="estado_revision" class="form-label">Estado de Revisión</label>
-                    <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="{{ usuario.estado_revision }}" disabled>
-                </div>
+
                 <div class="col-md-6 mb-2">
                     <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
                     <select class="form-select" id="fk_rol" name="fk_rol" required>
@@ -155,19 +38,22 @@
                         {% endfor %}
                     </select>
                 </div>
+
                 <div class="col-md-6 mb-2">
                     <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
-                    <input type="text" class="form-control" id="cargo" name="cargo" value="{{ usuario.cargo }}" required>
+                    <input type="text" class="form-control" id="cargo" name="cargo" value="{% if usuario.cargo %}{{ usuario.cargo }}{% endif %}" required>
                 </div>
 
                 <div class="col-md-6 mb-2">
                     <label for="fecha_nacimiento" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
                     <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ usuario.fecha_nacimiento|date:'Y-m-d' }}" required>
                 </div>
+
                 <div class="col-md-6 mb-2">
                     <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
-                    <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ usuario.lugar_nacimiento }}">
+                    <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{% if usuario.lugar_nacimiento %}{{ usuario.lugar_nacimiento }}{% endif %}">
                 </div>
+
                 <div class="col-md-6 mb-2">
                     <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
                     <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
@@ -179,6 +65,143 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="numero_documento" class="form-label mb-0">Número de Documento <span class='fw-bold fs-4'>*</span></label>
+                    <input type="number" class="form-control" id="numero_documento" name="numero_documento" value="{{ usuario.numero_documento }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
+                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento" value="{{ usuario.fecha_expedicion_documento|date:'Y-m-d' }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento<span class='fw-bold fs-4'></span></label>
+                    <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento" value="{% if usuario.lugar_expedicion_documento %}{{ usuario.lugar_expedicion_documento }}{% endif %}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="sexo" class="form-label mb-0">Sexo <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="sexo" name="sexo">
+                        <option value="" {% if not usuario.sexo %}selected{% endif %}>Seleccione</option>
+                        <option value="Masculino" {% if usuario.sexo == "Masculino" %}selected{% endif %}>Masculino</option>
+                        <option value="Femenino" {% if usuario.sexo == "Femenino" %}selected{% endif %}>Femenino</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="correo_personal" class="form-label mb-0">Correo Personal <span class='fw-bold fs-4'>*</span></label>
+                    <input type="email" class="form-control" id="correo_personal" name="correo_personal" value="{{ usuario.correo_personal }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="celular" class="form-label mb-0">Celular <span class='fw-bold fs-4'>*</span></label>
+                    <input type="number" class="form-control" id="celular" name="celular" value="{{ usuario.celular }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="telefono_fijo" class="form-label mb-0">Teléfono Fijo<span class='fw-bold fs-4'></span></label>
+                    <input type="number" class="form-control" id="telefono_fijo" name="telefono_fijo" value="{{ usuario.telefono_fijo }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia" value="{{ usuario.direccion_residencia }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="departamento_residencia" name="departamento_residencia">
+                        <option value="" {% if not usuario.departamento_residencia %}selected{% endif %}>Seleccione</option>
+                        {% for departamento in departamentos_list %}
+                            <option value="{{ departamento.nombre }}" {% if usuario.departamento_residencia == departamento.nombre %}selected{% endif %}>
+                                {{ departamento.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia" value="{{ usuario.ciudad_residencia }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia <span class='fw-bold fs-4'>*</span></label>
+                    <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia" value="{{ usuario.barrio_residencia }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="estado_civil" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
+                    <select class="form-select" id="estado_civil" name="estado_civil">
+                        <option value="" {% if not usuario.estado_civil %}selected{% endif %}>Seleccione</option>
+                        <option value="Soltero (a)" {% if usuario.estado_civil == "Soltero (a)" %}selected{% endif %}>Soltero (a)</option>
+                        <option value="Casado (a)" {% if usuario.estado_civil == "Casado (a)" %}selected{% endif %}>Casado (a)</option>
+                        <option value="Unión Libre" {% if usuario.estado_civil == "Unión Libre" %}selected{% endif %}>Unión Libre</option>
+                        <option value="Separado (a)" {% if usuario.estado_civil == "Separado (a)" %}selected{% endif %}>Separado (a)</option>
+                        <option value="Divorciado (a)" {% if usuario.estado_civil == "Divorciado (a)" %}selected{% endif %}>Divorciado (a)</option>
+                        <option value="Viudo (a)" {% if usuario.estado_civil == "Viudo (a)" %}selected{% endif %}>Viudo (a)</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio">
+                        <option value="" {% if not usuario.ultimo_nivel_estudio %}selected{% endif %}>Seleccione</option>
+                        {% for nivel in niveles_academicos_list %}
+                            <option value="{{ nivel.nombre }}" {% if usuario.ultimo_nivel_estudio == nivel.nombre %}selected{% endif %}>
+                                {{ nivel.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="fk_eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_eps" name="fk_eps">
+                        <option value="" {% if not usuario.fk_eps %}selected{% endif %}>Seleccione</option>
+                        {% for eps in eps_list %}
+                            <option value="{{ eps.id }}" {% if usuario.fk_eps and usuario.fk_eps.id == eps.id %}selected{% endif %}>
+                                {{ eps.nombre }} {% if eps.regimen %}({{ eps.regimen }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="afp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="afp" name="afp">
+                        <option value="" {% if not usuario.afp %}selected{% endif %}>Seleccione</option>
+                        {% for afp in afp_list %}
+                            <option value="{{ afp.nombre }}" {% if usuario.afp == afp.nombre %}selected{% endif %}>
+                                {{ afp.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
+                    <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" value="{{ usuario.url_hoja_de_vida }}">
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="fk_sede" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_sede" name="fk_sede">
+                        <option value="" {% if not usuario.sede_donde_labora %}selected{% endif %}>Seleccione</option>
+                        {% for sede in sedes_list %}
+                            <option value="{{ sede.id }}" {% if usuario.sede_donde_labora and usuario.sede_donde_labora.id == sede.id %}selected{% endif %}>
+                                {{ sede.ubicacion }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
+                    <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="{{ usuario.estado_revision }}" disabled>
+                </div>
+
                 <!-- <div class="modal-header">
                     <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
                 </div>
