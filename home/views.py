@@ -305,7 +305,7 @@ def agregar_info_personal(request):
                 afp=data.get('afp') or None,
                 url_hoja_de_vida=data.get('url_hoja_de_vida') or None,
                 estado_revision="Pendiente",
-                fk_sede_donde_labora=data.get('fk_sede'),
+                fk_sedes=data.get('fk_sede'),
                 fk_creado_por=request.user
             )
             return JsonResponse({
@@ -694,32 +694,18 @@ def detalle_usuario(request, tipo, usuario_id):
 @login_required
 def editar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
-    rol_list = Rol.objects.all()
-    tipos_documento_list = TipoDocumento.objects.all()
-    departamentos_list = Departamento.objects.all()
-    niveles_academicos_list = NivelAcademico.objects.all()
-    eps_list = EPS.objects.all()
-    afp_list = AFP.objects.all()
-    sedes_list = Sedes.objects.all()
-    instituciones_list = Institucion.objects.all()  # Nueva lista
-    roles_list = Rol.objects.all()  # Nueva lista de roles
-
+    
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+    
+    contexto.update ({
+        "usuario": usuario,
+        "tipo": tipo
+    })
+    
     return render(
         request,
         "partials/editar_usuario_form.html",
-        {
-            "usuario": usuario,
-            "tipo": tipo,
-            "rol_list": rol_list,
-            "tipos_documento_list": tipos_documento_list,
-            "departamentos_list": departamentos_list,
-            "niveles_academicos_list": niveles_academicos_list,
-            "eps_list": eps_list,
-            "afp_list": afp_list,
-            "sedes_list": sedes_list,
-            "instituciones_list": instituciones_list,
-            "roles_list": roles_list,
-        },
+        contexto,
     )
 
 
@@ -764,7 +750,7 @@ def guardar_usuario(request, tipo, usuario_id):
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
             if sede_id:
-                usuario.fk_sede_donde_labora = Sedes.objects.get(id=sede_id)
+                usuario.fk_sedes = Sedes.objects.get(id=sede_id)
 
             # Guardar cambios
             usuario.save()

@@ -288,6 +288,7 @@ table.table tbody td {
     white-space: nowrap;
     cursor: pointer;
     font-size: 14px;
+    text-transform: uppercase;
 }
 
 .dropdown-menu .dropdown-item:hover {
