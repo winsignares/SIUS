@@ -264,3 +264,35 @@ table.table tbody td {
 }
 
 
+/* 
+--------------------------------------- ESTILOS PARA SELECTS ---------------------------------------
+*/
+
+#fk_eps_dropdown {
+    position: absolute; /* Posición absoluta para alinear con el input */
+    top: 100%; /* Alinea el dropdown justo debajo del input */
+    left: 0; /* Fija el borde izquierdo al del input */
+    width: 100%; /* Asegura que el dropdown tenga el mismo ancho que el input */
+    max-height: 200px; /* Altura máxima con scroll si hay muchas opciones */
+    overflow-y: auto; /* Scroll para listas largas */
+    background-color: white; /* Fondo blanco */
+    border: 1px solid #ced4da; /* Borde del dropdown */
+    z-index: 1000; /* Asegura que esté sobre otros elementos */
+    padding: 0; /* Elimina el padding interno */
+    margin: 0; /* Elimina el margen */
+    list-style: none; /* Quita los estilos de lista */
+}
+
+#fk_eps_dropdown .dropdown-item {
+    padding: 5px 10px; /* Ajusta este padding según sea necesario */
+    white-space: nowrap; /* Evita saltos de línea en las opciones largas */
+    cursor: pointer; /* Indica que es interactivo */
+}
+
+#fk_eps_dropdown .dropdown-item:hover {
+    background-color: #f8f9fa; /* Color de fondo al hacer hover */
+}
+
+#fk_eps_input {
+    padding: 5px; /* Asegura que el padding del input sea consistente */
+}

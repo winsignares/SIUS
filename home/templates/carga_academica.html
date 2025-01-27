@@ -1,6 +1,6 @@
 {% extends "dashboard.html" %}
 
-{% block title %}SIUC - Gestión Carga Acádemica {% endblock %}
+{% block title %}Carga Acádemica - SIUC{% endblock %}
 {% block container_class %}justify-content-start align-items-start{% endblock %}
 
 {% block content %}
@@ -82,19 +82,77 @@
                                 <i class="bi bi-file-earmark-text"></i>Detalles
                             </div>
                             <div class="row px-3">
+                                <div class="col-md-12 mb-2" style="position: relative;">
+                                    <label for="fk_docente_input" class="form-label mb-0">
+                                        Seleccione el docente <span class="fw-bold fs-4">*</span>
+                                    </label>
+                                    <input type="text" id="fk_docente_input" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
+                                    <ul id="fk_docente_dropdown" class="dropdown-menu">
+                                        {% for docente in docentes_list %}
+                                            <li>
+                                                <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
+                                                    {{ docente.primer_nombre }} {{ docente.primer_apellido }}
+                                                </button>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const inputElement = document.getElementById("fk_docente_input");
+                                        const dropdownElement = document.getElementById("fk_docente_dropdown");
+                                        const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
+                                
+                                        // Mostrar/ocultar el dropdown según el input
+                                        inputElement.addEventListener("input", function () {
+                                            const query = inputElement.value.toLowerCase();
+                                
+                                            // Filtrar las opciones según el texto ingresado
+                                            const filteredItems = originalItems.filter(item =>
+                                                item.textContent.toLowerCase().includes(query)
+                                            );
+                                
+                                            // Limpiar y actualizar el dropdown
+                                            dropdownElement.innerHTML = "";
+                                            if (filteredItems.length > 0) {
+                                                filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                                                dropdownElement.style.display = "block";
+                                            } else {
+                                                dropdownElement.style.display = "none";
+                                            }
+                                        });
+                                
+                                        // Cuando seleccionas una opción
+                                        dropdownElement.addEventListener("click", function (event) {
+                                            if (event.target.matches(".dropdown-item")) {
+                                                const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
+                                                inputElement.value = selectedText; // Inserta solo el texto limpio
+                                                dropdownElement.style.display = "none"; // Oculta el dropdown
+                                            }
+                                        });
+                                
+                                        // Ocultar el dropdown al hacer clic fuera
+                                        document.addEventListener("click", function (event) {
+                                            if (!event.target.closest("#fk_docente_input") && !event.target.closest("#fk_docente_dropdown")) {
+                                                dropdownElement.style.display = "none";
+                                            }
+                                        });
+                                
+                                        // Mostrar todas las opciones si el input está vacío
+                                        inputElement.addEventListener("focus", function () {
+                                            if (inputElement.value.trim() === "") {
+                                                dropdownElement.innerHTML = "";
+                                                originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                                                dropdownElement.style.display = "block";
+                                            }
+                                        });
+                                    });
+                                </script>
+
                                 <div class="col-md-6 mb-2">
                                     <label for="primer_nombre" class="form-label mb-0">xxxxxxxxxxxxx <span class='fw-bold fs-4'>*</span></label>
                                     <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
-                                </div>
-
-                                <div class="col-md-6 mb-2">
-                                    <label for="fk_rol" class="form-label mb-0">ASDASDFSFSADSAD <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="fk_rol" name="fk_rol" required>
-                                        <option value="" selected>Seleccione</option>
-                                        {% for rol in roles_list %}
-                                            <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
-                                        {% endfor %}
-                                    </select>
                                 </div>
                             </div>
                         </div>                        
@@ -107,7 +165,7 @@
                 <!-- Nota -->
                 <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
 
-                <button type="submit" class="btn btn-primary" form="formCargaAcademica">Agregar</button>
+                <button type="submit" class="btn btn-primary" form="formCargaAcademica">Guardar</button>
             </div>
         </div>
     </div>

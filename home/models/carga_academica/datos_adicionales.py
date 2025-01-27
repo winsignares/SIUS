@@ -1,5 +1,4 @@
 from django.db import models
-from home.models.talento_humano.niveles_academicos import NivelAcademico
 
 
 class Periodo(models.Model):
@@ -20,7 +19,7 @@ class Periodo(models.Model):
 class Programa(models.Model):
     id = models.AutoField(primary_key=True)
     codigo_snies = models.CharField(max_length=255, unique=True)
-    nivel_formacion = models.ForeignKey(NivelAcademico, null= True, on_delete=models.CASCADE)
+    nivel_formacion = models.CharField(max_length=255, null=True, blank=True)
     programa = models.CharField(max_length=255, null=True, blank=True)
     sede = models.CharField(max_length=255, null=True, blank=True)
 

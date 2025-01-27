@@ -160,7 +160,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'niveles_academicos_list': NivelAcademico.objects.all(),
             'roles_list': Rol.objects.all(),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
-            'sedes_list': Sedes.objects.all()
+            'sedes_list': Sedes.objects.all(),
+            'docentes_list': Usuario.objects.filter(fk_rol_id=4)
         })
 
     return contexto
@@ -773,10 +774,10 @@ def guardar_usuario(request, tipo, usuario_id):
 #
 
 @login_required
-def gestion_carga_academica(request):    
+def gestion_carga_academica(request):
     '''
         Función para mostrar la gestión de carga academica.
     '''
-    contexto = obtener_db_info(request)
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
     return render(request, 'carga_academica.html', contexto)
