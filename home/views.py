@@ -305,7 +305,7 @@ def agregar_info_personal(request):
                 afp=data.get('afp') or None,
                 url_hoja_de_vida=data.get('url_hoja_de_vida') or None,
                 estado_revision="Pendiente",
-                sede_donde_labora=data.get('fk_sede'),
+                fk_sede_donde_labora=data.get('fk_sede'),
                 fk_creado_por=request.user
             )
             return JsonResponse({
@@ -750,7 +750,6 @@ def guardar_usuario(request, tipo, usuario_id):
             usuario.ultimo_nivel_estudio = request.POST.get("ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
             usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
-            usuario.sede_donde_labora = request.POST.get("fk_sede", usuario.sede_donde_labora)
 
             # Actualización de campos relacionales
             rol_id = request.POST.get("fk_rol")
@@ -765,7 +764,7 @@ def guardar_usuario(request, tipo, usuario_id):
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
             if sede_id:
-                usuario.fk_sede = Sedes.objects.get(id=sede_id)
+                usuario.fk_sede_donde_labora = Sedes.objects.get(id=sede_id)
 
             # Guardar cambios
             usuario.save()
