@@ -187,11 +187,11 @@
                 </div>
 
                 <div class="col-md-6 mb-2">
-                    <label for="fk_sede" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
-                    <select class="form-select" id="fk_sede" name="fk_sede">
-                        <option value="" {% if not usuario.fk_sedes %}selected{% endif %}>Seleccione</option>
+                    <label for="sede_donde_labora" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="sede_donde_labora" name="sede_donde_labora">
+                        <option value="" {% if not usuario.sede_donde_labora %}selected{% endif %}>Seleccione</option>
                         {% for sede in sedes_list %}
-                            <option value="{{ sede.id }}" {% if usuario.fk_sedes and usuario.fk_sedes.id == sede.id %}selected{% endif %}>
+                            <option value="{{ sede.ubicacion }}" {% if usuario.sede_donde_labora == sede.ubicacion %}selected{% endif %}>
                                 {{ sede.ubicacion }}
                             </option>
                         {% endfor %}

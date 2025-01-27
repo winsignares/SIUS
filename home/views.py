@@ -17,7 +17,7 @@ from .models.talento_humano.detalles_academicos import DetalleAcademico
 from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
 from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
-from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sedes
+from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 from siuc import settings
@@ -160,7 +160,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'niveles_academicos_list': NivelAcademico.objects.all(),
             'roles_list': Rol.objects.all(),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
-            'sedes_list': Sedes.objects.all(),
+            'sedes_list': Sede.objects.all(),
             'docentes_list': Usuario.objects.filter(fk_rol_id=4)
         })
 
@@ -305,7 +305,7 @@ def agregar_info_personal(request):
                 afp=data.get('afp') or None,
                 url_hoja_de_vida=data.get('url_hoja_de_vida') or None,
                 estado_revision="Pendiente",
-                fk_sedes=data.get('fk_sede'),
+                sede_donde_labora=data.get('sede_donde_labora') or None,
                 fk_creado_por=request.user
             )
             return JsonResponse({
@@ -736,12 +736,12 @@ def guardar_usuario(request, tipo, usuario_id):
             usuario.ultimo_nivel_estudio = request.POST.get("ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
             usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
+            usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
 
             # Actualización de campos relacionales
             rol_id = request.POST.get("fk_rol")
             tipo_documento_id = request.POST.get("fk_tipo_documento")
             eps_id = request.POST.get("fk_eps")
-            sede_id = request.POST.get("fk_sede")
 
             if rol_id:
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
@@ -749,8 +749,6 @@ def guardar_usuario(request, tipo, usuario_id):
                 usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
-            if sede_id:
-                usuario.fk_sedes = Sedes.objects.get(id=sede_id)
 
             # Guardar cambios
             usuario.save()

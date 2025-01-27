@@ -85,7 +85,7 @@ class Institucion(models.Model):
         return f"{self.nombre_institucion} - {self.departamento_ubicacion}, {self.municipio_ubicacion}"
 
 
-class Sedes(models.Model):
+class Sede(models.Model):
     id = models.AutoField(primary_key=True)
     ubicacion = models.CharField(max_length=255, null=True, blank=True)
 
