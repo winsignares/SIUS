@@ -15,59 +15,65 @@
         </div>
     </div>
 
+    <!-- Periodo en curso -->
+    {% if periodo_actual %}
+        <h5 id="cargasAcademicas">Periodo Vigente: {{ periodo_actual.periodo }}</h5>
+    {% else %}
+        <h5 id="cargasAcademicas">No hay un periodo vigente en este momento.</h5>
+    {% endif %}
+
     <div class="accordion" id="cargasAcademicasAccordion">
         {% for docente in docentes_list %}
-        <div class="row">
-            <div class="col-12 mb-3">
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" 
-                    data-bs-target="#collapseCargasAcademicas{{ docente.id }}" 
-                    aria-expanded="false" 
-                    aria-controls="collapseCargasAcademicas{{ docente.id }}">
+        <div class="row my-3">
+            <div class="col-mb-12">
+                <button class="btn btn-primary col-md-12" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCargasAcademicas{{ docente.id }}" aria-expanded="false" aria-controls="collapseCargasAcademicas{{ docente.id }}">
                     {{ docente.primer_nombre }}
                 </button>
             </div>
     
             <!-- Tabla de datos con data-bs-parent para cerrar otras secciones al abrir una -->
-            <div class="row collapse" id="collapseCargasAcademicas{{ docente.id }}" data-bs-parent="#cargasAcademicasAccordion">
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-3 align-middle">
-                            <thead>
-                                <tr>
-                                    <th scope="col"></th>
-                                    <th scope="col">Semestre</th>
-                                    <th scope="col">Materia</th>
-                                    <th scope="col">Créditos</th>
-                                    <th scope="col">Horas</th>
-                                    <th scope="col">Valor a pagar</th>
-                                    <th scope="col">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if not cargas_academicas %}
+            <div class="collapse" id="collapseCargasAcademicas{{ docente.id }}" data-bs-parent="#cargasAcademicasAccordion">
+                <div class="row mt-2 px-5">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0 align-middle">
+                                <thead>
                                     <tr>
-                                        <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
+                                        <th scope="col"></th>
+                                        <th scope="col">Semestre</th>
+                                        <th scope="col">Materia</th>
+                                        <th scope="col">Créditos</th>
+                                        <th scope="col">Horas</th>
+                                        <th scope="col">Valor a pagar</th>
+                                        <th scope="col">Acciones</th>
                                     </tr>
-                                {% else %}
-                                    {% for carga_academica in cargas_academicas %}
-                                    <tr class="text-center">
-                                        <td>{{ forloop.counter0|add:cargas_academicas.start_index }}</td>
-                                        <td>
-                                            
-                                        </td>
-                                        <td class="d-flex justify-content-center gap-3">
-                                            <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% endif %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {% if not cargas_academicas %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
+                                        </tr>
+                                    {% else %}
+                                        {% for carga_academica in cargas_academicas %}
+                                        <tr class="text-center">
+                                            <td>{{ forloop.counter0|add:cargas_academicas.start_index }}</td>
+                                            <td>
+                                                
+                                            </td>
+                                            <td class="d-flex justify-content-center gap-3">
+                                                <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>        
@@ -75,9 +81,6 @@
         {% endfor %}
     </div>    
 </div>
-
-    <!-- Tabla de cargas del periodo en curso 
-        <h4 id="cargasAcademicas" class="mb-3">Cargas Acádemicas (Periodo en curso)</h4> -->
 
 <!-- Modal Nueva Carga Académica -->
 <div class="modal fade" id="nuevaCargaModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="nuevaCargaModalLabel" aria-hidden="true">
@@ -186,4 +189,3 @@
     </div>
 </div>
 {% endblock %}
-

@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.timezone import now
 from django.utils.dateparse import parse_date
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -142,6 +143,9 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     except Usuario.DoesNotExist:
         usuario_log = None
 
+    # Obtener el periodo vigente basado en la fecha actual
+    fecha_actual = timezone.now().date()
+
     # Contexto inicial
     contexto = {
         'usuario_log': usuario_log,
@@ -163,6 +167,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'sedes_list': Sede.objects.all(),
             'docentes_list': Usuario.objects.filter(fk_rol_id=4),
             'cargas_por_docentes_list': CargaAcademica.objects.all(),
+            'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual,fecha_cierre__gte=fecha_actual).first()
         })
 
     return contexto

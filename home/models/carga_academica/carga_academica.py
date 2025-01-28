@@ -12,6 +12,7 @@ class CargaAcademica(models.Model):
     fk_docente_asignado = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     horas_asignadas = models.CharField(max_length=255, null=True, blank=True)
     materia_compartida = models.BooleanField(default=False)
+    aprobado = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'cargas_academicas'
