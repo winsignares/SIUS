@@ -186,5 +186,36 @@
             });
         });
     </script>
+
+    <script>
+        document.getElementById("formEditarUsuario").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            
+            // Verificar los datos enviados
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+
+            fetch(this.action, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    alert(data.message);
+                    location.reload(); // Recargar la página para ver los cambios
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error al procesar la solicitud");
+            });
+        });
+    </script>
 </body>
+
 </html>
