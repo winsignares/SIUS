@@ -737,7 +737,7 @@ def guardar_usuario(request, tipo, usuario_id):
             usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
             usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
-
+            usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
             # Actualización de campos relacionales
             rol_id = request.POST.get("fk_rol")
             tipo_documento_id = request.POST.get("fk_tipo_documento")
