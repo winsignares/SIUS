@@ -161,7 +161,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'roles_list': Rol.objects.all(),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
-            'docentes_list': Usuario.objects.filter(fk_rol_id=4)
+            'docentes_list': Usuario.objects.filter(fk_rol_id=4),
+            'cargas_por_docentes_list': CargaAcademica.objects.all(),
         })
 
     return contexto

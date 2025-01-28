@@ -6,63 +6,78 @@
 {% block content %}
 <div class="container-fluid m-4">
     <!-- Título y botón para agregar cargas academicas -->
-        <div class="row mb-3">
-            <div class=" d-flex col justify-content-between align-items-center">
-                <h3 class="fw-bold m-0">Gestión de Carga Acádemica</h3>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaCargaModal">
-                    Nueva Carga Acádemica
-                </button>
-            </div>
-        </div>
-        
-    <!-- Tabla de cargas del periodo en curso 
-        <h4 id="cargasAcademicas" class="mb-3">Cargas Acádemicas (Periodo en curso)</h4> -->
-
-    <!-- Tabla de datos -->
-    <div class="row">
-        <div class="col-12">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mb-3 align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Docente</th>
-                            <th scope="col">Semestre</th>
-                            <th scope="col">Materia</th>
-                            <th scope="col">Créditos</th>
-                            <th scope="col">Horas</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if not cargas_academicas %}
-                            <tr>
-                                <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
-                            </tr>
-                        {% else %}
-                            {% for carga_academica in cargas_academicas %}
-                            <tr class="text-center">
-                                <td>{{ forloop.counter0|add:cargas_academicas.start_index }}</td>
-                                <td>
-                                    
-                                </td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal"data-id="{{ usuario.id }}" data-tipo="carga_academica">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="row mb-3">
+        <div class=" d-flex col justify-content-between align-items-center">
+            <h3 class="fw-bold m-0">Gestión de Carga Acádemica</h3>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaCargaModal">
+                Nueva Carga Acádemica
+            </button>
         </div>
     </div>
+
+    <div class="accordion" id="cargasAcademicasAccordion">
+        {% for docente in docentes_list %}
+        <div class="row">
+            <div class="col-12 mb-3">
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#collapseCargasAcademicas{{ docente.id }}" 
+                    aria-expanded="false" 
+                    aria-controls="collapseCargasAcademicas{{ docente.id }}">
+                    {{ docente.primer_nombre }}
+                </button>
+            </div>
+    
+            <!-- Tabla de datos con data-bs-parent para cerrar otras secciones al abrir una -->
+            <div class="row collapse" id="collapseCargasAcademicas{{ docente.id }}" data-bs-parent="#cargasAcademicasAccordion">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-3 align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">Semestre</th>
+                                    <th scope="col">Materia</th>
+                                    <th scope="col">Créditos</th>
+                                    <th scope="col">Horas</th>
+                                    <th scope="col">Valor a pagar</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if not cargas_academicas %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
+                                    </tr>
+                                {% else %}
+                                    {% for carga_academica in cargas_academicas %}
+                                    <tr class="text-center">
+                                        <td>{{ forloop.counter0|add:cargas_academicas.start_index }}</td>
+                                        <td>
+                                            
+                                        </td>
+                                        <td class="d-flex justify-content-center gap-3">
+                                            <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>        
+        </div>
+        {% endfor %}
+    </div>    
 </div>
+
+    <!-- Tabla de cargas del periodo en curso 
+        <h4 id="cargasAcademicas" class="mb-3">Cargas Acádemicas (Periodo en curso)</h4> -->
 
 <!-- Modal Nueva Carga Académica -->
 <div class="modal fade" id="nuevaCargaModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="nuevaCargaModalLabel" aria-hidden="true">
@@ -171,3 +186,4 @@
     </div>
 </div>
 {% endblock %}
+
