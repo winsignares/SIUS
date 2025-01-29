@@ -29,7 +29,7 @@ class Programa(models.Model):
         verbose_name_plural = 'Programas'
 
     def __str__(self):
-        return f"{self.codigo} - {self.programa}"
+        return f"{self.codigo_snies} - {self.programa}"
 
 
 class Semestre(models.Model):
