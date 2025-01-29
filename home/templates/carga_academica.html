@@ -17,23 +17,23 @@
 
     <!-- Periodo en curso -->
     {% if periodo_actual %}
-        <h5 id="cargasAcademicas">Periodo Vigente: {{ periodo_actual.periodo }}</h5>
+        <h5 id="cargasAcademicas">Periodo Vigente: {{ periodo_actual.año }}-{{ periodo_actual.periodo }}</h5>
     {% else %}
         <h5 id="cargasAcademicas">No hay un periodo vigente en este momento.</h5>
     {% endif %}
 
     <div class="accordion" id="cargasAcademicasAccordion">
-        {% for docente in docentes_list %}
+        {% for semestre in semestres_list %}
         <div class="row my-3">
             <div class="col-mb-12">
-                <button class="btn btn-primary col-md-12" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCargasAcademicas{{ docente.id }}" aria-expanded="false" aria-controls="collapseCargasAcademicas{{ docente.id }}">
-                    {{ docente.primer_nombre }}
+                <button class="btn btn-primary col-md-12" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCargasAcademicas{{ semestre.semestre }}" aria-expanded="false" aria-controls="collapseCargasAcademicas{{ semestre.semestre }}">
+                    {{ semestre.descripcion }} Semestre
                 </button>
             </div>
     
             <!-- Tabla de datos con data-bs-parent para cerrar otras secciones al abrir una -->
-            <div class="collapse" id="collapseCargasAcademicas{{ docente.id }}" data-bs-parent="#cargasAcademicasAccordion">
-                <div class="row mt-2 px-5">
+            <div class="collapse" id="collapseCargasAcademicas{{ semestre.semestre }}" data-bs-parent="#cargasAcademicasAccordion">
+                <div class="row mt-2 px-3">
                     <div class="col-md-12">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover mb-0 align-middle">
@@ -42,35 +42,58 @@
                                         <th scope="col"></th>
                                         <th scope="col">Semestre</th>
                                         <th scope="col">Materia</th>
+                                        <th scope="col">Docente</th>
                                         <th scope="col">Créditos</th>
-                                        <th scope="col">Horas</th>
+                                        <th scope="col">Horas Semanales</th>
                                         <th scope="col">Valor a pagar</th>
                                         <th scope="col">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% if not cargas_academicas %}
-                                        <tr>
-                                            <td colspan="7" class="text-center">No se encontraron datos disponibles</td>
-                                        </tr>
-                                    {% else %}
+                                    {% with cargas_por_semestre=False %}
                                         {% for carga_academica in cargas_academicas %}
-                                        <tr class="text-center">
-                                            <td>{{ forloop.counter0|add:cargas_academicas.start_index }}</td>
-                                            <td>
-                                                
-                                            </td>
-                                            <td class="d-flex justify-content-center gap-3">
-                                                <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ usuario.id }}" data-tipo="carga_academica">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
+                                            {% if carga_academica.fk_semestre.semestre == semestre.semestre %}
+                                                {% with semestre_encontrado=True %} 
+                                                    <tr class="text-center">
+                                                        <td>
+                                                            {% comment %} <!-- {{ forloop.counter0|add:carga_academica.start_index }} --> {% endcomment %}
+                                                        </td>
+                                                        <td>
+                                                            {{ carga_academica.fk_semestre.semestre }}
+                                                        </td>
+                                                        <td>
+                                                            ({{ carga_academica.fk_materia.codigo }}) {{ carga_academica.fk_materia.materia }}
+                                                        </td>
+                                                        <td>
+                                                            {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}
+                                                        </td>
+                                                        <td>
+                                                            {{ carga_academica.fk_materia.creditos }}
+                                                        </td>
+                                                        <td>
+                                                            {{ carga_academica.horas_semanales }}
+                                                        </td>
+                                                        <td>
+                                                            {{ carga_academica.valor_a_pagar }}
+                                                        </td>
+                                                        <td class="d-flex justify-content-center gap-3">
+                                                            <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </a>
+                                                            <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                                <i class="bi bi-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endwith %}
+                                            {% endif %}
                                         {% endfor %}
-                                    {% endif %}
+                                        {% if not cargas_por_semestre %}
+                                            <tr>
+                                                <td colspan="8" class="text-center">No se encontraron datos disponibles</td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endwith %}
                                 </tbody>
                             </table>
                         </div>
@@ -100,10 +123,13 @@
                                 <i class="bi bi-file-earmark-text"></i>Detalles
                             </div>
                             <div class="row px-3">
+                                <div class="col-md-12 mb-2">
+                                    <label for="programa" class="form-label mb-0">Programa <span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="programa" name="programa" value="{{ usuario_log.auth_user.first_name }}" disabled required>
+                                </div>
+
                                 <div class="col-md-12 mb-2" style="position: relative;">
-                                    <label for="fk_docente_input" class="form-label mb-0">
-                                        Seleccione el docente <span class="fw-bold fs-4">*</span>
-                                    </label>
+                                    <label for="fk_docente_input" class="form-label mb-0">Docente <span class="fw-bold fs-4">*</span></label>
                                     <input type="text" id="fk_docente_input" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
                                     <ul id="fk_docente_dropdown" class="dropdown-menu">
                                         {% for docente in docentes_list %}
@@ -115,58 +141,6 @@
                                         {% endfor %}
                                     </ul>
                                 </div>
-                                
-                                <script>
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        const inputElement = document.getElementById("fk_docente_input");
-                                        const dropdownElement = document.getElementById("fk_docente_dropdown");
-                                        const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
-                                
-                                        // Mostrar/ocultar el dropdown según el input
-                                        inputElement.addEventListener("input", function () {
-                                            const query = inputElement.value.toLowerCase();
-                                
-                                            // Filtrar las opciones según el texto ingresado
-                                            const filteredItems = originalItems.filter(item =>
-                                                item.textContent.toLowerCase().includes(query)
-                                            );
-                                
-                                            // Limpiar y actualizar el dropdown
-                                            dropdownElement.innerHTML = "";
-                                            if (filteredItems.length > 0) {
-                                                filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
-                                                dropdownElement.style.display = "block";
-                                            } else {
-                                                dropdownElement.style.display = "none";
-                                            }
-                                        });
-                                
-                                        // Cuando seleccionas una opción
-                                        dropdownElement.addEventListener("click", function (event) {
-                                            if (event.target.matches(".dropdown-item")) {
-                                                const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
-                                                inputElement.value = selectedText; // Inserta solo el texto limpio
-                                                dropdownElement.style.display = "none"; // Oculta el dropdown
-                                            }
-                                        });
-                                
-                                        // Ocultar el dropdown al hacer clic fuera
-                                        document.addEventListener("click", function (event) {
-                                            if (!event.target.closest("#fk_docente_input") && !event.target.closest("#fk_docente_dropdown")) {
-                                                dropdownElement.style.display = "none";
-                                            }
-                                        });
-                                
-                                        // Mostrar todas las opciones si el input está vacío
-                                        inputElement.addEventListener("focus", function () {
-                                            if (inputElement.value.trim() === "") {
-                                                dropdownElement.innerHTML = "";
-                                                originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
-                                                dropdownElement.style.display = "block";
-                                            }
-                                        });
-                                    });
-                                </script>
 
                                 <div class="col-md-6 mb-2">
                                     <label for="primer_nombre" class="form-label mb-0">xxxxxxxxxxxxx <span class='fw-bold fs-4'>*</span></label>
@@ -188,4 +162,61 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function setupDropdownFilter(inputId, dropdownId) {
+            const inputElement = document.getElementById(inputId);
+            const dropdownElement = document.getElementById(dropdownId);
+            const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
+    
+            // Mostrar/ocultar el dropdown según el input
+            inputElement.addEventListener("input", function () {
+                const query = inputElement.value.toLowerCase();
+    
+                // Filtrar las opciones según el texto ingresado
+                const filteredItems = originalItems.filter(item =>
+                    item.textContent.toLowerCase().includes(query)
+                );
+    
+                // Limpiar y actualizar el dropdown
+                dropdownElement.innerHTML = "";
+                if (filteredItems.length > 0) {
+                    filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                    dropdownElement.style.display = "block";
+                } else {
+                    dropdownElement.style.display = "none";
+                }
+            });
+    
+            // Cuando seleccionas una opción
+            dropdownElement.addEventListener("click", function (event) {
+                if (event.target.matches(".dropdown-item")) {
+                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
+                    inputElement.value = selectedText; // Inserta solo el texto limpio
+                    dropdownElement.style.display = "none"; // Oculta el dropdown
+                }
+            });
+    
+            // Ocultar el dropdown al hacer clic fuera
+            document.addEventListener("click", function (event) {
+                if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
+                    dropdownElement.style.display = "none";
+                }
+            });
+    
+            // Mostrar todas las opciones si el input está vacío
+            inputElement.addEventListener("focus", function () {
+                if (inputElement.value.trim() === "") {
+                    dropdownElement.innerHTML = "";
+                    originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                    dropdownElement.style.display = "block";
+                }
+            });
+        }
+    
+        // Reutiliza la función para diferentes inputs y dropdowns
+        setupDropdownFilter("fk_docente_input", "fk_docente_dropdown");
+    });    
+</script>
 {% endblock %}

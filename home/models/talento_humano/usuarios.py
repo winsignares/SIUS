@@ -61,7 +61,7 @@ class Usuario(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
     # Relación con auth_user para definir si el usuario puede iniciar sesión en el aplicativo
-    auth_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuario_app')
+    auth_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = 'usuarios'
