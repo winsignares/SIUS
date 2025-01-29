@@ -165,19 +165,15 @@ body {
     border: none;
     border-radius: 5px;
     font-size: 1.3rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-in-out;
 }
 
-.btn-cargas:active {
+.btn-cargas {
     background-color: var(--color-cuaternario) !important;
 }
 
-.btn-carga-por-semestre:hover {
-
-}
-
-.btn-carga-por-semestre:active {
-
+.btn-carga-por-semestre:active {    
+    transform: scale(0.998);
 }
 
 /* 

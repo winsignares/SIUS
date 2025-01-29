@@ -3,9 +3,11 @@
     1. Instalación de librerias, creación de entorno virtual y activación.
         pip install virtualenv
         virtualenv venv
+        Set-ExecutionPolicy RemoteSigned -- Activar el uso de entornos virtuales
         .venv\Scripts\activate
         pip install -r requirements.txt -- instalar las librerias
         pip freeze > requirements.txt -- actualizar la lista de librerias
+
 
     2. Creación de modulos
         python manage.py startapp nombre_del_modulo

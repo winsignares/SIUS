@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
@@ -143,13 +144,23 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     except Usuario.DoesNotExist:
         usuario_log = None
 
-    # Obtener el periodo vigente basado en la fecha actual
+    # Obtener el programa del usuario logueado (Almacenado en first_name)
+    programa_usuario = Programa.objects.filter(programa=usuario_autenticado.first_name).first()
+
+    # Obtener el número de semestres del programa
+    num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
+
+    # Filtrar los semestres hasta el número del programa
+    semestres_list = Semestre.objects.filter(id__lte=num_semestres).order_by("id")
+
+    # Obtener la fecha actual
     fecha_actual = timezone.now().date()
 
     # Contexto inicial
     contexto = {
         'usuario_log': usuario_log,
-        'user_groups': grupos_usuario
+        'user_groups': grupos_usuario,
+        'semestres_list': semestres_list,
     }
 
     # Incluir datos adicionales si es necesario para otras funciones
@@ -165,7 +176,6 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'roles_list': Rol.objects.all(),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
-            'semestres_list': Semestre.objects.all().order_by('id'),
             'materias_list': Materia.objects.all(),
             'periodos_list': Periodo.objects.all(),
             'docentes_list': Usuario.objects.filter(fk_rol_id=4),
@@ -296,16 +306,13 @@ def agregar_info_personal(request):
                 segundo_apellido=data.get('segundo_apellido') or None,
                 fecha_nacimiento=data.get('fecha_nacimiento') or None,
                 lugar_nacimiento=data.get('lugar_nacimiento') or None,
-                fecha_expedicion_documento=data.get(
-                    'fecha_expedicion_documento') or None,
-                lugar_expedicion_documento=data.get(
-                    'lugar_expedicion_documento') or None,
+                fecha_expedicion_documento=data.get('fecha_expedicion_documento') or None,
+                lugar_expedicion_documento=data.get('lugar_expedicion_documento') or None,
                 sexo=data.get('sexo') or None,
                 celular=data.get('celular') or None,
                 telefono_fijo=data.get('telefono_fijo') or None,
                 direccion_residencia=data.get('direccion_residencia') or None,
-                departamento_residencia=data.get(
-                    'departamento_residencia') or None,
+                departamento_residencia=data.get('departamento_residencia') or None,
                 ciudad_residencia=data.get('ciudad_residencia') or None,
                 barrio_residencia=data.get('barrio_residencia') or None,
                 estado_civil=data.get('estado_civil') or None,
@@ -775,9 +782,15 @@ def guardar_usuario(request, tipo, usuario_id):
 
 @login_required
 def gestion_carga_academica(request):
-    '''
-        Función para mostrar la gestión de carga academica.
-    '''
+    """
+    Muestra la gestión de carga académica, filtrando los semestres según el programa del usuario.
+    """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
+    # Agrupar cargas académicas por semestre
+    cargas_dict = defaultdict(list)
+    for carga in contexto["cargas_academicas"]:
+        cargas_dict[carga.fk_semestre.semestre].append(carga)
+
+    contexto["cargas_dict"] = dict(cargas_dict)  # Convertir a diccionario normal para el template
     return render(request, 'carga_academica.html', contexto)

@@ -43,57 +43,58 @@
                                         <th scope="col">Semestre</th>
                                         <th scope="col">Materia</th>
                                         <th scope="col">Docente</th>
+                                        <th scope="col">N° de Identificación</th>
                                         <th scope="col">Créditos</th>
                                         <th scope="col">Horas Semanales</th>
-                                        <th scope="col">Valor a pagar</th>
+                                        <th scope="col">Valor a Pagar</th>
                                         <th scope="col">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% with cargas_por_semestre=False %}
+                                    {% if semestre.semestre not in cargas_dict %}
+                                        <tr>
+                                            <td colspan="9" class="text-center">No se encontraron datos disponibles</td>
+                                        </tr>
+                                    {% else %}
                                         {% for carga_academica in cargas_academicas %}
                                             {% if carga_academica.fk_semestre.semestre == semestre.semestre %}
-                                                {% with semestre_encontrado=True %} 
-                                                    <tr class="text-center">
-                                                        <td>
-                                                            {% comment %} <!-- {{ forloop.counter0|add:carga_academica.start_index }} --> {% endcomment %}
-                                                        </td>
-                                                        <td>
-                                                            {{ carga_academica.fk_semestre.semestre }}
-                                                        </td>
-                                                        <td>
-                                                            ({{ carga_academica.fk_materia.codigo }}) {{ carga_academica.fk_materia.materia }}
-                                                        </td>
-                                                        <td>
-                                                            {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}
-                                                        </td>
-                                                        <td>
-                                                            {{ carga_academica.fk_materia.creditos }}
-                                                        </td>
-                                                        <td>
-                                                            {{ carga_academica.horas_semanales }}
-                                                        </td>
-                                                        <td>
-                                                            {{ carga_academica.valor_a_pagar }}
-                                                        </td>
-                                                        <td class="d-flex justify-content-center gap-3">
-                                                            <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
-                                                                <i class="bi bi-pencil-square"></i>
-                                                            </a>
-                                                            <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
-                                                                <i class="bi bi-trash"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                {% endwith %}
+                                                <tr class="text-center">
+                                                    <td>
+                                                        {% comment %} <!-- {{ forloop.counter0|add:carga_academica.start_index }} --> {% endcomment %}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.fk_semestre.semestre }}
+                                                    </td>
+                                                    <td>
+                                                        ({{ carga_academica.fk_materia.codigo }}) {{ carga_academica.fk_materia.materia }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.fk_docente_asignado.numero_documento }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.fk_materia.creditos }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.horas_semanales }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.valor_a_pagar }}
+                                                    </td>
+                                                    <td class="d-flex justify-content-center gap-3">
+                                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
                                             {% endif %}
                                         {% endfor %}
-                                        {% if not cargas_por_semestre %}
-                                            <tr>
-                                                <td colspan="8" class="text-center">No se encontraron datos disponibles</td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endwith %}
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>
