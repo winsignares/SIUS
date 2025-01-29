@@ -159,6 +159,27 @@ body {
     transform: scale(0.98);
 }
 
+.btn-carga-por-semestre {
+    background-color: var(--color-cuaternario);
+    color: var(--color-secundario) !important;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.3rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-cargas:active {
+    background-color: var(--color-cuaternario) !important;
+}
+
+.btn-carga-por-semestre:hover {
+
+}
+
+.btn-carga-por-semestre:active {
+
+}
+
 /* 
 --------------------------------------- GESTIÓN ASPIRTANTES ---------------------------------------
 */
