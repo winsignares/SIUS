@@ -11,6 +11,7 @@ class CargaAcademica(models.Model):
     fk_materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
     fk_docente_asignado = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     horas_asignadas = models.CharField(max_length=255, null=True, blank=True)
+    valor_a_pagar = models.IntegerField("Valor a Pagar", null=True, blank=True)
     materia_compartida = models.BooleanField(default=False)
     aprobado = models.BooleanField(default=False)
 
@@ -20,4 +21,4 @@ class CargaAcademica(models.Model):
         verbose_name_plural = 'Cargas Acádemicas'
 
     def __str__(self):
-        return f"{self.fk_docente_asignado} {self.fk_materia}"
+        return f"{self.fk_materia}: {self.fk_docente_asignado} - Horas: {self.horas_asignadas} - Valor a Pagar: ${self.valor_a_pagar}"

@@ -19,4 +19,4 @@ class NivelAcademico(models.Model):
         unique_together = ('nombre', 'vigencia')
 
     def __str__(self):
-        return f"{self.nombre} ({self.vigencia}) - ${self.tarifa_base_por_hora}/hora"
+        return f"{self.nombre}"
