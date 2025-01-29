@@ -1,13 +1,12 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 class Periodo(models.Model):
     id = models.AutoField(primary_key=True)
-    año = models.CharField(verbose_name=_("Año"), max_length=255, unique=True)
-    periodo = models.CharField(verbose_name=_("Periodo"), max_length=255, null=True, blank=True)
-    fecha_apertura = models.DateField(verbose_name=_("Fecha de Apertura"), null=True, blank=True)
-    fecha_cierre = models.DateField(verbose_name=_("Fecha de Cierre"), null=True, blank=True)
+    año = models.CharField("Año", max_length=255, unique=True)
+    periodo = models.CharField("Periodo", max_length=255, null=True, blank=True)
+    fecha_apertura = models.DateField("Fecha de Apertura", null=True, blank=True)
+    fecha_cierre = models.DateField("Fecha de Cierre", null=True, blank=True)
 
     class Meta:
         db_table = 'periodos'
@@ -20,11 +19,11 @@ class Periodo(models.Model):
 
 class Programa(models.Model):
     id = models.AutoField(primary_key=True)
-    codigo_snies = models.CharField(verbose_name=_("Código SNIES"), max_length=255, unique=True)
-    nivel_formacion = models.CharField(verbose_name=_("Nivel de Formación"), max_length=255, null=True, blank=True)
-    programa = models.CharField(verbose_name=_("Nombre del Programa"), max_length=255, null=True, blank=True)
-    sede = models.CharField(verbose_name=_("Sede"), max_length=255, null=True, blank=True)
-    numero_semestres = models.CharField(verbose_name=_("Número de Semestres"), max_length=255, null=True, blank=True)
+    codigo_snies = models.CharField("Código SNIES", max_length=255, unique=True)
+    nivel_formacion = models.CharField("Nivel de Formación", max_length=255, null=True, blank=True)
+    programa = models.CharField("Nombre del Programa", max_length=255, null=True, blank=True)
+    sede = models.CharField("Sede", max_length=255, null=True, blank=True)
+    numero_semestres = models.CharField("Número de Semestres", max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = 'programas'
@@ -37,8 +36,8 @@ class Programa(models.Model):
 
 class Semestre(models.Model):
     id = models.AutoField(primary_key=True)
-    semestre = models.CharField(verbose_name=_("Semestre"), max_length=255, unique=True)
-    descripcion = models.CharField(verbose_name=_("Descripción"),  max_length=255, null=True, blank=True)
+    semestre = models.CharField("Semestre", max_length=255, unique=True)
+    descripcion = models.CharField("Descripción",  max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = 'semestres'
@@ -51,10 +50,10 @@ class Semestre(models.Model):
 
 class Materia(models.Model):
     id = models.AutoField(primary_key=True)
-    codigo = models.CharField(verbose_name=_("Código"), max_length=255, unique=True)
-    materia = models.CharField(verbose_name=_("Materia"), max_length=255, null=True, blank=True)
-    creditos = models.CharField(verbose_name=_("Número de Créditos"), max_length=255, null=True, blank=True)
-    metodologia = models.CharField(verbose_name=_("Metodología"), max_length=50, null=True, blank=True)
+    codigo = models.CharField("Código", max_length=255, unique=True)
+    materia = models.CharField("Materia", max_length=255, null=True, blank=True)
+    creditos = models.CharField("Número de Créditos", max_length=255, null=True, blank=True)
+    metodologia = models.CharField("Metodología", max_length=50, null=True, blank=True)
 
     class Meta:
         db_table = 'materias'
