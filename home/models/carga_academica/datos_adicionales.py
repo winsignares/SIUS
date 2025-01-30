@@ -3,7 +3,7 @@ from django.db import models
 
 class Periodo(models.Model):
     id = models.AutoField(primary_key=True)
-    año = models.CharField("Año", max_length=255, unique=True)
+    year = models.CharField("Año", max_length=255, unique=True)
     periodo = models.CharField("Periodo", max_length=255, null=True, blank=True)
     fecha_apertura = models.DateField("Fecha de Apertura", null=True, blank=True)
     fecha_cierre = models.DateField("Fecha de Cierre", null=True, blank=True)

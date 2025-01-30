@@ -1,0 +1,29 @@
+
+
+{% extends "dashboard.html" %}
+
+{% block title %}Matriz - SIUC{% endblock %}
+{% block container_class %}justify-content-start align-items-start{% endblock %}
+
+{% block content %}
+<div class="container-fluid m-4">
+    <!-- Título y botón para agregar cargas academicas -->
+    <div class="row mb-3">
+        <div class="d-flex col justify-content-between align-items-center">
+            <h3 class="fw-bold m-0">Matriz Planta Docente</h3>
+        </div>
+    </div>
+
+    <div class="row mb-3">        
+        <div class="d-flex col justify-content-between align-items-center"> 
+            {% if periodo_actual %}
+                <h5 id="matrizDocente"><span class="fw-bold">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
+            {% else %}
+                <h5 id="matrizDocente">No hay un periodo vigente en este momento.</h5>
+            {% endif %}
+            <h6 id="fechaElaboracion"><span class="fw-bold">Fecha de Elaboración:</span> {{ dia_actual }}</h6>
+            <h6 id="fechaElaboracion"><span class="fw-bold">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
+        </div>
+    </div>
+</div>
+{% endblock %}

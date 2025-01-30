@@ -1,7 +1,7 @@
 from django.db import models
 from .roles import Rol
 from .tipo_documentos import TipoDocumento
-from .datos_adicionales import Sede, EPS
+from .datos_adicionales import EPS
 from django.conf import settings
 
 

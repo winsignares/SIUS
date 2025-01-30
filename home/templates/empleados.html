@@ -17,10 +17,10 @@
                     Nuevo Empleado
                 </button>
                 <!-- Carga masiva de trabajadores -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cargaMasivaModal">
+                {% comment %} <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cargaMasivaModal"> --> {% endcomment %}
+                <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="No disponible en el momento">
                     Carga Masiva
                 </button>
-
             </div>
             
             {% endif %}
@@ -83,7 +83,7 @@
                                 <td>
                                     {% if usuario.activo == True %}
                                     <span class="alert alert-success d-inline-block py-1 px-2 mb-0">
-                                        Activo
+                                        {{ usuario.estado_revision }}
                                     </span>
                                     {% endif %}
                                 </td=>

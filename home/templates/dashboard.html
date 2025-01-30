@@ -216,6 +216,16 @@
             });
         });
     </script>
-</body>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    delay: { "show": 0, "hide": 0 } // Se muestra después de 0.5s y se oculta tras 1s
+                });
+            });
+        });
+    </script>
+</body>
 </html>

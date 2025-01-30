@@ -177,12 +177,17 @@ body {
 }
 
 /* 
---------------------------------------- GESTIÓN ASPIRTANTES ---------------------------------------
+--------------------------------------- GESTIÓN ASPIRTANTES Y EMPLEADOS ---------------------------------------
 */
 
 .cancelar-filtro {
     cursor: pointer;
     display: none;
+}
+
+.custom-tooltip {
+    --bs-tooltip-bg: var(--color-primario) !important;
+    --bs-tooltip-color: var(--color-secundario) !important;
 }
 
 /* 

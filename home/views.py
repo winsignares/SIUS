@@ -21,29 +21,16 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
+from .models.talento_humano.contrato import Contrato
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 from siuc import settings
 import openpyxl
 import pytz
 import pandas
 
-# Create your views here.
-
-
-def iniciar_sesion_form(request):
-    '''
-        Función para mostrar el formulario de inicio de sesión.
-    '''
-
-    return render(request, 'login.html')
-
-
-def restablecer_contraseña_form(request):
-    '''
-        Función para mostrar el formulario de restablecer contraseña.
-    '''
-
-    return render(request, 'restablecer_contraseña.html')
+#
+# ---------------------------- FUNCIONES EXTRAS ---------------------------------
+#
 
 
 def error_404_view(request, exception):
@@ -52,80 +39,6 @@ def error_404_view(request, exception):
     """
 
     return render(request, '404.html', status=404)
-
-
-def signin(request):
-    '''
-        Función para manejar los datos enviados en el formulario de inicio de sesión.
-    '''
-    if request.method == 'GET':
-        return redirect('iniciar_sesion_form')
-    elif request.method == 'POST':
-        print(request.POST)
-
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        # Verificar si el usuario existe en la base de datos
-        try:
-            user = User.objects.get(username=email)
-        except User.DoesNotExist:
-            messages.error(
-                request, "El correo ingresado no tiene una cuenta asociada.")
-            return redirect('iniciar_sesion_form')
-
-        user = authenticate(
-            request,
-            username=request.POST['email'],
-            password=request.POST['password']
-        )
-
-        if user is None:
-            messages.error(
-                request, "La contraseña ingresada es incorrecta.")
-            return render(request, 'login.html', {'email': email})
-
-        login(request, user)
-
-        return redirect('dashboard')
-
-
-def actualizar_contraseña(request):
-    '''
-        Función para manejar los datos enviados en el formulario de restablcer contraseña.
-    '''
-    if request.method == 'GET':
-        return redirect('iniciar_sesion_form')
-    elif request.method == 'POST':
-        print(request.POST)
-
-        reset_email = request.POST.get('resetEmail')
-        new_password = request.POST.get('newPassword')
-        confirm_password = request.POST.get('confirmPassword')
-
-        # Verificar si el correo ingresado existe
-        try:
-            user = User.objects.get(username=reset_email)
-        except User.DoesNotExist:
-            messages.error(
-                request, "El correo ingresado no tiene una cuenta asociada.")
-            return redirect('restablecer_contraseña_form')
-
-        # Validar si las contraseñas coinciden
-        if new_password != confirm_password:
-            messages.error(
-                request, "Las contraseñas no coinciden. Inténtalo nuevamente.")
-            return render(request, 'restablecer_contraseña.html', {'reset_email': reset_email})
-
-        # Actualizar la contraseña
-        user.set_password(new_password)
-        user.save()
-
-        # Enviar mensaje de éxito
-        messages.success(
-            request, "Contraseña actualizada exitosamente.")
-
-        return render(request, 'login.html', {'email': reset_email})
 
 
 def obtener_db_info(request, incluir_datos_adicionales=False):
@@ -145,13 +58,16 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         usuario_log = None
 
     # Obtener el programa del usuario logueado (Almacenado en first_name)
-    programa_usuario = Programa.objects.filter(programa=usuario_autenticado.first_name).first()
+    programa_usuario = Programa.objects.filter(
+        programa=usuario_autenticado.first_name).first()
 
     # Obtener el número de semestres del programa
-    num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
+    num_semestres = int(
+        programa_usuario.numero_semestres) if programa_usuario else 0
 
     # Filtrar los semestres hasta el número del programa
-    semestres_list = Semestre.objects.filter(id__lte=num_semestres).order_by("id")
+    semestres_list = Semestre.objects.filter(
+        id__lte=num_semestres).order_by("id")
 
     # Obtener la fecha actual
     fecha_actual = timezone.now().date()
@@ -180,10 +96,115 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'periodos_list': Periodo.objects.all(),
             'docentes_list': Usuario.objects.filter(fk_rol_id=4),
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
-            'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual,fecha_cierre__gte=fecha_actual).first()
+            'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
         })
 
     return contexto
+
+
+#
+# ---------------------------- INICIO DE SESIÓN ---------------------------------
+#
+
+
+def iniciar_sesion_form(request):
+    '''
+        Función para mostrar el formulario de inicio de sesión.
+    '''
+
+    return render(request, 'login.html')
+
+
+def signin(request):
+    '''
+        Función para manejar los datos enviados en el formulario de inicio de sesión.
+    '''
+    if request.method == 'GET':
+        return redirect('iniciar_sesion_form')
+    elif request.method == 'POST':
+        print(request.POST)
+
+        postEmail = request.POST.get('email')
+        postPsw = request.POST.get('password')
+
+        # Verificar si el usuario existe en la base de datos
+        try:
+            user = User.objects.get(username=postEmail)
+        except User.DoesNotExist:
+            messages.error(
+                request, "El usuario ingresado no tiene una cuenta asociada.")
+            return redirect('iniciar_sesion_form')
+
+        user = authenticate(
+            request,
+            username=postEmail,
+            password=postPsw
+        )
+
+        if user is None:
+            messages.error(
+                request, "La contraseña ingresada es incorrecta.")
+            return render(request, 'login.html', {'email': postEmail})
+
+        login(request, user)
+
+        return redirect('dashboard')
+
+
+#
+# ---------------------------- REESTABLECER CONTRASEÑA ---------------------------------
+#
+
+
+def restablecer_contraseña_form(request):
+    '''
+        Función para mostrar el formulario de restablecer contraseña.
+    '''
+
+    return render(request, 'restablecer_contraseña.html')
+
+
+def actualizar_contraseña(request):
+    '''
+        Función para manejar los datos enviados en el formulario de restablcer contraseña.
+    '''
+    if request.method == 'GET':
+        return redirect('iniciar_sesion_form')
+    elif request.method == 'POST':
+        print(request.POST)
+
+        reset_email = request.POST.get('resetEmail')
+        new_password = request.POST.get('newPassword')
+        confirm_password = request.POST.get('confirmPassword')
+
+        # Verificar si el correo ingresado existe
+        try:
+            user = User.objects.get(username=reset_email)
+        except User.DoesNotExist:
+            messages.error(
+                request, "El usuario ingresado no tiene una cuenta asociada.")
+            return redirect('restablecer_contraseña_form')
+
+        # Validar si las contraseñas coinciden
+        if new_password != confirm_password:
+            messages.error(
+                request, "Las contraseñas no coinciden. Inténtalo nuevamente.")
+            return render(request, 'restablecer_contraseña.html', {'reset_email': reset_email})
+
+        # Actualizar la contraseña
+        user.set_password(new_password)
+        user.save()
+
+        # Enviar mensaje de éxito
+        messages.success(
+            request, "Contraseña actualizada exitosamente.")
+
+        return render(request, 'login.html', {'email': reset_email})
+
+
+#
+# ---------------------------- VISTA INICIO ---------------------------------
+#
 
 
 @login_required
@@ -205,8 +226,9 @@ def cerrar_sesion(request):
 
     return redirect('iniciar_sesion_form')
 
+
 #
-# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+# ---------------------------- VISTA ASPIRANTES ---------------------------------
 #
 
 
@@ -248,15 +270,14 @@ def gestion_aspirantes(request):
             models.Q(fk_rol__descripcion__icontains=aspirante_rechazado)
         )
 
+    numero_registros = 10
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_pendientes = Paginator(
-        usuarios_aspirantes, 8)  # 5 registros por página
+    paginator_pendientes = Paginator(usuarios_aspirantes, numero_registros)  # 5 registros por página
     page_number_pendientes = request.GET.get('page_pendientes')
     page_obj_pendientes = paginator_pendientes.get_page(page_number_pendientes)
 
     # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_rechazados = Paginator(
-        usuarios_rechazados, 8)  # 8 registros por página
+    paginator_rechazados = Paginator(usuarios_rechazados, numero_registros)  # 8 registros por página
     page_number_rechazados = request.GET.get('page_rechazados')
     page_obj_rechazados = paginator_rechazados.get_page(page_number_rechazados)
 
@@ -306,13 +327,16 @@ def agregar_info_personal(request):
                 segundo_apellido=data.get('segundo_apellido') or None,
                 fecha_nacimiento=data.get('fecha_nacimiento') or None,
                 lugar_nacimiento=data.get('lugar_nacimiento') or None,
-                fecha_expedicion_documento=data.get('fecha_expedicion_documento') or None,
-                lugar_expedicion_documento=data.get('lugar_expedicion_documento') or None,
+                fecha_expedicion_documento=data.get(
+                    'fecha_expedicion_documento') or None,
+                lugar_expedicion_documento=data.get(
+                    'lugar_expedicion_documento') or None,
                 sexo=data.get('sexo') or None,
                 celular=data.get('celular') or None,
                 telefono_fijo=data.get('telefono_fijo') or None,
                 direccion_residencia=data.get('direccion_residencia') or None,
-                departamento_residencia=data.get('departamento_residencia') or None,
+                departamento_residencia=data.get(
+                    'departamento_residencia') or None,
                 ciudad_residencia=data.get('ciudad_residencia') or None,
                 barrio_residencia=data.get('barrio_residencia') or None,
                 estado_civil=data.get('estado_civil') or None,
@@ -426,7 +450,7 @@ def agregar_exp_laboral(request):
 
 
 #
-# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+# ---------------------------- VISTA EMPLEADOS ---------------------------------
 #
 
 
@@ -466,13 +490,14 @@ def gestion_empleados(request):
             models.Q(fk_rol__descripcion__icontains=empleado_inactivo)
         )
 
-    # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_activos = Paginator(empleados_activos, 10)  # 5 registros por página
+    numero_registros = 10
+    # Paginación para la tabla de aspirantes en estado 'Activos'
+    paginator_activos = Paginator(empleados_activos, numero_registros)  # 5 registros por página
     page_number_activos = request.GET.get('page_activos')
     page_obj_activos = paginator_activos.get_page(page_number_activos)
 
-    # Paginación para la tabla de aspirantes en estado 'Pendiente'
-    paginator_inactivos = Paginator(empleados_inactivos, 10)  # 8 registros por página
+    # Paginación para la tabla de aspirantes en estado 'Inactivos'
+    paginator_inactivos = Paginator(empleados_inactivos, numero_registros)  # 8 registros por página
     page_number_inactivos = request.GET.get('page_inactivos')
     page_obj_inactivos = paginator_inactivos.get_page(page_number_inactivos)
 
@@ -485,115 +510,6 @@ def gestion_empleados(request):
     })
 
     return render(request, 'empleados.html', contexto)
-
-
-#
-# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
-#
-
-
-@login_required
-def reportes(request):
-    contexto = obtener_db_info(request)
-
-    # Capturar parámetros del request
-    fecha_creacion = request.GET.get('fecha_creacion')
-    estado = request.GET.get('estado')
-    activo = request.GET.get('activo')  # Nuevo filtro
-    page = request.GET.get('page', 1)  # Página actual, por defecto 1
-
-    # Validar formato de fecha
-    if fecha_creacion:
-        fecha_creacion = parse_date(fecha_creacion)
-        if not fecha_creacion:
-            fecha_creacion = None
-
-    # Filtrar datos según los parámetros
-    usuarios = Usuario.objects.all()
-    if fecha_creacion:
-        usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
-
-    # Filtrar por estado
-    if estado:
-        usuarios = usuarios.filter(estado_revision=estado)
-
-    # Filtrar por activo/inactivo
-    if activo:
-        if activo == "Activo":
-            usuarios = usuarios.filter(activo= True)
-        elif activo == "Inactivo":
-            usuarios = usuarios.filter(activo= False)
-
-    # Paginación: 25 registros por página
-    paginator = Paginator(usuarios, 25)
-    page_obj = paginator.get_page(page)
-
-    # Actualizar el contexto con la paginación y filtros
-    contexto.update({
-        'page_obj': page_obj,
-        'fecha_creacion': request.GET.get('fecha_creacion', ''),
-        'estado': request.GET.get('estado', ''),
-        'activo': request.GET.get('activo', '')  # Nuevo campo en el contexto
-    })
-
-    return render(request, 'reportes.html', contexto)
-
-
-@login_required
-def generar_reporte_excel(request):
-    # Capturar filtros de la URL
-    fecha_creacion = request.GET.get('fecha_creacion')
-    estado = request.GET.get('estado')
-
-    # Configuración de la zona horaria local
-    zona_horaria_local = pytz.timezone('America/Bogota')
-
-    # Filtrar datos según los parámetros enviados
-    usuarios = Usuario.objects.all()
-    if fecha_creacion:
-        try:
-            # Convertir la fecha a rango con zona horaria local
-            fecha_inicio = zona_horaria_local.localize(datetime.strptime(fecha_creacion, "%Y-%m-%d"))
-            fecha_fin = fecha_inicio + timedelta(days=1)
-            usuarios = usuarios.filter(fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
-        except ValueError:
-            fecha_creacion = None
-
-    if estado:
-        usuarios = usuarios.filter(estado_revision=estado)
-
-    # Crear libro de Excel
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
-    sheet.title = "Reporte SNIES"
-
-    # Encabezados
-    sheet.append(["ID", "Nombre Completo", "Cargo", "Número Documento", "Correo", "Estado", "Fecha Creación"])
-
-    # Insertar datos filtrados
-    for idx, usuario in enumerate(usuarios, start=1):
-        fecha_local = usuario.fecha_creacion.astimezone(zona_horaria_local)
-        sheet.append([
-            idx,
-            f"{usuario.primer_nombre} {usuario.primer_apellido}",
-            usuario.cargo,
-            usuario.numero_documento,
-            usuario.correo_personal,
-            usuario.estado_revision,
-            # Mostrar en la zona local
-            fecha_local.strftime("%d-%m-%Y %H:%M:%S")
-        ])
-
-    # Generar nombre de archivo personalizado
-    nombre_archivo = f"reporte_snies_{fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
-
-    # Respuesta HTTP
-    response = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
-    workbook.save(response)
-    return response
 
 
 @login_required
@@ -679,7 +595,7 @@ def cargar_empleados_masivamente(request):
 
 
 #
-# ----------------------------  VISTA DE BOTÓN ASPIRANTES EMPLEADOS ---------------------------------
+# ---------------------------- FUNCIONES PARA VISTAS ASPIRANTES Y EMPLEADOS ---------------------------------
 #
 
 
@@ -692,7 +608,8 @@ def detalle_usuario(request, tipo, usuario_id):
     if usuario:
         template = "partials/detalle_usuario.html"
         detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
-        detalles_laborales = DetalleExperienciaLaboral.objects.filter(usuario=usuario)
+        detalles_laborales = DetalleExperienciaLaboral.objects.filter(
+            usuario=usuario)
     else:
         return HttpResponseNotFound("No se puede mostrar la información solicitada.")
 
@@ -702,22 +619,18 @@ def detalle_usuario(request, tipo, usuario_id):
         "detalles_laborales": detalles_laborales,
     })
 
-#
-# ----------------------------  VISTA DE BOTÓN EDITAR ASPIRANTES EMPLEADOS ---------------------------------
-#
-
 
 @login_required
 def editar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
-    
+
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
-    
-    contexto.update ({
+
+    contexto.update({
         "usuario": usuario,
         "tipo": tipo
     })
-    
+
     return render(
         request,
         "partials/editar_usuario_form.html",
@@ -726,34 +639,54 @@ def editar_usuario(request, tipo, usuario_id):
 
 
 @login_required
-def guardar_usuario(request, tipo, usuario_id):
+def actualizar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     if request.method == "POST":
         try:
             # Actualización de campos de texto
-            usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
-            usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
-            usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
-            usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
-            usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
-            usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
-            usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+            usuario.primer_nombre = request.POST.get(
+                "primer_nombre", usuario.primer_nombre)
+            usuario.segundo_nombre = request.POST.get(
+                "segundo_nombre", usuario.segundo_nombre)
+            usuario.primer_apellido = request.POST.get(
+                "primer_apellido", usuario.primer_apellido)
+            usuario.segundo_apellido = request.POST.get(
+                "segundo_apellido", usuario.segundo_apellido)
+            usuario.numero_documento = request.POST.get(
+                "numero_documento", usuario.numero_documento)
+            usuario.fecha_expedicion_documento = request.POST.get(
+                "fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+            usuario.lugar_expedicion_documento = request.POST.get(
+                "lugar_expedicion_documento", usuario.lugar_expedicion_documento)
             usuario.sexo = request.POST.get("sexo", usuario.sexo)
             usuario.celular = request.POST.get("celular", usuario.celular)
-            usuario.telefono_fijo = request.POST.get("telefono_fijo", usuario.telefono_fijo)
-            usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
-            usuario.departamento_residencia = request.POST.get("departamento_residencia", usuario.departamento_residencia)
-            usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
-            usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
-            usuario.estado_civil = request.POST.get("estado_civil", usuario.estado_civil)
-            usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
-            usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
+            usuario.telefono_fijo = request.POST.get(
+                "telefono_fijo", usuario.telefono_fijo)
+            usuario.direccion_residencia = request.POST.get(
+                "direccion_residencia", usuario.direccion_residencia)
+            usuario.departamento_residencia = request.POST.get(
+                "departamento_residencia", usuario.departamento_residencia)
+            usuario.ciudad_residencia = request.POST.get(
+                "ciudad_residencia", usuario.ciudad_residencia)
+            usuario.barrio_residencia = request.POST.get(
+                "barrio_residencia", usuario.barrio_residencia)
+            usuario.estado_civil = request.POST.get(
+                "estado_civil", usuario.estado_civil)
+            usuario.fecha_nacimiento = request.POST.get(
+                "fecha_nacimiento", usuario.fecha_nacimiento)
+            usuario.lugar_nacimiento = request.POST.get(
+                "lugar_nacimiento", usuario.lugar_nacimiento)
             usuario.cargo = request.POST.get("cargo", usuario.cargo)
-            usuario.ultimo_nivel_estudio = request.POST.get("ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
-            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
-            usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
-            usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
-            usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
+            usuario.ultimo_nivel_estudio = request.POST.get(
+                "ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
+            usuario.estado_revision = request.POST.get(
+                "estado_revision", usuario.estado_revision)
+            usuario.url_hoja_de_vida = request.POST.get(
+                "url_hoja_de_vida", usuario.url_hoja_de_vida)
+            usuario.sede_donde_labora = request.POST.get(
+                "sede_donde_labora", usuario.sede_donde_labora)
+            usuario.correo_personal = request.POST.get(
+                "correo_personal", usuario.correo_personal)
             # Actualización de campos relacionales
             rol_id = request.POST.get("fk_rol")
             tipo_documento_id = request.POST.get("fk_tipo_documento")
@@ -762,9 +695,12 @@ def guardar_usuario(request, tipo, usuario_id):
             if rol_id:
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
             if tipo_documento_id:
-                usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
+                usuario.fk_tipo_documento = TipoDocumento.objects.get(
+                    id=tipo_documento_id)
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
+
+            usuario.fk_modificado_por = request.user
 
             # Guardar cambios
             usuario.save()
@@ -777,8 +713,123 @@ def guardar_usuario(request, tipo, usuario_id):
 
 
 #
-# ----------------------------  GESTIÓN ASPIRANTES ---------------------------------
+# ---------------------------- VISTA REPORTES ---------------------------------
 #
+
+
+@login_required
+def reportes(request):
+    contexto = obtener_db_info(request)
+
+    # Capturar parámetros del request
+    fecha_creacion = request.GET.get('fecha_creacion')
+    estado = request.GET.get('estado')
+    activo = request.GET.get('activo')  # Nuevo filtro
+    page = request.GET.get('page', 1)  # Página actual, por defecto 1
+
+    # Validar formato de fecha
+    if fecha_creacion:
+        fecha_creacion = parse_date(fecha_creacion)
+        if not fecha_creacion:
+            fecha_creacion = None
+
+    # Filtrar datos según los parámetros
+    usuarios = Usuario.objects.all()
+    if fecha_creacion:
+        usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
+
+    # Filtrar por estado
+    if estado:
+        usuarios = usuarios.filter(estado_revision=estado)
+
+    # Filtrar por activo/inactivo
+    if activo:
+        if activo == "Activo":
+            usuarios = usuarios.filter(activo=True)
+        elif activo == "Inactivo":
+            usuarios = usuarios.filter(activo=False)
+
+    # Paginación: 25 registros por página
+    paginator = Paginator(usuarios, 25)
+    page_obj = paginator.get_page(page)
+
+    # Actualizar el contexto con la paginación y filtros
+    contexto.update({
+        'page_obj': page_obj,
+        'fecha_creacion': request.GET.get('fecha_creacion', ''),
+        'estado': request.GET.get('estado', ''),
+        'activo': request.GET.get('activo', '')  # Nuevo campo en el contexto
+    })
+
+    return render(request, 'reportes.html', contexto)
+
+
+@login_required
+def generar_reporte_excel(request):
+    # Capturar filtros de la URL
+    fecha_creacion = request.GET.get('fecha_creacion')
+    estado = request.GET.get('estado')
+
+    # Configuración de la zona horaria local
+    zona_horaria_local = pytz.timezone('America/Bogota')
+
+    # Filtrar datos según los parámetros enviados
+    usuarios = Usuario.objects.all()
+    if fecha_creacion:
+        try:
+            # Convertir la fecha a rango con zona horaria local
+            fecha_inicio = zona_horaria_local.localize(
+                datetime.strptime(fecha_creacion, "%Y-%m-%d"))
+            fecha_fin = fecha_inicio + timedelta(days=1)
+            usuarios = usuarios.filter(
+                fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
+        except ValueError:
+            fecha_creacion = None
+
+    if estado:
+        usuarios = usuarios.filter(estado_revision=estado)
+
+    # Crear libro de Excel
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Reporte SNIES"
+
+    # Encabezados
+    sheet.append(["ID", "Nombre Completo", "Cargo",
+                 "Número Documento", "Correo", "Estado", "Fecha Creación"])
+
+    # Insertar datos filtrados
+    for idx, usuario in enumerate(usuarios, start=1):
+        fecha_local = usuario.fecha_creacion.astimezone(zona_horaria_local)
+        sheet.append([
+            idx,
+            f"{usuario.primer_nombre} {usuario.primer_apellido}",
+            usuario.cargo,
+            usuario.numero_documento,
+            usuario.correo_personal,
+            usuario.estado_revision,
+            # Mostrar en la zona local
+            fecha_local.strftime("%d-%m-%Y %H:%M:%S")
+        ])
+
+    # Generar nombre de archivo personalizado
+    nombre_archivo = f"reporte_snies_{
+        fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
+
+    # Respuesta HTTP
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = f'attachment; filename="{
+        nombre_archivo}"'
+    workbook.save(response)
+    return response
+
+
+#
+# ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
+#
+
 
 @login_required
 def gestion_carga_academica(request):
@@ -786,11 +837,41 @@ def gestion_carga_academica(request):
     Muestra la gestión de carga académica, filtrando los semestres según el programa del usuario.
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+    
+    dia_actual = datetime.now().date()
 
     # Agrupar cargas académicas por semestre
     cargas_dict = defaultdict(list)
     for carga in contexto["cargas_academicas"]:
         cargas_dict[carga.fk_semestre.semestre].append(carga)
 
-    contexto["cargas_dict"] = dict(cargas_dict)  # Convertir a diccionario normal para el template
+    # Convertir a diccionario normal para el template
+    contexto["cargas_dict"] = dict(cargas_dict)
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
     return render(request, 'carga_academica.html', contexto)
+
+
+#
+# ----------------------------  VISTA MATRIZ DOCENTES ---------------------------------
+#
+
+
+@login_required
+def gestion_matriz(request):
+    """
+    Muestra la gestión 
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
+    return render(request, 'matriz.html', contexto)
+

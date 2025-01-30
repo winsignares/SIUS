@@ -23,6 +23,12 @@
 
         {% if "Director de Programa" in user_groups %}
         <li class="nav-item mb-2">
+            <a href="{% url 'gestion_matriz' %}" class="lh-sm d-flex gap-2 nav-link align-items-center">
+                <i class="bi bi-file-earmark-fill"></i></i>Matriz
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
             <a href="{% url 'gestion_carga_academica' %}" class="lh-sm d-flex gap-2 nav-link align-items-center">
                 <i class="bi bi-file-earmark-medical-fill"></i>Carga Acádemica
             </a>
