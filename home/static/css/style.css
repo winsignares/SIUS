@@ -184,7 +184,7 @@ p {
     color: var(--color-primario);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
     /* Ocultar todo el contenido principal */
     body>section {
@@ -192,20 +192,6 @@ p {
     }
 
     /* Mostrar el mensaje para dispositivos móviles */
-    .mobile-alert {
-        display: flex;
-        /* Hacer visible el mensaje */
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-
-    /* Ocultar todo el contenido principal */
-    body>section {
-        display: none;
-    }
-
-    /* Mostrar el mensaje para tablets */
     .mobile-alert {
         display: flex;
         /* Hacer visible el mensaje */
