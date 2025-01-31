@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models.talento_humano import DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Rol, Tarifa, TipoDocumento, Usuario, Sede
+from .models.talento_humano import DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Rol, Tarifa, TipoDocumento, Usuario, Sede, Contrato
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 
 # Register your models here.
@@ -16,3 +16,4 @@ admin.site.register(Periodo)
 admin.site.register(Programa)
 admin.site.register(Semestre)
 admin.site.register(Sede)
+admin.site.register(Contrato)

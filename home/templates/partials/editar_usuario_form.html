@@ -7,6 +7,16 @@
                     <i class="bi bi-clipboard2-check-fill"></i></i> Detalle de Revisión
                 </div>
 
+                <div class="col-md-6 mb-2">
+                    <label for="estado_civil" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="estado_revision" name="estado_revision" required>
+                        <option value="" {% if not usuario.estado_revision %}selected{% endif %}>Seleccione</option>
+                        <option value="Pendiente" {% if usuario.estado_revision == "Pendiente" %}selected{% endif %}>Pendiente</option>
+                        <option value="Contratado" {% if usuario.estado_revision == "Contratado" %}selected{% endif %}>Contratado</option>
+                        <option value="Rechazado" {% if usuario.estado_revision == "Rechazado" %}selected{% endif %}>Rechazado</option>
+                    </select>
+                </div>
+
                 <div class="col-md-6">
                     <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
                     <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="{{ usuario.estado_revision }}" disabled>
