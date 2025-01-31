@@ -58,16 +58,13 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         usuario_log = None
 
     # Obtener el programa del usuario logueado (Almacenado en first_name)
-    programa_usuario = Programa.objects.filter(
-        programa=usuario_autenticado.first_name).first()
+    programa_usuario = Programa.objects.filter(programa=usuario_autenticado.first_name).first()
 
     # Obtener el número de semestres del programa
-    num_semestres = int(
-        programa_usuario.numero_semestres) if programa_usuario else 0
+    num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
 
     # Filtrar los semestres hasta el número del programa
-    semestres_list = Semestre.objects.filter(
-        id__lte=num_semestres).order_by("id")
+    semestres_list = Semestre.objects.filter(id__lte=num_semestres).order_by("id")
 
     # Obtener la fecha actual
     fecha_actual = timezone.now().date()
@@ -611,8 +608,7 @@ def detalle_usuario(request, tipo, usuario_id):
     if usuario:
         template = "partials/detalle_usuario.html"
         detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
-        detalles_laborales = DetalleExperienciaLaboral.objects.filter(
-            usuario=usuario)
+        detalles_laborales = DetalleExperienciaLaboral.objects.filter(usuario=usuario)
     else:
         return HttpResponseNotFound("No se puede mostrar la información solicitada.")
 
@@ -629,9 +625,13 @@ def editar_usuario(request, tipo, usuario_id):
 
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
+    # Obtener el contrato más reciente del usuario (si existe)
+    contrato = Contrato.objects.filter(fk_usuario=usuario).order_by('-fecha_inicio').first()
+
     contexto.update({
         "usuario": usuario,
-        "tipo": tipo
+        "tipo": tipo,
+        "contrato": contrato  # Pasamos un solo contrato, no una queryset
     })
 
     return render(

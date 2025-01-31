@@ -7,19 +7,51 @@
                     <i class="bi bi-clipboard2-check-fill"></i></i> Detalle de Revisión
                 </div>
 
-                <div class="col-md-6 mb-2">
-                    <label for="estado_civil" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
-                    <select class="form-select" id="estado_revision" name="estado_revision" required>
-                        <option value="" {% if not usuario.estado_revision %}selected{% endif %}>Seleccione</option>
-                        <option value="Pendiente" {% if usuario.estado_revision == "Pendiente" %}selected{% endif %}>Pendiente</option>
-                        <option value="Contratado" {% if usuario.estado_revision == "Contratado" %}selected{% endif %}>Contratado</option>
-                        <option value="Rechazado" {% if usuario.estado_revision == "Rechazado" %}selected{% endif %}>Rechazado</option>
-                    </select>
-                </div>
+                <div class="row px-3">
+                    <div class="col-md-6 mb-2">
+                        <label for="estado_civil" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
+                        <select class="form-select" id="estado_revision" name="estado_revision" required>
+                            <option value="" {% if not usuario.estado_revision %}selected{% endif %}>Seleccione</option>
+                            <option value="Pendiente" {% if usuario.estado_revision == "Pendiente" %}selected{% endif %}>Pendiente</option>
+                            <option value="Contratado" {% if usuario.estado_revision == "Contratado" %}selected{% endif %}>Contratado</option>
+                            <option value="Rechazado" {% if usuario.estado_revision == "Rechazado" %}selected{% endif %}>Rechazado</option>
+                        </select>
+                    </div>
 
-                <div class="col-md-6">
-                    <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
-                    <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="{{ usuario.estado_revision }}" disabled>
+                    {% if usuario.fk_rol.descripcion == "Docente" %}
+                    
+                    {% endif %}
+    
+                    <div class="col-md-6">
+                        <label for="tipo_contrato" class="form-label mb-0">Tipo de Contrato <span class='fw-bold fs-4'>*</span></label>
+                        <select class="form-select" id="tipo_contrato" name="tipo_contrato" required>
+                            <option value="" {% if not contrato or not contrato.tipo_contrato %}selected{% endif %}>Seleccione</option>
+                            <option value="Termino Fijo" {% if contrato and contrato.tipo_contrato == "Termino Fijo" %}selected{% endif %}>Término Fijo</option>
+                            <option value="Indefinido" {% if contrato and contrato.tipo_contrato == "Indefinido" %}selected{% endif %}>Indefinido</option>
+                            <option value="Aprendiz" {% if contrato and contrato.tipo_contrato == "Aprendiz" %}selected{% endif %}>Aprendiz</option>
+                            <option value="Obra o Labor" {% if contrato and contrato.tipo_contrato == "Obra o Labor" %}selected{% endif %}>Obra o Labor</option>
+                            <option value="Prestación de Servicios" {% if contrato and contrato.tipo_contrato == "Prestación de Servicios" %}selected{% endif %}>Prestación de Servicios</option>
+                            <option value="Ocasional o Transitorio" {% if contrato and contrato.tipo_contrato == "Ocasional o Transitorio" %}selected{% endif %}>Ocasional o Transitorio</option>
+                            <option value="Trabajo Remoto" {% if contrato and contrato.tipo_contrato == "Trabajo Remoto" %}selected{% endif %}>Trabajo Remoto</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado_revision" class="form-label mb-0">Fecha Inicio Contrato <span class='fw-bold fs-4'></span></label>
+                        <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Falta Definir" disabled>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="estado_revision" class="form-label mb-0">Fecha Fin Contrato <span class='fw-bold fs-4'></span></label>
+                        <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Falta Definir" disabled>
+                    </div>
+
+                    {% if usuario.fk_rol.descripcion == "Administrativo" %}
+                        <div class="col-md-6">
+                            <label for="estado_revision" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'></span></label>
+                            <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Falta Definir" disabled>
+                        </div>
+                    {% endif %}
                 </div>
             {% elif "Secretaria Talento Humano" in user_groups %}
                 <div class="d-flex gap-3 fs-5 fw-bold">
