@@ -46,15 +46,24 @@
         </div>
         <div class="card-body">
             {% if not detalles_academicos %}
-                <p class="text-center mb-2">No se ha encontrado información relacionada</p>
+                <p class="text-center mb-2">No se ha encontrado información relacionada</dd>
             {% else %}
                 {% for detalle in detalles_academicos %}
                     <div class="card mb-3">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="bi bi-building"></i> Institución: <span class="text-uppercase">{{ detalle.institucion }}</span></h5>
-                            <p class="card-text"><i class="bi bi-award"></i> Título: <span class="text-uppercase">{{ detalle.titulo_obtenido }}</span></p>
-                            <p class="card-text"><i class="bi bi-book"></i> Nivel Académico: <span class="text-uppercase">{{ detalle.nivel_academico.nombre }}</span></p>
-                            <p class="card-text"><i class="bi bi-calendar-check"></i> Fecha de Graduación: <span class="text-uppercase">{{ detalle.fecha_graduacion }}</span></p>
+                            <dl class="row">
+                                <dt class="col-md-3 mb-2"><i class="bi bi-building"></i> Institución:</dt> 
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ detalle.institucion }}</dd>
+
+                                <dt class="col-md-3 mb-2"><i class="bi bi-award"></i> Título:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ detalle.titulo_obtenido }}</dd>
+
+                                <dt class="col-md-3 mb-2"><i class="bi bi-book"></i> Nivel Académico:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ detalle.nivel_academico.nombre }}</dd>
+
+                                <dt class="col-md-3 mb-2"><i class="bi bi-calendar-check"></i> Fecha de Graduación:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ detalle.fecha_graduacion }}</dd>
+                            </dl>
                         </div>
                     </div>
                 {% endfor %}
@@ -69,15 +78,24 @@
         </div>
         <div class="card-body">
             {% if not detalles_laborales %}
-                <p class="text-center mb-2">No se ha encontrado información relacionada</p>
+                <p class="text-center mb-2">No se ha encontrado información relacionada</dd>
             {% else %}
                 {% for experiencia in detalles_laborales %}
                     <div class="card mb-3">
                         <div class="card-body">
-                            <h5 class="card-title"><i class="bi bi-building"></i> Empresa: <span class="text-uppercase">{{ experiencia.empresa }}</span></h5>
-                            <p class="card-text"><i class="bi bi-person-lines-fill"></i> Cargo: <span class="text-uppercase">{{ experiencia.cargo }}</span></p>
-                            <p class="card-text"><i class="bi bi-calendar-range"></i> Fecha Inicio: <span class="text-uppercase">{{ experiencia.fecha_inicio }}</span></p>
-                            <p class="card-text"><i class="bi bi-calendar-range"></i> Fecha Fin: <span class="text-uppercase">{{ experiencia.fecha_fin }}</span></p>
+                                <dl class="row">
+                                <dt class="col-md-3 mb-2"><i class="bi bi-building"></i> Empresa:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ experiencia.empresa }}</dd>
+
+                                <dt class="col-md-3 mb-2"><i class="bi bi-person-lines-fill"></i> Cargo:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ experiencia.cargo }}</dd>
+
+                                <dt class="col-md-3 mb-2"><i class="bi bi-calendar-range"></i> Fecha Inicio:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ experiencia.fecha_inicio }}</dd>
+
+                                <dt class="col-md-3 mb-2"><i class="bi bi-calendar-range"></i> Fecha Fin:</dt>
+                                <dd class="col-md-9 mb-2 text-uppercase">{{ experiencia.fecha_fin }}</dd>
+                            </dl>
                         </div>
                     </div>
                 {% endfor %}
