@@ -5,10 +5,11 @@
 
 {% block content %}
 <div class="container-fluid m-4">
+    <h3 class="mb-3 d-flex justify-content-center align-items-center fw-bold">Gestión de Aspirantes</h3>
 <!-- Título y botón para agregar nuevo aspirante -->
     <div class="row mb-3">
-        <div class=" d-flex col justify-content-between align-items-center">
-            <h3 class="fw-bold m-0">Gestión de Aspirantes</h3>
+        <div class=" d-flex col-mb-12 justify-content-between align-items-center">
+            <h4 class="m-0">Aspirantes Pendientes</h4>
             {% if "Secretaria Talento Humano" in user_groups %}
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal">
                 Nuevo Aspirante
@@ -16,9 +17,6 @@
             {% endif %}
         </div>
     </div>
-    
-<!-- Tabla de aspirantes en estado 'Pendiente' -->
-    <h4 id="aspirantesPendientes" class="mb-3">Aspirantes Pendientes</h4>
 
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
@@ -38,14 +36,14 @@
         <div class="col-12">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-3 align-middle">
-                    <thead>
+                    <thead class="align-middle text-warp">
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col">Nombre Completo</th>
-                            <th scope="col">Rol</th>
-                            <th scope="col">Cargo</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Hoja de Vida</th>
+                            <th class="col-3" scope="col">Nombre Completo</th>
+                            <th class="col-2" scope="col">Rol</th>
+                            <th class="col-4" scope="col">Cargo</th>
+                            <th class="col-1" scope="col">Estado</th>
+                            <th class="col-2" scope="col">Hoja de Vida</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -82,15 +80,15 @@
                                     No Aplica
                                     {% endif %}
                                 </td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center"    data-bs-toggle="modal" data-bs-target="#editarUsuarioModal"data-id="{{ usuario.id }}" data-tipo="aspirante">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal"
-                                    data-id="{{ usuario.id }}" data-tipo="aspirante">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -160,14 +158,14 @@
         <div class="col-12">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-3 align-middle">
-                    <thead>
+                    <thead class="align-middle text-warp">
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col">Nombre Completo</th>
-                            <th scope="col">Rol</th>
-                            <th scope="col">Cargo</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Hoja de Vida</th>
+                            <th class="col-3" scope="col">Nombre Completo</th>
+                            <th class="col-2" scope="col">Rol</th>
+                            <th class="col-4" scope="col">Cargo</th>
+                            <th class="col-1" scope="col">Estado</th>
+                            <th class="col-2" scope="col">Hoja de Vida</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -204,13 +202,15 @@
                                     No Aplica
                                     {% endif %}
                                 </td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal"data-id="{{ usuario.id }}" data-tipo="aspirante">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="aspirante">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -254,7 +254,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-2">
-                <form id="formInfoPersonal" method="POST" action="{% url 'agregar_info_personal' %}">
+                <form id="formInfoPersonal" method="POST" action="{% url 'agregar_info_personal' %}" data-ajax-submit="true">
                     {% csrf_token %}
                     <div class="container">
                         <!-- Información Personal -->
@@ -586,7 +586,7 @@
                 <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
             </div>
             <div class="modal-body">
-                <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}">
+                <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}" data-ajax-submit="true">
                     {% csrf_token %}
                     <input type="hidden" id="usuario_id" name="usuario_id" value="" />
                     <div class="row p-2">
@@ -635,7 +635,7 @@
                     <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Experiencia Laboral</h5>
                 </div>
             <div class="modal-body">
-                <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}">
+                <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}" data-ajax-submit="true">
                     {% csrf_token %}
                     <input type="hidden" id="usuario_id" name="usuario_id" value="" />
                     <div class="row p-2">
@@ -707,63 +707,21 @@
     handleClearFilter(filtroRechazadosInput, clearRechazadosFilter); // Aspirantes Rechazados
 </script>
 
-<!-- Agregar Aspirantes -->
+<!-- Agregar Aspirantes 
 <script>
     document.getElementById("formInfoPersonal").addEventListener("submit", function(e) {
         e.preventDefault();
-        let formData = new FormData(this);
-    
-        fetch("{% url 'agregar_info_personal' %}", {
-            method: "POST",
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
+        handleFormSubmission(this, function(data) {
             if (data.status === "success") {
-                // Mostrar alerta de éxito
-                showAlert(data.message, "success");
-
                 // Almacenar el ID del usuario creado
                 window.usuarioIdCreado = data.usuario_id;
-
+    
                 // Redirigir al modal con el ID del usuario
                 openNextModal(data.nuevo_usuario_id);
-            } else {
-                // Mostrar alerta de error
-                showAlert(data.message, "error");
             }
-        })
-        .catch(error => {
-            showAlert("Error en el servidor, intenta de nuevo.", "error");
-            console.error("Error:", error);
         });
     });
-
-    // Función para mostrar alertas dinámicas
-    function showAlert(message, type) {
-        let alertClass = type === "success" ? "alert-success" : "alert-danger";
-        let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
     
-        let alertHtml = `
-            <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
-                <i class="bi ${icon}"></i> ${message}
-            </div>
-        `;
-    
-        // Insertar la alerta en el contenedor dinámico
-        const alertContainer = document.getElementById('dynamic-alerts');
-        alertContainer.insertAdjacentHTML('beforeend', alertHtml);
-    
-        // Ocultar la alerta automáticamente después de 3 segundos
-        setTimeout(() => {
-            alertContainer.firstElementChild?.remove();
-        }, 3000);
-    }    
-
     function openNextModal(usuarioId) {
         // Cerrar el modal de información personal
         const infoPersonalModal = bootstrap.Modal.getInstance(document.getElementById("infoPersonalModal"));
@@ -772,130 +730,89 @@
         // Mostrar el modal de información adicional
         const nextModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
         nextModal.show();
-    }    
-</script>
+    }
+</script> -->
 
+<!-- Modal de información adicional 
 <script>
     function redirigirAModal() {
         const infoAdicionalModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
         infoAdicionalModal.show();
     }
-
+    
     function cerrarModalFormulario(modalId) {
         const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
         modal.hide();
     }
-
+    
     document.getElementById("formDetalleAcademico").addEventListener("submit", function (e) {
         e.preventDefault();
-
-        let formData = new FormData(this);
-
+    
         // Asignar el ID del usuario creado al campo oculto
+        let formData = new FormData(this);
         formData.set("usuario_id", window.usuarioIdCreado);
-
-        fetch("{% url 'agregar_detalle_academico' %}", {
-            method: "POST",
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'X-Requested-With': 'XMLHttpRequest'
+    
+        handleFormSubmission(this, function(data) {
+            if (data.status === "success") {
+                // Agregar la fila nueva a la tabla dinámicamente
+                const tabla = document.getElementById("tablaAcademica");
+                const nuevaFila = `
+                    <tr>
+                        <td>${data.detalle.institucion}</td>
+                        <td>${data.detalle.titulo_obtenido}</td>
+                        <td>${data.detalle.nivel_academico}</td>
+                        <td>${data.detalle.fecha_graduacion}</td>
+                        <td><!-- Acciones futuras </td>
+                    </tr>`;
+    
+                tabla.insertAdjacentHTML("beforeend", nuevaFila);
+    
+                // Resetear el formulario
+                document.getElementById("formDetalleAcademico").reset();
+    
+                // Cerrar el modal actual
+                cerrarModalFormulario("formDetalleAcademicoModal");
+    
+                // Redirigir al modal de información adicional
+                redirigirAModal();
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    // Mostrar alerta de éxito
-                    showAlert(data.message, "success");
-
-                    // Agregar la fila nueva a la tabla dinámicamente
-                    const tabla = document.getElementById("tablaAcademica");
-                    const nuevaFila = `
-                        <tr>
-                            <td>${data.detalle.institucion}</td>
-                            <td>${data.detalle.titulo_obtenido}</td>
-                            <td>${data.detalle.nivel_academico}</td>
-                            <td>${data.detalle.fecha_graduacion}</td>
-                            <td><!-- Acciones futuras --></td>
-                        </tr>`;
-
-                    tabla.insertAdjacentHTML("beforeend", nuevaFila);
-
-                    // Resetear el formulario
-                    document.getElementById("formDetalleAcademico").reset();
-
-                    // Cerrar el modal actual
-                    cerrarModalFormulario("formDetalleAcademicoModal");
-
-                    // Redirigir al modal de información adicional
-                    redirigirAModal();
-                } else {
-                    // Mostrar alerta de error
-                    showAlert(data.message, "error");
-                }
-            })
-            .catch(error => {
-                showAlert("Error en el servidor, intenta de nuevo.", "error");
-                console.error("Error:", error);
-            });
+        });
     });
 
     document.getElementById("formExpLaboral").addEventListener("submit", function (e) {
         e.preventDefault();
-
-        let formData = new FormData(this);
-
+    
         // Asignar el ID del usuario creado al campo oculto
+        let formData = new FormData(this);
         formData.set("usuario_id", window.usuarioIdCreado);
-
-        fetch("{% url 'agregar_exp_laboral' %}", {
-            method: "POST",
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'X-Requested-With': 'XMLHttpRequest'
+    
+        handleFormSubmission(this, function(data) {
+            if (data.status === "success") {
+                // Agregar la fila nueva a la tabla dinámicamente
+                const tabla = document.getElementById("tablaExperiencia");
+                const nuevaFila = `
+                    <tr>
+                        <td>${data.detalle.empresa}</td>
+                        <td>${data.detalle.cargo}</td>
+                        <td>${data.detalle.fecha_inicio}</td>
+                        <td>${data.detalle.fecha_fin}</td>
+                        <td><!-- Acciones futuras </td>
+                    </tr>`;
+    
+                tabla.insertAdjacentHTML("beforeend", nuevaFila);
+    
+                // Resetear el formulario
+                document.getElementById("formExpLaboral").reset();
+    
+                // Cerrar el modal actual
+                cerrarModalFormulario("formExpLaboralModal");
+    
+                // Redirigir al modal de información adicional
+                redirigirAModal();
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    // Mostrar alerta de éxito
-                    showAlert(data.message, "success");
-
-                    // Agregar la fila nueva a la tabla dinámicamente
-                    const tabla = document.getElementById("tablaExperiencia");
-                    const nuevaFila = `
-                        <tr>
-                            <td>${data.detalle.empresa}</td>
-                            <td>${data.detalle.cargo}</td>
-                            <td>${data.detalle.fecha_inicio}</td>
-                            <td>${data.detalle.fecha_fin}</td>
-                            <td><!-- Acciones futuras --></td>
-                        </tr>`;
-
-                    tabla.insertAdjacentHTML("beforeend", nuevaFila);
-
-                    // Resetear el formulario
-                    document.getElementById("formExpLaboral").reset();
-
-                    // Cerrar el modal actual
-                    cerrarModalFormulario("formExpLaboralModal");
-
-                    // Redirigir al modal de información adicional
-                    redirigirAModal();
-                } else {
-                    // Mostrar alerta de error
-                    showAlert(data.message, "error");
-                }
-            })
-            .catch(error => {
-                showAlert("Error en el servidor, intenta de nuevo.", "error");
-                console.error("Error:", error);
-            });
+        });
     });
-</script>
 
-<script>
     document.getElementById("btnFinalizar").addEventListener("click", function () {
         // Cerrar el modal actual
         const infoAdicionalModal = bootstrap.Modal.getInstance(document.getElementById("infoAdicionalModal"));
@@ -903,9 +820,10 @@
     
         // Redirigir a la vista principal
         window.location.href = "{% url 'gestion_aspirantes' %}";
-    });
+    });  -->
 </script>
 
+<!-- Boton "Limpiar" campo de busqueda-->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Botón para limpiar filtro de Aspirantes Pendientes
@@ -946,6 +864,7 @@
     });
 </script>
 
+<!-- Scroll automatico a seccion por campo de busqueda-->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Función para realizar scroll automático a una sección específica
@@ -993,6 +912,7 @@
     });
 </script>
 
+<!-- Select con campo de busqueda -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         function setupDropdownFilter(inputId, dropdownId) {

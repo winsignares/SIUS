@@ -323,29 +323,26 @@ def agregar_info_personal(request):
                 correo_personal=data.get('correo_personal'),
 
                 # Campos opcionales
-                segundo_nombre=data.get('segundo_nombre') or None,
-                segundo_apellido=data.get('segundo_apellido') or None,
-                fecha_nacimiento=data.get('fecha_nacimiento') or None,
-                lugar_nacimiento=data.get('lugar_nacimiento') or None,
-                fecha_expedicion_documento=data.get(
-                    'fecha_expedicion_documento') or None,
-                lugar_expedicion_documento=data.get(
-                    'lugar_expedicion_documento') or None,
-                sexo=data.get('sexo') or None,
-                celular=data.get('celular') or None,
-                telefono_fijo=data.get('telefono_fijo') or None,
-                direccion_residencia=data.get('direccion_residencia') or None,
-                departamento_residencia=data.get(
-                    'departamento_residencia') or None,
-                ciudad_residencia=data.get('ciudad_residencia') or None,
-                barrio_residencia=data.get('barrio_residencia') or None,
-                estado_civil=data.get('estado_civil') or None,
-                ultimo_nivel_estudio=data.get('ultimo_nivel_estudio') or None,
-                fk_eps_id=data.get('fk_eps') or None,
-                afp=data.get('afp') or None,
-                url_hoja_de_vida=data.get('url_hoja_de_vida') or None,
+                segundo_nombre=data.get('segundo_nombre'),
+                segundo_apellido=data.get('segundo_apellido'),
+                fecha_nacimiento=data.get('fecha_nacimiento'),
+                lugar_nacimiento=data.get('lugar_nacimiento'),
+                fecha_expedicion_documento=data.get('fecha_expedicion_documento'),
+                lugar_expedicion_documento=data.get('lugar_expedicion_documento'),
+                sexo=data.get('sexo'),
+                celular=data.get('celular'),
+                telefono_fijo=data.get('telefono_fijo'),
+                direccion_residencia=data.get('direccion_residencia'),
+                departamento_residencia=data.get('departamento_residencia'),
+                ciudad_residencia=data.get('ciudad_residencia'),
+                barrio_residencia=data.get('barrio_residencia'),
+                estado_civil=data.get('estado_civil'),
+                ultimo_nivel_estudio=data.get('ultimo_nivel_estudio'),
+                fk_eps_id=data.get('fk_eps'),
+                afp=data.get('afp'),
+                url_hoja_de_vida=data.get('url_hoja_de_vida'),
                 estado_revision="Pendiente",
-                sede_donde_labora=data.get('sede_donde_labora') or None,
+                sede_donde_labora=data.get('sede_donde_labora'),
                 fk_creado_por=request.user
             )
             return JsonResponse({
@@ -643,51 +640,32 @@ def actualizar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     if request.method == "POST":
         try:
-            # Actualización de campos de texto
-            usuario.primer_nombre = request.POST.get(
-                "primer_nombre", usuario.primer_nombre)
-            usuario.segundo_nombre = request.POST.get(
-                "segundo_nombre", usuario.segundo_nombre)
-            usuario.primer_apellido = request.POST.get(
-                "primer_apellido", usuario.primer_apellido)
-            usuario.segundo_apellido = request.POST.get(
-                "segundo_apellido", usuario.segundo_apellido)
-            usuario.numero_documento = request.POST.get(
-                "numero_documento", usuario.numero_documento)
-            usuario.fecha_expedicion_documento = request.POST.get(
-                "fecha_expedicion_documento", usuario.fecha_expedicion_documento)
-            usuario.lugar_expedicion_documento = request.POST.get(
-                "lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+            # Actualización de campos de Usuario
+            usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
+            usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
+            usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
+            usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
+            usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
+            usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+            usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
             usuario.sexo = request.POST.get("sexo", usuario.sexo)
             usuario.celular = request.POST.get("celular", usuario.celular)
-            usuario.telefono_fijo = request.POST.get(
-                "telefono_fijo", usuario.telefono_fijo)
-            usuario.direccion_residencia = request.POST.get(
-                "direccion_residencia", usuario.direccion_residencia)
-            usuario.departamento_residencia = request.POST.get(
-                "departamento_residencia", usuario.departamento_residencia)
-            usuario.ciudad_residencia = request.POST.get(
-                "ciudad_residencia", usuario.ciudad_residencia)
-            usuario.barrio_residencia = request.POST.get(
-                "barrio_residencia", usuario.barrio_residencia)
-            usuario.estado_civil = request.POST.get(
-                "estado_civil", usuario.estado_civil)
-            usuario.fecha_nacimiento = request.POST.get(
-                "fecha_nacimiento", usuario.fecha_nacimiento)
-            usuario.lugar_nacimiento = request.POST.get(
-                "lugar_nacimiento", usuario.lugar_nacimiento)
+            usuario.telefono_fijo = request.POST.get("telefono_fijo", usuario.telefono_fijo)
+            usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
+            usuario.departamento_residencia = request.POST.get("departamento_residencia", usuario.departamento_residencia)
+            usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
+            usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
+            usuario.estado_civil = request.POST.get("estado_civil", usuario.estado_civil)
+            usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
+            usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
             usuario.cargo = request.POST.get("cargo", usuario.cargo)
-            usuario.ultimo_nivel_estudio = request.POST.get(
-                "ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
-            usuario.estado_revision = request.POST.get(
-                "estado_revision", usuario.estado_revision)
-            usuario.url_hoja_de_vida = request.POST.get(
-                "url_hoja_de_vida", usuario.url_hoja_de_vida)
-            usuario.sede_donde_labora = request.POST.get(
-                "sede_donde_labora", usuario.sede_donde_labora)
-            usuario.correo_personal = request.POST.get(
-                "correo_personal", usuario.correo_personal)
-            # Actualización de campos relacionales
+            usuario.ultimo_nivel_estudio = request.POST.get("ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
+            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
+            usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
+            usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
+            usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
+            usuario.fk_modificado_por = request.user
+
             rol_id = request.POST.get("fk_rol")
             tipo_documento_id = request.POST.get("fk_tipo_documento")
             eps_id = request.POST.get("fk_eps")
@@ -695,21 +673,28 @@ def actualizar_usuario(request, tipo, usuario_id):
             if rol_id:
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
             if tipo_documento_id:
-                usuario.fk_tipo_documento = TipoDocumento.objects.get(
-                    id=tipo_documento_id)
+                usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
-
-            usuario.fk_modificado_por = request.user
 
             # Guardar cambios
             usuario.save()
 
             # Respuesta en formato JSON para manejo en el frontend
-            return JsonResponse({'status': 'success', 'message': 'Usuario actualizado correctamente.'})
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Usuario actualizado correctamente.'})
+        except IntegrityError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de integridad al agregar el usuario. Revise los datos ingresados.'
+            }, status=400)
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': f'Error al actualizar el usuario: {e}'})
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
+            print(e)
+            return JsonResponse({
+                'status': 'error',
+                'message': f"Error inesperado: {e}"
+            }, status=500)
 
 
 #
@@ -781,8 +766,7 @@ def generar_reporte_excel(request):
             fecha_inicio = zona_horaria_local.localize(
                 datetime.strptime(fecha_creacion, "%Y-%m-%d"))
             fecha_fin = fecha_inicio + timedelta(days=1)
-            usuarios = usuarios.filter(
-                fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
+            usuarios = usuarios.filter(fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
         except ValueError:
             fecha_creacion = None
 

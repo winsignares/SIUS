@@ -1,10 +1,10 @@
-<form method="POST" id="formEditarUsuario" action="{% url 'actualizar_usuario' tipo=tipo usuario_id=usuario.id %}">
+<form id="formEditarUsuario" method="POST" action="{% url 'actualizar_usuario' tipo=tipo usuario_id=usuario.id %}" data-ajax-submit="true">
     {% csrf_token %}
     <div class="container">
         <div class="container mb-3">
             {% if "Director Talento Humano" in user_groups %}
                 <div class="d-flex gap-3 fs-5 fw-bold">
-                    <i class="bi bi-clipboard2-check-fill"></i></i> Revisión
+                    <i class="bi bi-clipboard2-check-fill"></i></i> Detalle de Revisión
                 </div>
 
                 <div class="col-md-6">

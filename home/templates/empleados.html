@@ -7,18 +7,18 @@
 
 {% block content %}
 <div class="container-fluid m-4">
+    <h3 class="mb-3 d-flex justify-content-center align-items-center fw-bold">Gestión de Empleados</h3>
     <div class="row mb-3">
         <div class=" d-flex col justify-content-between align-items-center">
-            <h3 class="fw-bold m-0">Gestión de Empleados</h3>
+            <h4 class="m-0">Empleados Activos</h3>
             {% if "Secretaria Talento Humano" in user_groups %}
             <div class="d-flex gap-3">
                 <!-- Agregar nuevos trabajadores activos -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalEmpleadoModal">
                     Nuevo Empleado
                 </button>
-                <!-- Carga masiva de trabajadores -->
-                {% comment %} <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cargaMasivaModal"> --> {% endcomment %}
-                <button type="button" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="No disponible en el momento">
+                <!-- Carga masiva de trabajadores (Habilitar mas adelante quitando el d-none) -->
+                <button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#cargaMasivaModal">
                     Carga Masiva
                 </button>
             </div>
@@ -26,9 +26,6 @@
             {% endif %}
         </div>
     </div>
-
-<!-- Tabla de empleados en estado 'Contratado' y 'Activo' -->
-    <h4 class="mb-3">Empleados Activos</h4>
 
     <!-- Formulario de búsqueda -->
     <form method="GET" class="mb-3">
@@ -48,14 +45,14 @@
         <div class="col-12">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-3 align-middle">
-                    <thead>
-                        <tr class="text-center">
+                    <thead class="align-middle text-warp">
+                        <tr>
                             <th scope="col"></th>
-                            <th scope="col">Nombre Completo</th>
-                            <th scope="col">Rol</th>
-                            <th scope="col">Cargo</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Hoja de Vida</th>
+                            <th class="col-3" scope="col">Nombre Completo</th>
+                            <th class="col-2" scope="col">Rol</th>
+                            <th class="col-4" scope="col">Cargo</th>
+                            <th class="col-1" scope="col">Estado</th>
+                            <th class="col-2" scope="col">Hoja de Vida</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -94,16 +91,15 @@
                                     No Aplica
                                     {% endif %}
                                 </td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center"     data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal"
-                                    data-id="{{ usuario.id }}" data-tipo="empleado">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-
+                                <td>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -163,14 +159,14 @@
         <div class="col-12">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-3 align-middle">
-                    <thead>
-                        <tr class="text-center">
+                    <thead class="align-middle text-warp">
+                        <tr>
                             <th scope="col"></th>
-                            <th scope="col">Nombre Completo</th>
-                            <th scope="col">Rol</th>
-                            <th scope="col">Cargo</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Hoja de Vida</th>
+                            <th class="col-3" scope="col">Nombre Completo</th>
+                            <th class="col-2" scope="col">Rol</th>
+                            <th class="col-4" scope="col">Cargo</th>
+                            <th class="col-1" scope="col">Estado</th>
+                            <th class="col-2" scope="col">Hoja de Vida</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -209,15 +205,15 @@
                                     No Aplica
                                     {% endif %}
                                 </td>
-                                <td class="d-flex justify-content-center gap-3">
-                                    <a class="btn btn-alterno-red d-flex justify-content-center align-items-center">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a href="" class="btn btn-alterno-dark d-flex justify-content-center align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal"
-                                    data-id="{{ usuario.id }}" data-tipo="aspirante">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}

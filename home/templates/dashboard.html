@@ -32,26 +32,6 @@
         </div>
     </div>
 
-    <!-- Mensaje de errores -->
-    {% if messages %}
-    <div id="alert-container" class="position-fixed bottom-0 end-0 m-3">
-        {% for message in messages %}
-            <div class="alert 
-                        {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}
-                        d-flex align-items-center gap-2 fade show" role="alert">
-                {% if message.tags == 'success' %}
-                    <i class="bi bi-check-circle"></i>
-                {% elif message.tags == 'error' or message.tags == 'warning' %}
-                    <i class="bi bi-exclamation-circle"></i>
-                {% else %}
-                    <i class="bi bi-info-circle"></i>
-                {% endif %}
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <!-- Modal para detalles de usuario -->
     <div class="modal fade" id="detalleUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="detalleUsuarioLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -68,7 +48,7 @@
     </div>
 
     <div class="modal fade" id="editarUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog {% if "Director Talento Humano" in user_groups %}modal-lg{% else %}modal-xl{% endif %} modal-dialog-scrollable">
             <div class="modal-forms modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="editarUsuarioLabel">Editar Usuario</h4>
@@ -128,6 +108,68 @@
         });
     </script>
 
+    <!-- Mostrar alertas generadas por los formularios 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Encuentra todos los formularios con atributo data-ajax-submit="true"
+            document.querySelectorAll("form[data-ajax-submit='true']").forEach(form => {
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault(); // Prevenir el envío normal
+                    handleFormSubmission(this);
+                });
+            });
+        });
+        
+        // Función para manejar el envío de formularios vía AJAX
+        function handleFormSubmission(form, onSuccess = null) {
+            let formData = new FormData(form);
+            let actionUrl = form.getAttribute("action");
+        
+            fetch(actionUrl, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-CSRFToken': form.querySelector("[name=csrfmiddlewaretoken]").value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.message, data.status === "success" ? "success" : "error");
+        
+                // Si la respuesta es exitosa y hay una función de éxito, la ejecutamos
+                if (data.status === "success" && typeof onSuccess === "function") {
+                    onSuccess(data);
+                }
+            })
+            .catch(error => {
+                showAlert("Error en el servidor, intenta de nuevo.", "error");
+                console.error("Error:", error);
+            });
+        }
+        
+        // Función para mostrar alertas dinámicas en el contenedor #dynamic-alerts
+        function showAlert(message, type) {
+            let alertClass = type === "success" ? "alert-success" : "alert-danger";
+            let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+        
+            let alertHtml = `
+                <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
+                    <i class="bi ${icon}"></i> ${message}
+                </div>
+            `;
+        
+            // Insertar la alerta en el contenedor dinámico
+            const alertContainer = document.getElementById("dynamic-alerts");
+            alertContainer.insertAdjacentHTML("beforeend", alertHtml);
+        
+            // Ocultar la alerta automáticamente después de 3 segundos
+            setTimeout(() => {
+                alertContainer.firstElementChild?.remove();
+            }, 3000);
+        }
+    </script> -->
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const editarModal = document.getElementById("editarUsuarioModal");
@@ -161,71 +203,137 @@
         });
     </script>
 
+    <!-- 
     <script>
-        document.getElementById("form-editar-usuario").addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevenir el envío tradicional del formulario
-            
-            const formData = new FormData(this);
-            const url = this.action; // URL definida en el atributo 'action' del formulario
-            
-            fetch(url, {
-                method: "POST",
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
+        document.getElementById("formEditarUsuario").addEventListener("submit", function (e) {
+            e.preventDefault();
+            handleFormSubmission(this, function (data) {
                 if (data.status === "success") {
-                    showAlert(data.message, "success");
-                } else {
-                    showAlert(data.message, "error");
+                    // Cerrar el modal después de un envío exitoso
+                    const editarUsuarioModal = bootstrap.Modal.getInstance(document.getElementById("editarUsuarioModal"));
+                    editarUsuarioModal.hide();
                 }
-            })
-            .catch(error => {
-                showAlert("Error al procesar la solicitud", "error");
-                console.error(error);
             });
         });
-    </script>
-
-    <script>
-        document.getElementById("formEditarUsuario").addEventListener("submit", function (event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            
-            // Verificar los datos enviados
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
-
-            fetch(this.action, {
-                method: "POST",
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    alert(data.message);
-                    location.reload(); // Recargar la página para ver los cambios
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Error al procesar la solicitud");
-            });
-        });
-    </script>
+    </script> -->
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl, {
-                    delay: { "show": 0, "hide": 0 } // Se muestra después de 0.5s y se oculta tras 1s
+            // Manejo de formularios con atributo `data-ajax-submit="true"`
+            document.querySelectorAll("form[data-ajax-submit='true']").forEach(form => {
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    handleFormSubmission(this, function (data) {
+                        if (form.id === "formInfoPersonal") {
+                            window.usuarioIdCreado = data.usuario_id;
+                            openNextModal();
+                        } else if (form.id === "formDetalleAcademico") {
+                            agregarFilaATabla("tablaAcademica", data.detalle, ["institucion", "titulo_obtenido", "nivel_academico", "fecha_graduacion"]);
+                            cerrarModalFormulario("formDetalleAcademicoModal");
+                            redirigirAModal();
+                        } else if (form.id === "formExpLaboral") {
+                            agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
+                            cerrarModalFormulario("formExpLaboralModal");
+                            redirigirAModal();
+                        } else if (form.id === "formEditarUsuario") {
+                            showAlert(data.message, "success");
+                            cerrarModalFormulario("editarUsuarioModal");
+                        }
+                    });
                 });
             });
+        
+            // Botón Finalizar - Cierra el modal y redirige
+            document.getElementById("btnFinalizar").addEventListener("click", function () {
+                cerrarModalFormulario("infoAdicionalModal");
+                window.location.href = "{% url 'gestion_aspirantes' %}";
+            });
         });
+        
+        // Función para manejar el envío de formularios vía AJAX
+        function handleFormSubmission(form, onSuccess = null) {
+            let formData = new FormData(form);
+            let actionUrl = form.getAttribute("action");
+        
+            // Si el formulario está relacionado con el usuario, añade el usuarioId
+            if (window.usuarioIdCreado && formData.has("usuario_id")) {
+                formData.set("usuario_id", window.usuarioIdCreado);
+            }
+        
+            fetch(actionUrl, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-CSRFToken': form.querySelector("[name=csrfmiddlewaretoken]").value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.message, data.status === "success" ? "success" : "error");
+        
+                // Ejecutar función de éxito si la respuesta es correcta
+                if (data.status === "success" && typeof onSuccess === "function") {
+                    onSuccess(data);
+                }
+            })
+            .catch(error => {
+                showAlert("Error en el servidor, intenta de nuevo.", "error");
+                console.error("Error:", error);
+            });
+        }
+        
+        // Función para mostrar alertas en el contenedor #dynamic-alerts
+        function showAlert(message, type) {
+            let alertClass = type === "success" ? "alert-success" : "alert-danger";
+            let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+        
+            let alertHtml = `
+                <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
+                    <i class="bi ${icon}"></i> ${message}
+                </div>
+            `;
+        
+            // Insertar la alerta en el contenedor dinámico
+            const alertContainer = document.getElementById("dynamic-alerts");
+            alertContainer.insertAdjacentHTML("beforeend", alertHtml);
+        
+            // Ocultar la alerta automáticamente después de 3 segundos
+            setTimeout(() => {
+                alertContainer.firstElementChild?.remove();
+            }, 3000);
+        }
+        
+        // Función para cerrar un modal por ID
+        function cerrarModalFormulario(modalId) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+            modal?.hide();
+        }
+        
+        // Función para abrir el modal de información adicional
+        function redirigirAModal() {
+            const infoAdicionalModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
+            infoAdicionalModal.show();
+        }
+        
+        // Función para abrir el siguiente modal después de crear un usuario
+        function openNextModal() {
+            cerrarModalFormulario("infoPersonalModal");
+            redirigirAModal();
+        }
+        
+        // Función para agregar una nueva fila a una tabla
+        function agregarFilaATabla(tablaId, data, columnas) {
+            const tabla = document.getElementById(tablaId);
+            let nuevaFila = "<tr>";
+        
+            columnas.forEach(columna => {
+                nuevaFila += `<td>${data[columna]}</td>`;
+            });
+        
+            nuevaFila += "<td><!-- Acciones futuras --></td></tr>";
+            tabla.insertAdjacentHTML("beforeend", nuevaFila);
+        }
     </script>
 </body>
 </html>
