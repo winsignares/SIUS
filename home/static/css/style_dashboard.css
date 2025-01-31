@@ -316,3 +316,33 @@ table.table tbody td {
 .dropdown-menu .dropdown-item:hover {
     background-color: #f8f9fa;
 }
+
+
+/* 
+--------------------------------------- VISTA DETALLES ---------------------------------------
+*/
+
+/* Estilos para las tarjetas */
+.card {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Estilo para mostrar texto en mayúsculas */
+.text-uppercase {
+    text-transform: uppercase;
+}

@@ -1,61 +1,87 @@
 <div class="container">
-    <div class="container mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex gap-3 fs-5 fw-bold mb-2">
-                <i class="bi bi-person-vcard"></i>Información Personal
+    <!-- Información Personal -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header  d-flex justify-content-between align-items-center">
+            <div class="d-flex gap-3 fs-5 fw-bold">
+                <i class="bi bi-person-vcard"></i> Información Personal
             </div>
-            <!-- <!-- Descargar CV Institucional (Habilitar mas adelante quitando el d-none) -->
+            <!-- Descargar CV Institucional (Habilitar más adelante quitando el d-none) -->
             <a href="#" id="descargarCVInstitucional" class="d-flex gap-2 text-decoration-none d-flex justify-content-center align-items-center d-none" aria-disabled="true">
-                <i class="bi bi-download fs-5"></i>Descargar CV Institucional
+                <i class="bi bi-download fs-5"></i> Descargar CV Institucional
             </a>
         </div>
-        <dl class="row px-2">
-            <dt class="col-md-3 mb-2">Nombre Completo:</dt>
-            <dd class="col-md-9 mb-2">{{ usuario.primer_nombre }}{% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %} {{ usuario.primer_apellido }}{% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}</dd>
-            <dt class="col-md-2 mb-2">Rol:</dt>
-            <dd class="col-md-5 mb-2">{{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}</dd>
-            <dt class="col-md-2 mb-2">Cargo:</dt>
-            <dd class="col-md-3 mb-2">{{ usuario.cargo }}</dd>
-            <dt class="col-md-9 mb-2">Número de Documento:</dt>
-            <dd class="col-md-3 mb-2">{{ usuario.numero_documento }}</dd>
-            <dt class="col-md-9 mb-2">Fecha de Nacimiento:</dt>
-            <dd class="col-md-3 mb-2">{{ usuario.fecha_nacimiento }}</dd>
-            <dt class="col-md-3 mb-2">Correo personal:</dt>
-            <dd class="col-md-9 mb-2">{{ usuario.correo_personal }}</dd>
-            <dt class="col-md-3 mb-2">Celular:</dt>
-            <dd class="col-md-9 mb-2">{{ usuario.celular }}</dd>
-            <dt class="col-md-3 mb-2">Dirección:</dt>
-            <dd class="col-md-9 mb-2">{{ usuario.direccion_residencia }}</dd>
-        </dl>
-    </div>
-    <div class="container mb-3">
-        <div class="d-flex gap-3 fs-5 fw-bold mb-2">
-            <i class="bi bi-mortarboard"></i>Detalles Académicos
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-md-3 mb-2"><i class="bi bi-person"></i> Nombre Completo:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.primer_nombre }}{% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %} {{ usuario.primer_apellido }}{% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-person-badge"></i> Rol:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.fk_rol.rol }} - {{ usuario.fk_rol.descripcion }}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-briefcase"></i> Cargo:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.cargo }}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-file-earmark-text"></i> Número de Documento:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.numero_documento }}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-calendar"></i> Fecha de Nacimiento:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.fecha_nacimiento }}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-envelope"></i> Correo personal:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.correo_personal }}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-phone"></i> Celular:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.celular }}</dd>
+
+                <dt class="col-md-3 mb-2"><i class="bi bi-house"></i> Dirección:</dt>
+                <dd class="col-md-9 mb-2 text-uppercase">{{ usuario.direccion_residencia }}</dd>
+            </dl>
         </div>
-        {% if not detalles_academicos %}
-            <p class="text-center mb-2">No se ha encontrado información relacionada</p>
-        {% else %}
-            {% for detalle in detalles_academicos %}
-                <p>Institución: {{ detalle.institucion }}</p>
-                <p>Título: {{ detalle.titulo_obtenido }}</p>
-                <p>Nivel Académico: {{ detalle.nivel_academico.nombre }}</p>
-                <p>Fecha de Graduación: {{ detalle.fecha_graduacion }}</p>
-            {% endfor %}
-        {% endif %}
     </div>
-    <div class="container mb-3">
-        <div class="d-flex gap-3 fs-5 fw-bold mb-2">
-            <i class="bi bi-briefcase"></i>Experiencia Laboral
+
+    <!-- Detalles Académicos -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex gap-3 fs-5 fw-bold">
+            <i class="bi bi-mortarboard"></i> Detalles Académicos
         </div>
-        {% if not detalles_laborales %}
-            <p class="text-center mb-2">No se ha encontrado información relacionada</p>
-        {% else %}
-            {% for experiencia in detalles_laborales %}
-                <p>Empresa: {{ experiencia.empresa }}</p>
-                <p>Cargo: {{ experiencia.cargo }}</p>
-                <p>Fecha Inicio: {{ experiencia.fecha_inicio }}</p>
-                <p>Fecha Fin: {{ experiencia.fecha_fin }}</p>
-            {% endfor %}
-        {% endif %}
+        <div class="card-body">
+            {% if not detalles_academicos %}
+                <p class="text-center mb-2">No se ha encontrado información relacionada</p>
+            {% else %}
+                {% for detalle in detalles_academicos %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-building"></i> Institución: <span class="text-uppercase">{{ detalle.institucion }}</span></h5>
+                            <p class="card-text"><i class="bi bi-award"></i> Título: <span class="text-uppercase">{{ detalle.titulo_obtenido }}</span></p>
+                            <p class="card-text"><i class="bi bi-book"></i> Nivel Académico: <span class="text-uppercase">{{ detalle.nivel_academico.nombre }}</span></p>
+                            <p class="card-text"><i class="bi bi-calendar-check"></i> Fecha de Graduación: <span class="text-uppercase">{{ detalle.fecha_graduacion }}</span></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Experiencia Laboral -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header  d-flex gap-3 fs-5 fw-bold">
+            <i class="bi bi-briefcase"></i> Experiencia Laboral
+        </div>
+        <div class="card-body">
+            {% if not detalles_laborales %}
+                <p class="text-center mb-2">No se ha encontrado información relacionada</p>
+            {% else %}
+                {% for experiencia in detalles_laborales %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-building"></i> Empresa: <span class="text-uppercase">{{ experiencia.empresa }}</span></h5>
+                            <p class="card-text"><i class="bi bi-person-lines-fill"></i> Cargo: <span class="text-uppercase">{{ experiencia.cargo }}</span></p>
+                            <p class="card-text"><i class="bi bi-calendar-range"></i> Fecha Inicio: <span class="text-uppercase">{{ experiencia.fecha_inicio }}</span></p>
+                            <p class="card-text"><i class="bi bi-calendar-range"></i> Fecha Fin: <span class="text-uppercase">{{ experiencia.fecha_fin }}</span></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
 </div>
