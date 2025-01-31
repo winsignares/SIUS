@@ -299,11 +299,17 @@ def agregar_info_personal(request):
         # Extraer todos los datos del formulario
         data = request.POST
         try:
-            # Verificar si ya existe un usuario con el número de documento
+            # Verificar si ya existe un usuario con el número de documento ingresado
             if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe un aspirante con el número de cédula ingresado.'}, status=400)
+                    'message': 'Ya existe un aspirante con el número de documento ingresado.'}, status=400)
+
+            # Verificar si ya existe un usuario con el correo
+            if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe un aspirante con el correo personal ingresado.'}, status=400)
 
             # Crear un nuevo usuario
             nuevo_usuario = Usuario.objects.create(
@@ -639,7 +645,21 @@ def editar_usuario(request, tipo, usuario_id):
 def actualizar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     if request.method == "POST":
+        # Extraer todos los datos del formulario
+        data = request.POST
         try:
+            # Verificar si ya existe otro usuario con el mismo número de documento
+            if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exclude(id=usuario_id).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe otro usuario con el número de documento ingresado.'}, status=400)
+
+            # Verificar si ya existe otro usuario con el mismo correo personal
+            if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exclude(id=usuario_id).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe otro usuario con el correo personal ingresado.'}, status=400)
+                
             # Actualización de campos de Usuario
             usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
             usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
@@ -763,8 +783,7 @@ def generar_reporte_excel(request):
     if fecha_creacion:
         try:
             # Convertir la fecha a rango con zona horaria local
-            fecha_inicio = zona_horaria_local.localize(
-                datetime.strptime(fecha_creacion, "%Y-%m-%d"))
+            fecha_inicio = zona_horaria_local.localize(datetime.strptime(fecha_creacion, "%Y-%m-%d"))
             fecha_fin = fecha_inicio + timedelta(days=1)
             usuarios = usuarios.filter(fecha_creacion__gte=fecha_inicio, fecha_creacion__lt=fecha_fin)
         except ValueError:
@@ -779,8 +798,7 @@ def generar_reporte_excel(request):
     sheet.title = "Reporte SNIES"
 
     # Encabezados
-    sheet.append(["ID", "Nombre Completo", "Cargo",
-                 "Número Documento", "Correo", "Estado", "Fecha Creación"])
+    sheet.append(["ID", "Nombre Completo", "Cargo", "Número Documento", "Correo", "Estado", "Fecha Creación"])
 
     # Insertar datos filtrados
     for idx, usuario in enumerate(usuarios, start=1):

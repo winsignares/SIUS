@@ -108,68 +108,6 @@
         });
     </script>
 
-    <!-- Mostrar alertas generadas por los formularios 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Encuentra todos los formularios con atributo data-ajax-submit="true"
-            document.querySelectorAll("form[data-ajax-submit='true']").forEach(form => {
-                form.addEventListener("submit", function (e) {
-                    e.preventDefault(); // Prevenir el envío normal
-                    handleFormSubmission(this);
-                });
-            });
-        });
-        
-        // Función para manejar el envío de formularios vía AJAX
-        function handleFormSubmission(form, onSuccess = null) {
-            let formData = new FormData(form);
-            let actionUrl = form.getAttribute("action");
-        
-            fetch(actionUrl, {
-                method: "POST",
-                body: formData,
-                headers: {
-                    'X-CSRFToken': form.querySelector("[name=csrfmiddlewaretoken]").value,
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                showAlert(data.message, data.status === "success" ? "success" : "error");
-        
-                // Si la respuesta es exitosa y hay una función de éxito, la ejecutamos
-                if (data.status === "success" && typeof onSuccess === "function") {
-                    onSuccess(data);
-                }
-            })
-            .catch(error => {
-                showAlert("Error en el servidor, intenta de nuevo.", "error");
-                console.error("Error:", error);
-            });
-        }
-        
-        // Función para mostrar alertas dinámicas en el contenedor #dynamic-alerts
-        function showAlert(message, type) {
-            let alertClass = type === "success" ? "alert-success" : "alert-danger";
-            let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
-        
-            let alertHtml = `
-                <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
-                    <i class="bi ${icon}"></i> ${message}
-                </div>
-            `;
-        
-            // Insertar la alerta en el contenedor dinámico
-            const alertContainer = document.getElementById("dynamic-alerts");
-            alertContainer.insertAdjacentHTML("beforeend", alertHtml);
-        
-            // Ocultar la alerta automáticamente después de 3 segundos
-            setTimeout(() => {
-                alertContainer.firstElementChild?.remove();
-            }, 3000);
-        }
-    </script> -->
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const editarModal = document.getElementById("editarUsuarioModal");
@@ -203,20 +141,6 @@
         });
     </script>
 
-    <!-- 
-    <script>
-        document.getElementById("formEditarUsuario").addEventListener("submit", function (e) {
-            e.preventDefault();
-            handleFormSubmission(this, function (data) {
-                if (data.status === "success") {
-                    // Cerrar el modal después de un envío exitoso
-                    const editarUsuarioModal = bootstrap.Modal.getInstance(document.getElementById("editarUsuarioModal"));
-                    editarUsuarioModal.hide();
-                }
-            });
-        });
-    </script> -->
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Manejo de formularios con atributo `data-ajax-submit="true"`
@@ -235,9 +159,6 @@
                             agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
                             cerrarModalFormulario("formExpLaboralModal");
                             redirigirAModal();
-                        } else if (form.id === "formEditarUsuario") {
-                            showAlert(data.message, "success");
-                            cerrarModalFormulario("editarUsuarioModal");
                         }
                     });
                 });
@@ -249,6 +170,42 @@
                 window.location.href = "{% url 'gestion_aspirantes' %}";
             });
         });
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const editarUsuarioModal = document.getElementById("editarUsuarioModal");
+        
+            // Delegación de eventos para capturar el submit del formulario dinámico
+            editarUsuarioModal.addEventListener("shown.bs.modal", function () {
+                const formEditarUsuario = document.getElementById("formEditarUsuario");
+        
+                if (formEditarUsuario) {
+                    formEditarUsuario.removeEventListener("submit", submitEditarUsuario);
+                    formEditarUsuario.addEventListener("submit", submitEditarUsuario);
+                }
+            });
+        });
+        
+        // Función mejorada para manejar el envío del formulario y recargar correctamente la vista
+        function submitEditarUsuario(e) {
+            e.preventDefault();
+            handleFormSubmission(this, function (data) {
+                showAlert(data.message, "success");
+                cerrarModalFormulario("editarUsuarioModal");
+        
+                // Detectar la vista actual para redirigir correctamente
+                const currentPath = document.location.pathname;
+        
+                setTimeout(() => {
+                    if (currentPath.includes("empleados")) {
+                        window.location.href = "{% url 'gestion_empleados' %}";
+                    } else if (currentPath.includes("aspirantes")) {
+                        window.location.href = "{% url 'gestion_aspirantes' %}";
+                    } else {
+                        window.location.reload();
+                    }
+                }, 1500);
+            });
+        }
         
         // Función para manejar el envío de formularios vía AJAX
         function handleFormSubmission(form, onSuccess = null) {
@@ -283,10 +240,15 @@
             });
         }
         
-        // Función para mostrar alertas en el contenedor #dynamic-alerts
+        // Función para mostrar alertas sin duplicarlas
         function showAlert(message, type) {
             let alertClass = type === "success" ? "alert-success" : "alert-danger";
             let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+        
+            let alertContainer = document.getElementById("dynamic-alerts");
+        
+            // Limpiar alertas anteriores antes de agregar una nueva
+            alertContainer.replaceChildren();
         
             let alertHtml = `
                 <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
@@ -294,8 +256,6 @@
                 </div>
             `;
         
-            // Insertar la alerta en el contenedor dinámico
-            const alertContainer = document.getElementById("dynamic-alerts");
             alertContainer.insertAdjacentHTML("beforeend", alertHtml);
         
             // Ocultar la alerta automáticamente después de 3 segundos
