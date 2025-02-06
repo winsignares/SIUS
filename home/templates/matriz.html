@@ -1,5 +1,3 @@
-
-
 {% extends "dashboard.html" %}
 
 {% block title %}Matriz - SIUC{% endblock %}
@@ -14,16 +12,257 @@
         </div>
     </div>
 
-    <div class="row mb-3">        
-        <div class="d-flex col justify-content-between align-items-center"> 
-            {% if periodo_actual %}
-                <h5 id="matrizDocente"><span class="fw-bold">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
-            {% else %}
-                <h5 id="matrizDocente">No hay un periodo vigente en este momento.</h5>
-            {% endif %}
-            <h6 id="fechaElaboracion"><span class="fw-bold">Fecha de Elaboración:</span> {{ dia_actual }}</h6>
-            <h6 id="fechaElaboracion"><span class="fw-bold">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
+    <div class="row mb-3">
+        <div class="d-flex justify-content-center align-items-center gap-3">
+            <div class="d-flex col justify-content-between justify-middle align-items-center">
+                {% if periodo_actual %}
+                    <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
+                {% else %}
+                    <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
+                {% endif %}
+                <h6 id="fechaElaboracion" class="m-0"><span class="fw-bold m-0">Fecha de Elaboración:</span> {{ dia_actual }}</h6>
+                <h6 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
+            </div>
+            <div class="vr"></div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarCargaModal">
+                Agregar
+            </button>
+            <button id="guardarTodo" class="btn btn-primary">
+                Guardar Todo
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="agregarCargaModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-forms modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Agregar Carga Académica</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cargaForm">
+                        <div class="mb-3">
+                            <label for="semestre" class="form-label">Semestre</label>
+                            <select class="form-select" id="semestre" required>
+                                <option value="">Selecciona un semestre</option>
+                                {% for semestre in semestres %}
+                                    <option value="{{ semestre.id }}">{{ semestre.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="materia" class="form-label">Materia</label>
+                            <select class="form-select" id="materia" required>
+                                <option value="">Selecciona una materia</option>
+                                {% for materia in materias_list %}
+                                    <option value="{{ materia.id }}">{{ materia.materia }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-2" style="position: relative;">
+                            <label for="fk_docente_input_matriz" class="form-label mb-0">Docente <span class="fw-bold fs-4">*</span></label>
+                            <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
+                            <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
+                                {% for docente in docentes_list %}
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
+                                            {{ docente.primer_nombre }} {{ docente.primer_apellido }}
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="mb-3">
+                            <label for="horas_semanales" class="form-label">Horas Semanales</label>
+                            <input type="number" class="form-control" id="horas_semanales" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="materia_compartida">
+                            <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCarga">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Semestre</th>
+                        <th>Materia</th>
+                        <th>Docente</th>
+                        <th>Dedicación</th>
+                        <th>Funciones Sustantivas</th>
+                        <!--
+                        <th>Horas Semanales (H)</th>
+                        <th>Número de Semanas (S)</th>
+                        <th>Total (H * S)</th>
+                        -->
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán los datos del formulario -->
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function setupDropdownFilter(inputId, dropdownId) {
+            const inputElement = document.getElementById(inputId);
+            const dropdownElement = document.getElementById(dropdownId);
+            const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
+
+            // Mostrar/ocultar el dropdown según el input
+            inputElement.addEventListener("input", function () {
+                const query = inputElement.value.toLowerCase();
+
+                // Filtrar las opciones según el texto ingresado
+                const filteredItems = originalItems.filter(item =>
+                    item.textContent.toLowerCase().includes(query)
+                );
+
+                // Limpiar y actualizar el dropdown
+                dropdownElement.innerHTML = "";
+                if (filteredItems.length > 0) {
+                    filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                    dropdownElement.style.display = "block";
+                } else {
+                    dropdownElement.style.display = "none";
+                }
+            });
+
+            // Cuando seleccionas una opción
+            dropdownElement.addEventListener("click", function (event) {
+                if (event.target.matches(".dropdown-item")) {
+                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
+                    inputElement.value = selectedText; // Inserta solo el texto limpio
+                    dropdownElement.style.display = "none"; // Oculta el dropdown
+                }
+            });
+
+            // Ocultar el dropdown al hacer clic fuera
+            document.addEventListener("click", function (event) {
+                if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
+                    dropdownElement.style.display = "none";
+                }
+            });
+
+            // Mostrar todas las opciones si el input está vacío
+            inputElement.addEventListener("focus", function () {
+                if (inputElement.value.trim() === "") {
+                    dropdownElement.innerHTML = "";
+                    originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                    dropdownElement.style.display = "block";
+                }
+            });
+        }
+
+        // Reutiliza la función para diferentes inputs y dropdowns
+        setupDropdownFilter("fk_docente_input_matriz", "fk_docente_dropdown_matriz");
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cargas = [];
+        const tablaBody = document.querySelector('#tablaCargas tbody');
+
+        // Guardar datos del modal en la tabla
+        document.getElementById('guardarCarga').addEventListener('click', function () {
+            const semestre = document.getElementById('semestre').value;
+            const materia = document.getElementById('materia').value;
+            const docente = document.getElementById('docente').value;
+            const horasSemanales = document.getElementById('horas_semanales').value;
+            const valorAPagar = document.getElementById('valor_a_pagar').value;
+            const materiaCompartida = document.getElementById('materia_compartida').checked;
+
+            // Validar que todos los campos estén completos
+            // if (!semestre || !materia || !docente || !horasSemanales || !valorAPagar) {
+            //     alert('Por favor, completa todos los campos.');
+            //     return;
+            // }
+
+            // Agregar la carga a la lista temporal
+            cargas.push({
+                semestre,
+                materia,
+                docente,
+                horasSemanales,
+                valorAPagar,
+                materiaCompartida
+            });
+
+            // Limpiar el formulario
+            document.getElementById('cargaForm').reset();
+
+            // Actualizar la tabla
+            actualizarTabla();
+            $('#agregarCargaModal').modal('hide');
+        });
+
+        // Función para actualizar la tabla
+        function actualizarTabla() {
+            tablaBody.innerHTML = '';
+            cargas.forEach((carga, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${document.getElementById('semestre').options[document.getElementById('semestre').selectedIndex].text}</td>
+                    <td>${document.getElementById('materia').options[document.getElementById('materia').selectedIndex].text}</td>
+                    <td>${document.getElementById('docente').options[document.getElementById('docente').selectedIndex].text}</td>
+                    <td>${carga.horasSemanales}</td>
+                    <td>${carga.valorAPagar}</td>
+                    <td>${carga.materiaCompartida ? 'Sí' : 'No'}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="eliminarFila(${index})">Eliminar</button></td>
+                `;
+                tablaBody.appendChild(row);
+            });
+        }
+
+        // Función para eliminar una fila
+        window.eliminarFila = function (index) {
+            cargas.splice(index, 1);
+            actualizarTabla();
+        };
+
+        // Enviar todas las cargas al backend
+        document.getElementById('enviarCargas').addEventListener('click', function () {
+            fetch('/guardar_matriz/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    cargas,
+                    periodoVigente: document.getElementById('matrizDocente').innerText.split(':')[1].trim(),
+                    fechaElaboracion: document.getElementById('fechaElaboracion').innerText.split(':')[1].trim(),
+                    programaMatriz: document.getElementById('programaMatriz').innerText.split(':')[1].trim()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Cargas académicas guardadas correctamente.');
+                    cargas.length = 0; // Limpiar la lista temporal
+                    actualizarTabla();
+                } else {
+                    alert('Ocurrió un error al guardar las cargas.');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

@@ -1,4 +1,5 @@
 from collections import defaultdict
+import json
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
@@ -43,7 +44,7 @@ def error_404_view(request, exception):
 
 def obtener_db_info(request, incluir_datos_adicionales=False):
     """
-        Función auxiliar para obtener información especifica del usuario autenticado.        
+        Función auxiliar para obtener información especifica del usuario autenticado.
         Además, se incluye el envío de datos de la base de dato si alguna otra función lo requiere.
     """
     usuario_autenticado = request.user
@@ -659,7 +660,7 @@ def actualizar_usuario(request, tipo, usuario_id):
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe otro usuario con el correo personal ingresado.'}, status=400)
-                
+
             # Actualización de campos de Usuario
             usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
             usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
@@ -839,7 +840,7 @@ def gestion_carga_academica(request):
     Muestra la gestión de carga académica, filtrando los semestres según el programa del usuario.
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
-    
+
     dia_actual = datetime.now().date()
 
     # Agrupar cargas académicas por semestre
@@ -865,7 +866,7 @@ def gestion_carga_academica(request):
 @login_required
 def gestion_matriz(request):
     """
-    Muestra la gestión 
+    Muestra la gestión
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
@@ -877,3 +878,31 @@ def gestion_matriz(request):
 
     return render(request, 'matriz.html', contexto)
 
+@login_required
+@csrf_exempt
+def guardar_matriz(request):
+    """
+    Guarda la carga académica del usuario.
+    """
+    if request.method == "POST":
+        # Obtener datos del formulario
+        data = json.loads(request.body)
+
+        try:
+            for carga in data[carga]:
+                CargaAcademica.objects.create(
+                )
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Carga académica agregada correctamente.'})
+        except IntegrityError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de integridad al agregar la carga académica. Revise los datos ingresados.'
+            }, status=400)
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                'status': 'error',
+                'message': f"Error inesperado: {e}"
+            }, status=500)
