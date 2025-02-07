@@ -291,42 +291,29 @@ def gestion_aspirantes(request):
 
 
 @login_required
-def agregar_info_personal(request):
+def agregar_aspirante(request):
     print(request.POST)
     if request.method == 'POST':
-        # Extraer todos los datos del formulario
         data = request.POST
         try:
-            # Verificar si ya existe un usuario con el número de documento ingresado
             if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe un aspirante con el número de documento ingresado.'}, status=400)
 
-            # Verificar si ya existe un usuario con el correo
             if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe un aspirante con el correo personal ingresado.'}, status=400)
 
-            # Crear un nuevo usuario
             nuevo_usuario = Usuario.objects.create(
-                # Campos obligatorios
                 fk_rol_id=data.get('fk_rol'),
-
                 fk_tipo_documento_id=data.get('fk_tipo_documento'),
-
                 cargo=data.get('cargo'),
-
                 primer_nombre=data.get('primer_nombre'),
-
                 primer_apellido=data.get('primer_apellido'),
-
                 numero_documento=data.get('numero_documento'),
-
                 correo_personal=data.get('correo_personal'),
-
-                # Campos opcionales
                 segundo_nombre=data.get('segundo_nombre'),
                 segundo_apellido=data.get('segundo_apellido'),
                 fecha_nacimiento=data.get('fecha_nacimiento'),
@@ -358,7 +345,7 @@ def agregar_info_personal(request):
         except IntegrityError:
             return JsonResponse({
                 'status': 'error',
-                'message': 'Error de integridad al agregar el usuario. Revise los datos ingresados.'
+                'message': 'Error de integridad al agregar el aspirante. Revise los datos ingresados.'
             }, status=400)
         except Exception as e:
             print(e)
@@ -366,6 +353,77 @@ def agregar_info_personal(request):
                 'status': 'error',
                 'message': f"Error inesperado: {e}"
             }, status=500)
+
+@login_required
+def agregar_empleado(request):
+    if request.method == 'POST':
+        data = request.POST
+        try:
+            # Verificar si ya existe un usuario con el número de documento ingresado
+            if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe un empleado con el número de documento ingresado.'}, status=400)
+
+            # Verificar si ya existe un usuario con el correo
+            if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe un empleado con el correo personal ingresado.'}, status=400)
+
+            # Crear un nuevo usuario
+            nuevo_usuario = Usuario.objects.create(
+                fk_rol_id=data.get('fk_rol_emp'),
+                fk_tipo_documento_id=data.get('fk_tipo_documento'),
+                cargo=data.get('cargo'),
+                primer_nombre=data.get('primer_nombre'),
+                primer_apellido=data.get('primer_apellido'),
+                numero_documento=data.get('numero_documento'),
+                correo_personal=data.get('correo_personal'),
+                segundo_nombre=data.get('segundo_nombre'),
+                segundo_apellido=data.get('segundo_apellido'),
+                fecha_nacimiento=data.get('fecha_nacimiento'),
+                lugar_nacimiento=data.get('lugar_nacimiento'),
+                fecha_expedicion_documento=data.get('fecha_expedicion_documento'),
+                lugar_expedicion_documento=data.get('lugar_expedicion_documento'),
+                sexo=data.get('sexo'),
+                celular=data.get('celular'),
+                telefono_fijo=data.get('telefono_fijo'),
+                direccion_residencia=data.get('direccion_residencia'),
+                departamento_residencia=data.get('departamento_residencia'),
+                ciudad_residencia=data.get('ciudad_residencia'),
+                barrio_residencia=data.get('barrio_residencia'),
+                estado_civil=data.get('estado_civil'),
+                ultimo_nivel_estudio=data.get('ultimo_nivel_estudio'),
+                fk_eps_id=data.get('fk_eps'),
+                afp=data.get('afp'),
+                url_hoja_de_vida=data.get('url_hoja_de_vida'),
+                estado_revision="Contratado",
+                activo=True,
+                sede_donde_labora=data.get('sede_donde_labora'),
+                fk_creado_por=request.user
+            )
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Empleado agregado correctamente.',
+                'usuario_id': nuevo_usuario.id
+            })
+
+        except IntegrityError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Error de integridad al agregar el empleado: {str(e)}'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f"Error inesperado: {str(e)}"
+            }, status=500)
+    else:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Método no permitido.'
+        }, status=405)
 
 
 @login_required

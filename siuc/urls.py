@@ -33,7 +33,8 @@ urlpatterns = [
     path('siuc/dashboard/home/', views.dashboard, name='dashboard'),
 
     path("siuc/dashboard/aspirantes/", views.gestion_aspirantes, name="gestion_aspirantes"),
-    path("siuc/dashboard/aspirantes/agregar_info_personal/", views.agregar_info_personal, name="agregar_info_personal"),
+    path("siuc/dashboard/aspirantes/agregar_aspirante/", views.agregar_aspirante, name="agregar_aspirante"),
+    path("siuc/dashboard/aspirantes/agregar_empleado/", views.agregar_empleado, name="agregar_empleado"),
     path("siuc/dashboard/aspirantes/agregar_exp_laboral/", views.agregar_exp_laboral, name="agregar_exp_laboral"),
     path("siuc/dashboard/aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"),
 

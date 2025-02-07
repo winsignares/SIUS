@@ -14,7 +14,7 @@
             {% if "Secretaria Talento Humano" in user_groups %}
             <div class="d-flex gap-3">
                 <!-- Agregar nuevos trabajadores activos -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalEmpleadoModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal">
                     Nuevo Empleado
                 </button>
                 <!-- Carga masiva de trabajadores (Habilitar mas adelante quitando el d-none) -->
@@ -253,20 +253,17 @@
     </nav>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="nuevoEmpleadoModal" tabindex="-1" aria-labelledby="nuevoEmpleadoModalLabel" aria-hidden="true">
+<!-- Modal Información Personal -->
+<div class="modal fade" id="infoPersonalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoPersonalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="nuevoEmpleadoModalLabel">Nuevo Empleado</h3>
+                <h4 class="modal-title" id="nuevoEmpleadoModalLabel">Nuevo Empleado</h4>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-2">
-                <form id="formEmpleado" method="POST">
-                    {% comment %} action="{% url 'agregar_empleado' %}" {% endcomment %}
+                <form id="formInfoPersonal" method="POST" action="{% url 'agregar_empleado' %}" data-ajax-submit="true">
                     {% csrf_token %}
-
-                    <!-- Contenido de las pestañas -->
                     <div class="container">
                         <!-- Información Personal -->
                         <div class="container mb-3">
@@ -275,117 +272,131 @@
                             </div>
                             <div class="row px-3">
                                 <div class="col-md-6 mb-2">
-                                    <label for="primer_nombre" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="segundo_nombre" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="segundo_nombre" name="segundo_nombre">
+                                    <label for="primer_nombre_emp" class="form-label mb-0">Primer Nombre <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="primer_nombre_emp" name="primer_nombre" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="primer_apellido" class="form-label mb-0">Primer Apellido <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="primer_apellido" name="primer_apellido" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="segundo_apellido" class="form-label mb-0">Segundo Apellido<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="segundo_apellido" name="segundo_apellido">
+                                    <label for="segundo_nombre_emp" class="form-label mb-0">Segundo Nombre<span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="segundo_nombre_emp" name="segundo_nombre">
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="fk_rol" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="fk_rol" name="fk_rol" required>
+                                    <label for="primer_apellido_emp" class="form-label mb-0">Primer Apellido <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="primer_apellido_emp" name="primer_apellido" required>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="segundo_apellido_emp" class="form-label mb-0">Segundo Apellido<span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="segundo_apellido_emp" name="segundo_apellido">
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="fk_rol_emp" class="form-label mb-0">Rol <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_rol" name="fk_rol_emp" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for rol in roles_list %}
                                             <option value="{{ rol.id }}">{{ rol.rol }} - {{ rol.descripcion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
-                                    <label for="cargo" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="cargo" name="cargo" required>
+                                    <label for="cargo_emp" class="form-label mb-0">Cargo <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="cargo_emp" name="cargo" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="fecha_nacimiento" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="lugar_nacimiento" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
+                                    <label for="fecha_nacimiento_emp" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="date" class="form-control" id="fecha_nacimiento_emp" name="fecha_nacimiento" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="fk_tipo_documento" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="fk_tipo_documento" name="fk_tipo_documento" required>
+                                    <label for="lugar_nacimiento_emp" class="form-label mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="lugar_nacimiento_emp" name="lugar_nacimiento">
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="fk_tipo_documento_emp" class="form-label mb-0">Tipo de Documento <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_tipo_documento_emp" name="fk_tipo_documento" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for tipo in tipos_documento_list %}
                                             <option value="{{ tipo.id }}">{{ tipo.tipo_documento }} - {{ tipo.descripcion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
-                                    <label for="numero_documento" class="form-label mb-0">Número de Documento <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="number" class="form-control" id="numero_documento" name="numero_documento" required>
+                                    <label for="numero_documento_emp" class="form-label mb-0">Número de Documento <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="number" class="form-control" id="numero_documento_emp" name="numero_documento" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="fecha_expedicion_documento" class="form-label mb-0">Fecha de Expedición del Documento<span class='fw-bold fs-4'>   </span></label>
-                                    <input type="date" class="form-control" id="fecha_expedicion_documento" name="fecha_expedicion_documento">
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="lugar_expedicion_documento" class="form-label mb-0">Lugar de Expedición del Documento<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="lugar_expedicion_documento" name="lugar_expedicion_documento">
+                                    <label for="fecha_expedicion_documento_emp" class="form-label mb-0">Fecha de Expedición del Documento <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="date" class="form-control" id="fecha_expedicion_documento_emp" name="fecha_expedicion_documento" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="sexo" class="form-label mb-0">Sexo<span class='fw-bold fs-4'></span></label>
-                                    <select class="form-select" id="sexo" name="sexo">
+                                    <label for="lugar_expedicion_documento_emp" class="form-label mb-0">Lugar de Expedición del Documento<span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="lugar_expedicion_documento_emp" name="lugar_expedicion_documento">
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="sexo_emp" class="form-label mb-0">Sexo <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="sexo_emp" name="sexo" required>
                                         <option value="" selected>Seleccione</option>
                                         <option value="Masculino">Masculino</option>
                                         <option value="Femenino">Femenino</option>
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
-                                    <label for="correo_personal" class="form-label mb-0">Correo Personal <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="email" class="form-control" id="correo_personal" name="correo_personal" required>
+                                    <label for="correo_personal_emp" class="form-label mb-0">Correo Personal <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="email" class="form-control" id="correo_personal_emp" name="correo_personal" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="celular" class="form-label mb-0">Celular <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="number" class="form-control" id="celular" name="celular" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="telefono_fijo" class="form-label mb-0">Teléfono Fijo<span class='fw-bold fs-4'></span></label>
-                                    <input type="number" class="form-control" id="telefono_fijo" name="telefono_fijo">
+                                    <label for="celular_emp" class="form-label mb-0">Celular <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="number" class="form-control" id="celular_emp" name="celular" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="direccion_residencia" class="form-label mb-0">Dirección de Residencia<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="direccion_residencia" name="direccion_residencia">
+                                    <label for="telefono_fijo_emp" class="form-label mb-0">Teléfono Fijo<span class='fw-bold fs-4'></span></label>
+                                    <input type="number" class="form-control" id="telefono_fijo_emp" name="telefono_fijo">
                                 </div>
+
                                 <div class="col-md-6 mb-2">
-                                    <label for="departamento_residencia" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-select" id="departamento_residencia" name="departamento_residencia" required>
-                                        <option value="" selected>Seleccione</option>
+                                    <label for="direccion_residencia_emp" class="form-label mb-0">Dirección de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="direccion_residencia_emp" name="direccion_residencia" required>
+                                </div>
+
+                                <div class="col-md-6 mb-2" style="position: relative;">
+                                    <label for="departamento_residencia_emp" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control mb-2" id="departamento_residencia_emp_input" name="departamento_residencia" placeholder="Buscar o escribir Departamento de Residencia..." autocomplete="off" required>
+                                    <ul id="departamento_residencia_dropdown" class="dropdown-menu">
                                         {% for departamento in departamentos_list %}
-                                            <option value="{{ departamento.nombre }}">{{ departamento.nombre }}</option>
+                                            <li>
+                                                <button class="dropdown-item" type="button" data-value="{{ departamento.nombre }}">
+                                                    {{ departamento.nombre }}
+                                                </button>
+                                            </li>
                                         {% endfor %}
-                                    </select>
+                                    </ul>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="ciudad_residencia" class="form-label mb-0">Ciudad de Residencia<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="ciudad_residencia" name="ciudad_residencia">
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="barrio_residencia" class="form-label mb-0">Barrio de Residencia<span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="barrio_residencia" name="barrio_residencia">
+                                    <label for="ciudad_residencia_emp" class="form-label mb-0">Ciudad de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="ciudad_residencia_emp" name="ciudad_residencia" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="estado_civil" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
-                                    <select type="text" class="form-select" id="estado_civil" name="estado_civil">
+                                    <label for="barrio_residencia_emp" class="form-label mb-0">Barrio de Residencia <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="text" class="form-control" id="barrio_residencia_emp" name="barrio_residencia" required>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="estado_civil_emp" class="form-label mb-0">Estado Civil<span class='fw-bold fs-4'></span></label>
+                                    <select type="text" class="form-select" id="estado_civil_emp" name="estado_civil">
                                         <option value="" selected>Seleccione</option>
                                         <option value="Soltero (a)">Soltero (a)</option>
                                         <option value="Casado (a)">Casado (a)</option>
@@ -395,29 +406,34 @@
                                         <option value="Viudo (a)">Viudo (a)</option>
                                     </select>
                                 </div>
+
                                 <div class="col-md-6 mb-2">
-                                    <label for="ultimo_nivel_estudio" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="ultimo_nivel_estudio" name="ultimo_nivel_estudio" required>
+                                    <label for="ultimo_nivel_estudio_emp" class="form-label mb-0">Último Nivel de Estudio <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="ultimo_nivel_estudio_emp" name="ultimo_nivel_estudio" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for nivel in niveles_academicos_list %}
-                                            <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+                                            <option value="{{ nivel.nombre }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
-                                <div class="col-md-6 mb-2">
-                                    <label for="eps" class="form-label mb-0">EPS <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="eps" name="eps" required>
-                                        <option value="" selected>Seleccione</option>
+                                <div class="col-md-6 mb-2" style="position: relative;">
+                                    <label for="fk_eps_input_emp" class="form-label mb-0">EPS <span class="fw-bold fs-4">*</span></label>
+                                    <input type="text" id="fk_eps_emp_input" class="form-control mb-2" placeholder="Buscar o escribir EPS..." autocomplete="off" required>
+                                    <ul id="fk_eps_dropdown" class="dropdown-menu">
                                         {% for eps in eps_list %}
-                                            <option value="{{ eps.nombre }}">{{ eps.nombre }}</option>
+                                            <li>
+                                                <button class="dropdown-item" type="button" data-value="{{ eps.id }}">
+                                                    {{ eps.nombre }} {% if eps.regimen %}({{ eps.regimen }}){% endif %}{% if eps.codigo_eps %} - {{ eps.codigo_eps }}{% endif %}
+                                                </button>
+                                            </li>
                                         {% endfor %}
-                                    </select>
+                                    </ul>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="afp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
-                                    <select type="text" class="form-select" id="afp" name="afp" required>
+                                    <label for="afp_emp" class="form-label mb-0">AFP <span class='fw-bold fs-4'>*</span></label>
+                                    <select type="text" class="form-select" id="afp_emp" name="afp" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for afp in afp_list %}
                                             <option value="{{ afp.nombre }}">{{ afp.nombre }}</option>
@@ -425,92 +441,27 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-8">
-                                    <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
+                                <div class="col-md-12">
+                                    <label for="url_hoja_de_vida_emp" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
+                                    <input type="url" class="form-control" id="url_hoja_de_vida_emp" name="url_hoja_de_vida" required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Pendiente" disabled required>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Separador -->
-                        <div class="d-flex align-items-center justify-content-center divider">
-                            <hr class="w-100">
-                        </div>
-
-                        <!-- Detalles Académicos -->
-                        <div class="container mb-3">
-                            <div class="d-flex gap-3 fs-5 fw-bold">
-                                <i class="bi bi-mortarboard"></i>Detalles Académicos
-                            </div>
-                            <div class="row px-3">
-                                <!-- Fila 1 -->
                                 <div class="col-md-6 mb-2">
-                                    <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="institucion" name="institucion" required>
+                                    <label for="sede_donde_labora_emp" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="sede_donde_labora_emp" name="sede_donde_labora" required>
                                         <option value="" selected>Seleccione</option>
-                                        {% for institucion in instituciones_list %}
-                                            <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
+                                        {% for sede in sedes_list %}
+                                            <option value="{{ sede.ubicacion }}">{{ sede.ubicacion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="titulo_obtenido" name="titulo_obtenido" required>
-                                </div>
 
-                                <!-- Fila 2 -->
                                 <div class="col-md-6">
-                                    <label for="nivel_academico" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="nivel_academico" name="nivel_academico" required>
-                                        <option value="" selected>Seleccione</option>
-                                        {% for nivel in niveles_academicos_list %}
-                                            <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="date" class="form-control" id="fecha_graduacion" name="fecha_graduacion" required>
+                                    <label for="estado_revision_emp" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
+                                    <input type="text" class="form-control" id="estado_revision_emp" name="estado_revision" value="Contratado" disabled required>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Separador -->
-                        <div class="d-flex align-items-center justify-content-center divider">
-                            <hr class="w-100">
-                        </div>
-
-                        <!-- Experiencia Laboral -->
-                        <div class="container mb-2">
-                            <div class="d-flex gap-3 fs-5 fw-bold">
-                                <i class="bi bi-briefcase"></i></i>Experiencia Laboral
-                            </div>
-                            <div class="row px-3">
-                                <!-- Fila 1 -->
-                                <div class="col-md-6 mb-2">
-                                    <label for="empresa" class="form-label mb-0">Empresa donde Laboró <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="empresa" name="empresa" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <label for="cargo" class="form-label mb-0">Cargo Laborado <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="cargo" name="cargo" required>
-                                </div>
-
-                                <!-- Fila 2 -->
-                                <div class="col-md-6">
-                                    <label for="fecha_inicio" class="form-label mb-0">Fecha de Inicio <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="fecha_fin" class="form-label mb-0">Fecha de Fin <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
-                                </div>
-                            </div>
-                        </div>
+                        </div>                        
                     </div>
                 </form>
             </div>
@@ -520,7 +471,204 @@
                 <!-- Nota -->
                 <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
 
-                <button type="submit" class="btn btn-primary" form="formEmpleado">Enviar</button>
+                <button type="submit" class="btn btn-primary" form="formInfoPersonal">Agregar y continuar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Información Adicional -->
+<div class="modal fade" id="infoAdicionalModalEmp" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="infoAdicionalModalLabel">Información Adicional</h4>
+            </div>
+            <div class="modal-body p-2">
+                <div class="container">
+                    <!-- Detalles Académicos -->
+                    <div class="container mb-3">
+                        <div class="d-flex gap-3 fs-5 fw-bold">
+                            <i class="bi bi-mortarboard"></i>Detalles Académicos
+                        </div>
+                        <!-- Botón para registrar información académica -->
+                        <div class="text-end mb-2 px-2">
+                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formDetalleAcademicoModal">
+                                <i class="bi bi-plus-circle"></i> Agregar Detalle Académico
+                            </a>
+                        </div>
+                    
+                        <!-- Tabla de Detalles Académicos -->
+                        <div class="table-responsive px-2">
+                            <table class="table table-striped table-hover mb-3 align-middle">
+                                <thead class="thead-dark">
+                                    <tr class="text-center">
+                                        <th>Institución</th>
+                                        <th>Título Obtenido</th>
+                                        <th>Nivel Académico</th>
+                                        <th>Fecha de Graduación</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaAcademica">
+                                    {% comment %} {% for detalle in detalles_academicos_by_id %}
+                                    <tr>
+                                        <td>{{ detalle.institucion }}</td>
+                                        <td>{{ detalle.titulo_obtenido }}</td>
+                                        <td>{{ detalle.nivel_academico.nombre }}</td>
+                                        <td>{{ detalle.fecha_graduacion }}</td>
+                                        <td>
+                                            <!-- Acciones -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %} {% endcomment %}
+                                </tbody>                                
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Separador -->
+                    <div class="d-flex align-items-center justify-content-center divider">
+                        <hr class="w-100">
+                    </div>
+
+                    <!-- Experiencia Laboral -->
+                    <div class="container mb-2">
+                        <div class="d-flex gap-3 fs-5 fw-bold">
+                            <i class="bi bi-briefcase"></i>Experiencia Laboral
+                        </div>
+                        <!-- Botón para registrar información laboral -->
+                        <div class="text-end mb-2 px-2">
+                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formExpLaboralModal">
+                                <i class="bi bi-plus-circle"></i> Agregar Experiencia Laboral
+                            </a>
+                        </div>
+
+                        <!-- Tabla de Experiencia Laboral -->
+                        <div class="table-responsive px-2">
+                            <table class="table table-striped table-hover mb-3 align-middle">
+                                <thead class="thead-dark">
+                                    <tr class="text-center">
+                                        <th>Empresa</th>
+                                        <th>Cargo</th>
+                                        <th>Fecha de Inicio</th>
+                                        <th>Fecha de Fin</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaExperiencia">
+                                    {% comment %} {% for detalle in detalles_academicos %}
+                                    <tr>
+                                        <td>{{ detalle.institucion }}</td>
+                                        <td>{{ detalle.titulo_obtenido }}</td>
+                                        <td>{{ detalle.nivel_academico.nombre }}</td>
+                                        <td>{{ detalle.fecha_graduacion }}</td>
+                                        <td>
+                                            <!-- Acciones -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %} {% endcomment %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón para enviar el formulario -->
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <!-- Nota -->
+                <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                <button type="submit" class="btn btn-primary" id="btnFinalizarEmp">Finalizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Modal Formulario Detalle Académico -->
+<div class="modal fade" id="formDetalleAcademicoModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formDetalleAcademicoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
+            </div>
+            <div class="modal-body">
+                <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}" data-ajax-submit="true">
+                    {% csrf_token %}
+                    <input type="hidden" id="usuario_id" name="usuario_id" value="" />
+                    <div class="row p-2">
+                        <div class="mb-2">
+                            <label for="institucion_emp" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
+                            <select class="form-select" id="institucion_emp" name="institucion" required>
+                                <option value="" selected>Seleccione</option>
+                                {% for institucion in instituciones_list %}
+                                    <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="titulo_obtenido_emp" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" class="form-control" id="titulo_obtenido_emp" name="titulo_obtenido" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="nivel_academico_emp" class="form-label mb-0">Nivel Académico <span class='fw-bold fs-4'>*</span></label>
+                            <select class="form-select" id="nivel_academico_emp" name="nivel_academico" required>
+                                <option value="" selected>Seleccione</option>
+                                {% for nivel in niveles_academicos_list %}
+                                    <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="fecha_graduacion_emp" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
+                            <input type="date" class="form-control" id="fecha_graduacion_emp" name="fecha_graduacion" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" ide="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formDetalleAcademico">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Formulario Exp Laboral -->
+<div class="modal fade" id="formExpLaboralModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formExpLaboralModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-forms modal-content">
+            <div class="modal-header">
+                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Experiencia Laboral</h5>
+                </div>
+            <div class="modal-body">
+                <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}" data-ajax-submit="true">
+                    {% csrf_token %}
+                    <input type="hidden" id="usuario_id" name="usuario_id" value="" />
+                    <div class="row p-2">
+                        <div class="mb-2">
+                            <label for="empresa_emp" class="form-label mb-0">Empresa donde Laboró <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" class="form-control" id="empresa_emp" name="empresa" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="cargo_emp" class="form-label mb-0">Cargo Laborado <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" class="form-control" id="cargo_emp" name="cargo" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="fecha_inicio_emp" class="form-label mb-0">Fecha de Inicio <span class='fw-bold fs-4'>*</span></label>
+                            <input type="date" class="form-control" id="fecha_inicio_emp" name="fecha_inicio" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="fecha_fin_emp" class="form-label mb-0">Fecha de Fin <span class='fw-bold fs-4'>*</span></label>
+                            <input type="date" class="form-control" id="fecha_fin_emp" name="fecha_fin" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelarFormExpLaboral" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formExpLaboral">Guardar</button>
             </div>
         </div>
     </div>
@@ -554,6 +702,7 @@
     </div>
 </div>
 
+<!-- Script para Carga masiva -->
 <script>
     document.getElementById("formCargaMasiva").addEventListener("submit", function (e) {
         e.preventDefault();
@@ -667,5 +816,65 @@
         handleClearFilter("clearFilterActivos", "empleadosActivos");
         handleClearFilter("clearFilterInactivos", "empleadosInactivos");
     });
+</script>
+
+<!-- Select con campo de busqueda -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function setupDropdownFilter(inputId, dropdownId) {
+            const inputElement = document.getElementById(inputId);
+            const dropdownElement = document.getElementById(dropdownId);
+            const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
+    
+            // Mostrar/ocultar el dropdown según el input
+            inputElement.addEventListener("input", function () {
+                const query = inputElement.value.toLowerCase();
+    
+                // Filtrar las opciones según el texto ingresado
+                const filteredItems = originalItems.filter(item =>
+                    item.textContent.toLowerCase().includes(query)
+                );
+    
+                // Limpiar y actualizar el dropdown
+                dropdownElement.innerHTML = "";
+                if (filteredItems.length > 0) {
+                    filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                    dropdownElement.style.display = "block";
+                } else {
+                    dropdownElement.style.display = "none";
+                }
+            });
+    
+            // Cuando seleccionas una opción
+            dropdownElement.addEventListener("click", function (event) {
+                if (event.target.matches(".dropdown-item")) {
+                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
+                    inputElement.value = selectedText; // Inserta solo el texto limpio
+                    dropdownElement.style.display = "none"; // Oculta el dropdown
+                }
+            });
+    
+            // Ocultar el dropdown al hacer clic fuera
+            document.addEventListener("click", function (event) {
+                if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
+                    dropdownElement.style.display = "none";
+                }
+            });
+    
+            // Mostrar todas las opciones si el input está vacío
+            inputElement.addEventListener("focus", function () {
+                if (inputElement.value.trim() === "") {
+                    dropdownElement.innerHTML = "";
+                    originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                    dropdownElement.style.display = "block";
+                }
+            });
+        }
+    
+        // Reutiliza la función para diferentes inputs y dropdowns
+        setupDropdownFilter("fk_eps_emp_input", "fk_eps_dropdown");
+        setupDropdownFilter("departamento_residencia_emp_input", "departamento_residencia_dropdown");
+        setupDropdownFilter("fk_docente_emp_input", "fk_docente_dropdown");
+    });    
 </script>
 {% endblock %}
