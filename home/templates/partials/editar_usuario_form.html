@@ -9,7 +9,7 @@
 
                 <div class="row px-3">
                     <div class="col-md-6 mb-2">
-                        <label for="estado_civil" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
+                        <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
                         <select class="form-select" id="estado_revision" name="estado_revision" required>
                             <option value="" {% if not usuario.estado_revision %}selected{% endif %}>Seleccione</option>
                             <option value="Pendiente" {% if usuario.estado_revision == "Pendiente" %}selected{% endif %}>Pendiente</option>
@@ -35,23 +35,36 @@
                             <option value="Trabajo Remoto" {% if contrato and contrato.tipo_contrato == "Trabajo Remoto" %}selected{% endif %}>Trabajo Remoto</option>
                         </select>
                     </div>
-
-                    <div class="col-md-6">
-                        <label for="estado_revision" class="form-label mb-0">Fecha Inicio Contrato <span class='fw-bold fs-4'></span></label>
-                        <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Falta Definir" disabled>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="estado_revision" class="form-label mb-0">Fecha Fin Contrato <span class='fw-bold fs-4'></span></label>
-                        <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Falta Definir" disabled>
-                    </div>
-
-                    {% if usuario.fk_rol.descripcion == "Administrativo" %}
-                        <div class="col-md-6">
-                            <label for="estado_revision" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'></span></label>
-                            <input type="text" class="form-control" id="estado_revision" name="estado_revision" value="Falta Definir" disabled>
+                    
+                    <!-- Campos del Contrato (solo si el usuario es contratado) -->
+                    {% if usuario.estado_revision == 'Contratado' %}
+                    <div class="container mb-3">
+                        <div class="d-flex gap-3 fs-5 fw-bold">
+                            <i class="bi bi-file-earmark-text"></i>Información del Contrato
                         </div>
+                        <div class="row px-3">
+                            <!-- Fecha Inicio Contrato -->
+                            <div class="col-md-4 mb-2">
+                                <label for="fecha_inicio_contrato" class="form-label mb-0">Fecha Inicio Contrato <span class='fw-bold fs-4'>*</span></label>
+                                <input type="date" class="form-control" id="fecha_inicio_contrato" name="fecha_inicio_contrato" value="{{ contrato.fecha_inicio|default:'' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                            </div>
+                            <!-- Fecha Fin Contrato -->
+                            <div class="col-md-4 mb-2">
+                                <label for="fecha_fin_contrato" class="form-label mb-0">Fecha Fin Contrato <span class='fw-bold fs-4'>*</span></label>
+                                <input type="date" class="form-control" id="fecha_fin_contrato" name="fecha_fin_contrato" value="{{ contrato.fecha_fin|default:'' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                            </div>
+                            <!-- Valor del Contrato -->
+                            {% if usuario.fk_rol.descripcion == "Administrativo" %}
+                            <div class="col-md-4 mb-2">
+                                <label for="valor_contrato" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'>*</span></label>
+                                <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" value="{{ contrato.valor_contrato|default:'' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% endif %}
+                </div>
+
                 </div>
             {% elif "Secretaria Talento Humano" in user_groups %}
                 <div class="d-flex gap-3 fs-5 fw-bold">
@@ -258,3 +271,28 @@
         </div>
     </div>
 </form>
+
+<!-- Script para habilitar/deshabilitar campos del contrato -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script cargado correctamente"); // Verifica en la consola del navegador
+
+    const estadoRevision = document.getElementById("estado_revision");
+    const camposContrato = document.querySelectorAll("#fecha_inicio_contrato, #fecha_fin_contrato, #valor_contrato");
+
+    if (estadoRevision) {
+        function toggleCamposContrato() {
+            if (estadoRevision.value === "Contratado") {
+                camposContrato.forEach(campo => campo.disabled = false);
+            } else {
+                camposContrato.forEach(campo => campo.disabled = true);
+            }
+        }
+
+        estadoRevision.addEventListener("change", toggleCamposContrato);
+        toggleCamposContrato();
+    } else {
+        console.error("No se encontró el campo 'estado_revision'");
+    }
+});
+</script>

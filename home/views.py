@@ -755,6 +755,25 @@ def actualizar_usuario(request, tipo, usuario_id):
                 usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
+                
+            # Si el usuario es contratado, actualizar o crear el contrato
+            if usuario.estado_revision == 'Contratado':
+                usuario.activo = True
+                contrato, created = Contrato.objects.get_or_create(
+                    fk_usuario=usuario,
+                    defaults={
+                        'fecha_inicio': data.get('fecha_inicio_contrato'),
+                        'fecha_fin': data.get('fecha_fin_contrato'),
+                        'valor_contrato': data.get('valor_contrato'),
+                        'tipo_contrato': data.get('tipo_contrato')
+                    }
+                )
+                if not created:
+                    contrato.fecha_inicio = data.get('fecha_inicio_contrato')
+                    contrato.fecha_fin = data.get('fecha_fin_contrato')
+                    contrato.valor_contrato = data.get('valor_contrato')
+                    contrato.tipo_contrato = data.get('tipo_contrato')
+                    contrato.save()
 
             # Guardar cambios
             usuario.save()
