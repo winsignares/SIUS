@@ -4,6 +4,7 @@
     --color-secundario: #fef5f6;
     --color-terciario: #ec5464;
     --color-cuaternario: #9c9c94;
+    --bg-color-select: #e3e6ea;
     --borde-redondo: 10px;
 }
 
@@ -14,7 +15,7 @@ body {
     color: var(--color-primario);
 }
 
-/* 
+/*
 --------------------------------------- DASHBOARD BASE ---------------------------------------
 */
 
@@ -95,7 +96,7 @@ body {
 }
 
 .pagination .page-link:active {
-    transform: scale(0.98);    
+    transform: scale(0.98);
 }
 
 .table-responsive {
@@ -121,7 +122,7 @@ body {
     text-decoration: underline;
 }
 
-#revisarHojaDeVida:active, #descargarCVInstitucional:active {    
+#revisarHojaDeVida:active, #descargarCVInstitucional:active {
     transform: scale(0.95);
 }
 
@@ -172,11 +173,11 @@ body {
     background-color: var(--color-cuaternario) !important;
 }
 
-.btn-carga-por-semestre:active {    
+.btn-carga-por-semestre:active {
     transform: scale(0.998);
 }
 
-/* 
+/*
 --------------------------------------- GESTIÓN ASPIRTANTES Y EMPLEADOS ---------------------------------------
 */
 
@@ -190,7 +191,7 @@ body {
     --bs-tooltip-color: var(--color-secundario) !important;
 }
 
-/* 
+/*
 --------------------------------------- MODAL FORMULARIOS ---------------------------------------
 */
 
@@ -241,7 +242,7 @@ span {
     color: var(--color-terciario);
 }
 
-/* 
+/*
 --------------------------------------- ALERTAS ---------------------------------------
 */
 
@@ -249,7 +250,7 @@ span {
     z-index: 1055;
 }
 
-/* 
+/*
 --------------------------------------- ESTILOS DE TABLAS ---------------------------------------
 */
 
@@ -286,7 +287,7 @@ table.table tbody td {
 }
 
 
-/* 
+/*
 --------------------------------------- ESTILOS PARA SELECTS ---------------------------------------
 */
 
@@ -313,12 +314,12 @@ table.table tbody td {
     text-transform: uppercase;
 }
 
-.dropdown-menu .dropdown-item:hover {
-    background-color: #f8f9fa;
+.dropdown-menu .dropdown-item:hover, select option:hover {
+    background-color: var(--bg-color-select);
 }
 
 
-/* 
+/*
 --------------------------------------- VISTA DETALLES ---------------------------------------
 */
 

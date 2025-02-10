@@ -10,7 +10,7 @@ class Contrato(models.Model):
     fecha_inicio = models.DateField(verbose_name=('Fecha Inicio Contrato'), null=True, blank=True)
     fecha_fin = models.DateField(verbose_name=('Fecha Fin Contrato'), null=True, blank=True)
     tipo_contrato = models.CharField(verbose_name=('Tipo Contrato'), max_length=255, null=True, blank=True)
-    dias_contrato = models.IntegerField(verbose_name=('Cantidad de Dias'), null=True, blank=True)
+    valor_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True)
 
     class Meta:
         db_table = 'contrato'
