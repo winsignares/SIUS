@@ -272,24 +272,38 @@
     </div>
 </form>
 
-<!-- Script para habilitar/deshabilitar campos del contrato -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
     console.log("Script cargado correctamente"); // Verifica en la consola del navegador
 
     const estadoRevision = document.getElementById("estado_revision");
     const camposContrato = document.querySelectorAll("#fecha_inicio_contrato, #fecha_fin_contrato, #valor_contrato");
+    const tipoContrato = document.getElementById("tipo_contrato");
 
     if (estadoRevision) {
         function toggleCamposContrato() {
             if (estadoRevision.value === "Contratado") {
+                // Habilitar campos del contrato
                 camposContrato.forEach(campo => campo.disabled = false);
+                tipoContrato.disabled = false;
             } else {
+                // Deshabilitar campos del contrato
                 camposContrato.forEach(campo => campo.disabled = true);
+                tipoContrato.disabled = true;
             }
         }
 
+        // Habilitar el campo "Estado de Revisión" si el usuario está en estado "Pendiente"
+        if (estadoRevision.value === "Pendiente") {
+            estadoRevision.disabled = false;
+        } else {
+            estadoRevision.disabled = true;
+        }
+
+        // Escuchar cambios en el campo "Estado de Revisión"
         estadoRevision.addEventListener("change", toggleCamposContrato);
+
+        // Ejecutar la función al cargar la página
         toggleCamposContrato();
     } else {
         console.error("No se encontró el campo 'estado_revision'");
