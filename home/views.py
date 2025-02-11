@@ -700,6 +700,57 @@ def editar_usuario(request, tipo, usuario_id):
     )
 
 
+def calcular_dias_laborados(fecha_inicio, fecha_fin):
+    if fecha_inicio and fecha_fin:
+        return (fecha_fin - fecha_inicio).days
+    return 0
+
+
+@login_required
+def contrato_usuario(request, tipo, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    data = request.POST
+
+    try:
+        # Si el usuario es contratado, actualizar o crear el contrato
+        contrato, created = Contrato.objects.get_or_create(
+            fk_usuario=usuario,
+            defaults={
+                'fecha_inicio': data.get('fecha_inicio_contrato'),
+                'fecha_fin': data.get('fecha_fin_contrato'),
+                'valor_contrato': data.get('valor_contrato'),
+                'tipo_contrato': data.get('tipo_contrato')
+            }
+        )
+        if not created:
+            contrato.fecha_inicio = data.get('fecha_inicio_contrato')
+            contrato.fecha_fin = data.get('fecha_fin_contrato')
+            contrato.valor_contrato = data.get('valor_contrato')
+            contrato.tipo_contrato = data.get('tipo_contrato')
+            contrato.save()
+        else:
+            # Si el estado no es "Contratado", desactivar el usuario y eliminar el contrato si existe
+            usuario.activo = False
+            Contrato.objects.filter(fk_usuario=usuario).delete()
+
+        # Respuesta en formato JSON para manejo en el frontend
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Contrato creado/actualizado correctamente.'
+        })
+    except IntegrityError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Error de integridad al crear/actualizar el contrato.'
+        }, status=400)
+    except Exception as e:
+        print(e)
+        return JsonResponse({
+            'status': 'error',
+            'message': f"Error inesperado: {e}"
+        }, status=500)
+
+
 @login_required
 def actualizar_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
@@ -755,26 +806,13 @@ def actualizar_usuario(request, tipo, usuario_id):
                 usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
             if eps_id:
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
-                
-            # Si el usuario es contratado, actualizar o crear el contrato
+
+            # Si el usuario es contratado, llamar a la función contrato_usuario
             if usuario.estado_revision == 'Contratado':
                 usuario.activo = True
-                contrato, created = Contrato.objects.get_or_create(
-                    fk_usuario=usuario,
-                    defaults={
-                        'fecha_inicio': data.get('fecha_inicio_contrato'),
-                        'fecha_fin': data.get('fecha_fin_contrato'),
-                        'valor_contrato': data.get('valor_contrato'),
-                        'tipo_contrato': data.get('tipo_contrato')
-                    }
-                )
-                if not created:
-                    contrato.fecha_inicio = data.get('fecha_inicio_contrato')
-                    contrato.fecha_fin = data.get('fecha_fin_contrato')
-                    contrato.valor_contrato = data.get('valor_contrato')
-                    contrato.tipo_contrato = data.get('tipo_contrato')
-                    contrato.save()
-
+                contrato_response = contrato_usuario(request, tipo, usuario_id)
+                if contrato_response.status_code != 200:
+                    return contrato_response
             # Guardar cambios
             usuario.save()
 
@@ -793,6 +831,135 @@ def actualizar_usuario(request, tipo, usuario_id):
                 'status': 'error',
                 'message': f"Error inesperado: {e}"
             }, status=500)
+
+
+#
+# ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
+#
+
+
+def calcular_dias_laborados_docentes(fecha_inicio, fecha_fin):
+    
+    pass
+
+
+@login_required
+def gestion_carga_academica(request):
+    """
+    Muestra la gestión de carga académica, filtrando los semestres según el programa del usuario.
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    # Agrupar cargas académicas por semestre
+    cargas_dict = defaultdict(list)
+    for carga in contexto["cargas_academicas"]:
+        cargas_dict[carga.fk_semestre.semestre].append(carga)
+
+    # Convertir a diccionario normal para el template
+    contexto["cargas_dict"] = dict(cargas_dict)
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
+    return render(request, 'carga_academica.html', contexto)
+
+
+#
+# ----------------------------  VISTA MATRIZ DOCENTES ---------------------------------
+#
+
+
+@login_required
+def gestion_matriz(request):
+    """
+    Muestra la gestión
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
+    return render(request, 'matriz.html', contexto)
+
+@login_required
+@csrf_exempt
+def guardar_matriz(request):
+    """
+    Guarda la carga académica del usuario.
+    """
+    if request.method == "POST":
+        # Obtener datos del formulario
+        data = json.loads(request.body)
+
+        try:
+            for carga in data[carga]:
+                CargaAcademica.objects.create(
+                )
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Carga académica agregada correctamente.'})
+        except IntegrityError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de integridad al agregar la carga académica. Revise los datos ingresados.'
+            }, status=400)
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                'status': 'error',
+                'message': f"Error inesperado: {e}"
+            }, status=500)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #
@@ -904,82 +1071,3 @@ def generar_reporte_excel(request):
         nombre_archivo}"'
     workbook.save(response)
     return response
-
-
-#
-# ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
-#
-
-
-@login_required
-def gestion_carga_academica(request):
-    """
-    Muestra la gestión de carga académica, filtrando los semestres según el programa del usuario.
-    """
-    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
-
-    dia_actual = datetime.now().date()
-
-    # Agrupar cargas académicas por semestre
-    cargas_dict = defaultdict(list)
-    for carga in contexto["cargas_academicas"]:
-        cargas_dict[carga.fk_semestre.semestre].append(carga)
-
-    # Convertir a diccionario normal para el template
-    contexto["cargas_dict"] = dict(cargas_dict)
-
-    contexto.update({
-            "dia_actual": dia_actual,
-        })
-
-    return render(request, 'carga_academica.html', contexto)
-
-
-#
-# ----------------------------  VISTA MATRIZ DOCENTES ---------------------------------
-#
-
-
-@login_required
-def gestion_matriz(request):
-    """
-    Muestra la gestión
-    """
-    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
-
-    dia_actual = datetime.now().date()
-
-    contexto.update({
-            "dia_actual": dia_actual,
-        })
-
-    return render(request, 'matriz.html', contexto)
-
-@login_required
-@csrf_exempt
-def guardar_matriz(request):
-    """
-    Guarda la carga académica del usuario.
-    """
-    if request.method == "POST":
-        # Obtener datos del formulario
-        data = json.loads(request.body)
-
-        try:
-            for carga in data[carga]:
-                CargaAcademica.objects.create(
-                )
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Carga académica agregada correctamente.'})
-        except IntegrityError:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Error de integridad al agregar la carga académica. Revise los datos ingresados.'
-            }, status=400)
-        except Exception as e:
-            print(e)
-            return JsonResponse({
-                'status': 'error',
-                'message': f"Error inesperado: {e}"
-            }, status=500)

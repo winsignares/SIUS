@@ -56,7 +56,7 @@
                 </div>
                 <div class="modal-body" id="editarUsuarioContent">
                     <!-- Contenido dinámico cargado por AJAX -->
-                </div>               
+                </div>
 
                 <!-- Botón para enviar el formulario -->
                 <div class="modal-footer d-flex justify-content-between align-items-center">
@@ -111,13 +111,13 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const editarModal = document.getElementById("editarUsuarioModal");
-    
+
             editarModal.addEventListener("show.bs.modal", function (event) {
                 const button = event.relatedTarget;
                 const userId = button.getAttribute("data-id");
                 const userType = button.getAttribute("data-tipo");
                 const modalContent = document.getElementById("editarUsuarioContent");
-    
+
                 // Mostrar un spinner mientras se cargan los datos
                 modalContent.innerHTML = `
                     <div class="text-center">
@@ -126,7 +126,7 @@
                         </div>
                     </div>
                 `;
-    
+
                 // Realizar la solicitud AJAX para cargar los datos
                 fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`)
                     .then(response => response.text())
@@ -163,38 +163,38 @@
                     });
                 });
             });
-        
+
             // Botón Finalizar - Cierra el modal y redirige
             document.getElementById("btnFinalizar").addEventListener("click", function () {
                 cerrarModalFormulario("infoAdicionalModal");
                 window.location.href = "{% url 'gestion_aspirantes' %}";
             });
         });
-        
+
         document.addEventListener("DOMContentLoaded", function () {
             const editarUsuarioModal = document.getElementById("editarUsuarioModal");
-        
+
             // Delegación de eventos para capturar el submit del formulario dinámico
             editarUsuarioModal.addEventListener("shown.bs.modal", function () {
                 const formEditarUsuario = document.getElementById("formEditarUsuario");
-        
+
                 if (formEditarUsuario) {
                     formEditarUsuario.removeEventListener("submit", submitEditarUsuario);
                     formEditarUsuario.addEventListener("submit", submitEditarUsuario);
                 }
             });
         });
-        
+
         // Función mejorada para manejar el envío del formulario y recargar correctamente la vista
         function submitEditarUsuario(e) {
             e.preventDefault();
             handleFormSubmission(this, function (data) {
                 showAlert(data.message, "success");
                 cerrarModalFormulario("editarUsuarioModal");
-        
+
                 // Detectar la vista actual para redirigir correctamente
                 const currentPath = document.location.pathname;
-        
+
                 setTimeout(() => {
                     if (currentPath.includes("empleados")) {
                         window.location.href = "{% url 'gestion_empleados' %}";
@@ -206,17 +206,17 @@
                 }, 1500);
             });
         }
-        
+
         // Función para manejar el envío de formularios vía AJAX
         function handleFormSubmission(form, onSuccess = null) {
             let formData = new FormData(form);
             let actionUrl = form.getAttribute("action");
-        
+
             // Si el formulario está relacionado con el usuario, añade el usuarioId
             if (window.usuarioIdCreado && formData.has("usuario_id")) {
                 formData.set("usuario_id", window.usuarioIdCreado);
             }
-        
+
             fetch(actionUrl, {
                 method: "POST",
                 body: formData,
@@ -228,7 +228,7 @@
             .then(response => response.json())
             .then(data => {
                 showAlert(data.message, data.status === "success" ? "success" : "error");
-        
+
                 // Ejecutar función de éxito si la respuesta es correcta
                 if (data.status === "success" && typeof onSuccess === "function") {
                     onSuccess(data);
@@ -239,58 +239,58 @@
                 console.error("Error:", error);
             });
         }
-        
+
         // Función para mostrar alertas sin duplicarlas
         function showAlert(message, type) {
             let alertClass = type === "success" ? "alert-success" : "alert-danger";
             let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
-        
+
             let alertContainer = document.getElementById("dynamic-alerts");
-        
+
             // Limpiar alertas anteriores antes de agregar una nueva
             alertContainer.replaceChildren();
-        
+
             let alertHtml = `
                 <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
                     <i class="bi ${icon}"></i> ${message}
                 </div>
             `;
-        
+
             alertContainer.insertAdjacentHTML("beforeend", alertHtml);
-        
+
             // Ocultar la alerta automáticamente después de 3 segundos
             setTimeout(() => {
                 alertContainer.firstElementChild?.remove();
             }, 3000);
         }
-        
+
         // Función para cerrar un modal por ID
         function cerrarModalFormulario(modalId) {
             const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
             modal?.hide();
         }
-        
+
         // Función para abrir el modal de información adicional
         function redirigirAModal() {
             const infoAdicionalModal = new bootstrap.Modal(document.getElementById("infoAdicionalModal"));
             infoAdicionalModal.show();
         }
-        
+
         // Función para abrir el siguiente modal después de crear un usuario
         function openNextModal() {
             cerrarModalFormulario("infoPersonalModal");
             redirigirAModal();
         }
-        
+
         // Función para agregar una nueva fila a una tabla
         function agregarFilaATabla(tablaId, data, columnas) {
             const tabla = document.getElementById(tablaId);
             let nuevaFila = "<tr>";
-        
+
             columnas.forEach(columna => {
                 nuevaFila += `<td>${data[columna]}</td>`;
             });
-        
+
             nuevaFila += "<td><!-- Acciones futuras --></td></tr>";
             tabla.insertAdjacentHTML("beforeend", nuevaFila);
         }
