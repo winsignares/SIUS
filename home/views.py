@@ -843,7 +843,7 @@ def gestion_contratos(request):
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    return render(request, 'contratos.html', contexto)
+    return render(request, 'func_sustantivas.html', contexto)
 
 #
 # ----------------------------  VISTA CARGA ACADEMICA ---------------------------------

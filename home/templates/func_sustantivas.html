@@ -1,0 +1,56 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Funciones Sustantivas - SIUC{% endblock %}
+{% block container_class %}justify-content-start align-items-start{% endblock %}
+
+{% block content %}
+<div class="container-fluid m-4">
+    <div class="row mb-3">
+        <div class="d-flex col justify-content-between align-items-center">
+            <h3 class="fw-bold m-0">Funciones Sustantivas</h3>
+        </div>
+    </div>
+
+    <!-- Periodo en curso -->
+    <div class="row mb-3">
+        <div class="d-flex justify-content-center align-items-center gap-3">
+            <div class="d-flex col justify-content-between justify-middle align-items-center">
+                {% if periodo_actual %}
+                    <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
+                {% else %}
+                    <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
+                {% endif %}
+                <h6 id="fechaElaboracion" class="m-0"><span class="fw-bold m-0">Fecha de Elaboración:</span> {{ dia_actual }}</h6>
+                <h6 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Nombre Completo</th>
+                        <th>Nivel de Formación</th>
+                        <th>Tipo de Documento</th>
+                        <th>No. Documento</th>
+                        <th>Dedicación</th>
+                        <th>Docencia</th>
+                        <th>Administrativa</th>
+                        <th>Investigación</th>
+                        <th>Proyección y Extensión</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán los datos del formulario -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+</div>
+{% endblock %}
