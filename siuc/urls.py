@@ -40,7 +40,7 @@ urlpatterns = [
 
     path("siuc/dashboard/empleados/", views.gestion_empleados, name="gestion_empleados"),
 
-    path("siuc/dashboard/contratos/", views.gestion_contratos, name="gestion_contratos"),
+    path("siuc/dashboard/contratos/", views.gestion_func_sustantivas, name="gestion_contratos"),
 
     path("siuc/dashboard/reportes/", views.reportes, name="reportes"),
     path("siuc/dashboard/reporte/excel/", views.generar_reporte_excel, name="reporte_excel"),

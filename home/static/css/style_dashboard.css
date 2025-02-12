@@ -250,6 +250,10 @@ span {
     z-index: 1055;
 }
 
+.fs-color-li {
+    color: var(--color-terciario);
+    }
+
 /*
 --------------------------------------- ESTILOS DE TABLAS ---------------------------------------
 */

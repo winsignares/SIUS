@@ -11,8 +11,7 @@
             <h3 class="fw-bold m-0">Matriz Planta Docente</h3>
         </div>
     </div>
-    
-    <!-- Periodo en curso -->
+
     <div class="row mb-3">
         <div class="d-flex justify-content-center align-items-center gap-3">
             <div class="d-flex col justify-content-between justify-middle align-items-center">
@@ -39,75 +38,83 @@
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-forms modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Agregar Carga Académica</h5>
+                    <h4 class="modal-title">Agregar Carga Académica</h4>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="cargaForm">
-                        <div class="mb-3">
-                            <label for="semestre" class="form-label">Semestre</label>
-                            <select class="form-select" id="semestre" required>
-                                <option value="">Selecciona un semestre</option>
-                                {% for semestre in semestres %}
-                                    <option value="{{ semestre.id }}">{{ semestre.nombre }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="materia" class="form-label">Materia</label>
-                            <select class="form-select" id="materia" required>
-                                <option value="">Selecciona una materia</option>
-                                {% for materia in materias_list %}
-                                    <option value="{{ materia.id }}">{{ materia.materia }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-12 mb-2" style="position: relative;">
-                            <label for="fk_docente_input_matriz" class="form-label mb-0">Docente <span class="fw-bold fs-4">*</span></label>
-                            <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
-                            <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
-                                {% for docente in docentes_list %}
-                                    <li>
-                                        <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
-                                            {{ docente.primer_nombre }} {{ docente.primer_apellido }}
-                                        </button>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="horas_semanales" class="form-label">Horas Semanales</label>
-                            <input type="number" class="form-control" id="horas_semanales" required>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="materia_compartida">
-                            <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
-                        </div>
+                <div class="modal-body p-2">
+                    <form id="formAgregarMatriz">
+                        {% csrf_token %}
+                        <div class"container">
+                            <div class="container mb-3">
+                                <div class="row px-3">
+                                    <div class="col-md-5 mb-2">
+                                        <label for="semestre" class="form-label">Semestre</label>
+                                        <select class="form-select" id="semestre" required>
+                                            <option value="">Seleccione</option>
+                                            {% for semestre in semestres_list %}
+                                                <option value="{{ semestre.id }}">{{ semestre.semestre }} - {{ semestre.descripcion }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="materia" class="form-label">Materia</label>
+                                        <select class="form-select" id="materia" required>
+                                            <option value="">Seleccione</option>
+                                            {% for materia in materias_list %}
+                                                <option value="{{ materia.id }}">{{ materia.materia }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 mb-2" style="position: relative;">
+                                        <label for="fk_docente_input_matriz" class="form-label mb-0">Docente <span class="fw-bold fs-4">*</span></label>
+                                        <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
+                                        <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
+                                            {% for docente in docentes_list %}
+                                                <li>
+                                                    <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
+                                                        {{ docente.primer_nombre }} {{ docente.primer_apellido }}
+                                                    </button>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="horas_semanales" class="form-label">Horas Semanales</label>
+                                        <input type="number" class="form-control" id="horas_semanales" required>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="materia_compartida">
+                                        <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
+                                    </div>
 
-                        <div id="materiasCompartidas" class="">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="col flex-column d-flex justify-content-center align-items-center">
-                                    <label class="form-label">Materias Disponibles</label>
-                                    <select multiple class="form-select select-multiple" id="materiasDisponibles">
-                                        {% for materia in materias_compartidas %}
-                                            <option value="{{ materia.id }}">{{ materia.materia }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="d-flex flex-column align-items-center justify-content-center">
-                                    <button type="button" id="agregarMateria" class="btn m-1">
-                                        <i class="bi bi-arrow-right-circle-fill"></i>
-                                    </button>
-                                    <button type="button" id="quitarMateria" class="btn m-1">
-                                        <i class="bi bi-arrow-left-circle-fill"></i>
-                                    </button>
-                                </div>
-                                <div class="col flex-column d-flex justify-content-center align-items-center">
-                                    <label class="text-center">Materias Elegidas</label>
-                                    <select multiple class="form-select" id="permisosElegidos"></select>
+                                    <div id="materiasCompartidas" class="">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <div class="col flex-column d-flex justify-content-center align-items-center">
+                                                <label class="form-label">Materias Disponibles</label>
+                                                <select multiple class="form-select select-multiple" id="materiasDisponibles">
+                                                    {% for materia in materias_compartidas %}
+                                                        <option value="{{ materia.id }}">{{ materia.materia }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <button type="button" id="agregarMateria" class="btn m-1">
+                                                    <i class="bi bi-arrow-right-circle-fill"></i>
+                                                </button>
+                                                <button type="button" id="quitarMateria" class="btn m-1">
+                                                    <i class="bi bi-arrow-left-circle-fill"></i>
+                                                </button>
+                                            </div>
+                                            <div class="col flex-column d-flex justify-content-center align-items-center">
+                                                <label class="text-center">Materias Elegidas</label>
+                                                <select multiple class="form-select" id="permisosElegidos"></select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -127,12 +134,9 @@
                         <th>Materia</th>
                         <th>Docente</th>
                         <th>Dedicación</th>
-                        <th>Funciones Sustantivas</th>
-                        <!--
                         <th>Horas Semanales (H)</th>
-                        <th>Número de Semanas (S)</th>
+                        <th>Semanas (S)</th>
                         <th>Total (H * S)</th>
-                        -->
                         <th>Acciones</th>
                     </tr>
                 </thead>

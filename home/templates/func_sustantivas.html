@@ -8,12 +8,18 @@
     <div class="row mb-3">
         <div class="d-flex col justify-content-between align-items-center">
             <h3 class="fw-bold m-0">Funciones Sustantivas</h3>
+            <ul class="d-flex gap-lg-5 mb-0 list-unstyled fs-color-li">
+                <li><strong>DO</strong> = Docencia</li>
+                <li><strong>AD</strong> = Administrativa</li>
+                <li><strong>IN</strong> = Investigación</li>
+                <li><strong>PYE</strong> = Proyección y Extensión</li>
+            </ul>
         </div>
     </div>
 
     <!-- Periodo en curso -->
     <div class="row mb-3">
-        <div class="d-flex justify-content-center align-items-center gap-3">
+        <div class="d-flex justify-content-center align-items-center">
             <div class="d-flex col justify-content-between justify-middle align-items-center">
                 {% if periodo_actual %}
                     <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
@@ -26,6 +32,18 @@
         </div>
     </div>
 
+    {% comment %} <!-- Periodo en curso -->
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-center align-items-center">
+            <ul class="d-flex gap-lg-5 mb-0 list-unstyled">
+                <li><strong>DO</strong> = Docencia</li>
+                <li><strong>AD</strong> = Administrativa</li>
+                <li><strong>IN</strong> = Investigación</li>
+                <li><strong>PYE</strong> = Proyección y Extensión</li>
+            </ul>
+        </div>
+    </div> {% endcomment %}
+
     <div class="col-md-12">
         <div class="table-responsive">
             <table class="table table-striped table-hover mb-0 align-middle">
@@ -36,15 +54,30 @@
                         <th>Tipo de Documento</th>
                         <th>No. Documento</th>
                         <th>Dedicación</th>
-                        <th>Docencia</th>
-                        <th>Administrativa</th>
-                        <th>Investigación</th>
-                        <th>Proyección y Extensión</th>
+                        <th colspan="2">DO</th>
+                        <th colspan="2">AD</th>
+                        <th colspan="2">IN</th>
+                        <th colspan="2">PyE</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Aquí se agregarán los datos del formulario -->
+                    <tr class="text-center">
+                        <td>Nombre Completo</td>
+                        <td>Nivel de Formación</td>
+                        <td>Tipo de Documento</td>
+                        <td>No. Documento</td>
+                        <td>Dedicación</td>
+                        <td>DO</td>
+                        <td>%DO%</td>
+                        <td>AD</td>
+                        <td>%AD%</td>
+                        <td>IN</td>
+                        <td>%IN%</td>
+                        <td>PyE</td>
+                        <td>%PyE%</td>
+                        <td>Acciones</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

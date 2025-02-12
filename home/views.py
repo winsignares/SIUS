@@ -837,11 +837,17 @@ def actualizar_usuario(request, tipo, usuario_id):
 # ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
 #
 
-def gestion_contratos(request):
+def gestion_func_sustantivas(request):
     """
     Muestra la gestión de contratos
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
 
     return render(request, 'func_sustantivas.html', contexto)
 
