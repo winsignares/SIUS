@@ -19,9 +19,9 @@
                     </div>
 
                     {% if usuario.fk_rol.descripcion == "Docente" %}
-                    
+
                     {% endif %}
-    
+
                     <div class="col-md-6">
                         <label for="tipo_contrato" class="form-label mb-0">Tipo de Contrato <span class='fw-bold fs-4'>*</span></label>
                         <select class="form-select" id="tipo_contrato" name="tipo_contrato" required>
@@ -35,7 +35,7 @@
                             <option value="Trabajo Remoto" {% if contrato and contrato.tipo_contrato == "Trabajo Remoto" %}selected{% endif %}>Trabajo Remoto</option>
                         </select>
                     </div>
-                    
+
                     <!-- Campos del Contrato (solo si el usuario es contratado) -->
                     {% if usuario.estado_revision == 'Contratado' %}
                     <div class="container mb-3">

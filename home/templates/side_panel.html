@@ -47,6 +47,12 @@
                 <i class="bi bi-people-fill"></i></i>Empleados
             </a>
         </li>
+
+        <li class="nav-item mb-2">
+            <a href="{% url 'gestion_contratos' %}" class="d-flex gap-2 nav-link">
+                <i class="bi bi-people-fill"></i></i>Contratos
+            </a>
+        </li>
         {% endif %}
         
         {% if "Secretaria Talento Humano" in user_groups %}

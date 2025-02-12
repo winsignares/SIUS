@@ -837,6 +837,18 @@ def actualizar_usuario(request, tipo, usuario_id):
 # ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
 #
 
+def gestion_contratos(request):
+    """
+    Muestra la gestión de contratos
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    return render(request, 'contratos.html', contexto)
+
+#
+# ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
+#
+
 
 def calcular_dias_laborados_docentes(fecha_inicio, fecha_fin):
     
