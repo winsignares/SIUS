@@ -48,7 +48,7 @@
                             <div class="container mb-3">
                                 <div class="row px-3">
                                     <div class="col-md-5 mb-2">
-                                        <label for="semestre" class="form-label">Semestre</label>
+                                        <label for="semestre" class="form-label">Semestre <span class="fw-bold fs-4">*</span></label>
                                         <select class="form-select" id="semestre" required>
                                             <option value="">Seleccione</option>
                                             {% for semestre in semestres_list %}
@@ -56,17 +56,23 @@
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="materia" class="form-label">Materia</label>
+                                    <div class="col-md-7 mb-2">
+                                        <label for="materia" class="form-label">Materia <span class="fw-bold fs-4">*</span></label>
                                         <select class="form-select" id="materia" required>
                                             <option value="">Seleccione</option>
                                             {% for materia in materias_list %}
-                                                <option value="{{ materia.id }}">{{ materia.materia }}</option>
+                                                {% if materia.fk_programa.programa == usuario_log.auth_user.first_name %}
+                                                <option value="{{ materia.id }}">{{ materia.codigo }} - {{ materia.materia }}</option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="col-md-12 mb-2" style="position: relative;">
-                                        <label for="fk_docente_input_matriz" class="form-label mb-0">Docente <span class="fw-bold fs-4">*</span></label>
+                                    <div class="col-md-4 mb-2">
+                                        <label for="horas_semanales" class="form-label">Horas Semanales<span class="fw-bold fs-4"></span></label>
+                                        <input type="number" class="form-control" id="horas_semanales" disabled>
+                                    </div>
+                                    <div class="col-md-8 mb-2" style="position: relative;">
+                                        <label for="fk_docente_input_matriz" class="form-label">Docente <span class="fw-bold fs-4">*</span></label>
                                         <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
                                         <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
                                             {% for docente in docentes_list %}
@@ -78,11 +84,8 @@
                                             {% endfor %}
                                         </ul>
                                     </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="horas_semanales" class="form-label">Horas Semanales</label>
-                                        <input type="number" class="form-control" id="horas_semanales" required>
-                                    </div>
-                                    <div class="mb-3 form-check">
+
+                                    <div class="col-md-12 mb-2 form-check">
                                         <input type="checkbox" class="form-check-input" id="materia_compartida">
                                         <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
                                     </div>
@@ -114,7 +117,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
