@@ -852,6 +852,24 @@ def gestion_func_sustantivas(request):
     return render(request, 'func_sustantivas.html', contexto)
 
 #
+# ----------------------------  VISTA CONTABILIDAD ---------------------------------
+#
+
+def gestion_contabilidad(request):
+    """
+    Muestra la gestión de contratos
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
+    return render(request, 'contabilidad.html', contexto)
+
+#
 # ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
 #
 
