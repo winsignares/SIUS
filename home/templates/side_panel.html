@@ -54,6 +54,15 @@
             </a>
         </li>
 
+        {% endif %}
+
+        {% if "Contabilidad" in user_groups %}
+        <li class="nav-item mb-2">
+            <a href="{% url 'gestion_contabilidad' %}" class="d-flex gap-2 nav-link">
+                <i class="bi bi-person-fill-add"></i></i></i>Revision
+            </a>
+        </li>
+
         
         {% endif %}
         
