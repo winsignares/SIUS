@@ -20,8 +20,8 @@ class Periodo(models.Model):
 class Programa(models.Model):
     id = models.AutoField(primary_key=True)
     codigo_snies = models.CharField("Código SNIES", max_length=255, unique=True)
-    nivel_formacion = models.CharField("Nivel de Formación", max_length=255, null=True, blank=True)
     programa = models.CharField("Nombre del Programa", max_length=255, null=True, blank=True)
+    nivel_formacion = models.CharField("Nivel de Formación", max_length=255, null=True, blank=True)
     sede = models.CharField("Sede", max_length=255, null=True, blank=True)
     numero_semestres = models.CharField("Número de Semestres", max_length=255, null=True, blank=True)
 
@@ -31,7 +31,7 @@ class Programa(models.Model):
         verbose_name_plural = 'Programas'
 
     def __str__(self):
-        return f"(Código SNIES: {self.codigo_snies}) {self.programa} - {self.sede}"
+        return f"(Código SNIES: {self.codigo_snies}) {self.nivel_formacion} en {self.programa} - {self.sede}"
 
 class Pensum(models.Model):
     id = models.AutoField(primary_key=True)
