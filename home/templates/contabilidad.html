@@ -19,9 +19,9 @@
                 <div class="d-flex col-md-auto mb-2 gap-3">
                     <label for="fk_programa_cont" class="form-label col-auto mb-0">Seleccione un programa <span class='fw-bold fs-4'>*</span></label>
                     <select class="form-select" id="fk_programa_cont" name="fk_programa_cont" required>
-                        <option value="" {% if not usuario.fk_rol %}selected{% endif %}>Seleccione</option>
+                        <option>Seleccione</option>
                         {% for programa in programa_list %}
-                            <option value="{{ programa.id }}" {% if usuario.fk_rol.id == rol.id %}selected{% endif %}>
+                            <option value="{{ programa.id }}">
                                 {{ programa.codigo_snies }} - {{ programa.programa }}
                             </option>
                         {% endfor %}

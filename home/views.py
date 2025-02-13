@@ -22,7 +22,7 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
-from .models.talento_humano.contrato import Contrato
+from .models.talento_humano.contrato import Contrato, DetalleContratro
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 from siuc import settings
 import openpyxl
@@ -700,10 +700,75 @@ def editar_usuario(request, tipo, usuario_id):
     )
 
 
-def calcular_dias_laborados(fecha_inicio, fecha_fin):
-    if fecha_inicio and fecha_fin:
-        return (fecha_fin - fecha_inicio).days
-    return 0
+def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
+    """Calcula los días laborados en cada mes del contrato, con un máximo de 30 días por mes."""
+    fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
+    fecha_final = datetime.strptime(str(fecha_final), "%Y-%m-%d")
+
+    dias_laborados_por_mes = {}
+    fecha_actual = fecha_inicio
+
+    while fecha_actual <= fecha_final:
+        year = fecha_actual.year
+        month = fecha_actual.month
+
+        # Último día del mes es 30
+        ultimo_dia_mes = min(30, fecha_final.day if fecha_final.year == year and fecha_final.month == month else 30)
+
+        # Primer día del mes (ajustado si el contrato inicia en un día específico)
+        primer_dia_mes = max(1, fecha_actual.day)
+
+        # Cálculo de los días laborados en este mes
+        dias_mes = ultimo_dia_mes - primer_dia_mes + 1
+
+        clave_mes = f"{year}-{month:02d}"
+        dias_laborados_por_mes[clave_mes] = dias_mes
+
+        # Avanzar al siguiente mes
+        if month == 12:
+            fecha_actual = fecha_actual.replace(year=year + 1, month=1, day=1)
+        else:
+            fecha_actual = fecha_actual.replace(month=month + 1, day=1)
+
+    return dias_laborados_por_mes
+
+
+def generar_detalles_contrato(contrato):
+    """Genera registros de detalles del contrato con días laborados y valores a pagar por mes."""
+    fecha_inicio = contrato.fecha_inicio
+    fecha_fin = contrato.fecha_fin
+    valor_total = contrato.valor_contrato
+
+    if not fecha_inicio or not fecha_fin or not valor_total:
+        return
+
+    # Eliminar detalles previos
+    DetalleContratro.objects.filter(fk_contrato=contrato).delete()
+
+    # Obtener el cálculo de días laborados por mes
+    dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
+
+    # Calcular el total de días laborados
+    total_dias_laborados = sum(dias_laborados_por_mes.values())
+
+    # Calcular el valor a pagar por día
+    valor_por_dia = valor_total / total_dias_laborados if total_dias_laborados > 0 else 0
+
+    # Crear los detalles del contrato
+    detalles = []
+    for mes, dias in dias_laborados_por_mes.items():
+        valor_mes = int(dias * valor_por_dia)
+        detalles.append(
+            DetalleContratro(
+                fk_contrato=contrato,
+                mes_a_pagar=mes,
+                dias_laborados=dias,
+                valor_a_pagar=valor_mes,
+            )
+        )
+
+    # Guardar en la base de datos
+    DetalleContratro.objects.bulk_create(detalles)
 
 
 @login_required
@@ -712,43 +777,40 @@ def contrato_usuario(request, tipo, usuario_id):
     data = request.POST
 
     try:
-        # Si el usuario es contratado, actualizar o crear el contrato
         contrato, created = Contrato.objects.get_or_create(
             fk_usuario=usuario,
             defaults={
-                'fecha_inicio': data.get('fecha_inicio_contrato'),
-                'fecha_fin': data.get('fecha_fin_contrato'),
-                'valor_contrato': data.get('valor_contrato'),
-                'tipo_contrato': data.get('tipo_contrato')
-            }
+                "fecha_inicio": data.get("fecha_inicio_contrato"),
+                "fecha_fin": data.get("fecha_fin_contrato"),
+                "valor_contrato": data.get("valor_contrato"),
+                "tipo_contrato": data.get("tipo_contrato"),
+            },
         )
-        if not created:
-            contrato.fecha_inicio = data.get('fecha_inicio_contrato')
-            contrato.fecha_fin = data.get('fecha_fin_contrato')
-            contrato.valor_contrato = data.get('valor_contrato')
-            contrato.tipo_contrato = data.get('tipo_contrato')
-            contrato.save()
-        else:
-            # Si el estado no es "Contratado", desactivar el usuario y eliminar el contrato si existe
-            usuario.activo = False
-            Contrato.objects.filter(fk_usuario=usuario).delete()
 
-        # Respuesta en formato JSON para manejo en el frontend
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Contrato creado/actualizado correctamente.'
-        })
+        if not created:
+            contrato.fecha_inicio = data.get("fecha_inicio_contrato")
+            contrato.fecha_fin = data.get("fecha_fin_contrato")
+            contrato.valor_contrato = data.get("valor_contrato")
+            contrato.tipo_contrato = data.get("tipo_contrato")
+            contrato.save()
+
+        # Generar detalles del contrato
+        generar_detalles_contrato(contrato)
+
+        return JsonResponse(
+            {"status": "success", "message": "Contrato y detalles creados/actualizados correctamente."}
+        )
+
     except IntegrityError:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Error de integridad al crear/actualizar el contrato.'
-        }, status=400)
+        return JsonResponse(
+            {"status": "error", "message": "Error de integridad al crear/actualizar el contrato."},
+            status=400,
+        )
     except Exception as e:
         print(e)
-        return JsonResponse({
-            'status': 'error',
-            'message': f"Error inesperado: {e}"
-        }, status=500)
+        return JsonResponse(
+            {"status": "error", "message": f"Error inesperado: {e}"}, status=500
+        )
 
 
 @login_required
@@ -796,30 +858,27 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
             usuario.fk_modificado_por = request.user
 
-            rol_id = request.POST.get("fk_rol")
-            tipo_documento_id = request.POST.get("fk_tipo_documento")
-            eps_id = request.POST.get("fk_eps")
+            usuario.fk_modificado_por = request.user
 
-            if rol_id:
+            if rol_id := request.POST.get("fk_rol"):
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
-            if tipo_documento_id:
+            if tipo_documento_id := request.POST.get("fk_tipo_documento"):
                 usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
-            if eps_id:
+            if eps_id := request.POST.get("fk_eps"):
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
 
-            # Si el usuario es contratado, llamar a la función contrato_usuario
-            if usuario.estado_revision == 'Contratado':
+            if usuario.estado_revision == "Contratado":
                 usuario.activo = True
                 contrato_response = contrato_usuario(request, tipo, usuario_id)
                 if contrato_response.status_code != 200:
                     return contrato_response
-            # Guardar cambios
+
             usuario.save()
 
-            # Respuesta en formato JSON para manejo en el frontend
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Usuario actualizado correctamente.'})
+            return JsonResponse(
+                {"status": "success",
+                "message": "Usuario actualizado correctamente."
+                })
         except IntegrityError:
             return JsonResponse({
                 'status': 'error',
@@ -862,10 +921,10 @@ def gestion_contabilidad(request):
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
     dia_actual = datetime.now().date()
-
-    contexto.update({
-            "dia_actual": dia_actual,
-        })
+    
+    contexto.update ({
+        'programa_list': Programa.objects.all(),
+    })
 
     return render(request, 'contabilidad.html', contexto)
 
@@ -875,7 +934,7 @@ def gestion_contabilidad(request):
 
 
 def calcular_dias_laborados_docentes(fecha_inicio, fecha_fin):
-    
+
     pass
 
 
