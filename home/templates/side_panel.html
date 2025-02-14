@@ -53,19 +53,27 @@
                 <i class="bi bi-people-fill"></i></i>Empleados
             </a>
         </li>
-
         {% endif %}
 
+        <!-- Rol Contabilidad -->
         {% if "Contabilidad" in user_groups %}
         <li class="nav-item mb-2">
-            <a href="{% url 'gestion_contabilidad' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-person-fill-add"></i></i></i>Revision
+            <a href="{% url 'gestion_docentes' %}" class="d-flex gap-2 nav-link">
+                <i class="bi bi-person-video3"></i> Docentes
             </a>
         </li>
 
+        <li class="nav-item mb-2">
+            <a href="{% url 'gestion_administrativos' %}" class="d-flex gap-2 nav-link">
+                <i class="bi bi-briefcase-fill"></i> Administrativos
+            </a>
+        </li>
+        
         
         {% endif %}
-        
+
+
+    
         {% if "Secretaria Talento Humano" in user_groups %}
         <li class="nav-item mb-2">
             <a href="{% url 'gestion_aspirantes' %}" class="d-flex gap-2 nav-link">

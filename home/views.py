@@ -914,7 +914,7 @@ def gestion_func_sustantivas(request):
 # ----------------------------  VISTA CONTABILIDAD ---------------------------------
 #
 
-def gestion_contabilidad(request):
+def gestion_docentes(request):
     """
     Muestra la gestión de contratos
     """
@@ -926,7 +926,23 @@ def gestion_contabilidad(request):
         'programa_list': Programa.objects.all(),
     })
 
-    return render(request, 'contabilidad.html', contexto)
+    return render(request, 'docentes.html', contexto)
+
+
+def gestion_administrativos(request):
+    """
+    Muestra la gestión de contratos
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
+    return render(request, 'administrativos.html', contexto)
+
 
 #
 # ----------------------------  VISTA CARGA ACADEMICA ---------------------------------
