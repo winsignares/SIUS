@@ -1,11 +1,11 @@
 {% extends "dashboard.html" %}
 
-{% block title %}Consulta Contabilidad - SIUC{% endblock %}
+{% block title %}Consulta Administrativos - SIUC{% endblock %}
 {% block container_class %}justify-content-start align-items-start{% endblock %}
 
 {% block content %}
 <div class="container-fluid m-4">
-    <h3 class="mb-3 d-flex justify-content-center align-items-center fw-bold">Consulta Contabilidad</h3>
+    <h3 class="mb-3 d-flex justify-content-center align-items-center fw-bold">Consulta Administrativos</h3>
 
     <!-- Periodo en curso -->
     <div class="row mb-3">
@@ -32,13 +32,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for administrativo in administrativos %}
                     <tr class="text-center">
-                        <td>Willian Ricardo Insignares Conde</td>
-                        <td>Profesional</td>
-                        <td>CC  - 1045680563</td>
-                        <td>HC</td>
-                        <td>40000</td>
-                        <td>2000000</td>
+                        <td>{{ administrativo.primer_nombre }} {{ administrativo.primer_apellido }}</td>
+                        <td>{{ administrativo.cargo }}</td>
+                        <td>{{ administrativo.fk_tipo_documento.descripcion }} - {{ administrativo.numero_documento }}</td>
+                        <td>{{ administrativo.estado_revision }}</td>
+                        <td>{{ administrativo.contrato.valor_hora|default:"N/A" }}</td>
+                        <td>{{ administrativo.contrato.valor_contrato|default:"N/A" }}</td>
                         <td>
                             <div style="overflow-x: auto; width: 630px;"> <!-- Contenedor con scroll -->
                                 <table>
@@ -60,12 +61,10 @@
                             </div>
                         </td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-</div>
-
-
 </div>
 {% endblock %}

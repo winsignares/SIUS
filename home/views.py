@@ -931,15 +931,18 @@ def gestion_docentes(request):
 
 def gestion_administrativos(request):
     """
-    Muestra la gestión de contratos
+    Muestra la gestión de administrativos.
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    dia_actual = datetime.now().date()
+    # Filtrar usuarios con rol de administrativo
+    administrativos = Usuario.objects.filter(fk_rol__descripcion="Administrativo").order_by('-fecha_modificacion')
 
+    # Agregar los administrativos al contexto
     contexto.update({
-            "dia_actual": dia_actual,
-        })
+        "administrativos": administrativos,
+        "dia_actual": datetime.now().date(),
+    })
 
     return render(request, 'administrativos.html', contexto)
 
