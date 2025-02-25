@@ -591,14 +591,19 @@
                     {% csrf_token %}
                     <input type="hidden" id="usuario_id" name="usuario_id" value="" />
                     <div class="row p-2">
-                        <div class="mb-2">
-                            <label for="institucion" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
-                            <select class="form-select" id="institucion" name="institucion" required>
-                                <option value="" selected>Seleccione</option>
+                        <div class="mb-2" style="position: relative;">
+                            <label for="institucion_input" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
+                            <input type="text" id="institucion_input" class="form-control mb-2" placeholder="Buscar o escribir institución..." autocomplete="off" required>
+                            <input type="hidden" id="institucion" name="institucion" value=""> <!-- Campo oculto para el valor enviado -->
+                            <ul id="institucion_dropdown" class="dropdown-menu">
                                 {% for institucion in instituciones_list %}
-                                    <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
+                                    <li>
+                                        <button class="dropdown-item" type="button" data-value="{{ institucion.nombre_institucion }}">
+                                            {{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}
+                                        </button>
+                                    </li>
                                 {% endfor %}
-                            </select>
+                            </ul>
                         </div>
                         <div class="mb-2">
                             <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
@@ -621,7 +626,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" ide="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" id="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
                 <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formDetalleAcademico">Guardar</button>
             </div>
         </div>
@@ -856,6 +861,8 @@
     // Configurar el dropdown para EPS
     setupDropdownFilter("fk_eps_input", "fk_eps_dropdown", "fk_eps");
     setupDropdownFilter("departamento_residencia_input", "departamento_residencia_dropdown", "departamento_residencia"); // Si también necesitas esto
+    // Configurar el dropdown para Institución
+    setupDropdownFilter("institucion_input", "institucion_dropdown", "institucion");
 });    
 </script>
 {% endblock %}
