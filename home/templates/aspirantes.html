@@ -412,6 +412,7 @@
                                 <div class="col-md-6 mb-2" style="position: relative;">
                                     <label for="fk_eps_input" class="form-label mb-0">EPS <span class="fw-bold fs-4">*</span></label>
                                     <input type="text" id="fk_eps_input" class="form-control mb-2" placeholder="Buscar o escribir EPS..." autocomplete="off" required>
+                                    <input type="hidden" id="fk_eps" name="fk_eps" value=""> <!-- Campo oculto para el ID -->
                                     <ul id="fk_eps_dropdown" class="dropdown-menu">
                                         {% for eps in eps_list %}
                                             <li>
@@ -799,60 +800,62 @@
 <!-- Select con campo de busqueda -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        function setupDropdownFilter(inputId, dropdownId) {
-            const inputElement = document.getElementById(inputId);
-            const dropdownElement = document.getElementById(dropdownId);
-            const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
-    
-            // Mostrar/ocultar el dropdown según el input
-            inputElement.addEventListener("input", function () {
-                const query = inputElement.value.toLowerCase();
-    
-                // Filtrar las opciones según el texto ingresado
-                const filteredItems = originalItems.filter(item =>
-                    item.textContent.toLowerCase().includes(query)
-                );
-    
-                // Limpiar y actualizar el dropdown
+    function setupDropdownFilter(inputId, dropdownId, hiddenInputId) { // Agregar hiddenInputId como parámetro
+        const inputElement = document.getElementById(inputId);
+        const dropdownElement = document.getElementById(dropdownId);
+        const hiddenInputElement = document.getElementById(hiddenInputId); // Campo oculto
+        const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
+
+        // Mostrar/ocultar el dropdown según el input
+        inputElement.addEventListener("input", function () {
+            const query = inputElement.value.toLowerCase();
+
+            // Filtrar las opciones según el texto ingresado
+            const filteredItems = originalItems.filter(item =>
+                item.textContent.toLowerCase().includes(query)
+            );
+
+            // Limpiar y actualizar el dropdown
+            dropdownElement.innerHTML = "";
+            if (filteredItems.length > 0) {
+                filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                dropdownElement.style.display = "block";
+            } else {
+                dropdownElement.style.display = "none";
+            }
+        });
+
+        // Cuando seleccionas una opción
+        dropdownElement.addEventListener("click", function (event) {
+            if (event.target.matches(".dropdown-item")) {
+                const selectedText = event.target.textContent.trim();
+                const selectedValue = event.target.getAttribute("data-value"); // Obtener el ID
+                inputElement.value = selectedText; // Mostrar el texto en el input visible
+                hiddenInputElement.value = selectedValue; // Asignar el ID al campo oculto
+                dropdownElement.style.display = "none"; // Ocultar el dropdown
+            }
+        });
+
+        // Ocultar el dropdown al hacer clic fuera
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
+                dropdownElement.style.display = "none";
+            }
+        });
+
+        // Mostrar todas las opciones si el input está vacío
+        inputElement.addEventListener("focus", function () {
+            if (inputElement.value.trim() === "") {
                 dropdownElement.innerHTML = "";
-                if (filteredItems.length > 0) {
-                    filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
-                    dropdownElement.style.display = "block";
-                } else {
-                    dropdownElement.style.display = "none";
-                }
-            });
-    
-            // Cuando seleccionas una opción
-            dropdownElement.addEventListener("click", function (event) {
-                if (event.target.matches(".dropdown-item")) {
-                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
-                    inputElement.value = selectedText; // Inserta solo el texto limpio
-                    dropdownElement.style.display = "none"; // Oculta el dropdown
-                }
-            });
-    
-            // Ocultar el dropdown al hacer clic fuera
-            document.addEventListener("click", function (event) {
-                if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
-                    dropdownElement.style.display = "none";
-                }
-            });
-    
-            // Mostrar todas las opciones si el input está vacío
-            inputElement.addEventListener("focus", function () {
-                if (inputElement.value.trim() === "") {
-                    dropdownElement.innerHTML = "";
-                    originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
-                    dropdownElement.style.display = "block";
-                }
-            });
-        }
-    
-        // Reutiliza la función para diferentes inputs y dropdowns
-        setupDropdownFilter("fk_eps_input", "fk_eps_dropdown");
-        setupDropdownFilter("departamento_residencia_input", "departamento_residencia_dropdown");
-        setupDropdownFilter("fk_docente_input", "fk_docente_dropdown");
-    });    
+                originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
+                dropdownElement.style.display = "block";
+            }
+        });
+    }
+
+    // Configurar el dropdown para EPS
+    setupDropdownFilter("fk_eps_input", "fk_eps_dropdown", "fk_eps");
+    setupDropdownFilter("departamento_residencia_input", "departamento_residencia_dropdown", "departamento_residencia"); // Si también necesitas esto
+});    
 </script>
 {% endblock %}
