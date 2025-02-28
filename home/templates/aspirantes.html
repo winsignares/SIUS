@@ -592,9 +592,8 @@
                     <input type="hidden" id="usuario_id" name="usuario_id" value="" />
                     <div class="row p-2">
                         <div class="mb-2" style="position: relative;">
-                            <label for="institucion_input" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
-                            <input type="text" id="institucion_input" class="form-control mb-2" placeholder="Buscar o escribir institución..." autocomplete="off" required>
-                            <input type="hidden" id="institucion" name="institucion" value=""> <!-- Campo oculto para el valor enviado -->
+                            <label for="institucion_input" class="form-label mb-0">Institución <span class='fw-bold fs-4'></span></label>
+                            <input type="text" id="institucion_input" class="form-control mb-2" placeholder="Buscar o escribir institución..." autocomplete="off" name="institucion">
                             <ul id="institucion_dropdown" class="dropdown-menu">
                                 {% for institucion in instituciones_list %}
                                     <li>
@@ -604,6 +603,14 @@
                                     </li>
                                 {% endfor %}
                             </ul>
+                        </div>
+                        <div class="mb-2">
+                            <label for="institucion_extranjera" class="form-label mb-0">Institución Extranjera (Opcional)</label>
+                            <input type="text" class="form-control" id="institucion_extranjera" name="institucion_extranjera">
+                        </div>
+                        <div class="mb-2">
+                            <label for="codigo_convalidacion" class="form-label mb-0">Código de Convalidación (Opcional)</label>
+                            <input type="number" class="form-control" id="codigo_convalidacion" name="codigo_convalidacion">
                         </div>
                         <div class="mb-2">
                             <label for="titulo_obtenido" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
@@ -617,6 +624,24 @@
                                     <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                 {% endfor %}
                             </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="metodologia_programa" class="form-label mb-0">Metodología del Programa <span class='fw-bold fs-4'>*</span></label>
+                            <select class="form-select" id="metodologia_programa" name="metodologia_programa" required>
+                                <option value="" selected>Seleccione</option>
+                                <option value="presencial">Presencial</option>
+                                <option value="virtual">Virtual</option>
+                                <option value="remota_sincronica">Remota Sincrónica</option>
+                                <option value="remota_asincronica">Remota Asincrónica</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="ies_codigo" class="form-label mb-0">Código IES (Opcional) <span class='fw-bold fs-4'></span></label>
+                            <input type="number" class="form-control" id="ies_codigo" name="ies_codigo">
+                        </div>
+                        <div class="mb-2">
+                            <label for="codigo_pais" class="form-label mb-0">Código del País (Opcional) <span class='fw-bold fs-4'></span></label>
+                            <input type="number" class="form-control" id="codigo_pais" name="codigo_pais">
                         </div>
                         <div class="mb-2">
                             <label for="fecha_graduacion" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>

@@ -8,8 +8,14 @@ class DetalleAcademico(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="detalles_academicos")
     nivel_academico = models.ForeignKey(NivelAcademico, on_delete=models.CASCADE)
     institucion = models.CharField(max_length=255)
+    institucion_extranjera = models.CharField(max_length=255, null=True, blank=True)
+    codigo_convalidacion = models.CharField(max_length=50, null=True, blank=True)
     titulo_obtenido = models.CharField(max_length=255)
+    metodologia_programa = models.CharField(max_length=50, null=True, blank=True)
+    ies_codigo = models.PositiveIntegerField(null=True, blank=True)
+    codigo_pais = models.PositiveIntegerField(null=True, blank=True)
     fecha_graduacion = models.DateField(null=True, blank=True)
+    
 
     class Meta:
         db_table = 'detalles_academicos'
