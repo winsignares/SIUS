@@ -26,13 +26,10 @@
                         <label for="tipo_contrato" class="form-label mb-0">Tipo de Contrato <span class='fw-bold fs-4'>*</span></label>
                         <select class="form-select" id="tipo_contrato" name="tipo_contrato" required>
                             <option value="" {% if not contrato or not contrato.tipo_contrato %}selected{% endif %}>Seleccione</option>
-                            <option value="Termino Fijo" {% if contrato and contrato.tipo_contrato == "Termino Fijo" %}selected{% endif %}>Término Fijo</option>
-                            <option value="Indefinido" {% if contrato and contrato.tipo_contrato == "Indefinido" %}selected{% endif %}>Indefinido</option>
+                            <option value="Termino Fijo" {% if contrato and contrato.tipo_contrato == "Tiempo Completo - TC" %}selected{% endif %}>Tiempo Completo - TC</option>
+                            <option value="Indefinido" {% if contrato and contrato.tipo_contrato == "Medio Tiempo - MT" %}selected{% endif %}>Medio Tiempo - MT</option>
+                            <option value="Indefinido" {% if contrato and contrato.tipo_contrato == "Hora Catedra - HC" %}selected{% endif %}>Hora Catedra - HC</option>
                             <option value="Aprendiz" {% if contrato and contrato.tipo_contrato == "Aprendiz" %}selected{% endif %}>Aprendiz</option>
-                            <option value="Obra o Labor" {% if contrato and contrato.tipo_contrato == "Obra o Labor" %}selected{% endif %}>Obra o Labor</option>
-                            <option value="Prestación de Servicios" {% if contrato and contrato.tipo_contrato == "Prestación de Servicios" %}selected{% endif %}>Prestación de Servicios</option>
-                            <option value="Ocasional o Transitorio" {% if contrato and contrato.tipo_contrato == "Ocasional o Transitorio" %}selected{% endif %}>Ocasional o Transitorio</option>
-                            <option value="Trabajo Remoto" {% if contrato and contrato.tipo_contrato == "Trabajo Remoto" %}selected{% endif %}>Trabajo Remoto</option>
                         </select>
                     </div>
 
