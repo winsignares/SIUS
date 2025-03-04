@@ -14,7 +14,7 @@
             {% if "Secretaria Talento Humano" in user_groups %}
             <div class="d-flex gap-3">
                 <!-- Agregar nuevos trabajadores activos -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoPersonalModal_emp">
                     Nuevo Empleado
                 </button>
                 <!-- Carga masiva de trabajadores (Habilitar mas adelante quitando el d-none) -->
@@ -254,7 +254,7 @@
 </div>
 
 <!-- Modal Información Personal -->
-<div class="modal fade" id="infoPersonalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoPersonalModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoPersonalModal_emp" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoPersonalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
@@ -372,8 +372,9 @@
 
                                 <div class="col-md-6 mb-2" style="position: relative;">
                                     <label for="departamento_residencia_emp" class="form-label mb-0">Departamento de Residencia <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control mb-2" id="departamento_residencia_emp_input" name="departamento_residencia" placeholder="Buscar o seleccionar Departamento de Residencia..." autocomplete="off" required>
-                                    <ul id="departamento_residencia_dropdown" class="dropdown-menu">
+                                    <input type="text" class="form-control mb-2" id="departamento_residencia_input_emp" name="departamento_residencia" placeholder="Buscar o seleccionar Departamento de Residencia..." autocomplete="off" required>
+                                    <input type="hidden" id="departamento_residencia_emp" name="departamento_residencia" value="">
+                                    <ul id="departamento_residencia_dropdown_emp" class="dropdown-menu">
                                         {% for departamento in departamentos_list %}
                                             <li>
                                                 <button class="dropdown-item" type="button" data-value="{{ departamento.nombre }}">
@@ -419,8 +420,9 @@
 
                                 <div class="col-md-6 mb-2" style="position: relative;">
                                     <label for="fk_eps_input_emp" class="form-label mb-0">EPS <span class="fw-bold fs-4">*</span></label>
-                                    <input type="text" id="fk_eps_emp_input" class="form-control mb-2" placeholder="Buscar o seleccionar EPS..." autocomplete="off" required>
-                                    <ul id="fk_eps_dropdown" class="dropdown-menu">
+                                    <input type="text" id="fk_eps_input_emp" class="form-control mb-2" placeholder="Buscar o seleccionar EPS..." autocomplete="off" required>
+                                    <input type="hidden" id="fk_eps_emp" name="fk_eps" value="">
+                                    <ul id="fk_eps_dropdown_emp" class="dropdown-menu">
                                         {% for eps in eps_list %}
                                             <li>
                                                 <button class="dropdown-item" type="button" data-value="{{ eps.id }}">
@@ -478,7 +480,7 @@
 </div>
 
 <!-- Modal Información Adicional -->
-<div class="modal fade" id="infoAdicionalModalEmp" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
+<div class="modal fade" id="infoAdicionalModal_emp" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
@@ -493,7 +495,7 @@
                         </div>
                         <!-- Botón para registrar información académica -->
                         <div class="text-end mb-2 px-2">
-                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formDetalleAcademicoModal">
+                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formDetalleAcademicoModal_emp">
                                 <i class="bi bi-plus-circle"></i> Agregar Detalle Académico
                             </a>
                         </div>
@@ -587,7 +589,7 @@
 </div>
 
 <!-- Modal Modal Formulario Detalle Académico -->
-<div class="modal fade" id="formDetalleAcademicoModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formDetalleAcademicoModalLabel" aria-hidden="true">
+<div class="modal fade" id="formDetalleAcademicoModal_emp" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formDetalleAcademicoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
@@ -598,14 +600,31 @@
                     {% csrf_token %}
                     <input type="hidden" id="usuario_id" name="usuario_id" value="" />
                     <div class="row p-2">
+                        <div class="mb-2" style="position: relative;">
+                            <label for="institucion_input_emp" class="form-label mb-0">Institución <span class='fw-bold fs-4'></span></label>
+                            <input type="text" id="institucion_input_emp" class="form-control mb-2" placeholder="Buscar o escribir institución..." autocomplete="off">
+                            <input type="hidden" id="institucion_emp" name="institucion" value="">
+                            <ul id="institucion_dropdown_emp" class="dropdown-menu" style="display: none; z-index: 1050;">
+                                {% if instituciones_list|length > 0 %}
+                                    {% for institucion in instituciones_list %}
+                                        <li>
+                                            <button class="dropdown-item" type="button" data-value="{{ institucion.nombre_institucion }}">
+                                                {{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li><button class="dropdown-item" type="button" disabled>No hay instituciones disponibles</button></li>
+                                {% endif %}
+                            </ul>
+                        </div>
                         <div class="mb-2">
-                            <label for="institucion_emp" class="form-label mb-0">Institución <span class='fw-bold fs-4'>*</span></label>
-                            <select class="form-select" id="institucion_emp" name="institucion" required>
-                                <option value="" selected>Seleccione</option>
-                                {% for institucion in instituciones_list %}
-                                    <option value="{{ institucion.nombre_institucion }}">{{ institucion.nombre_institucion }} - {{ institucion.departamento_ubicacion }}, {{ institucion.municipio_ubicacion }}</option>
-                                {% endfor %}
-                            </select>
+                            <label for="institucion_extranjera_emp" class="form-label mb-0">Institución Extranjera (Opcional)</label>
+                            <input type="text" class="form-control" id="institucion_extranjera_emp" name="institucion_extranjera">
+                        </div>
+                        <div class="mb-2">
+                            <label for="codigo_convalidacion_emp" class="form-label mb-0">Código de Convalidación (Opcional)</label>
+                            <input type="number" class="form-control" id="codigo_convalidacion_emp" name="codigo_convalidacion">
                         </div>
                         <div class="mb-2">
                             <label for="titulo_obtenido_emp" class="form-label mb-0">Título Obtenido <span class='fw-bold fs-4'>*</span></label>
@@ -621,6 +640,24 @@
                             </select>
                         </div>
                         <div class="mb-2">
+                            <label for="metodologia_programa_emp" class="form-label mb-0">Metodología del Programa <span class='fw-bold fs-4'>*</span></label>
+                            <select class="form-select" id="metodologia_programa_emp" name="metodologia_programa" required>
+                                <option value="" selected>Seleccione</option>
+                                <option value="presencial">Presencial</option>
+                                <option value="virtual">Virtual</option>
+                                <option value="remota_sincronica">Remota Sincrónica</option>
+                                <option value="remota_asincronica">Remota Asincrónica</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="ies_codigo_emp" class="form-label mb-0">Código IES (Opcional) <span class='fw-bold fs-4'></span></label>
+                            <input type="number" class="form-control" id="ies_codigo_emp" name="ies_codigo">
+                        </div>
+                        <div class="mb-2">
+                            <label for="codigo_pais_emp" class="form-label mb-0">Código del País (Opcional) <span class='fw-bold fs-4'></span></label>
+                            <input type="number" class="form-control" id="codigo_pais_emp" name="codigo_pais">
+                        </div>
+                        <div class="mb-2">
                             <label for="fecha_graduacion_emp" class="form-label mb-0">Fecha de Graduación <span class='fw-bold fs-4'>*</span></label>
                             <input type="date" class="form-control" id="fecha_graduacion_emp" name="fecha_graduacion" required>
                         </div>
@@ -628,7 +665,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" ide="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" id="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModalEmp">Cancelar</button>
                 <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formDetalleAcademico">Guardar</button>
             </div>
         </div>
@@ -818,63 +855,89 @@
     });
 </script>
 
-<!-- Select con campo de busqueda -->
+<!-- Select con campo de búsqueda -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        function setupDropdownFilter(inputId, dropdownId) {
+        function setupDropdownFilter(inputId, dropdownId, hiddenInputId) {
             const inputElement = document.getElementById(inputId);
             const dropdownElement = document.getElementById(dropdownId);
+            const hiddenInputElement = document.getElementById(hiddenInputId);
+
+            if (!inputElement || !dropdownElement || !hiddenInputElement) {
+                console.error("One or more elements not found:", {
+                    inputId,
+                    dropdownId,
+                    hiddenInputId
+                });
+                return;
+            }
+
             const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
-    
+
+            // Debug: Log initial items
+            console.log("Original items:", originalItems);
+
             // Mostrar/ocultar el dropdown según el input
             inputElement.addEventListener("input", function () {
                 const query = inputElement.value.toLowerCase();
-    
+
                 // Filtrar las opciones según el texto ingresado
                 const filteredItems = originalItems.filter(item =>
                     item.textContent.toLowerCase().includes(query)
                 );
-    
+
                 // Limpiar y actualizar el dropdown
                 dropdownElement.innerHTML = "";
                 if (filteredItems.length > 0) {
                     filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
                     dropdownElement.style.display = "block";
+                    console.log("Filtered items:", filteredItems);
                 } else {
                     dropdownElement.style.display = "none";
+                    console.log("No matches found for query:", query);
                 }
             });
-    
+
             // Cuando seleccionas una opción
             dropdownElement.addEventListener("click", function (event) {
                 if (event.target.matches(".dropdown-item")) {
-                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
-                    inputElement.value = selectedText; // Inserta solo el texto limpio
-                    dropdownElement.style.display = "none"; // Oculta el dropdown
+                    const selectedText = event.target.textContent.trim(); // Use the displayed text (EPS name)
+                    const selectedValue = event.target.getAttribute("data-value"); // Use data-value for the ID
+                    inputElement.value = selectedText; // Display the name in the input
+                    if (hiddenInputElement) {
+                        hiddenInputElement.value = selectedValue; // Store the ID in the hidden input
+                        console.log("Selected name:", selectedText, "Selected ID:", selectedValue);
+                    }
+                    dropdownElement.style.display = "none"; // Ocultar el dropdown
                 }
             });
-    
+
             // Ocultar el dropdown al hacer clic fuera
             document.addEventListener("click", function (event) {
                 if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
                     dropdownElement.style.display = "none";
                 }
             });
-    
+
             // Mostrar todas las opciones si el input está vacío
             inputElement.addEventListener("focus", function () {
                 if (inputElement.value.trim() === "") {
                     dropdownElement.innerHTML = "";
                     originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
                     dropdownElement.style.display = "block";
+                    console.log("Showing all items on focus");
                 }
             });
         }
-    
-        // Reutiliza la función para diferentes inputs y dropdowns
-        setupDropdownFilter("fk_eps_emp_input", "fk_eps_dropdown");
-        setupDropdownFilter("departamento_residencia_emp_input", "departamento_residencia_dropdown");
-        setupDropdownFilter("fk_docente_emp_input", "fk_docente_dropdown");
-    });    
+
+        // Configurar el dropdown para EPS
+        setupDropdownFilter("fk_eps_input_emp", "fk_eps_dropdown_emp", "fk_eps_emp");
+
+        // Configurar el dropdown para departamentos
+        setupDropdownFilter("departamento_residencia_input_emp", "departamento_residencia_dropdown_emp", "departamento_residencia_emp");
+
+        // Configurar el dropdown para Institución
+        setupDropdownFilter("institucion_input_emp", "institucion_dropdown_emp", "institucion_emp");
+    });
 </script>
 {% endblock %}

@@ -858,11 +858,9 @@
         // Cuando seleccionas una opción
         dropdownElement.addEventListener("click", function (event) {
             if (event.target.matches(".dropdown-item")) {
-                const selectedText = event.target.textContent.trim();
-                const selectedValue = event.target.getAttribute("data-value"); // Obtener el ID
-                inputElement.value = selectedText; // Mostrar el texto en el input visible
-                hiddenInputElement.value = selectedValue; // Asignar el ID al campo oculto
-                dropdownElement.style.display = "none"; // Ocultar el dropdown
+                const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
+                inputElement.value = selectedText; // Inserta solo el texto limpio
+                dropdownElement.style.display = "none"; // Oculta el dropdown
             }
         });
 
@@ -885,6 +883,8 @@
 
     // Configurar el dropdown para EPS
     setupDropdownFilter("fk_eps_input", "fk_eps_dropdown", "fk_eps");
+
+    // Configurar el dropdown para departamentos
     setupDropdownFilter("departamento_residencia_input", "departamento_residencia_dropdown", "departamento_residencia"); // Si también necesitas esto
     // Configurar el dropdown para Institución
     setupDropdownFilter("institucion_input", "institucion_dropdown", "institucion");
