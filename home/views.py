@@ -498,10 +498,15 @@ def agregar_exp_laboral(request):
         cargo = request.POST.get("cargo")
         fecha_inicio = request.POST.get("fecha_inicio")
         fecha_fin = request.POST.get("fecha_fin")
+        laborando_actualmente = request.POST.get("laborando_actualmente") == "on"
 
         try:
             # Validar que el usuario existe
             usuario = get_object_or_404(Usuario, id=usuario_id)
+            
+            # Si está laborando actualmente, establecer fecha_fin como None
+            if laborando_actualmente or fecha_fin == "":
+                fecha_fin = None
 
             # Crear el detalle de experiencia laboral
             detalle = DetalleExperienciaLaboral.objects.create(
@@ -509,7 +514,8 @@ def agregar_exp_laboral(request):
                 empresa=empresa,
                 cargo=cargo,
                 fecha_inicio=fecha_inicio,
-                fecha_fin=fecha_fin
+                fecha_fin=fecha_fin,
+                trabajando_actualmente=laborando_actualmente
             )
 
             contexto = {
@@ -517,7 +523,7 @@ def agregar_exp_laboral(request):
                     "empresa": detalle.empresa,
                     "cargo": detalle.cargo,
                     "fecha_inicio": detalle.fecha_inicio,
-                    "fecha_fin": detalle.fecha_fin,
+                    "fecha_fin": detalle.fecha_fin if detalle.fecha_fin else "Actualmente"
                 }
             }
 

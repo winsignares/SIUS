@@ -8,8 +8,9 @@ class DetalleExperienciaLaboral(models.Model):
     empresa = models.CharField(max_length=255)
     cargo = models.CharField(max_length=255)
     fecha_inicio = models.DateField(null=False, blank=False)
-    fecha_fin = models.DateField(null=False, blank=False)
-
+    fecha_fin = models.DateField(null=True, blank=True)
+    trabajando_actualmente = models.BooleanField(default=False)
+    
     class Meta:
         db_table = 'detalles_exp_laboral'
         verbose_name = 'Detalle Experiencia Laboral'
