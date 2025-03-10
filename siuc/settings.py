@@ -141,7 +141,7 @@ LOGOUT_REDIRECT_URL = '/siuc/login/'
 # Configuración de sesiones
 # https://docs.djangoproject.com/en/5.1/ref/settings/#sessions
 
-SESSION_COOKIE_AGE = 1800
+SESSION_COOKIE_AGE = 2 * 60 * 60  # 2 horas en segundos
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Default primary key field type
