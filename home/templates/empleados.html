@@ -697,6 +697,12 @@
                             <input type="date" class="form-control" id="fecha_inicio_emp" name="fecha_inicio" required>
                         </div>
                         <div class="mb-2">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="laborando_actualmente_emp" name="laborando_actualmente">
+                                <label class="form-check-label" for="laborando_actualmente_emp">Laborando actualmente</label>
+                            </div>
+                        </div>
+                        <div class="mb-2" id="fecha_fin_container_emp">
                             <label for="fecha_fin_emp" class="form-label mb-0">Fecha de Fin <span class='fw-bold fs-4'>*</span></label>
                             <input type="date" class="form-control" id="fecha_fin_emp" name="fecha_fin" required>
                         </div>
@@ -938,6 +944,31 @@
 
         // Configurar el dropdown para Institución
         setupDropdownFilter("institucion_input_emp", "institucion_dropdown_emp", "institucion_emp");
+    });
+</script>
+
+<!--SCRIPT FUNCIONALIDAD DE LABORANDO ACTUALMENTE-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const laborandoCheckbox = document.getElementById("laborando_actualmente_emp");
+        const fechaFinContainer = document.getElementById("fecha_fin_container_emp");
+        const fechaFinInput = document.getElementById("fecha_fin_emp");
+
+        // Función para actualizar el estado del campo Fecha de Fin
+        function toggleFechaFin() {
+            if (laborandoCheckbox.checked) {
+                fechaFinContainer.style.display = "none"; // Ocultar el campo
+                fechaFinInput.removeAttribute("required"); // Quitar el atributo required
+                fechaFinInput.value = ""; // Limpiar el valor
+            } else {
+                fechaFinContainer.style.display = "block"; // Mostrar el campo
+                fechaFinInput.setAttribute("required", "required"); // Restaurar el atributo required
+            }
+        }
+
+        // Ejecutar la función al cargar la página y al cambiar el estado del checkbox
+        toggleFechaFin(); // Inicializar al cargar
+        laborandoCheckbox.addEventListener("change", toggleFechaFin);
     });
 </script>
 {% endblock %}

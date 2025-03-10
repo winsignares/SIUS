@@ -159,6 +159,7 @@
                     } else if (form.id === "formExpLaboral") {
                         agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
                         cerrarModalFormulario("formExpLaboralModal");
+                        cerrarModalFormulario("formExpLaboralModal_emp");
                         redirigirAModal();
                     }
                 });
