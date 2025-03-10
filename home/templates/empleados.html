@@ -262,7 +262,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-2">
-                <form id="formInfoPersonal" method="POST" action="{% url 'agregar_empleado' %}" data-ajax-submit="true">
+                <form id="formInfoPersonal_emp" method="POST" action="{% url 'agregar_empleado' %}" data-ajax-submit="true">
                     {% csrf_token %}
                     <div class="container">
                         <!-- Información Personal -->
@@ -473,7 +473,7 @@
                 <!-- Nota -->
                 <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
 
-                <button type="submit" class="btn btn-primary" form="formInfoPersonal">Agregar y continuar</button>
+                <button type="submit" class="btn btn-primary" form="formInfoPersonal_emp">Agregar y continuar</button>
             </div>
         </div>
     </div>
@@ -541,7 +541,7 @@
                         </div>
                         <!-- Botón para registrar información laboral -->
                         <div class="text-end mb-2 px-2">
-                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formExpLaboralModal">
+                            <a href="#" class="link-modal d-flex gap-2 justify-content-end fw-bold text-decoration-none" data-bs-toggle="modal" data-bs-target="#formExpLaboralModal_emp">
                                 <i class="bi bi-plus-circle"></i> Agregar Experiencia Laboral
                             </a>
                         </div>
@@ -593,10 +593,10 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Detalle Académico</h5>
+                <h5 class="modal-title" id="detalleAcademicoLabel_emp">Agregar Detalle Académico</h5>
             </div>
             <div class="modal-body">
-                <form id="formDetalleAcademico" method="POST" action="{% url 'agregar_detalle_academico' %}" data-ajax-submit="true">
+                <form id="formDetalleAcademico_emp" method="POST" action="{% url 'agregar_detalle_academico' %}" data-ajax-submit="true">
                     {% csrf_token %}
                     <input type="hidden" id="usuario_id" name="usuario_id" value="" />
                     <div class="row p-2">
@@ -665,19 +665,19 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelarFormDetalleAcademico" data-bs-toggle="modal" data-bs-target="#infoAdicionalModalEmp">Cancelar</button>
-                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formDetalleAcademico">Guardar</button>
+                <button type="button" class="btn btn-secondary" id="cancelarFormDetalleAcademico_emp" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal_emp">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico_emp" form="formDetalleAcademico_emp">Guardar</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Formulario Exp Laboral -->
-<div class="modal fade" id="formExpLaboralModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formExpLaboralModalLabel" aria-hidden="true">
+<div class="modal fade" id="formExpLaboralModal_emp" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="formExpLaboralModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-forms modal-content">
             <div class="modal-header">
-                    <h5 class="modal-title" id="detalleAcademicoLabel">Agregar Experiencia Laboral</h5>
+                    <h5 class="modal-title" id="detalleAcademicoLabel_emp">Agregar Experiencia Laboral</h5>
                 </div>
             <div class="modal-body">
                 <form id="formExpLaboral" method="POST" action="{% url 'agregar_exp_laboral' %}" data-ajax-submit="true">
@@ -704,8 +704,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelarFormExpLaboral" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal">Cancelar</button>
-                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico" form="formExpLaboral">Guardar</button>
+                <button type="button" class="btn btn-secondary" id="cancelarFormExpLaboral_emp" data-bs-toggle="modal" data-bs-target="#infoAdicionalModal_emp">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="agregarDetalleAcademico_emp" form="formExpLaboral">Guardar</button>
             </div>
         </div>
     </div>
