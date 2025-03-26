@@ -22,13 +22,14 @@
 
                     {% endif %}
 
+                    <!-- Tipo de Contrato -->
                     <div class="col-md-6">
                         <label for="tipo_contrato" class="form-label mb-0">Tipo de Contrato <span class='fw-bold fs-4'>*</span></label>
                         <select class="form-select" id="tipo_contrato" name="tipo_contrato" required>
                             <option value="" {% if not contrato or not contrato.tipo_contrato %}selected{% endif %}>Seleccione</option>
-                            <option value="Termino Fijo" {% if contrato and contrato.tipo_contrato == "Tiempo Completo - TC" %}selected{% endif %}>Tiempo Completo - TC</option>
-                            <option value="Indefinido" {% if contrato and contrato.tipo_contrato == "Medio Tiempo - MT" %}selected{% endif %}>Medio Tiempo - MT</option>
-                            <option value="Indefinido" {% if contrato and contrato.tipo_contrato == "Hora Catedra - HC" %}selected{% endif %}>Hora Catedra - HC</option>
+                            <option value="Tiempo Completo - TC" {% if contrato and contrato.tipo_contrato == "Tiempo Completo - TC" %}selected{% endif %}>Tiempo Completo - TC</option>
+                            <option value="Medio Tiempo - MT" {% if contrato and contrato.tipo_contrato == "Medio Tiempo - MT" %}selected{% endif %}>Medio Tiempo - MT</option>
+                            <option value="Hora Catedra - HC" {% if contrato and contrato.tipo_contrato == "Hora Catedra - HC" %}selected{% endif %}>Hora Catedra - HC</option>
                             <option value="Aprendiz" {% if contrato and contrato.tipo_contrato == "Aprendiz" %}selected{% endif %}>Aprendiz</option>
                         </select>
                     </div>
@@ -43,18 +44,18 @@
                             <!-- Fecha Inicio Contrato -->
                             <div class="col-md-4 mb-2">
                                 <label for="fecha_inicio_contrato" class="form-label mb-0">Fecha Inicio Contrato <span class='fw-bold fs-4'>*</span></label>
-                                <input type="date" class="form-control" id="fecha_inicio_contrato" name="fecha_inicio_contrato" value="{{ contrato.fecha_inicio|default:'' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                                <input type="date" class="form-control" id="fecha_inicio_contrato" name="fecha_inicio_contrato" value="{% if contrato and contrato.fecha_inicio %}{{ contrato.fecha_inicio|date:'Y-m-d' }}{% endif %}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
                             </div>
                             <!-- Fecha Fin Contrato -->
                             <div class="col-md-4 mb-2">
                                 <label for="fecha_fin_contrato" class="form-label mb-0">Fecha Fin Contrato <span class='fw-bold fs-4'>*</span></label>
-                                <input type="date" class="form-control" id="fecha_fin_contrato" name="fecha_fin_contrato" value="{{ contrato.fecha_fin|default:'' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                                <input type="date" class="form-control" id="fecha_fin_contrato" name="fecha_fin_contrato" value="{% if contrato and contrato.fecha_fin %}{{ contrato.fecha_fin|date:'Y-m-d' }}{% endif %}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
                             </div>
                             <!-- Valor del Contrato -->
                             {% if usuario.fk_rol.descripcion == "Administrativo" %}
                             <div class="col-md-4 mb-2">
                                 <label for="valor_contrato" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'>*</span></label>
-                                <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" value="{{ contrato.valor_contrato|default:'' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                                <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" value="{% if contrato and contrato.valor_contrato %}{{ contrato.valor_contrato }}{% endif %}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
                             </div>
                             {% endif %}
                         </div>
@@ -269,7 +270,7 @@
     </div>
 </form>
 
-<script>
+{% comment %} <script>
     document.addEventListener("DOMContentLoaded", function () {
     console.log("Script cargado correctamente"); // Verifica en la consola del navegador
 
@@ -306,4 +307,4 @@
         console.error("No se encontró el campo 'estado_revision'");
     }
 });
-</script>
+</script> {% endcomment %}
