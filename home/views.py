@@ -764,7 +764,7 @@ def generar_detalles_contrato(contrato):
     """Genera registros de detalles del contrato con días laborados y valores a pagar por mes."""
     fecha_inicio = contrato.fecha_inicio
     fecha_fin = contrato.fecha_fin
-    valor_total = contrato.valor_contrato
+    valor_total = float(contrato.valor_contrato)  # Ensure the value is numeric
 
     if not fecha_inicio or not fecha_fin or not valor_total:
         return
