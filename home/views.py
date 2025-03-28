@@ -25,7 +25,11 @@ from .models.talento_humano.roles import Rol
 from .models.talento_humano.contrato import Contrato, DetalleContratro
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 from siuc import settings
+from docx import Document
+from docx.shared import Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 import openpyxl
+from io import BytesIO
 import pytz
 import pandas
 
@@ -1212,3 +1216,193 @@ def generar_reporte_excel(request):
         nombre_archivo}"'
     workbook.save(response)
     return response
+
+
+#
+# ---------------------------- GENERAR CONTRATOS WORD ---------------------------------
+#
+
+@login_required
+def generar_contrato_word(request, usuario_id):
+    """
+    Genera un contrato en formato Word para el usuario especificado y lo devuelve como archivo descargable.
+    """
+    # Obtener el usuario y su contrato
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    contrato = Contrato.objects.filter(fk_usuario=usuario).order_by('-fecha_inicio').first()
+
+    # Verificar si el usuario tiene un contrato y está en estado "Contratado"
+    if not contrato or usuario.estado_revision != "Contratado":
+        return JsonResponse({
+            'status': 'error',
+            'message': 'El usuario no tiene un contrato asociado o no está en estado "Contratado".'
+        }, status=400)
+
+    # Crear un nuevo documento Word
+    doc = Document()
+
+    # Título del contrato
+    doc.add_heading('CONTRATO A TÉRMINO FIJO INFERIOR A UN AÑO', level=1).alignment = 1  # Centrado
+
+    # Tabla inicial con los datos del trabajador
+    table = doc.add_table(rows=10, cols=2)
+    table.style = 'Table Grid'
+
+    # Rellenar la tabla con los datos
+    table.cell(0, 0).text = "NOMBRE DEL TRABAJADOR"
+    table.cell(0, 1).text = f"{usuario.primer_nombre} {usuario.segundo_nombre or ''} {usuario.primer_apellido} {usuario.segundo_apellido or ''}"
+    table.cell(1, 0).text = "NACIONALIDAD"
+    table.cell(1, 1).text = "COLOMBIANA"
+    table.cell(2, 0).text = "LUGAR DONDE DESEMPEÑA SUS LABORES"
+    table.cell(2, 1).text = "BARRANQUILLA"
+    table.cell(3, 0).text = "CARGO"
+    table.cell(3, 1).text = usuario.cargo or "N/A"
+    table.cell(4, 0).text = "SALARIO MENSUAL"
+    table.cell(4, 1).text = f"${contrato.valor_contrato:,}" if contrato.valor_contrato else "N/A"
+    table.cell(5, 0).text = "AUXILIO DE TRANSPORTE"
+    table.cell(5, 1).text = "$162,000"  # Valor fijo según la plantilla
+    table.cell(6, 0).text = "TOTAL SALARIO"
+    table.cell(6, 1).text = f"${contrato.valor_contrato + 162000:,}" if contrato.valor_contrato else "N/A"
+    table.cell(7, 0).text = "FECHA INICIO CONTRATO"
+    table.cell(7, 1).text = contrato.fecha_inicio.strftime("%d/%m/%Y") if contrato.fecha_inicio else "N/A"
+    table.cell(8, 0).text = "FECHA FINALIZACION CONTRATO"
+    table.cell(8, 1).text = contrato.fecha_fin.strftime("%d/%m/%Y") if contrato.fecha_fin else "N/A"
+
+    # Ajustar el estilo de la tabla
+    for row in table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(12)
+
+    # Agregar el contenido del contrato (cláusulas)
+    doc.add_paragraph(
+        "Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD –UNICORSALUD- identificada con NIT. No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 de 15 de Julio/93 y Resolución No 3597 de 30 de junio/06 expedida por el Ministerio de Educación Nacional y quien en este CONTRATO se denominará la CORPORACIÓN y "
+        f"{usuario.primer_nombre} {usuario.segundo_nombre or ''} {usuario.primer_apellido} {usuario.segundo_apellido or ''}, también mayor de edad con domicilio en la ciudad de BARRANQUILLA, identificado(a) con la cédula de ciudadanía No. {usuario.numero_documento}, quien para estos efectos se denominará EL TRABAJADOR, se ha celebrado el contrato de trabajo a término fijo regido por las siguientes cláusulas:"
+    )
+
+    # Cláusula Primera: Objeto
+    doc.add_heading("PRIMERA: OBJETO.", level=2)
+    doc.add_paragraph(
+        "LA CORPORACION, contrata los servicios especiales del TRABAJADOR y éste se obliga: a) A poner al servicio de la CORPORACION toda su capacidad normal de trabajo en el desempeño de las funciones propias del oficio mencionado y en las labores anexas y complementarias del mismo, de conformidad con las órdenes e instrucciones que le imparta la CORPORACION directamente o a través de sus representantes. b) Prestar sus servicios en forma personal en el horario contratado con LA CORPORACION; es decir, a no prestar directamente servicios laborales a otros EMPLEADORES, durante el cumplimiento del horario antes mencionado. y c) A guardar absoluta reserva sobre los hechos, documentos físicos y/o electrónicos, informaciones y en general, sobre todos los asuntos y materias que lleguen a su conocimiento por causa o por ocasión de su contrato de trabajo, EL TRABAJADOR se compromete a aceptar cambio de empleo o funciones a donde se le promueva dentro de las distintas dependencias que la Institución tiene o estableciere, siempre que el cambio no desmejore sus condiciones laborales ni de remuneración del trabajador. Mientras la CORPORACION no resuelva otra cosa los servicios serán prestados en la ciudad de BARRANQUILLA, siendo de advertir que ha sido contratado en la misma ciudad."
+    )
+
+    # Cláusula Segunda: Remuneración
+    doc.add_heading("SEGUNDA: REMUNERACIÓN.", level=2)
+    doc.add_paragraph(
+        f"LA CORPORACION pagará al trabajador por la prestación de sus servicios, un salario mensual por ${contrato.valor_contrato:,} incluyendo el auxilio de transporte legal vigente siempre y cuando le aplique, se le realizará el descuento correspondiente a la seguridad social (salud y pensión), el salario se cancela por mes vencido y será depositado en una cuenta bancaria individual de nómina, así mismo; se establece que el pago de las prestaciones sociales y demás derechos derivados del contrato de trabajo se efectuará mediante transferencia a la respectiva cuenta de nómina al finalizar este contrato."
+    )
+
+    # Cláusula Tercera: Pagos No Salariales
+    doc.add_heading("TERCERA: PAGOS NO SALARIALES.", level=2)
+    doc.add_paragraph(
+        "Las partes de común acuerdo y de conformidad con lo establecido en los artículos 15 y 16 de la Ley 50 de 1990, en concordancia con lo señalado en el artículo 17 de la Ley 344 de 1996, determinan que las sumas que ocasionalmente y por mera liberalidad reciba de la CORPORACION no tendrán naturaleza salarial y/o prestacional, conforme lo señalado en el artículo 128 del Código Sustantivo de Trabajo y por lo tanto no se tendrán en cuenta como factor salarial para la liquidación de acreencias laborales, ni el pago de aportes en seguridad social."
+    )
+
+    # Cláusula Cuarta: Trabajo Nocturno, Suplementario, Dominical y/o Festivo
+    doc.add_heading("CUARTA: TRABAJO NOCTURNO, SUPLEMENTARIO, DOMINICAL Y/O FESTIVO.", level=2)
+    doc.add_paragraph(
+        "Todo trabajo nocturno, suplementario o en horas extras y todo trabajo en domingo o festivo en los que legalmente debe concederse descanso, se remunera conforme lo dispone expresamente la ley, salvo acuerdo en contrario entre las partes o en pacto colectivo o fallo arbitral. Para el reconocimiento y pago del trabajo suplementario, nocturno, dominical o festivo, LA CORPORACION o sus representantes deberán haberlo autorizado previamente y por escrito. Cuando la necesidad de este trabajo se presente de manera imprevista e inaplazable, deberá ejecutarse y darse cuenta de él por escrito, a la mayor brevedad, a LA CORPORACION o a sus representantes para su aprobación. LA CORPORACION, en consecuencia, no reconocerá ningún trabajo suplementario, trabajo nocturno o en días de descanso obligatorio que no haya sido autorizado previamente o que, habiendo sido avisado inmediatamente, no haya sido aprobada como anteriormente se expuso. Tratándose de trabajadores de dirección, confianza o manejo, no habrá lugar al pago de horas extras, conforme lo dispuesto en el artículo 162 del Código Sustantivo del Trabajo."
+    )
+
+    # Cláusula Quinta: Duración del Contrato
+    doc.add_heading("QUINTA: DURACION DEL CONTRATO.", level=2)
+    doc.add_paragraph(
+        "El término inicial de duración del contrato será el señalado en la parte superior del documento, respecto del pago de sus prestaciones sociales, se establece que en cumplimiento de lo previsto en el artículo 46 del C.S.T. modificado por el artículo 3° de la ley 50 de 1990, EL TRABAJADOR tendrá derecho al pago de sus prestaciones sociales en proporción al tiempo laborado, cualquiera que éste sea, cancelándose al finalizar el presente contrato."
+    )
+
+    # Cláusula Sexta: Jornada de Trabajo
+    doc.add_heading("SEXTA: JORNADA DE TRABAJO.", level=2)
+    doc.add_paragraph(
+        "El TRABAJADOR salvo estipulación expresa y escrita en contrario, se obliga a laborar la jornada máxima legal, cumpliendo con los turnos y horarios que señale LA CORPORACION, quien podrá cambiarlos o ajustarlos cuando lo estime conveniente. Por el acuerdo expreso o tácito de las partes, podrán repartirse total o parcialmente las horas de la jornada ordinaria, con base en lo dispuesto por el artículo 164 del C.S.T. modificado por el artículo 23 de la ley 50 de 1990, teniendo en cuenta que los tiempos de descanso entre las secciones de la jornada no se computan dentro de la misma, según lo dispuesto en el artículo 167 del ordenamiento laboral. De igual manera, las partes acuerdan desde la firma del presente contrato que se podrá prestar el servicio en los turnos de la jornada flexible contemplados en el artículo 51 de la ley 789 de 2002."
+    )
+
+    # Cláusula Séptima: Jornada de Trabajo Flexible
+    doc.add_heading("SÉPTIMA: JORNADA DE TRABAJO FLEXIBLE.", level=2)
+    doc.add_paragraph(
+        "Las partes acuerdan que el TRABAJADOR laborará conforme lo permite la jornada flexible contenida en el artículo 51 de la Ley 789 de 2002, en una jornada máxima de cuarenta y ocho (48) horas durante seis (6) días de la semana en los turnos y horarios que LA CORPORACION determine unilateralmente y en forma anticipada, cuya duración diaria no podrá ser superior a cuatro (4) horas continuas, ni superior a diez (10) horas y sin que haya lugar al pago de cargos por trabajo extraordinario siempre y cuando no exceda el promedio de las cuarenta y ocho (48) horas semanales en la jornada laboral ordinaria de 06:00 a.m. a 9:00 p.m. Ley 1846 de 2017 y la reducción gradual a 42 horas de la jornada laboral sin que disminuya el salario, obedece a la Ley 2101 del 2021 y al artículo 161 del Código Sustantivo del Trabajo, el cual se modificó, este comenzaría a regir en julio de 2023 reduciendo una (1) hora de la jornada laboral semanal y reducir a cuarenta y siete (47) horas semanales y se extendería hasta el mismo mes del año 2026 para alcanzar la disminución de la jornada laboral a cuarenta y dos (42) horas semanales."
+    )
+
+    # Cláusula Octava: Período de Prueba
+    doc.add_heading("OCTAVA: PERIODO DE PRUEBA.", level=2)
+    doc.add_paragraph(
+        "Las partes acuerdan un período de prueba no podrá ser superior a la quinta parte del término inicial de este contrato, en caso de prorroga se entenderá, que no hay nuevo periodo de prueba, por consiguiente durante este período tanto LA CORPORACION, como EL TRABAJADOR podrán terminar el contrato en forma unilateral, en cualquier tiempo, sin que se cause el pago de indemnización alguna, de conformidad con lo dispuesto en el artículo 80 del Código Sustantivo de Trabajo modificado por el Artículo 3° del Decreto 617 de 1954. En caso de prórrogas, se entenderá que no hay nuevo periodo de prueba, de acuerdo con lo dispuesto por el artículo 78 del C.S.T., modificado por el artículo 7º de la Ley 50 de 1990."
+    )
+
+    # Cláusula Novena: Terminación Unilateral
+    doc.add_heading("NOVENA: TERMINACIÓN UNILATERAL.", level=2)
+    doc.add_paragraph(
+        "Son justas causas para dar por terminado unilateralmente este contrato, por cualquiera de las partes, las enumeradas en los artículos 62 y 63 del C.S.T. modificados por el artículo 7° del Decreto 2351 de 1965 y además, por parte de la CORPORACION, las faltas que para el efecto se califiquen como graves en el Reglamento Interno de Trabajo y demás reglamentos y documentos que contengan reglamentaciones, órdenes, instrucciones o prohibiciones de carácter general o particular, pactos. Expresamente se califican en este acto como faltas graves la violación a las obligaciones y prohibiciones contenidas en el mencionado Reglamento. Además de las previstas en la ley, se consideran justas causas graves para poner término a éste contrato, por parte de la CORPORACION, los siguientes hechos imputables al trabajador, aún ocurridos por primera vez: 1o) La violación de cualquiera de sus obligaciones legales, contractuales o reglamentarias; 2o) El incumplimiento del horario o la no asistencia al trabajo sin justa causa a juicio de la CORPORACION; 3o) El abandono o retiro del sitio de trabajo sin el debido permiso del superior inmediato; 4o) No atender en debida forma cualquier orden de la CORPORACION, relacionada con el presente contrato; 5o) Todo acto inmoral o delictuoso, toda falta de respeto, disciplina o lealtad, todo acto de violencia, injuria o malos tratamientos en que incurra el trabajador contra sus jefes, directivos o compañeros de trabajo; 6o) Cualquier acto grave en su vida privada que cometa fuera o dentro de las dependencias en que le corresponda laborar y que atente contra la naturaleza, fines o buen nombre de la CORPORACION; 7o) Todo daño material causado intencionalmente o por descuido a las edificaciones, instrumentos, elementos de la CORPORACION, o que pongan en grave peligro la seguridad de las personas; 8o) Llegar embriagado al sitio de trabajo o ingerir en éste bebidas embriagantes o en general, todo vicio que altere la disciplina y la buena marcha de la CORPORACION; 9o) Toda detención preventiva por más de treinta (30) días, o arresto correccional aún por tiempo menor, cuando la causa de la sanción sea grave y; 10o) El deficiente rendimiento en el desempeño de sus funciones. 11º) Fraude o intento de fraude en perjuicio de la Institución. 12º. Recibir dinero en efectivo o transferencia de los usuarios ya sea por concepto de derechos pecuniarios, matriculas, servicios o cualquier otro concepto. Por otra parte, se deja constancia a partir de la firma del presente documento que la fecha de terminación está señalada en la parte inicial del contrato, y por lo tanto no es necesaria nueva comunicación indicando dicha fecha y/o preaviso de vencimiento de contrato."
+    )
+
+    # Cláusula Décima: Políticas de Seguridad, Salud en el Trabajo y Medio Ambiente
+    doc.add_heading("DECIMA: POLITICAS DE SEGURIDAD, SALUD EN EL TRABAJO Y MEDIO AMBIENTE.", level=2)
+    doc.add_paragraph(
+        "EL TRABAJADOR hace constar que recibe de la CORPORACION. Información del Sistema de Gestión de Seguridad y Salud en el Trabajo y los cuales declara conocer, así como del reglamento interno del trabajo, el cual se encuentra publicado. EL TRABAJADOR se obliga a cumplir las políticas y normas de Seguridad, Salud en el Trabajo, Medio Ambiente y Calidad cuando su labor la ejecute ejerciendo el objeto del presente contrato, se le aplicará procesos disciplinarios cuando EL TRABAJADOR con previo conocimiento realice actos inseguros en el sitio de trabajo, al igual que informar sobre las condiciones y seguimiento de su salud y se compromete que esta información suministrada es veraz. De lo contrario ameritará sanciones disciplinarias."
+    )
+
+    # Cláusula Décima Primera: Documentos e Información Confidencial y Reservada
+    doc.add_heading("DÉCIMA PRIMERA: DOCUMENTOS E INFORMACIÓN CONFIDENCIAL Y RESERVADA.", level=2)
+    doc.add_paragraph(
+        "Sobre la base de considerar como confidencial y reservada toda información que EL TRABAJADOR reciba DE LA CORPORACION o de terceros en razón de su cargo, que incluye, pero sin que se limite a los elementos descritos, la información objeto de derecho de autor, patentes, técnicas, modelos, invenciones, procesos, algoritmos, programas ejecutables, investigaciones, detalles de diseño, información financiera, lista de clientes, inversionistas, trabajadores, estudiantes, notas, resultados de notas de evaluaciones antes que estas sean publicadas, relaciones de negocios y contractuales, pronósticos de negocios, planes de mercadeo y cualquier información revelada sobre terceras personas, salvo la que expresamente y por escrito se le manifieste que no tiene dicho carácter, o la que se tiene disponible para el público en general, EL TRABAJADOR se obliga a: a) Abstenerse de revelar o usar información relacionada con los trabajos o actividades que desarrolla LA CORPORACION, ni durante el tiempo de vigencia del contrato de trabajo, ni después de finalizado EL CONTRATO, se mantendrá la reserva de confidencialidad hasta por 2 años después de no estar activo en la CORPORACION, ya sea con terceras personas naturales o jurídicas, ni con personal de la misma CORPORACION, no autorizado para conocer información confidencial salvo autorización expresa DE LA CORPORACION. b) Entregar A LA CORPORACION cuando finalice el contrato de trabajo todos los archivos en original o copias con información confidencial que se encuentren en su poder, ya sea que se encuentre en documentos escritos, gráficos o archivos magnéticos como video, audio etc. c) En caso de violación de esta confidencialidad durante la vigencia del contrato de trabajo y los dos años posteriores a la terminación del mismo, las partes acuerdan expresamente que el incumplimiento de las disposiciones contenidas en el presente acuerdo es considerado como una falta grave y en tal sentido justa causa para la terminación del contrato de trabajo de conformidad con lo dispuesto en el literal a) numeral 6 del artículo 62 del C.S.T. subrogado por el artículo 7 del decreto 2351 de 1965. Lo anterior sin perjuicio de las acciones civiles, comerciales o penales que puedan instaurarse en contra del TRABAJADOR por parte de LA CORPORACION o de terceros como consecuencia de dicho incumplimiento."
+    )
+
+    # Cláusula Décima Segunda: Autorización de Descuentos
+    doc.add_heading("DÉCIMA SEGUNDA: AUTORIZACIÓN DE DESCUENTOS.", level=2)
+    doc.add_paragraph(
+        "EL TRABAJADOR responderá por todos los elementos que se le confíen y en caso de pérdida, rotura, daño o deterioro de los mismos no imputables a su uso normal, pagará a la CORPORACION el valor comercial en el momento de la reposición de dichos bienes y a su vez el TRABAJADOR autoriza en forma expresa a la CORPORACION para retener, deducir y compensar de su salario y prestaciones si aquellos fueren insuficientes, cualquier suma de dinero que él llegara a adeudar por éstos conceptos y/o a cualquier título, como también si EL TRABAJADOR esté debiendo a la CORPORACION, por los siguientes conceptos: a) Préstamos debidamente autorizados por escrito. b) Valor de los elementos de trabajo y mercancías extraviadas y dañadas o deterioradas bajo su responsabilidad y que llegaran a faltar al momento de hacer entrega del inventario. c) Los valores que se le hubieran confiado para su manejo, y que hayan sido dispuestos abusivamente para otros propósitos en perjuicio de la CORPORACION. d) Los anticipos o sumas no legalizadas con las facturas o comprobantes requeridos que le fueron entregadas para gastos."
+    )
+
+    # Cláusula Décima Tercera: Obligaciones de la Corporación
+    doc.add_heading("DECIMA TERCERA: OBLIGACIONES DE LA CORPORACION.", level=2)
+    doc.add_paragraph(
+        "Además de las obligaciones contenidas en el artículo 57 del Código Sustantivo de Trabajo, el EMPLEADOR se obliga a: a) Mantener al TRABAJADOR en las condiciones indicadas por la empresa al momento de aprobar la vacante b) Cumplir oportunamente las obligaciones de orden laboral asumidas con los contratados que correspondan de acuerdo con la naturaleza del servicio que presten. c) realizar la inducción y reinducción, d) socializar las políticas y dar a conocer el Programa y las responsabilidades del SG - SST d) Velar por el cumplimento de la normativa que se expida El Ministerio de Educación y Ministerio de Trabajo y por las disposiciones que regulen la relación laboral entre la CORPORACION y sus Trabajadores. De lo contrario ameritará sanciones disciplinarias."
+    )
+
+    # Cláusula Décima Cuarta: Modificación de las Condiciones Laborales
+    doc.add_heading("DECIMA CUARTA: MODIFICACION DE LAS CONDICIONES LABORALES.", level=2)
+    doc.add_paragraph(
+        "EL TRABAJADOR acepta desde ahora expresamente todas las modificaciones de sus condiciones laborales determinadas por LA CORPORACION en ejercicio de su poder subordinante, tales como los turnos y jornadas de trabajo, el lugar de prestación de servicio, el cargo u oficio y/o funciones y la forma de remuneración, siempre que tales modificaciones no afecten su honor, dignidad o sus derechos mínimos, ni impliquen desmejoras sustanciales o graves perjuicios para él, de conformidad con lo dispuesto por el artículo 23 del C.S.T. modificado por el artículo 1° de la Ley 50 de 1990."
+    )
+
+    # Cláusula Décima Quinta: Dirección del Trabajador
+    doc.add_heading("DECIMA QUINTA: DIRECCION DEL TRABAJADOR.", level=2)
+    doc.add_paragraph(
+        "EL TRABAJADOR para todos los efectos legales y en especial para la aplicación del parágrafo 1° del artículo 29 de la Ley 789 de 2002, norma que modificó el 65 del C.S.T., se compromete a informar por escrito y de manera inmediata a LA CORPORACION, cualquier cambio en su dirección de residencia, teniéndose en todo caso como suya, la última dirección registrada en su hoja de vida."
+    )
+
+    # Cláusula Décima Sexta: Tratamiento de Datos Personales
+    doc.add_heading("DECIMA SEXTA: TRATAMIENTO DE DATOS PERSONALES.", level=2)
+    doc.add_paragraph(
+        "En cumplimiento a lo estipulado en la Ley 1581 de 2012 y demás normas y decretos que la complementan, el titular de datos personales autoriza para que la información suministrada en nuestras bases de datos sea utilizada exclusivamente por CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD - UNICORSALUD, para el desarrollo de diversos procedimientos relacionados directamente con su objeto social. Para más información lo invitamos a visitar nuestra Política de Privacidad en www.UNICORSALUD.edu.co/politicadeprivacidad, donde podrán conocer como ejercer sus derechos de acceder, rectificar, actualizar, suprimir los datos o revocar la autorización."
+    )
+
+    # Cláusula Décima Séptima: Efectos
+    doc.add_heading("DECIMA SEPTIMA: EFECTOS.", level=2)
+    doc.add_paragraph(
+        "El presente contrato reemplaza en su integridad y deja sin efecto cualquiera otro contrato, verbal o escrito, celebrando entre las partes con anterioridad, pudiendo las partes convenir por escrito modificaciones al mismo, las que formaran parte integrante de este contrato."
+    )
+
+    # Firma
+    doc.add_paragraph(
+        f"En constancia se firma el presente documento en BARRANQUILLA, {datetime.now().strftime('%d/%m/%Y')}"
+    )
+    doc.add_paragraph("LA CORPORACION\n\n\n\n\nRepresentante Legal")
+    doc.add_paragraph(f"EL TRABAJADOR\n\n\n\n\nC.C. {usuario.numero_documento}")
+
+    # Guardar el documento en un buffer
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+
+    # Crear la respuesta HTTP para descargar el archivo
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+    response['Content-Disposition'] = f'attachment; filename="Contrato_{usuario.numero_documento}.docx"'
+    return response
+#
+# ---------------------------- DESCARGAR CONTRATOS WORD ---------------------------------
+#
+

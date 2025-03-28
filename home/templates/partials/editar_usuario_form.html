@@ -36,6 +36,9 @@
 
                     <!-- Campos del Contrato (solo si el usuario es contratado) -->
                     {% if usuario.estado_revision == 'Contratado' %}
+
+                    </div>
+                    {% endif %}
                     <div class="container mb-3">
                         <div class="d-flex gap-3 fs-5 fw-bold">
                             <i class="bi bi-file-earmark-text"></i>Información del Contrato
@@ -59,6 +62,14 @@
                             </div>
                             {% endif %}
                         </div>
+                        {% if usuario.estado_revision == 'Contratado' and "Director Talento Humano" in user_groups %}
+                    <div class="col-md-12 mb-2 text-center">
+                        <a href="{% url 'generar_contrato' usuario_id=usuario.id %}" class="btn btn-primary" target="_blank">
+                            <i class="bi bi-download"></i> Descargar Contrato
+                        </a>
+                        <button type="button" class="btn btn-secondary" onclick="descargarEImprimir({{ usuario.id }})">
+                            <i class="bi bi-printer"></i> Imprimir Contrato
+                        </button>
                     </div>
                     {% endif %}
                 </div>
@@ -308,3 +319,96 @@
     }
 });
 </script> {% endcomment %}
+
+{% comment %} <script>
+function descargarEImprimir(usuarioId) {
+    // Descargar el contrato y abrir la ventana de impresión
+    const url = "{% url 'generar_contrato' usuario_id=0 %}".replace('0', usuarioId);
+    fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `Contrato_${usuarioId}.docx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            // Abrir el documento en una nueva ventana para impresión
+            const printWindow = window.open(url, '_blank');
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        })
+        .catch(error => {
+            console.error('Error al descargar el contrato:', error);
+            alert('Error al descargar el contrato. Por favor, intenta de nuevo.');
+        });
+}
+</script>
+ {% endcomment %}
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const estadoRevision = document.getElementById("estado_revision");
+    const camposContrato = document.querySelectorAll("#fecha_inicio_contrato, #fecha_fin_contrato, #valor_contrato");
+    const tipoContrato = document.getElementById("tipo_contrato");
+    const descargarContratoBtn = document.querySelector("a[href*='generar_contrato']");
+    const imprimirContratoBtn = document.querySelector("button[onclick*='descargarEImprimir']");
+
+    if (estadoRevision) {
+        function toggleCamposContrato() {
+            const isContratado = estadoRevision.value === "Contratado";
+            camposContrato.forEach(campo => campo.disabled = !isContratado);
+            tipoContrato.disabled = !isContratado;
+
+            // Habilitar/deshabilitar los botones de descarga e impresión
+            if (descargarContratoBtn && imprimirContratoBtn) {
+                const allFieldsFilled = Array.from(camposContrato).every(campo => campo.value) && tipoContrato.value;
+                descargarContratoBtn.classList.toggle("disabled", !isContratado || !allFieldsFilled);
+                imprimirContratoBtn.disabled = !isContratado || !allFieldsFilled;
+            }
+        }
+
+        if (estadoRevision.value === "Pendiente") {
+            estadoRevision.disabled = false;
+        } else {
+            estadoRevision.disabled = true;
+        }
+
+        estadoRevision.addEventListener("change", toggleCamposContrato);
+        camposContrato.forEach(campo => campo.addEventListener("input", toggleCamposContrato));
+        tipoContrato.addEventListener("change", toggleCamposContrato);
+
+        toggleCamposContrato();
+    }
+
+    function descargarEImprimir(usuarioId) {
+        const url = "{% url 'generar_contrato' usuario_id=0 %}".replace('0', usuarioId);
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `Contrato_${usuarioId}.docx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                const printWindow = window.open(url, '_blank');
+                printWindow.onload = function() {
+                    printWindow.print();
+                };
+            })
+            .catch(error => {
+                console.error('Error al descargar el contrato:', error);
+                alert('Error al descargar el contrato. Por favor, intenta de nuevo.');
+            });
+    }
+});
+</script>
