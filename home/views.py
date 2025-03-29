@@ -1,5 +1,7 @@
+# Importar Librerias
 from collections import defaultdict
 import json
+from decimal import Decimal
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
@@ -15,6 +17,14 @@ from django.utils.timezone import now
 from django.utils.dateparse import parse_date
 from django.contrib import messages
 from django.core.paginator import Paginator
+from docx import Document
+from docx.shared import Pt, Inches
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+import openpyxl
+from io import BytesIO
+import pytz
+
+# Importar Modelos
 from .models.talento_humano.usuarios import Usuario
 from .models.talento_humano.detalles_academicos import DetalleAcademico
 from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
@@ -24,14 +34,7 @@ from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento
 from .models.talento_humano.roles import Rol
 from .models.talento_humano.contrato import Contrato, DetalleContratro
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
-from siuc import settings
-from docx import Document
-from docx.shared import Pt
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-import openpyxl
-from io import BytesIO
-import pytz
-import pandas
+
 
 #
 # ---------------------------- FUNCIONES EXTRAS ---------------------------------
@@ -449,7 +452,7 @@ def agregar_detalle_academico(request):
         try:
             # Validar que el usuario existe
             usuario = get_object_or_404(Usuario, id=usuario_id)
-            
+
             # Validar campos numéricos
             if ies_codigo and not ies_codigo.isdigit():
                 return JsonResponse({"status": "error", "message": "El código IES debe ser numérico."})
@@ -742,24 +745,15 @@ def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
     while fecha_actual <= fecha_final:
         year = fecha_actual.year
         month = fecha_actual.month
+        inicio_mes = fecha_actual.replace(day=1)
+        fin_mes = min((inicio_mes + timedelta(days=32)).replace(day=1) - timedelta(days=1), fecha_final)
 
-        # Último día del mes es 30
-        ultimo_dia_mes = min(30, fecha_final.day if fecha_final.year == year and fecha_final.month == month else 30)
-
-        # Primer día del mes (ajustado si el contrato inicia en un día específico)
-        primer_dia_mes = max(1, fecha_actual.day)
-
-        # Cálculo de los días laborados en este mes
-        dias_mes = ultimo_dia_mes - primer_dia_mes + 1
-
+        dias_laborales_mes = 30
+        dias_trabajados = min((fin_mes - fecha_actual).days + 1, dias_laborales_mes - (fecha_actual.day - 1))
         clave_mes = f"{year}-{month:02d}"
-        dias_laborados_por_mes[clave_mes] = dias_mes
+        dias_laborados_por_mes[clave_mes] = dias_trabajados
 
-        # Avanzar al siguiente mes
-        if month == 12:
-            fecha_actual = fecha_actual.replace(year=year + 1, month=1, day=1)
-        else:
-            fecha_actual = fecha_actual.replace(month=month + 1, day=1)
+        fecha_actual = fin_mes + timedelta(days=1)
 
     return dias_laborados_por_mes
 
@@ -768,27 +762,23 @@ def generar_detalles_contrato(contrato):
     """Genera registros de detalles del contrato con días laborados y valores a pagar por mes."""
     fecha_inicio = contrato.fecha_inicio
     fecha_fin = contrato.fecha_fin
-    valor_total = float(contrato.valor_contrato)  # Ensure the value is numeric
+    valor_mensual = Decimal(contrato.valor_contrato)
 
-    if not fecha_inicio or not fecha_fin or not valor_total:
+    if not fecha_inicio or not fecha_fin or not valor_mensual:
         return
 
     # Eliminar detalles previos
     DetalleContratro.objects.filter(fk_contrato=contrato).delete()
 
-    # Obtener el cálculo de días laborados por mes
+    # Obtener días laborados por mes
     dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
+    valor_dia = valor_mensual / 30  # Se asume un mes estándar de 30 días
+    total_pagado = Decimal(0)
 
-    # Calcular el total de días laborados
-    total_dias_laborados = sum(dias_laborados_por_mes.values())
-
-    # Calcular el valor a pagar por día
-    valor_por_dia = valor_total / total_dias_laborados if total_dias_laborados > 0 else 0
-
-    # Crear los detalles del contrato
     detalles = []
     for mes, dias in dias_laborados_por_mes.items():
-        valor_mes = int(dias * valor_por_dia)
+        valor_mes = round(dias * valor_dia, 2)
+        total_pagado += valor_mes
         detalles.append(
             DetalleContratro(
                 fk_contrato=contrato,
@@ -798,8 +788,8 @@ def generar_detalles_contrato(contrato):
             )
         )
 
-    # Guardar en la base de datos
     DetalleContratro.objects.bulk_create(detalles)
+    return total_pagado
 
 
 @login_required
@@ -825,11 +815,14 @@ def contrato_usuario(request, tipo, usuario_id):
             contrato.tipo_contrato = data.get("tipo_contrato")
             contrato.save()
 
-        # Generar detalles del contrato
-        generar_detalles_contrato(contrato)
+        total_pagado = generar_detalles_contrato(contrato)
 
         return JsonResponse(
-            {"status": "success", "message": "Contrato y detalles creados/actualizados correctamente."}
+            {
+                "status": "success", 
+                "message": "Contrato y detalles creados/actualizados correctamente.",
+                "valor_total_pagado": float(total_pagado)
+            }
         )
 
     except IntegrityError:
@@ -838,10 +831,10 @@ def contrato_usuario(request, tipo, usuario_id):
             status=400,
         )
     except Exception as e:
-        print(e)
         return JsonResponse(
             {"status": "error", "message": f"Error inesperado: {e}"}, status=500
         )
+
 
 
 @login_required
@@ -1241,6 +1234,12 @@ def generar_contrato_word(request, usuario_id):
     # Crear un nuevo documento Word
     doc = Document()
 
+    header = doc.sections[0].header
+    header_paragraph = header.paragraphs[0]
+
+    run = header_paragraph.add_run()
+    run.add_picture('home\static\images\logo_unicorsalud.png', width=Inches(3))
+
     # Título del contrato
     doc.add_heading('CONTRATO A TÉRMINO FIJO INFERIOR A UN AÑO', level=1).alignment = 1  # Centrado
 
@@ -1260,9 +1259,9 @@ def generar_contrato_word(request, usuario_id):
     table.cell(4, 0).text = "SALARIO MENSUAL"
     table.cell(4, 1).text = f"${contrato.valor_contrato:,}" if contrato.valor_contrato else "N/A"
     table.cell(5, 0).text = "AUXILIO DE TRANSPORTE"
-    table.cell(5, 1).text = "$162,000"  # Valor fijo según la plantilla
+    table.cell(5, 1).text = "$200,000"  # Valor fijo según la plantilla
     table.cell(6, 0).text = "TOTAL SALARIO"
-    table.cell(6, 1).text = f"${contrato.valor_contrato + 162000:,}" if contrato.valor_contrato else "N/A"
+    table.cell(6, 1).text = f"${contrato.valor_contrato + 200000:,}" if contrato.valor_contrato else "N/A"
     table.cell(7, 0).text = "FECHA INICIO CONTRATO"
     table.cell(7, 1).text = contrato.fecha_inicio.strftime("%d/%m/%Y") if contrato.fecha_inicio else "N/A"
     table.cell(8, 0).text = "FECHA FINALIZACION CONTRATO"
