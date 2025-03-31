@@ -90,17 +90,21 @@
                                     {% else %}
                                     No Aplica
                                     {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-3">
-                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            {% if usuario.estado_revision == 'Contratado' and "Director Talento Humano" in user_groups %}
+                                                <a href="{% url 'generar_contrato' usuario_id=usuario.id %}" class="btn btn-primary d-flex justify-content-center align-items-center" target="_blank">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
                             </tr>
                             {% endfor %}
                         {% endif %}

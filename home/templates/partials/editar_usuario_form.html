@@ -62,18 +62,7 @@
                             </div>
                             {% endif %}
                         </div>
-                        {% if usuario.estado_revision == 'Contratado' and "Director Talento Humano" in user_groups %}
-                    <div class="col-md-12 mb-2 text-center">
-                        <a href="{% url 'generar_contrato' usuario_id=usuario.id %}" class="btn btn-primary" target="_blank">
-                            <i class="bi bi-download"></i> Descargar Contrato
-                        </a>
-                        <button type="button" class="btn btn-secondary" onclick="descargarEImprimir({{ usuario.id }})">
-                            <i class="bi bi-printer"></i> Imprimir Contrato
-                        </button>
-                    </div>
-                    {% endif %}
                 </div>
-
                 </div>
             {% elif "Secretaria Talento Humano" in user_groups %}
                 <div class="d-flex gap-3 fs-5 fw-bold">
@@ -385,30 +374,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
         toggleCamposContrato();
     }
-
-    function descargarEImprimir(usuarioId) {
-        const url = "{% url 'generar_contrato' usuario_id=0 %}".replace('0', usuarioId);
-        fetch(url)
-            .then(response => response.blob())
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = `Contrato_${usuarioId}.docx`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-
-                const printWindow = window.open(url, '_blank');
-                printWindow.onload = function() {
-                    printWindow.print();
-                };
-            })
-            .catch(error => {
-                console.error('Error al descargar el contrato:', error);
-                alert('Error al descargar el contrato. Por favor, intenta de nuevo.');
-            });
-    }
-});
 </script>
