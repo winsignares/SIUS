@@ -762,11 +762,13 @@ def generar_detalles_contrato(contrato):
     """Genera registros de detalles del contrato con días laborados y valores a pagar por mes."""
     fecha_inicio = contrato.fecha_inicio
     fecha_fin = contrato.fecha_fin
-    valor_mensual = Decimal(contrato.valor_contrato)
+    valor_mensual = contrato.valor_contrato
 
-    if not fecha_inicio or not fecha_fin or not valor_mensual:
-        return
+    # Validar que los campos necesarios no sean None
+    if not fecha_inicio or not fecha_fin or valor_mensual is None:
+        raise ValueError("El contrato debe tener fecha de inicio, fecha de fin y un valor mensual válido.")
 
+    valor_mensual = Decimal(valor_mensual)  # Convertir a Decimal
     # Eliminar detalles previos
     DetalleContratro.objects.filter(fk_contrato=contrato).delete()
 
@@ -815,13 +817,17 @@ def contrato_usuario(request, tipo, usuario_id):
             contrato.tipo_contrato = data.get("tipo_contrato")
             contrato.save()
 
-        total_pagado = generar_detalles_contrato(contrato)
+        # Solo generar detalles si el valor del contrato está definido
+        if contrato.valor_contrato:
+            total_pagado = generar_detalles_contrato(contrato)
+        else:
+            total_pagado = None
 
         return JsonResponse(
             {
-                "status": "success", 
+                "status": "success",
                 "message": "Contrato y detalles creados/actualizados correctamente.",
-                "valor_total_pagado": float(total_pagado)
+                "valor_total_pagado": float(total_pagado) if total_pagado else None,
             }
         )
 
@@ -829,6 +835,10 @@ def contrato_usuario(request, tipo, usuario_id):
         return JsonResponse(
             {"status": "error", "message": "Error de integridad al crear/actualizar el contrato."},
             status=400,
+        )
+    except ValueError as e:
+        return JsonResponse(
+            {"status": "error", "message": str(e)}, status=400
         )
     except Exception as e:
         return JsonResponse(
