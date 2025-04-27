@@ -1,0 +1,36 @@
+CARGA ACADEMICA
+1. Las asignaturas se deben cargar automáticamente según el programa y el semestre seleccionado.
+
+Materias similares en programas:
+1 semestre - Software, Renovable, Ambiental e Industrial: 
+	Calculo diferencial
+	Catedra Unicorsalud
+	Geometría analítica
+
+
+
+
+
+
+-------------------------------------------------
+CONTABILIDAD
+
+Checkbox para aprobar o no el total a pagar en los contratos (individual).
+
+Pregunta de confirmación
+
+Luego de que esté aprobado, se podrían generar los contratos y descargarlos desde Dir. Talento Humano
+
+Reportes
+
+
+
+-------------------------------------------------
+VICERRECTORIA
+
+Aprobación de cargas académicas
+Asignación de funciones sustantivas
+
+Reportes
+
+

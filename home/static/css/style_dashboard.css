@@ -131,6 +131,10 @@ body {
     background-color: var(--color-terciario) !important;
 }
 
+.btn-sm {
+    border-radius: 5px;
+}
+
 .btn-primary, .btn-alterno-red {
     background-color: var(--color-terciario);
     color: var(--color-secundario) !important;
@@ -224,6 +228,15 @@ span {
     text-transform: uppercase;
 }
 
+.form-check-input:checked {
+    background-color: var(--color-terciario);
+    border-color: var(--color-terciario);
+}
+.form-check-input:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
 .form-control:focus, .form-select:focus {
     border-color: var(--color-terciario);
     box-shadow: 0 0 5px var(--color-terciario);
@@ -241,6 +254,7 @@ span {
 .modal .link-modal {
     color: var(--color-terciario);
 }
+
 
 /*
 --------------------------------------- ALERTAS ---------------------------------------

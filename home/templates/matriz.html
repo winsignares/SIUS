@@ -52,7 +52,7 @@
                                         <select class="form-select" id="semestre" required>
                                             <option value="">Seleccione</option>
                                             {% for semestre in semestres_list %}
-                                                <option value="{{ semestre.id }}">{{ semestre.semestre }} - {{ semestre.descripcion }} </option>
+                                                <option value="{{ semestre.id }}">{{ semestre.semestre }} - {{ semestre.descripcion }} SEMESTRE</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -60,13 +60,9 @@
                                         <label for="materia" class="form-label">Materia <span class="fw-bold fs-4">*</span></label>
                                         <select class="form-select" id="materia" required>
                                             <option value="">Seleccione</option>
-                                            {% for materia in materias_list %}
-                                                {% if materia.fk_programa.programa == usuario_log.auth_user.first_name %}
-                                                <option value="{{ materia.id }}">{{ materia.codigo }} - {{ materia.materia }}</option>
-                                                {% endif %}
-                                            {% endfor %}
                                         </select>
                                     </div>
+
                                     <div class="col-md-4 mb-2">
                                         <label for="horas_semanales" class="form-label">Horas Semanales<span class="fw-bold fs-4"></span></label>
                                         <input type="number" class="form-control" id="horas_semanales" disabled>
@@ -78,21 +74,21 @@
                                             {% for docente in docentes_list %}
                                                 <li>
                                                     <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
-                                                        {{ docente.primer_nombre }} {{ docente.primer_apellido }}
+                                                        {{ docente.primer_nombre }}{% if docente.segundo_nombre %} {{ docente.segundo_nombre }}{% endif %} {{ docente.primer_apellido }}{% if docente.segundo_apellido %} {{ docente.segundo_apellido }}{% endif %}
                                                     </button>
                                                 </li>
                                             {% endfor %}
                                         </ul>
                                     </div>
 
-                                    <div class="col-md-12 mb-2 form-check">
+                                    <div class="col-md-12 mb-2 ms-2 form-check">
                                         <input type="checkbox" class="form-check-input" id="materia_compartida">
                                         <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
                                     </div>
 
-                                    <div id="materiasCompartidas" class="">
-                                        <div class="d-flex justify-content-center align-items-center">
-                                            <div class="col flex-column d-flex justify-content-center align-items-center">
+                                    <div id="materiasCompartidas" class="container">
+                                        <div class="d-flex justify-content-center align-items-center row">
+                                            <div class="col flex-column d-flex justify-content-center align-items-center col-md-5">
                                                 <label class="form-label">Materias Disponibles</label>
                                                 <select multiple class="form-select select-multiple" id="materiasDisponibles">
                                                     {% for materia in materias_compartidas %}
@@ -100,16 +96,16 @@
                                                     {% endfor %}
                                                 </select>
                                             </div>
-                                            <div class="d-flex flex-column align-items-center justify-content-center">
-                                                <button type="button" id="agregarMateria" class="btn m-1">
+                                            <div class="d-flex flex-column justify-content-center align-items-center col-md-2">
+                                                <button type="button" id="agregarMateria" class="btn-sm btn-primary mb-2">
                                                     <i class="bi bi-arrow-right-circle-fill"></i>
                                                 </button>
-                                                <button type="button" id="quitarMateria" class="btn m-1">
+                                                <button type="button" id="quitarMateria" class="btn-sm btn-primary">
                                                     <i class="bi bi-arrow-left-circle-fill"></i>
                                                 </button>
                                             </div>
-                                            <div class="col flex-column d-flex justify-content-center align-items-center">
-                                                <label class="text-center">Materias Elegidas</label>
+                                            <div class="col flex-column d-flex justify-content-center align-items-center col-md-5">
+                                                <label class="form-label">Materias Elegidas</label>
                                                 <select multiple class="form-select" id="permisosElegidos"></select>
                                             </div>
                                         </div>
@@ -150,6 +146,53 @@
     </div>
 </div>
 
+<!-- Script para manejar la lista de materias -->
+{% if materias_list %}
+    {{ materias_list|json_script:"materiasJSON" }}
+{% endif %}
+
+<!-- Script para manejar la selección de materias según el semestre -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const materias = JSON.parse(document.getElementById("materiasJSON").textContent);
+        const semestreSelect = document.getElementById("semestre");
+        const materiaSelect = document.getElementById("materia");
+        const horasInput = document.getElementById("horas_semanales");
+
+        // Limpiar select de materias
+        function clearMateriaSelect() {
+            materiaSelect.innerHTML = '<option value="">Seleccione</option>';
+        }
+
+        // Al seleccionar semestre
+        semestreSelect.addEventListener("change", function () {
+            const semestreId = parseInt(this.value);
+            clearMateriaSelect();
+            horasInput.value = "";
+
+            if (!semestreId) return;
+
+            const materiasFiltradas = materias.filter(m => m.fk_semestre_id === semestreId);
+
+            materiasFiltradas.forEach(m => {
+                const option = document.createElement("option");
+                option.value = m.id;
+                option.textContent = `${m.codigo} - ${m.materia}`;
+                option.setAttribute("data-horas", m.horas ?? "");
+                materiaSelect.appendChild(option);
+            });
+        });
+
+        // Al seleccionar materia, mostrar horas
+        materiaSelect.addEventListener("change", function () {
+            const selected = materiaSelect.options[materiaSelect.selectedIndex];
+            const horas = selected.getAttribute("data-horas");
+            horasInput.value = horas || "";
+        });
+    });
+</script>
+
+<!-- Script para filtrado en selects -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         function setupDropdownFilter(inputId, dropdownId) {

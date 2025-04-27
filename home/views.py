@@ -77,11 +77,20 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     # Obtener la fecha actual
     fecha_actual = timezone.now().date()
 
+    # Se filtran las materias por el programa del usuario logueado
+    materias_queryset = Materia.objects.select_related('fk_semestre').filter(
+        fk_programa=programa_usuario).values(
+            'id',
+            'materia',
+            'codigo',
+            'horas',
+            'fk_semestre_id'
+        )
+
     # Contexto inicial
     contexto = {
         'usuario_log': usuario_log,
         'user_groups': grupos_usuario,
-        'semestres_list': semestres_list,
     }
 
     # Incluir datos adicionales si es necesario para otras funciones
@@ -97,7 +106,9 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'roles_list': Rol.objects.all(),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
-            'materias_list': Materia.objects.all(),
+            'semestres_list': semestres_list,
+            'materias_list_all': Materia.objects.all(),
+            'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
             'docentes_list': Usuario.objects.filter(fk_rol_id=4),
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
@@ -127,7 +138,6 @@ def signin(request):
     if request.method == 'GET':
         return redirect('iniciar_sesion_form')
     elif request.method == 'POST':
-        print(request.POST)
 
         postEmail = request.POST.get('email')
         postPsw = request.POST.get('password')
@@ -176,7 +186,6 @@ def actualizar_contraseña(request):
     if request.method == 'GET':
         return redirect('iniciar_sesion_form')
     elif request.method == 'POST':
-        print(request.POST)
 
         reset_email = request.POST.get('resetEmail')
         new_password = request.POST.get('newPassword')
@@ -510,7 +519,7 @@ def agregar_exp_laboral(request):
         try:
             # Validar que el usuario existe
             usuario = get_object_or_404(Usuario, id=usuario_id)
-            
+
             # Si está laborando actualmente, establecer fecha_fin como None
             if laborando_actualmente or fecha_fin == "":
                 fecha_fin = None
@@ -1034,6 +1043,7 @@ def gestion_matriz(request):
         })
 
     return render(request, 'matriz.html', contexto)
+
 
 @login_required
 @csrf_exempt
