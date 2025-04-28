@@ -348,10 +348,10 @@ table.table tbody td {
     transition: transform 0.2s ease-in-out;
 }
 
-.card:hover {
+/* .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .card-header {
     border-radius: 10px 10px 0 0;
@@ -364,4 +364,8 @@ table.table tbody td {
 /* Estilo para mostrar texto en mayúsculas */
 .text-uppercase {
     text-transform: uppercase;
+}
+
+.card-body .fs-small {
+    font-size: 0.79rem;
 }
