@@ -37,7 +37,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-2">
-                    <form id="formAgregarMatriz">
+                    <form id="formAgregarCargaMatriz">
                         {% csrf_token %}
                         <div class"container">
                             <div class="container mb-3">
@@ -58,11 +58,12 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-md-4 mb-2">
+                                    <div class="col-md-3 mb-2">
                                         <label for="horas_semanales" class="form-label">Horas Semanales<span class="fw-bold fs-4"></span></label>
                                         <input type="number" class="form-control" id="horas_semanales" disabled>
                                     </div>
-                                    <div class="col-md-8 mb-2" style="position: relative;">
+
+                                    <div class="col-md-9 mb-2" style="position: relative;">
                                         <label for="fk_docente_input_matriz" class="form-label">Docente <span class="fw-bold fs-4">*</span></label>
                                         <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
                                         <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
@@ -110,36 +111,40 @@
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="guardarCarga">Guardar</button>
+                <!-- Botón para enviar el formulario -->
+                <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <!-- Nota -->
+                    <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                    <button type="button" class="btn btn-primary" id="agregarCarga">Agregar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-12">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0 align-middle">
-                <thead>
-                    <tr>
-                        <th>Semestre</th>
-                        <th>Materia</th>
-                        <th>Docente</th>
-                        <th>Dedicación</th>
-                        <th>Horas Semanales (H)</th>
-                        <th>Semanas (S)</th>
-                        <th>Total (H * S)</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se agregarán los datos del formulario -->
-                </tbody>
-            </table>
+    <!-- Tabla de datos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-3 align-middle" id="infoAgregadaMatriz">
+                    <thead class="align-middle text-warp">
+                        <tr>
+                            <th>Semestre</th>
+                            <th>Materia</th>
+                            <th>Docente</th>
+                            <th>Dedicación</th>
+                            <th>Horas Semanales (H)</th>
+                            <th>Semanas (S)</th>
+                            <th>Total (H * S)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
 <!-- Script para manejar la lista de materias -->
 {% if materias_list %}
@@ -246,92 +251,82 @@
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const cargas = [];
-        const tablaBody = document.querySelector('#tablaCargas tbody');
+    document.addEventListener("DOMContentLoaded", function () {
+        const agregarCargaBtn = document.getElementById("agregarCarga");
+        const tablaBody = document.querySelector("#infoAgregadaMatriz tbody");
 
-        // Guardar datos del modal en la tabla
-        document.getElementById('guardarCarga').addEventListener('click', function () {
-            const semestre = document.getElementById('semestre').value;
-            const materia = document.getElementById('materia').value;
-            const docente = document.getElementById('docente').value;
-            const horasSemanales = document.getElementById('horas_semanales').value;
-            const valorAPagar = document.getElementById('valor_a_pagar').value;
-            const materiaCompartida = document.getElementById('materia_compartida').checked;
+        // Aquí almacenaremos las cargas antes de enviarlas
+        let cargasAcademicas = [];
 
-            // Validar que todos los campos estén completos
-            // if (!semestre || !materia || !docente || !horasSemanales || !valorAPagar) {
-            //     alert('Por favor, completa todos los campos.');
-            //     return;
-            // }
+        agregarCargaBtn.addEventListener("click", function (event) {
+            event.preventDefault(); // Previene el submit automático del formulario
 
-            // Agregar la carga a la lista temporal
-            cargas.push({
-                semestre,
-                materia,
-                docente,
-                horasSemanales,
-                valorAPagar,
-                materiaCompartida
-            });
+            const semestreSelect = document.getElementById("semestre");
+            const materiaSelect = document.getElementById("materia");
+            const docenteInput = document.getElementById("fk_docente_input_matriz");
+            const horasInput = document.getElementById("horas_semanales");
+            const materiaCompartidaCheckbox = document.getElementById("materia_compartida");
 
-            // Limpiar el formulario
-            document.getElementById('cargaForm').reset();
+            const semestreText = semestreSelect.options[semestreSelect.selectedIndex].text;
+            const semestreId = semestreSelect.value;
+            const materiaText = materiaSelect.options[materiaSelect.selectedIndex].text;
+            const materiaId = materiaSelect.value;
+            const docenteNombre = docenteInput.value.trim();
+            const horasSemanales = horasInput.value;
+            const materiaCompartida = materiaCompartidaCheckbox.checked;
+            const semanas = 16; // Asumiendo siempre 16 semanas, si no quieres eso, lo haces dinámico
+            const totalHoras = horasSemanales * semanas;
 
-            // Actualizar la tabla
-            actualizarTabla();
-            $('#agregarCargaModal').modal('hide');
+            // Validaciones mínimas
+            if (!semestreId || !materiaId || !docenteNombre || !horasSemanales) {
+                alert("Por favor completa todos los campos obligatorios.");
+                return;
+            }
+
+            // Creamos el objeto que representa una fila de carga académica
+            const nuevaCarga = {
+                semestre_id: semestreId,
+                semestre_nombre: semestreText,
+                materia_id: materiaId,
+                materia_nombre: materiaText,
+                docente_nombre: docenteNombre,
+                horas_semanales: horasSemanales,
+                materia_compartida: materiaCompartida,
+                semanas: semanas,
+                total: totalHoras
+            };
+
+            cargasAcademicas.push(nuevaCarga); // Agregamos al arreglo
+
+            // Agregamos la fila a la tabla visualmente
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td>${nuevaCarga.semestre_nombre}</td>
+                <td>${nuevaCarga.materia_nombre}</td>
+                <td>${nuevaCarga.docente_nombre}</td>
+                <td>Tiempo Completo</td>
+                <td>${nuevaCarga.horas_semanales}</td>
+                <td>${nuevaCarga.semanas}</td>
+                <td>${nuevaCarga.total}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm eliminarFila">Eliminar</button>
+                </td>
+            `;
+            tablaBody.appendChild(fila);
+
+            // Reseteamos el formulario (no cierra el modal)
+            document.getElementById("formAgregarCargaMatriz").reset();
         });
 
-        // Función para actualizar la tabla
-        function actualizarTabla() {
-            tablaBody.innerHTML = '';
-            cargas.forEach((carga, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${document.getElementById('semestre').options[document.getElementById('semestre').selectedIndex].text}</td>
-                    <td>${document.getElementById('materia').options[document.getElementById('materia').selectedIndex].text}</td>
-                    <td>${document.getElementById('docente').options[document.getElementById('docente').selectedIndex].text}</td>
-                    <td>${carga.horasSemanales}</td>
-                    <td>${carga.valorAPagar}</td>
-                    <td>${carga.materiaCompartida ? 'Sí' : 'No'}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="eliminarFila(${index})">Eliminar</button></td>
-                `;
-                tablaBody.appendChild(row);
-            });
-        }
+        // Eliminar fila
+        tablaBody.addEventListener("click", function (event) {
+            if (event.target.classList.contains("eliminarFila")) {
+                const fila = event.target.closest("tr");
+                const index = Array.from(tablaBody.children).indexOf(fila);
 
-        // Función para eliminar una fila
-        window.eliminarFila = function (index) {
-            cargas.splice(index, 1);
-            actualizarTabla();
-        };
-
-        // Enviar todas las cargas al backend
-        document.getElementById('enviarCargas').addEventListener('click', function () {
-            fetch('/guardar_matriz/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    cargas,
-                    periodoVigente: document.getElementById('matrizDocente').innerText.split(':')[1].trim(),
-                    fechaElaboracion: document.getElementById('fechaElaboracion').innerText.split(':')[1].trim(),
-                    programaMatriz: document.getElementById('programaMatriz').innerText.split(':')[1].trim()
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Cargas académicas guardadas correctamente.');
-                    cargas.length = 0; // Limpiar la lista temporal
-                    actualizarTabla();
-                } else {
-                    alert('Ocurrió un error al guardar las cargas.');
-                }
-            });
+                cargasAcademicas.splice(index, 1); // Eliminamos del array
+                fila.remove(); // Eliminamos visualmente
+            }
         });
     });
 </script>
