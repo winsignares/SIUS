@@ -7,6 +7,8 @@ class Periodo(models.Model):
     periodo = models.CharField("Periodo", max_length=255, null=True, blank=True)
     fecha_apertura = models.DateField("Fecha de Apertura", null=True, blank=True)
     fecha_cierre = models.DateField("Fecha de Cierre", null=True, blank=True)
+    salario_minimo = models.IntegerField("Salario Mínimo", null=True, blank=True)
+    auxilio_transporte = models.IntegerField("Auxilio de Transporte", null=True, blank=True)
 
     class Meta:
         db_table = 'periodos'
@@ -14,7 +16,7 @@ class Periodo(models.Model):
         verbose_name_plural = 'Periodos'
 
     def __str__(self):
-        return f"{self.año}-{self.periodo}"
+        return f"{self.year}-{self.periodo}"
 
 
 class Programa(models.Model):

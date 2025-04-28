@@ -6,6 +6,7 @@
     --color-cuaternario: #9c9c94;
     --bg-color-select: #e3e6ea;
     --borde-redondo: 10px;
+    --bg-white: #ffffff;
 }
 
 /* Estilo general */
@@ -165,8 +166,7 @@ body {
 }
 
 .btn-carga-por-semestre {
-    background-color: var(--color-cuaternario);
-    color: var(--color-secundario) !important;
+    color: var(--color-terciario) !important;
     border: none;
     border-radius: 5px;
     font-size: 1.3rem;
@@ -174,7 +174,7 @@ body {
 }
 
 .btn-cargas {
-    background-color: var(--color-cuaternario) !important;
+    background-color: var(--bg-white) !important;
 }
 
 .btn-carga-por-semestre:active {

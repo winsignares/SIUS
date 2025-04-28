@@ -26,7 +26,6 @@
                 {% else %}
                     <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
                 {% endif %}
-                <h6 id="fechaElaboracion" class="m-0"><span class="fw-bold m-0">Fecha de Elaboración:</span> {{ dia_actual }}</h6>
                 <h6 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
             </div>
         </div>
@@ -51,14 +50,12 @@
                     <tr>
                         <th>Nombre Completo</th>
                         <th>Nivel de Formación</th>
-                        <th>Tipo de Documento</th>
-                        <th>No. Documento</th>
+                        <th>Documento de Identidad</th>
                         <th>Dedicación</th>
                         <th colspan="2">DO</th>
                         <th colspan="2">AD</th>
                         <th colspan="2">IN</th>
                         <th colspan="2">PyE</th>
-                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,7 +63,6 @@
                         <td>Nombre Completo</td>
                         <td>Nivel de Formación</td>
                         <td>Tipo de Documento</td>
-                        <td>No. Documento</td>
                         <td>Dedicación</td>
                         <td>DO</td>
                         <td>%DO%</td>
@@ -76,7 +72,6 @@
                         <td>%IN%</td>
                         <td>PyE</td>
                         <td>%PyE%</td>
-                        <td>Acciones</td>
                     </tr>
                 </tbody>
             </table>

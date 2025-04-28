@@ -5,12 +5,8 @@
 
 {% block content %}
 <div class="container-fluid m-4">
-    <!-- Título y botón para agregar cargas academicas -->
-    <div class="row mb-3">
-        <div class="d-flex col justify-content-between align-items-center">
-            <h3 class="fw-bold m-0">Matriz Planta Docente</h3>
-        </div>
-    </div>
+    <!-- Título de la página -->
+    <h3 class="mb-3 d-flex justify-content-center align-items-center fw-bold">Matriz Planta Docente</h3>
 
     <div class="row mb-3">
         <div class="d-flex justify-content-center align-items-center gap-3">
@@ -20,8 +16,7 @@
                 {% else %}
                     <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
                 {% endif %}
-                <h6 id="fechaElaboracion" class="m-0"><span class="fw-bold m-0">Fecha de Elaboración:</span> {{ dia_actual }}</h6>
-                <h6 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
+                <h5 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h5>
             </div>
             <div class="vr"></div>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarCargaModal">
