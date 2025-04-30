@@ -85,14 +85,12 @@
                                     <div id="materiasCompartidas" class="container">
                                         <div class="d-flex justify-content-center align-items-center row">
                                             <div class="col flex-column d-flex justify-content-center align-items-center col-md-5">
-                                                <label class="form-label">Materias Disponibles</label>
-                                                <select multiple class="form-select select-multiple" id="materiasDisponibles">
-                                                    {% for materia in materias_compartidas %}
-                                                        <option value="{{ materia.id }}">{{ materia.materia }}</option>
-                                                    {% endfor %}
+                                                <label for="materias_disponibles" class="form-label">Materias Disponibles</label>
+                                                <select multiple class="form-select select-multiple" id="materias_disponibles">
+                                                    <!-- Aquí se agregarán las materias disponibles dinámicamente -->
                                                 </select>
                                             </div>
-                                            <div class="d-flex flex-column justify-content-center align-items-center col-md-2">
+                                            <div class="d-flex flex-column justify-content-center align-items-center col-md-1">
                                                 <button type="button" id="agregarMateria" class="btn-sm btn-primary mb-2">
                                                     <i class="bi bi-arrow-right-circle-fill"></i>
                                                 </button>
@@ -101,8 +99,10 @@
                                                 </button>
                                             </div>
                                             <div class="col flex-column d-flex justify-content-center align-items-center col-md-5">
-                                                <label class="form-label">Materias Elegidas</label>
-                                                <select multiple class="form-select" id="permisosElegidos"></select>
+                                                <label for="materias_elegidas" class="form-label">Materias Elegidas</label>
+                                                <select multiple class="form-select" id="materias_elegidas">
+                                                    <!-- Aquí se agregarán las materias elegidas dinámicamente -->
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -133,23 +133,33 @@
                             <th>Materia</th>
                             <th>Docente</th>
                             <th>Dedicación</th>
-                            <th>Horas Semanales (H)</th>
-                            <th>Semanas (S)</th>
-                            <th>Total (H * S)</th>
+                            <th class="text-nowrap">Horas Semanales (H)</th>
+                            <th class="text-nowrap">Semanas (S)</th>
+                            <th class="text-nowrap">Total (H * S)</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="infoAgregadaMatrizBody">
+                        <tr id="mensajeVacio" class="text-center d-none">
+                            <td colspan="8">No se encontraron datos disponibles</td>
+                        </tr>
+                        <!-- Aquí se agregan las filas dinámicamente -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-<!-- Script para manejar la lista de materias -->
+<!-- Script para manejar la lista de materias por programa -->
 {% if materias_list %}
     {{ materias_list|json_script:"materiasJSON" }}
 {% endif %}
+
+<!-- Script para manejar la lista de todas las materias -->
+{% if materias_list_all %}
+    {{ materias_list_all|json_script:"materiasAllJSON" }}
+{% endif %}
+
 
 <!-- Script para manejar la selección de materias según el semestre -->
 <script>
@@ -250,16 +260,118 @@
     });
 </script>
 
+<!-- Script para manejar la selección de materias compartidas -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const materiasAll = JSON.parse(document.getElementById("materiasAllJSON").textContent);
+        const materiaSelect = document.getElementById("materia");
+        const materiasDisponibles = document.getElementById("materias_disponibles");
+
+        function normalize(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        }
+
+        materiaSelect.addEventListener("change", function () {
+            const selectedOption = materiaSelect.options[materiaSelect.selectedIndex];
+            const selectedText = selectedOption.textContent.trim();
+            const [codigo, ...rest] = selectedText.split(" - ");
+            const nombre = rest.join(" ").trim();
+
+            // Limpiar listado actual
+            materiasDisponibles.innerHTML = "";
+
+            const nombreNormalizado = normalize(nombre);
+            const codigoSeleccionado = codigo.trim();
+
+            // Filtrar por nombre normalizado y excluir la materia seleccionada
+            const materiasCoincidentes = materiasAll.filter(m => {
+                return normalize(m.materia) === nombreNormalizado && m.codigo !== codigoSeleccionado;
+            });
+
+            // Agregar opciones coincidentes
+            materiasCoincidentes.forEach(m => {
+                const option = document.createElement("option");
+                option.value = m.id;
+                option.textContent = `${m.codigo} - ${m.materia}`;
+                materiasDisponibles.appendChild(option);
+            });
+        });
+    });
+</script>
+
+<!-- Script para manejar el checkbox de materia compartida y habilitar campos -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkboxMateriaCompartida = document.getElementById("materia_compartida");
+        const materiasDisponibles = document.getElementById("materias_disponibles");
+        const materiasElegidas = document.getElementById("materias_elegidas");
+        const btnAgregar = document.getElementById("agregarMateria");
+        const btnQuitar = document.getElementById("quitarMateria");
+
+        // Función para activar/desactivar y aplicar estilos visuales
+        function toggleCamposCompartidos(habilitar) {
+            const toggleDisable = !habilitar;
+            const toggleOpacity = habilitar ? 'remove' : 'add';
+
+            materiasDisponibles.disabled = toggleDisable;
+            materiasElegidas.disabled = toggleDisable;
+            btnAgregar.disabled = toggleDisable;
+            btnQuitar.disabled = toggleDisable;
+
+            materiasDisponibles.classList[toggleOpacity]('opacity-50');
+            materiasElegidas.classList[toggleOpacity]('opacity-50');
+        }
+
+        // Estado inicial desactivado
+        toggleCamposCompartidos(false);
+
+        // Escuchar cambio en el checkbox
+        checkboxMateriaCompartida.addEventListener("change", function () {
+            toggleCamposCompartidos(this.checked);
+        });
+    });
+</script>
+
+<!-- Script para mover materias entre listas -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const materiasDisponibles = document.getElementById("materias_disponibles");
+        const materiasElegidas = document.getElementById("materias_elegidas");
+        const btnAgregar = document.getElementById("agregarMateria");
+        const btnQuitar = document.getElementById("quitarMateria");
+
+        // Mover opciones seleccionadas de un select a otro
+        function moverOpciones(origen, destino) {
+            const opcionesSeleccionadas = Array.from(origen.selectedOptions);
+            opcionesSeleccionadas.forEach(opcion => {
+                origen.removeChild(opcion);
+                destino.appendChild(opcion);
+            });
+        }
+
+        // Evento para agregar materias a la lista de elegidas
+        btnAgregar.addEventListener("click", function () {
+            moverOpciones(materiasDisponibles, materiasElegidas);
+        });
+
+        // Evento para quitar materias y devolverlas a la lista de disponibles
+        btnQuitar.addEventListener("click", function () {
+            moverOpciones(materiasElegidas, materiasDisponibles);
+        });
+    });
+</script>
+
+<!-- Script para agregar la información del formulario a la tabla -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const agregarCargaBtn = document.getElementById("agregarCarga");
-        const tablaBody = document.querySelector("#infoAgregadaMatriz tbody");
+        const tablaBody = document.getElementById("infoAgregadaMatrizBody");
 
-        // Aquí almacenaremos las cargas antes de enviarlas
+        // Diccionario de cargas académicas
         let cargasAcademicas = [];
 
         agregarCargaBtn.addEventListener("click", function (event) {
-            event.preventDefault(); // Previene el submit automático del formulario
+            event.preventDefault();
 
             const semestreSelect = document.getElementById("semestre");
             const materiaSelect = document.getElementById("materia");
@@ -267,14 +379,14 @@
             const horasInput = document.getElementById("horas_semanales");
             const materiaCompartidaCheckbox = document.getElementById("materia_compartida");
 
-            const semestreText = semestreSelect.options[semestreSelect.selectedIndex].text;
+            const semestreText = semestreSelect.options[semestreSelect.selectedIndex]?.text || '';
             const semestreId = semestreSelect.value;
-            const materiaText = materiaSelect.options[materiaSelect.selectedIndex].text;
+            const materiaText = materiaSelect.options[materiaSelect.selectedIndex]?.text || '';
             const materiaId = materiaSelect.value;
             const docenteNombre = docenteInput.value.trim();
             const horasSemanales = horasInput.value;
             const materiaCompartida = materiaCompartidaCheckbox.checked;
-            const semanas = 16; // Asumiendo siempre 16 semanas, si no quieres eso, lo haces dinámico
+            const semanas = 16;
             const totalHoras = horasSemanales * semanas;
 
             // Validaciones mínimas
@@ -283,7 +395,7 @@
                 return;
             }
 
-            // Creamos el objeto que representa una fila de carga académica
+            // Crear nueva carga
             const nuevaCarga = {
                 semestre_id: semestreId,
                 semestre_nombre: semestreText,
@@ -296,10 +408,12 @@
                 total: totalHoras
             };
 
-            cargasAcademicas.push(nuevaCarga); // Agregamos al arreglo
+            // Agregar carga al arreglo
+            cargasAcademicas.push(nuevaCarga);
 
-            // Agregamos la fila a la tabla visualmente
+            // Insertar fila en la tabla
             const fila = document.createElement("tr");
+            fila.classList.add("text-center");
             fila.innerHTML = `
                 <td>${nuevaCarga.semestre_nombre}</td>
                 <td>${nuevaCarga.materia_nombre}</td>
@@ -313,6 +427,7 @@
                 </td>
             `;
             tablaBody.appendChild(fila);
+            toggleMensajeVacio();
 
             // Reseteamos el formulario (no cierra el modal)
             document.getElementById("formAgregarCargaMatriz").reset();
@@ -324,10 +439,35 @@
                 const fila = event.target.closest("tr");
                 const index = Array.from(tablaBody.children).indexOf(fila);
 
-                cargasAcademicas.splice(index, 1); // Eliminamos del array
-                fila.remove(); // Eliminamos visualmente
+                // Eliminar del array
+                cargasAcademicas.splice(index, 1);
+
+                // Eliminar del DOM
+                fila.remove();
+
+                // Verificar si hay filas restantes
+                toggleMensajeVacio();
             }
         });
+
+        // Mostrar u ocultar mensaje vacío
+        function toggleMensajeVacio() {
+            const mensajeVacio = document.getElementById("mensajeVacio");
+            const tablaBody = document.getElementById("infoAgregadaMatrizBody");
+
+            // Filas que no son el mensaje vacío
+            const filasActivas = Array.from(tablaBody.querySelectorAll("tr"))
+                .filter(tr => tr.id !== "mensajeVacio");
+
+            if (filasActivas.length === 0) {
+                mensajeVacio.classList.remove("d-none");
+            } else {
+                mensajeVacio.classList.add("d-none");
+            }
+        }
+
+        // Verifica si ya no hay más cargas
+        toggleMensajeVacio();
     });
 </script>
 {% endblock %}

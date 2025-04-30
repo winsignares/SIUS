@@ -77,6 +77,15 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     # Obtener la fecha actual
     fecha_actual = timezone.now().date()
 
+    # Todas las materias
+    materias_list_all = Materia.objects.all().values(
+        'id',
+        'materia',
+        'codigo',
+        'horas',
+        'fk_semestre_id'
+    )
+
     # Se filtran las materias por el programa del usuario logueado
     materias_queryset = Materia.objects.select_related('fk_semestre').filter(
         fk_programa=programa_usuario).values(
@@ -107,7 +116,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
             'semestres_list': semestres_list,
-            'materias_list_all': Materia.objects.all(),
+            'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
             'docentes_list': Usuario.objects.filter(fk_rol_id=4),

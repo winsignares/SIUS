@@ -181,6 +181,10 @@ body {
     transform: scale(0.998);
 }
 
+.fs-small {
+    font-size: 0.79rem;
+}
+
 /*
 --------------------------------------- GESTIÓN ASPIRTANTES Y EMPLEADOS ---------------------------------------
 */
