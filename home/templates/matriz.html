@@ -129,19 +129,20 @@
                 <table class="table table-striped table-hover mb-3 align-middle" id="infoAgregadaMatriz">
                     <thead class="align-middle text-warp">
                         <tr>
-                            <th>Semestre</th>
-                            <th>Materia</th>
-                            <th>Docente</th>
-                            <th>Dedicación</th>
-                            <th class="text-nowrap">Horas Semanales (H)</th>
-                            <th class="text-nowrap">Semanas (S)</th>
-                            <th class="text-nowrap">Total (H * S)</th>
-                            <th>Acciones</th>
+                            <th class="col-1" scope="col">Semestre</th>
+                            <th class="col-2" scope="col">Materia</th>
+                            <th class="col-2" scope="col">Docente</th>
+                            <th class="col-1" scope="col">Dedicación</th>
+                            <th class="col-1" scope="col">Horas (H)</th>
+                            <th class="col-1" scope="col">Semanas (S)</th>
+                            <th class="col-1" scope="col">Total<br>(H * S)</th>
+                            <th class="col-2" scope="col">Compartida con</th>
+                            <th class="col-1" scope="col">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="infoAgregadaMatrizBody">
                         <tr id="mensajeVacio" class="text-center d-none">
-                            <td colspan="8">No se encontraron datos disponibles</td>
+                            <td colspan="9">No se encontraron datos disponibles</td>
                         </tr>
                         <!-- Aquí se agregan las filas dinámicamente -->
                     </tbody>
@@ -413,7 +414,7 @@
 
             // Insertar fila en la tabla
             const fila = document.createElement("tr");
-            fila.classList.add("text-center");
+            fila.classList.add("text-center","fs-small");
             fila.innerHTML = `
                 <td>${nuevaCarga.semestre_nombre}</td>
                 <td>${nuevaCarga.materia_nombre}</td>
@@ -423,7 +424,13 @@
                 <td>${nuevaCarga.semanas}</td>
                 <td>${nuevaCarga.total}</td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm eliminarFila">Eliminar</button>
+                    <!-- Si es materia compartida, mostrar las materias elegidas - Si no es materia compartida, mostrar "No aplica" -->
+                    ${nuevaCarga.materia_compartida ? `<ul>${Array.from(materiasElegidas.options).map(option => `<li>${option.textContent}</li>`).join("")}</ul>` : "No aplica"}
+                </td>
+                <td>
+                    <button type="button" class="btn fs-6 btn-alterno-dark eliminarFila">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </td>
             `;
             tablaBody.appendChild(fila);
