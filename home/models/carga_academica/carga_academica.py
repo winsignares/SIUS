@@ -15,6 +15,12 @@ class CargaAcademica(models.Model):
     valor_a_pagar = models.IntegerField("Valor a Pagar", null=True, blank=True)
     materia_compartida = models.BooleanField("Materia Compartida", default=False, null=True, blank=True)
 
+    # Creación de carga académica
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='carga_academica_creado_por', verbose_name="Creado Por", on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_creacion = models.DateTimeField("Fecha Creación", auto_now_add=True, null=True, blank=True)
+    modificado_por = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='carga_academica_modificado_por', verbose_name="Modificado Por", on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_modificacion = models.DateTimeField("Fecha Modificación", auto_now=True, null=True, blank=True)
+
     # Aprobación vicerectoria
     aprobado_vicerrectoria = models.BooleanField("Aprobado", default=False, null=True, blank=True)
     fk_aprobado_vicerrectoria = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_vicerrectoria',verbose_name="Aprobación Vicerrectoria", on_delete=models.SET_NULL, null=True, blank=True)
