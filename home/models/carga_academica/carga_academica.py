@@ -12,6 +12,7 @@ class CargaAcademica(models.Model):
     fk_materia = models.ForeignKey(Materia, on_delete=models.CASCADE, verbose_name="Materia")
     fk_docente_asignado = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name="Docente Asignado")
     horas_semanales = models.CharField("Horas Semanales", max_length=255, null=True, blank=True)
+    total_horas = models.CharField("Total Horas", max_length=255, null=True, blank=True)
     valor_a_pagar = models.IntegerField("Valor a Pagar", null=True, blank=True)
     materia_compartida = models.BooleanField("Materia Compartida", default=False, null=True, blank=True)
 
@@ -49,6 +50,7 @@ class MateriaCompartida(models.Model):
     id = models.AutoField(primary_key=True)
     fk_carga_academica = models.ForeignKey(CargaAcademica, on_delete=models.CASCADE, verbose_name="Carga Académica")
     fk_programa = models.ForeignKey(Programa, on_delete=models.CASCADE, verbose_name="Programa")
+    fk_periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE, verbose_name="Periodo")
 
     class Meta:
         db_table = 'materias_compartidas'

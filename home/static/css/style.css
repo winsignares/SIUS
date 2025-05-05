@@ -76,7 +76,7 @@ p {
     text-decoration: underline;
 }
 
-#forgotPasswordLink:active ,#backToLoginLink:active {    
+#forgotPasswordLink:active ,#backToLoginLink:active {
     transform: scale(0.95);
 }
 
@@ -107,7 +107,7 @@ p {
 }
 
 
-/* 
+/*
 --------------------------------------- Error 404 ---------------------------------------
 */
 
@@ -133,7 +133,7 @@ p {
 }
 
 
-/* 
+/*
 --------------------------------------- SPINNER DE CARGA ---------------------------------------
 */
 
@@ -147,7 +147,7 @@ p {
     font-weight: bold;
 }
 
-/* 
+/*
 --------------------------------------- MENSAJE PARA DISPOSITIVOS MÓVILES Y TABLETS ---------------------------------------
 */
 .mobile-alert {

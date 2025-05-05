@@ -1,18 +1,36 @@
-CARGA ACADEMICA
-1. Las asignaturas se deben cargar automáticamente según el programa y el semestre seleccionado.
+---------------------------------------------------------------------------------------------------------------------------------------------------
 
-Materias similares en programas:
-1 semestre - Software, Renovable, Ambiental e Industrial: 
-	Calculo diferencial
-	Catedra Unicorsalud
-	Geometría analítica
+SECRETARIA TALENTO HUMANO
 
+Reportes
 
+---------------------------------------------------------------------------------------------------------------------------------------------------
 
+DIRECCIÓN TALENTO HUMANO
 
+Flujo de trabajo:
 
+1. Se presiona el botón de Editar Usuario
+2. Si se selecciona la opción "Contratado" en el select de "Estado de revisión" se mostrarán los siguientes campos:
+	- Un select para definir la AFP
+	- Un select para definir la EPS
 
--------------------------------------------------
+2.1. En el apartado de información de contrato debe mostrarse los siguientes campos:
+	- Un select para definir el Tipo de Contrato
+	- Un input date para definir la fecha de inicio del contrato
+	- Un input date para definir la fecha de fin del contrato
+	- Si es administrativo, un input para agregar el valor a pagar mensualmente
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+DIRECTORES DE PROGRAMA
+
+	PENDIENTES:
+	1. Definir como se va a colocar la dedicación del docente (Tiempo Completo - Medio Tiempo - Hora Cátedra)
+	2. Guardar la información de la tabla en la base de datos
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
 CONTABILIDAD
 
 Checkbox para aprobar o no el total a pagar en los contratos (individual).
@@ -23,14 +41,11 @@ Luego de que esté aprobado, se podrían generar los contratos y descargarlos de
 
 Reportes
 
+---------------------------------------------------------------------------------------------------------------------------------------------------
 
-
--------------------------------------------------
 VICERRECTORIA
 
 Aprobación de cargas académicas
 Asignación de funciones sustantivas
 
 Reportes
-
-

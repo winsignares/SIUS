@@ -39,7 +39,7 @@ urlpatterns = [
     path("siuc/dashboard/aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"),
 
     path("siuc/dashboard/empleados/", views.gestion_empleados, name="gestion_empleados"),
-    # path('generar_contrato/<int:usuario_id>/', views.generar_contrato_word, name='generar_contrato'),
+    path('generar_contrato/<int:usuario_id>/', views.generar_contrato_word, name='generar_contrato'),
 
     path("siuc/dashboard/contratos/", views.gestion_func_sustantivas, name="gestion_contratos"),
 

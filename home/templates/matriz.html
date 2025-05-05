@@ -166,21 +166,25 @@
     {{ programas_list|json_script:"programasJSON" }}
 {% endif %}
 
-<!-- Script para manejar la selección de materias según el semestre -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const materias = JSON.parse(document.getElementById("materiasJSON").textContent);
+        // Variables comunes
+        const materias = JSON.parse(document.getElementById("materiasJSON")?.textContent || "[]");
+        const materiasAll = JSON.parse(document.getElementById("materiasAllJSON")?.textContent || "[]");
+        const programas = JSON.parse(document.getElementById("programasJSON")?.textContent || "[]");
+
+        // Materias según semestre
         const semestreSelect = document.getElementById("semestre");
         const materiaSelect = document.getElementById("materia");
         const horasInput = document.getElementById("horas_semanales");
 
-        // Limpiar select de materias
+        // Limpiar el select de materias al cargar la página
         function clearMateriaSelect() {
             materiaSelect.innerHTML = '<option value="">Seleccione</option>';
         }
 
-        // Al seleccionar semestre
-        semestreSelect.addEventListener("change", function () {
+        // Mostrar materias según el semestre seleccionado
+        semestreSelect?.addEventListener("change", function () {
             const semestreId = parseInt(this.value);
             clearMateriaSelect();
             horasInput.value = "";
@@ -188,7 +192,6 @@
             if (!semestreId) return;
 
             const materiasFiltradas = materias.filter(m => m.fk_semestre_id === semestreId);
-
             materiasFiltradas.forEach(m => {
                 const option = document.createElement("option");
                 option.value = m.id;
@@ -198,33 +201,25 @@
             });
         });
 
-        // Al seleccionar materia, mostrar horas
-        materiaSelect.addEventListener("change", function () {
+        // Actualizar el input de horas al seleccionar una materia
+        materiaSelect?.addEventListener("change", function () {
             const selected = materiaSelect.options[materiaSelect.selectedIndex];
             const horas = selected.getAttribute("data-horas");
             horasInput.value = horas || "";
         });
-    });
-</script>
 
-<!-- Script para filtrado en selects -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+        // Filtro de selects con input (docente)
         function setupDropdownFilter(inputId, dropdownId) {
             const inputElement = document.getElementById(inputId);
             const dropdownElement = document.getElementById(dropdownId);
             const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
 
-            // Mostrar/ocultar el dropdown según el input
+            // Mostrar el dropdown al hacer clic en el input
             inputElement.addEventListener("input", function () {
                 const query = inputElement.value.toLowerCase();
-
-                // Filtrar las opciones según el texto ingresado
                 const filteredItems = originalItems.filter(item =>
                     item.textContent.toLowerCase().includes(query)
                 );
-
-                // Limpiar y actualizar el dropdown
                 dropdownElement.innerHTML = "";
                 if (filteredItems.length > 0) {
                     filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
@@ -234,23 +229,22 @@
                 }
             });
 
-            // Cuando seleccionas una opción
+            // Ocultar el dropdown al hacer clic fuera de él
             dropdownElement.addEventListener("click", function (event) {
                 if (event.target.matches(".dropdown-item")) {
-                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
-                    inputElement.value = selectedText; // Inserta solo el texto limpio
-                    dropdownElement.style.display = "none"; // Oculta el dropdown
+                    const selectedText = event.target.textContent.trim();
+                    inputElement.value = selectedText;
+                    dropdownElement.style.display = "none";
                 }
             });
 
-            // Ocultar el dropdown al hacer clic fuera
             document.addEventListener("click", function (event) {
                 if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
                     dropdownElement.style.display = "none";
                 }
             });
 
-            // Mostrar todas las opciones si el input está vacío
+            // Mostrar el dropdown al seleccionar el input
             inputElement.addEventListener("focus", function () {
                 if (inputElement.value.trim() === "") {
                     dropdownElement.innerHTML = "";
@@ -260,40 +254,35 @@
             });
         }
 
-        // Reutiliza la función para diferentes inputs y dropdowns
+        // Inicializar el filtro de dropdown para el docente
         setupDropdownFilter("fk_docente_input_matriz", "fk_docente_dropdown_matriz");
-    });
-</script>
 
-<!-- Script para manejar la selección de materias compartidas -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const materiasAll = JSON.parse(document.getElementById("materiasAllJSON").textContent);
-        const materiaSelect = document.getElementById("materia");
+        // Materias compartidas - filtrado por nombre
         const materiasDisponibles = document.getElementById("materias_disponibles");
 
+        // Normalizar cadenas para comparación
         function normalize(str) {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
         }
 
-        materiaSelect.addEventListener("change", function () {
+        // Actualizar el select de materias disponibles al seleccionar una materia
+        materiaSelect?.addEventListener("change", function () {
             const selectedOption = materiaSelect.options[materiaSelect.selectedIndex];
             const selectedText = selectedOption.textContent.trim();
             const [codigo, ...rest] = selectedText.split(" - ");
             const nombre = rest.join(" ").trim();
 
-            // Limpiar listado actual
             materiasDisponibles.innerHTML = "";
 
             const nombreNormalizado = normalize(nombre);
             const codigoSeleccionado = codigo.trim();
 
-            // Filtrar por nombre normalizado y excluir la materia seleccionada
-            const materiasCoincidentes = materiasAll.filter(m => {
-                return normalize(m.materia) === nombreNormalizado && m.codigo !== codigoSeleccionado;
-            });
+            // Filtrar la materia seleccionada por nombre y código
+            const materiasCoincidentes = materiasAll.filter(m =>
+                normalize(m.materia) === nombreNormalizado && m.codigo !== codigoSeleccionado
+            );
 
-            // Agregar opciones coincidentes
+            // Agregar las materias filtradas de otros programas al select de materias disponibles
             materiasCoincidentes.forEach(m => {
                 const option = document.createElement("option");
                 option.value = m.id;
@@ -301,19 +290,14 @@
                 materiasDisponibles.appendChild(option);
             });
         });
-    });
-</script>
 
-<!-- Script para manejar el checkbox de materia compartida y habilitar campos -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+        // Checkbox: activar campos de materia compartida
         const checkboxMateriaCompartida = document.getElementById("materia_compartida");
-        const materiasDisponibles = document.getElementById("materias_disponibles");
         const materiasElegidas = document.getElementById("materias_elegidas");
         const btnAgregar = document.getElementById("agregarMateria");
         const btnQuitar = document.getElementById("quitarMateria");
 
-        // Función para activar/desactivar y aplicar estilos visuales
+        // Deshabilitar campos de materias compartidas
         function toggleCamposCompartidos(habilitar) {
             const toggleDisable = !habilitar;
             const toggleOpacity = habilitar ? 'remove' : 'add';
@@ -327,25 +311,15 @@
             materiasElegidas.classList[toggleOpacity]('opacity-50');
         }
 
-        // Estado inicial desactivado
+        // Ocultar campos de materias compartidas al cargar la página
         toggleCamposCompartidos(false);
 
-        // Escuchar cambio en el checkbox
-        checkboxMateriaCompartida.addEventListener("change", function () {
+        // Mostrar/ocultar campos de materias compartidas dependiendo del estado del checkbox
+        checkboxMateriaCompartida?.addEventListener("change", function () {
             toggleCamposCompartidos(this.checked);
         });
-    });
-</script>
 
-<!-- Script para mover materias entre listas -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const materiasDisponibles = document.getElementById("materias_disponibles");
-        const materiasElegidas = document.getElementById("materias_elegidas");
-        const btnAgregar = document.getElementById("agregarMateria");
-        const btnQuitar = document.getElementById("quitarMateria");
-
-        // Mover opciones seleccionadas de un select a otro
+        // Mover materias entre listas
         function moverOpciones(origen, destino) {
             const opcionesSeleccionadas = Array.from(origen.selectedOptions);
             opcionesSeleccionadas.forEach(opcion => {
@@ -354,77 +328,53 @@
             });
         }
 
-        // Evento para agregar materias a la lista de elegidas
-        btnAgregar.addEventListener("click", function () {
+        // Agregar y quitar materias compartidas
+        btnAgregar?.addEventListener("click", function () {
             moverOpciones(materiasDisponibles, materiasElegidas);
         });
 
-        // Evento para quitar materias y devolverlas a la lista de disponibles
-        btnQuitar.addEventListener("click", function () {
+        btnQuitar?.addEventListener("click", function () {
             moverOpciones(materiasElegidas, materiasDisponibles);
         });
-    });
-</script>
 
-<!-- Script para agregar la información del formulario a la tabla -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+        // Agregar info del formulario a la tabla
         const formAgregarCarga = document.getElementById("formAgregarCargaMatriz");
         const agregarCargaBtn = document.getElementById("agregarCarga");
         const tablaBody = document.getElementById("infoAgregadaMatrizBody");
-
-        // Obtener el JSON de las materias
-        const materiasAll = JSON.parse(document.getElementById("materiasAllJSON").textContent);
-
-        // Diccionario de cargas académicas
         let cargasAcademicas = [];
 
-        agregarCargaBtn.addEventListener("click", function (event) {
+        // Agregar evento al botón de agregar carga
+        agregarCargaBtn?.addEventListener("click", function (event) {
             event.preventDefault();
 
-            // Validar el formulario
+            // Validar campos obligatorios del formulario
             if (!formAgregarCarga.checkValidity()) {
-                formAgregarCarga.reportValidity(); // Muestra los mensajes de error de validación
+                formAgregarCarga.reportValidity();
                 return;
             }
-
-            const semestreSelect = document.getElementById("semestre");
-            const materiaSelect = document.getElementById("materia");
-            const docenteInput = document.getElementById("fk_docente_input_matriz");
-            const horasInput = document.getElementById("horas_semanales");
-            const materiaCompartidaCheckbox = document.getElementById("materia_compartida");
-            const materiasElegidasSelect = document.getElementById("materias_elegidas");
 
             const semestreText = semestreSelect.options[semestreSelect.selectedIndex]?.text || '';
             const semestreId = semestreSelect.value;
             const materiaText = materiaSelect.options[materiaSelect.selectedIndex]?.text || '';
             const materiaId = materiaSelect.value;
-            const docenteNombre = docenteInput.value.trim();
+            const docenteNombre = document.getElementById("fk_docente_input_matriz")?.value.trim() || "";
             const horasSemanales = horasInput.value;
-            const materiaCompartida = materiaCompartidaCheckbox.checked;
-            // Se coloca 16 por defecto, ya que no se puede cambiar el número de semanas. Es un parametro fijo para todas las universidades.
+            const materiaCompartida = checkboxMateriaCompartida.checked;
             const semanas = 16;
             const totalHoras = horasSemanales * semanas;
 
-            // Obtener los programas asociados a las materias elegidas
-            const programas = [];
-            Array.from(materiasElegidasSelect.selectedOptions).forEach(option => {
-                const materiaIdSeleccionada = parseInt(option.value);
-
-                // Buscar la materia en el JSON
-                const materia = materiasAll.find(m => m.id === materiaIdSeleccionada);
-
-                // Si la materia tiene programa asociado, agregar el nombre del programa a la lista
-                if (materia && materia.fk_programa_id) {
-                    // Buscar el programa correspondiente usando el fk_programa_id
-                    const programa = getProgramById(materia.fk_programa_id);
+            // Validar si la materia ya está en la tabla
+            const programasSeleccionados = [];
+            Array.from(materiasElegidas.selectedOptions).forEach(option => {
+                const materia = materiasAll.find(m => m.id === parseInt(option.value));
+                if (materia?.fk_programa_id) {
+                    const programa = programas.find(p => p.id === materia.fk_programa_id);
                     if (programa) {
-                        programas.push(programa);
+                        programasSeleccionados.push(programa.programa);
                     }
                 }
             });
 
-            // Crear nueva carga
             const nuevaCarga = {
                 semestre_id: semestreId,
                 semestre_nombre: semestreText,
@@ -435,13 +385,13 @@
                 materia_compartida: materiaCompartida,
                 semanas: semanas,
                 total: totalHoras,
-                programas: programas
+                programas: programasSeleccionados
             };
 
-            // Agregar carga al arreglo
+            // Agregar la carga a la tabla
             cargasAcademicas.push(nuevaCarga);
 
-            // Insertar fila en la tabla
+            // Mostrar la carga en la tabla
             const fila = document.createElement("tr");
             fila.classList.add("text-center", "fs-small");
             fila.innerHTML = `
@@ -453,68 +403,43 @@
                 <td>${nuevaCarga.semanas}</td>
                 <td>${nuevaCarga.total}</td>
                 <td>
-                    <!-- Si es materia compartida, mostrar los programas vinculados a las materias elegidas -->
-                    ${nuevaCarga.materia_compartida ? `<ul>${nuevaCarga.programas.map(programa => `<li class="list-unstyled">${programa}</li>`).join("")}</ul>` : "No aplica"}
+                    ${nuevaCarga.materia_compartida && nuevaCarga.programas.length
+                    ? nuevaCarga.programas.map(p => `<div>${p}</div>`).join("")
+                    : "No aplica"}
                 </td>
-                <td>
-                    <button type="button" class="btn fs-6 btn-alterno-dark eliminarFila">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
+                <td><button type="button" class="btn fs-6 btn-alterno-dark eliminarFila"><i class="bi bi-trash"></i></button></td>
             `;
             tablaBody.appendChild(fila);
             toggleMensajeVacio();
-
-            // Reseteamos el formulario (no cierra el modal)
             formAgregarCarga.reset();
+
+            // Limpieza de selects múltiples y estado del checkbox
+            materiasDisponibles.innerHTML = "";
+            materiasElegidas.innerHTML = "";
+            checkboxMateriaCompartida.checked = false;
+            toggleCamposCompartidos(false);
         });
 
-        // Función para obtener el nombre del programa por su ID
-        function getProgramById(programaId) {
-            // Obtener los programas desde el JSON pasado al template
-            const programas = JSON.parse(document.getElementById("programasJSON").textContent);
-
-            // Buscar el programa con el ID correspondiente
-            const programa = programas.find(p => p.id === programaId);
-
-            // Devolver el nombre del programa, o null si no lo encuentra
-            return programa ? programa.programa : null;
-        }
-
-        // Eliminar fila
-        tablaBody.addEventListener("click", function (event) {
-            if (event.target.classList.contains("eliminarFila")) {
+        // Eliminar fila de la tabla
+        tablaBody?.addEventListener("click", function (event) {
+            if (event.target.classList.contains("eliminarFila") || event.target.closest(".eliminarFila")) {
                 const fila = event.target.closest("tr");
                 const index = Array.from(tablaBody.children).indexOf(fila);
-
-                // Eliminar del array
                 cargasAcademicas.splice(index, 1);
-
-                // Eliminar del DOM
                 fila.remove();
-
-                // Verificar si hay filas restantes
                 toggleMensajeVacio();
             }
         });
 
-        // Mostrar u ocultar mensaje vacío
+        // Si no hay filas, mostrar el mensaje de vacío
         function toggleMensajeVacio() {
             const mensajeVacio = document.getElementById("mensajeVacio");
-            const tablaBody = document.getElementById("infoAgregadaMatrizBody");
-
-            // Filas que no son el mensaje vacío
             const filasActivas = Array.from(tablaBody.querySelectorAll("tr"))
                 .filter(tr => tr.id !== "mensajeVacio");
-
-            if (filasActivas.length === 0) {
-                mensajeVacio.classList.remove("d-none");
-            } else {
-                mensajeVacio.classList.add("d-none");
-            }
+            mensajeVacio.classList.toggle("d-none", filasActivas.length > 0);
         }
 
-        // Verifica si ya no hay más cargas
+        // Inicializar el mensaje de vacío
         toggleMensajeVacio();
     });
 </script>
