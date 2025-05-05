@@ -65,7 +65,7 @@
 
                                     <div class="col-md-9 mb-2" style="position: relative;">
                                         <label for="fk_docente_input_matriz" class="form-label">Docente <span class="fw-bold fs-4">*</span></label>
-                                        <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
+                                        <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off" required>
                                         <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
                                             {% for docente in docentes_list %}
                                                 <li>
@@ -82,7 +82,7 @@
                                         <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
                                     </div>
 
-                                    <div id="materiasCompartidas" class="container">
+                                    <div id="materiasCompartidas" class="container col-12">
                                         <div class="d-flex justify-content-center align-items-center row">
                                             <div class="col flex-column d-flex justify-content-center align-items-center col-md-5">
                                                 <label for="materias_disponibles" class="form-label">Materias Disponibles</label>
@@ -152,7 +152,7 @@
     </div>
 
 <!-- Script para manejar la lista de materias por programa -->
-{% if materias_list %}
+{% if materias_list and materias_list_all and programas_list%}
     {{ materias_list|json_script:"materiasJSON" }}
 {% endif %}
 
@@ -161,6 +161,10 @@
     {{ materias_list_all|json_script:"materiasAllJSON" }}
 {% endif %}
 
+<!-- Script para manejar la lista de programas -->
+{% if programas_list %}
+    {{ programas_list|json_script:"programasJSON" }}
+{% endif %}
 
 <!-- Script para manejar la selección de materias según el semestre -->
 <script>
@@ -365,8 +369,12 @@
 <!-- Script para agregar la información del formulario a la tabla -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const formAgregarCarga = document.getElementById("formAgregarCargaMatriz");
         const agregarCargaBtn = document.getElementById("agregarCarga");
         const tablaBody = document.getElementById("infoAgregadaMatrizBody");
+
+        // Obtener el JSON de las materias
+        const materiasAll = JSON.parse(document.getElementById("materiasAllJSON").textContent);
 
         // Diccionario de cargas académicas
         let cargasAcademicas = [];
@@ -374,11 +382,18 @@
         agregarCargaBtn.addEventListener("click", function (event) {
             event.preventDefault();
 
+            // Validar el formulario
+            if (!formAgregarCarga.checkValidity()) {
+                formAgregarCarga.reportValidity(); // Muestra los mensajes de error de validación
+                return;
+            }
+
             const semestreSelect = document.getElementById("semestre");
             const materiaSelect = document.getElementById("materia");
             const docenteInput = document.getElementById("fk_docente_input_matriz");
             const horasInput = document.getElementById("horas_semanales");
             const materiaCompartidaCheckbox = document.getElementById("materia_compartida");
+            const materiasElegidasSelect = document.getElementById("materias_elegidas");
 
             const semestreText = semestreSelect.options[semestreSelect.selectedIndex]?.text || '';
             const semestreId = semestreSelect.value;
@@ -387,14 +402,27 @@
             const docenteNombre = docenteInput.value.trim();
             const horasSemanales = horasInput.value;
             const materiaCompartida = materiaCompartidaCheckbox.checked;
+            // Se coloca 16 por defecto, ya que no se puede cambiar el número de semanas. Es un parametro fijo para todas las universidades.
             const semanas = 16;
             const totalHoras = horasSemanales * semanas;
 
-            // Validaciones mínimas
-            if (!semestreId || !materiaId || !docenteNombre || !horasSemanales) {
-                alert("Por favor completa todos los campos obligatorios.");
-                return;
-            }
+            // Obtener los programas asociados a las materias elegidas
+            const programas = [];
+            Array.from(materiasElegidasSelect.selectedOptions).forEach(option => {
+                const materiaIdSeleccionada = parseInt(option.value);
+
+                // Buscar la materia en el JSON
+                const materia = materiasAll.find(m => m.id === materiaIdSeleccionada);
+
+                // Si la materia tiene programa asociado, agregar el nombre del programa a la lista
+                if (materia && materia.fk_programa_id) {
+                    // Buscar el programa correspondiente usando el fk_programa_id
+                    const programa = getProgramById(materia.fk_programa_id);
+                    if (programa) {
+                        programas.push(programa);
+                    }
+                }
+            });
 
             // Crear nueva carga
             const nuevaCarga = {
@@ -406,7 +434,8 @@
                 horas_semanales: horasSemanales,
                 materia_compartida: materiaCompartida,
                 semanas: semanas,
-                total: totalHoras
+                total: totalHoras,
+                programas: programas
             };
 
             // Agregar carga al arreglo
@@ -414,7 +443,7 @@
 
             // Insertar fila en la tabla
             const fila = document.createElement("tr");
-            fila.classList.add("text-center","fs-small");
+            fila.classList.add("text-center", "fs-small");
             fila.innerHTML = `
                 <td>${nuevaCarga.semestre_nombre}</td>
                 <td>${nuevaCarga.materia_nombre}</td>
@@ -424,8 +453,8 @@
                 <td>${nuevaCarga.semanas}</td>
                 <td>${nuevaCarga.total}</td>
                 <td>
-                    <!-- Si es materia compartida, mostrar las materias elegidas - Si no es materia compartida, mostrar "No aplica" -->
-                    ${nuevaCarga.materia_compartida ? `<ul>${Array.from(materiasElegidas.options).map(option => `<li>${option.textContent}</li>`).join("")}</ul>` : "No aplica"}
+                    <!-- Si es materia compartida, mostrar los programas vinculados a las materias elegidas -->
+                    ${nuevaCarga.materia_compartida ? `<ul>${nuevaCarga.programas.map(programa => `<li class="list-unstyled">${programa}</li>`).join("")}</ul>` : "No aplica"}
                 </td>
                 <td>
                     <button type="button" class="btn fs-6 btn-alterno-dark eliminarFila">
@@ -437,8 +466,20 @@
             toggleMensajeVacio();
 
             // Reseteamos el formulario (no cierra el modal)
-            document.getElementById("formAgregarCargaMatriz").reset();
+            formAgregarCarga.reset();
         });
+
+        // Función para obtener el nombre del programa por su ID
+        function getProgramById(programaId) {
+            // Obtener los programas desde el JSON pasado al template
+            const programas = JSON.parse(document.getElementById("programasJSON").textContent);
+
+            // Buscar el programa con el ID correspondiente
+            const programa = programas.find(p => p.id === programaId);
+
+            // Devolver el nombre del programa, o null si no lo encuentra
+            return programa ? programa.programa : null;
+        }
 
         // Eliminar fila
         tablaBody.addEventListener("click", function (event) {

@@ -77,12 +77,20 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     # Obtener la fecha actual
     fecha_actual = timezone.now().date()
 
+    programas = Programa.objects.all().values(
+        'id',
+        'codigo_snies',
+        'programa',
+        'nivel_formacion',
+        'sede',
+        'numero_semestres'
+    )
+
     # Todas las materias
     materias_list_all = Materia.objects.all().values(
         'id',
         'materia',
         'codigo',
-        'horas',
         'fk_semestre_id',
         'fk_programa_id'
     )
@@ -117,6 +125,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
             'semestres_list': semestres_list,
+            'programas_list': list(programas),
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
