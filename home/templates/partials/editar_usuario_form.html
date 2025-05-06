@@ -346,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const imprimirContratoBtn = document.querySelector("button[onclick*='descargarEImprimir']");
 
     if (estadoRevision) {
-        function toggleCamposContrato() {
+        function toggleCamposContrato() { 
             const isContratado = estadoRevision.value === "Contratado";
             camposContrato.forEach(campo => campo.disabled = !isContratado);
             tipoContrato.disabled = !isContratado;

@@ -98,7 +98,7 @@
                                             <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <!-- Botón de descar gar contrato (Habilitar más adelante quitando el d-none) -->
+                                            <!-- Botón de descargar contrato (Habilitar más adelante quitando el d-none) -->
                                             {% if usuario.estado_revision == 'Contratado' and "Director Talento Humano" in user_groups %}
                                                 <a href="{% url 'generar_contrato' usuario_id=usuario.id %}" class="btn btn-primary d-flex justify-content-center align-items-center d-none" target="_blank">
                                                     <i class="bi bi-download"></i>
