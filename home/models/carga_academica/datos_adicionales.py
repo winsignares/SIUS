@@ -1,5 +1,5 @@
 from django.db import models
-
+from ..talento_humano import Usuario
 
 class Periodo(models.Model):
     id = models.AutoField(primary_key=True)
@@ -84,3 +84,55 @@ class Materia(models.Model):
 
     def __str__(self):
         return f" ({self.codigo}) {self.materia} - Créditos: {self.creditos}"
+
+
+class Matricula(models.Model):
+    estudiante = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        limit_choices_to={'fk_rol__rol': 'E'}
+    )
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    fecha_matricula = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.estudiante} matriculado en {self.materia}"
+
+    class Meta:
+        unique_together = ('estudiante', 'materia')
+        verbose_name = "Matrícula"
+        verbose_name_plural = "Matrículas"
+        
+
+
+class Prerrequisito(models.Model):
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='materia_principal')
+    prerequisito = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='materia_requerida')
+
+    def __str__(self):
+        return f"{self.materia.codigo} requiere {self.prerequisito.codigo}"
+
+    class Meta:
+        unique_together = ('materia', 'prerequisito')
+        verbose_name = "Prerrequisito"
+        verbose_name_plural = "Prerrequisitos"
+
+
+
+class MateriaAprobada(models.Model):
+    estudiante = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        limit_choices_to={'fk_rol__rol': 'E'}
+    )
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    fecha_inicio = models.DateField()  
+    fecha_aprobacion = models.DateField()  
+
+    def __str__(self):
+        return f"{self.estudiante} cursó {self.materia} desde {self.fecha_inicio} y la aprobó el {self.fecha_aprobacion}"
+
+    class Meta:
+        unique_together = ('estudiante', 'materia')
+        verbose_name = "Materia Aprobada"
+        verbose_name_plural = "Materias Aprobadas"

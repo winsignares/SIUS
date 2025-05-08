@@ -48,7 +48,8 @@ class Usuario(models.Model):
     ciudad_residencia = models.CharField(max_length=255, null=True, blank=True)
     barrio_residencia = models.CharField(max_length=255, null=True, blank=True)
     sede_donde_labora = models.CharField(max_length=255, null=True, blank=True)
-
+    programa = models.ForeignKey('Programa', on_delete=models.CASCADE, null=True, blank=True)
+    semestre = models.ForeignKey('Semestre', on_delete=models.CASCADE, null=True, blank=True)
     # Enlace a Hoja de Vida
     url_hoja_de_vida = models.URLField(blank=True, null=True)
 

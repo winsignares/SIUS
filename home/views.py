@@ -1237,17 +1237,17 @@ def generar_reporte_excel(request):
         ])
 
     # Generar nombre de archivo personalizado
-    nombre_archivo = f"reporte_snies_{
-        fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
+   # nombre_archivo = f"reporte_snies_{
+        #fecha_creacion}.xlsx" if fecha_creacion else "reporte_snies.xlsx"
 
     # Respuesta HTTP
-    response = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-    response['Content-Disposition'] = f'attachment; filename="{
-        nombre_archivo}"'
-    workbook.save(response)
-    return response
+   # response = HttpResponse(
+     #   content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  #  )
+   # response['Content-Disposition'] = f'attachment; filename="{
+      #  nombre_archivo}"'
+    #workbook.save(response)
+   # return response
 
 
 #
