@@ -2,343 +2,379 @@
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> {% block title %}Inicio - SIUC{% endblock %}</title>
-    <!-- Importar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{% static 'css/style_dashboard.css' %}">
-    <link rel="icon" href="{% static 'images/icon.png' %}" type="image/x-icon">
-</head>
-<body>
-    <div class="d-flex">
-        <!-- Panel lateral -->
-        <div class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
-            {% include "side_panel.html" %}
-        </div>
-
-        <!-- Contenido principal -->
-        <div class="main-container d-flex {% block container_class%} justify-content-center align-items-center {% endblock %} flex-grow-1 col-md-10 overflow-auto">
-
-            {% block content %}
-
-            <div class="p-5 h-auto">
-                <img src="{% static 'images/img_home.png' %}" class="img-fluid h-100" alt="Unicorsalud">
-            </div>
-
-            {% endblock %}
-        </div>
-    </div>
-
-    <!-- Modal para detalles de usuario -->
-    <div class="modal fade" id="detalleUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="detalleUsuarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-forms modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="detalleUsuarioLabel">Detalles del Usuario</h4>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-2" id="detalleUsuarioContent">
-                    <!-- El contenido se cargará dinámicamente -->
-                </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> {% block title %}Inicio - SIUC{% endblock %}</title>
+        <!-- Importar CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="{% static 'css/style_dashboard.css' %}">
+        <link rel="icon" href="{% static 'images/icon.png' %}" type="image/x-icon">
+    </head>
+    <body>
+        <!-- Mensaje para dispositivos móviles -->
+        <div class="mobile-alert">
+            <div class="d-block justify-content-center align-items-center">
+                <img src="{% static 'images/not_available.png' %}" class="img-fluid w-50 h-50 mb-3" alt="Unicorsalud">
+                <h1>¡Atención!</h1>
+                <p>Este sitio web no está disponible para dispositivos móviles.</p>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
-        <div class="modal-dialog {% if "Director Talento Humano" in user_groups %}modal-lg{% else %}modal-xl{% endif %} modal-dialog-scrollable">
-            <div class="modal-forms modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="editarUsuarioLabel">Editar Información del Usuario</h4>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="editarUsuarioContent">
-                    <!-- Contenido dinámico cargado por AJAX -->
+        <div class="d-flex">
+            <!-- Panel lateral -->
+            <div class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
+                {% include "side_panel.html" %}
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="main-container d-flex {% block container_class%} justify-content-center align-items-center {% endblock %} flex-grow-1 col-md-10 overflow-auto">
+
+                {% block content %}
+
+                <div class="p-5 h-auto">
+                    <img src="{% static 'images/img_home.png' %}" class="img-fluid h-100" alt="Unicorsalud">
                 </div>
 
-                <!-- Botón para enviar el formulario -->
-                <div class="modal-footer d-flex justify-content-between align-items-center">
-                    <!-- Nota -->
-                    <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
-
-                    <button type="submit" class="btn btn-primary" form="formEditarUsuario">Guardar Cambios</button>
-                </div>
+                {% endblock %}
             </div>
         </div>
-    </div>
 
-    <!-- Aquí se generarán alertas dinámicas del frontend -->
-    <div id="dynamic-alerts" class="position-fixed bottom-0 end-0 mb-1 me-2"></div>
-
-    <!-- Importar Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-    <!-- Detalles de un usuario -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const detalleModal = document.getElementById('detalleUsuarioModal');
-            detalleModal.addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const userId = button.getAttribute('data-id');
-                const userType = button.getAttribute('data-tipo');
-                const modalContent = document.getElementById('detalleUsuarioContent');
-
-                // Mostrar el spinner mientras se carga la información
-                modalContent.innerHTML = `
-                    <div class="text-center">
-                        <div class="spinner-border text-color-terciario" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
+        <!-- Modal para detalles de usuario -->
+        <div class="modal fade" id="detalleUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="detalleUsuarioLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="detalleUsuarioLabel">Detalles del Usuario</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                `;
-
-                // Hacer una solicitud AJAX para obtener los detalles
-                fetch(`/siuc/dashboard/detalle_usuario/${userType}/${userId}/`)
-                .then(response => response.text())
-                .then(data => {
-                    modalContent.innerHTML = data;
-                })
-                .catch(error => {
-                    modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
-                    console.error('Error:', error);
-                });
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const editarModal = document.getElementById("editarUsuarioModal");
-
-            editarModal.addEventListener("show.bs.modal", function (event) {
-                const button = event.relatedTarget;
-                const userId = button.getAttribute("data-id");
-                const userType = button.getAttribute("data-tipo");
-                const modalContent = document.getElementById("editarUsuarioContent");
-
-                // Mostrar un spinner mientras se cargan los datos
-                modalContent.innerHTML = `
-                    <div class="text-center">
-                        <div class="spinner-border text-color-terciario" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
+                    <div class="modal-body p-2" id="detalleUsuarioContent">
+                        <!-- El contenido se cargará dinámicamente -->
                     </div>
-                `;
+                </div>
+            </div>
+        </div>
 
-                // Realizar la solicitud AJAX para cargar los datos
-                fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`)
+        <div class="modal fade" id="editarUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
+            <div class="modal-dialog {% if "Director Talento Humano" in user_groups %}modal-lg{% else %}modal-xl{% endif %} modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="editarUsuarioLabel">Editar Información del Usuario</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="editarUsuarioContent">
+                        <!-- Contenido dinámico cargado por AJAX -->
+                    </div>
+
+                    <!-- Botón para enviar el formulario -->
+                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                        <!-- Nota -->
+                        <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                        <button type="submit" class="btn btn-primary" form="formEditarUsuario">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aquí se generarán alertas dinámicas del frontend -->
+        <div id="dynamic-alerts" class="position-fixed bottom-0 end-0 mb-1 me-2"></div>
+
+        <!-- Importar Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+        <!-- Detalles de un usuario -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const detalleModal = document.getElementById('detalleUsuarioModal');
+                detalleModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute('data-id');
+                    const userType = button.getAttribute('data-tipo');
+                    const modalContent = document.getElementById('detalleUsuarioContent');
+
+                    // Mostrar el spinner mientras se carga la información
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-color-terciario" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Hacer una solicitud AJAX para obtener los detalles
+                    fetch(`/siuc/dashboard/detalle_usuario/${userType}/${userId}/`)
                     .then(response => response.text())
                     .then(data => {
                         modalContent.innerHTML = data;
                     })
                     .catch(error => {
                         modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
-                        console.error("Error:", error);
+                        console.error('Error:', error);
                     });
+                });
             });
-        });
-    </script>
+        </script>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Manejo de formularios con atributo `data-ajax-submit="true"`
-        document.querySelectorAll("form[data-ajax-submit='true']").forEach(form => {
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-                handleFormSubmission(this, function (data) {
-                    if (form.id === "formInfoPersonal" || form.id === "formInfoPersonal_emp") {
-                        window.usuarioIdCreado = data.usuario_id;
-                        openNextModal();
-                    } else if (form.id === "formDetalleAcademico" || form.id === "formDetalleAcademico_emp") {
-                        agregarFilaATabla("tablaAcademica", data.detalle, ["institucion", "titulo_obtenido", "nivel_academico", "fecha_graduacion"]);
-                        cerrarModalFormulario("formDetalleAcademicoModal");
-                        cerrarModalFormulario("formDetalleAcademicoModal_emp");
-                        redirigirAModal();
-                    } else if (form.id === "formExpLaboral") {
-                        agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
-                        cerrarModalFormulario("formExpLaboralModal");
-                        cerrarModalFormulario("formExpLaboralModal_emp");
-                        redirigirAModal();
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const editarModal = document.getElementById("editarUsuarioModal");
+
+                editarModal.addEventListener("show.bs.modal", function (event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute("data-id");
+                    const userType = button.getAttribute("data-tipo");
+                    const modalContent = document.getElementById("editarUsuarioContent");
+
+                    // Mostrar un spinner mientras se cargan los datos
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-color-terciario" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Realizar la solicitud AJAX para cargar los datos
+                    fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`)
+                        .then(response => response.text())
+                        .then(data => {
+                            modalContent.innerHTML = data;
+                        })
+                        .catch(error => {
+                            modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
+                            console.error("Error:", error);
+                        });
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Manejo de formularios con atributo `data-ajax-submit="true"`
+                document.querySelectorAll("form[data-ajax-submit='true']").forEach(form => {
+                    form.addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        handleFormSubmission(this, function (data) {
+                            if (form.id === "formInfoPersonal" || form.id === "formInfoPersonal_emp") {
+                                window.usuarioIdCreado = data.usuario_id;
+                                openNextModal();
+                            } else if (form.id === "formDetalleAcademico" || form.id === "formDetalleAcademico_emp") {
+                                agregarFilaATabla("tablaAcademica", data.detalle, ["institucion", "titulo_obtenido", "nivel_academico", "fecha_graduacion"]);
+                                cerrarModalFormulario("formDetalleAcademicoModal");
+                                cerrarModalFormulario("formDetalleAcademicoModal_emp");
+                                redirigirAModal();
+                            } else if (form.id === "formExpLaboral") {
+                                agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
+                                cerrarModalFormulario("formExpLaboralModal");
+                                cerrarModalFormulario("formExpLaboralModal_emp");
+                                redirigirAModal();
+                            }
+                        });
+                    });
+                });
+
+                // Botones "Finalizar" para ambos modales
+                const btnFinalizarAspirantes = document.getElementById("btnFinalizar");
+                const btnFinalizarEmpleados = document.getElementById("btnFinalizarEmp");
+
+                // Evento para el botón "Finalizar" de aspirantes
+                if (btnFinalizarAspirantes) {
+                    btnFinalizarAspirantes.addEventListener("click", function () {
+                        cerrarModalFormulario("infoAdicionalModal");
+                        window.location.href = "{% url 'gestion_aspirantes' %}";
+                    });
+                }
+
+                // Evento para el botón "Finalizar" de empleados
+                if (btnFinalizarEmpleados) {
+                    btnFinalizarEmpleados.addEventListener("click", function () {
+                        cerrarModalFormulario("infoAdicionalModal_emp");
+                        window.location.href = "{% url 'gestion_empleados' %}";
+                    });
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const editarUsuarioModal = document.getElementById("editarUsuarioModal");
+
+                // Delegación de eventos para capturar el submit del formulario dinámico
+                editarUsuarioModal.addEventListener("shown.bs.modal", function () {
+                    const formEditarUsuario = document.getElementById("formEditarUsuario");
+
+                    if (formEditarUsuario) {
+                        formEditarUsuario.removeEventListener("submit", submitEditarUsuario);
+                        formEditarUsuario.addEventListener("submit", submitEditarUsuario);
                     }
                 });
             });
-        });
 
-        // Botones "Finalizar" para ambos modales
-        const btnFinalizarAspirantes = document.getElementById("btnFinalizar");
-        const btnFinalizarEmpleados = document.getElementById("btnFinalizarEmp");
+            // Función mejorada para manejar el envío del formulario y recargar correctamente la vista
+            function submitEditarUsuario(e) {
+                e.preventDefault();
+                handleFormSubmission(this, function (data) {
+                    showAlert(data.message, "success");
+                    cerrarModalFormulario("editarUsuarioModal");
 
-        // Evento para el botón "Finalizar" de aspirantes
-        if (btnFinalizarAspirantes) {
-            btnFinalizarAspirantes.addEventListener("click", function () {
-                cerrarModalFormulario("infoAdicionalModal");
-                window.location.href = "{% url 'gestion_aspirantes' %}";
-            });
-        }
+                    // Detectar la vista actual para redirigir correctamente
+                    const currentPath = document.location.pathname;
 
-        // Evento para el botón "Finalizar" de empleados
-        if (btnFinalizarEmpleados) {
-            btnFinalizarEmpleados.addEventListener("click", function () {
-                cerrarModalFormulario("infoAdicionalModal_emp");
-                window.location.href = "{% url 'gestion_empleados' %}";
-            });
-        }
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const editarUsuarioModal = document.getElementById("editarUsuarioModal");
-
-        // Delegación de eventos para capturar el submit del formulario dinámico
-        editarUsuarioModal.addEventListener("shown.bs.modal", function () {
-            const formEditarUsuario = document.getElementById("formEditarUsuario");
-
-            if (formEditarUsuario) {
-                formEditarUsuario.removeEventListener("submit", submitEditarUsuario);
-                formEditarUsuario.addEventListener("submit", submitEditarUsuario);
+                    setTimeout(() => {
+                        if (currentPath.includes("empleados")) {
+                            window.location.href = "{% url 'gestion_empleados' %}";
+                        } else if (currentPath.includes("aspirantes")) {
+                            window.location.href = "{% url 'gestion_aspirantes' %}";
+                        } else {
+                            window.location.reload();
+                        }
+                    }, 1500);
+                });
             }
-        });
-    });
 
-    // Función mejorada para manejar el envío del formulario y recargar correctamente la vista
-    function submitEditarUsuario(e) {
-        e.preventDefault();
-        handleFormSubmission(this, function (data) {
-            showAlert(data.message, "success");
-            cerrarModalFormulario("editarUsuarioModal");
+            // Función para manejar el envío de formularios vía AJAX
+            function handleFormSubmission(form, onSuccess = null) {
+                let formData = new FormData(form);
+                let actionUrl = form.getAttribute("action");
 
-            // Detectar la vista actual para redirigir correctamente
-            const currentPath = document.location.pathname;
-
-            setTimeout(() => {
-                if (currentPath.includes("empleados")) {
-                    window.location.href = "{% url 'gestion_empleados' %}";
-                } else if (currentPath.includes("aspirantes")) {
-                    window.location.href = "{% url 'gestion_aspirantes' %}";
-                } else {
-                    window.location.reload();
+                // Si el formulario está relacionado con el usuario, añade el usuarioId
+                if (window.usuarioIdCreado && formData.has("usuario_id")) {
+                    formData.set("usuario_id", window.usuarioIdCreado);
                 }
-            }, 1500);
-        });
-    }
 
-    // Función para manejar el envío de formularios vía AJAX
-    function handleFormSubmission(form, onSuccess = null) {
-        let formData = new FormData(form);
-        let actionUrl = form.getAttribute("action");
+                fetch(actionUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': form.querySelector("[name=csrfmiddlewaretoken]").value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showAlert(data.message, data.status === "success" ? "success" : "error");
 
-        // Si el formulario está relacionado con el usuario, añade el usuarioId
-        if (window.usuarioIdCreado && formData.has("usuario_id")) {
-            formData.set("usuario_id", window.usuarioIdCreado);
-        }
-
-        fetch(actionUrl, {
-            method: "POST",
-            body: formData,
-            headers: {
-                'X-CSRFToken': form.querySelector("[name=csrfmiddlewaretoken]").value,
-                'X-Requested-With': 'XMLHttpRequest'
+                    // Ejecutar función de éxito si la respuesta es correcta
+                    if (data.status === "success" && typeof onSuccess === "function") {
+                        onSuccess(data);
+                    }
+                })
+                .catch(error => {
+                    showAlert("Error en el servidor, intenta de nuevo.", "error");
+                    console.error("Error:", error);
+                });
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            showAlert(data.message, data.status === "success" ? "success" : "error");
 
-            // Ejecutar función de éxito si la respuesta es correcta
-            if (data.status === "success" && typeof onSuccess === "function") {
-                onSuccess(data);
+            // Función para mostrar alertas sin duplicarlas
+            function showAlert(message, type) {
+                let alertClass = type === "success" ? "alert-success" : "alert-danger";
+                let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+
+                let alertContainer = document.getElementById("dynamic-alerts");
+
+                // Limpiar alertas anteriores antes de agregar una nueva
+                alertContainer.replaceChildren();
+
+                let alertHtml = `
+                    <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
+                        <i class="bi ${icon}"></i> ${message}
+                    </div>
+                `;
+
+                alertContainer.insertAdjacentHTML("beforeend", alertHtml);
+
+                // Ocultar la alerta automáticamente después de 3 segundos
+                setTimeout(() => {
+                    alertContainer.firstElementChild?.remove();
+                }, 3000);
             }
-        })
-        .catch(error => {
-            showAlert("Error en el servidor, intenta de nuevo.", "error");
-            console.error("Error:", error);
-        });
-    }
 
-    // Función para mostrar alertas sin duplicarlas
-    function showAlert(message, type) {
-        let alertClass = type === "success" ? "alert-success" : "alert-danger";
-        let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
-
-        let alertContainer = document.getElementById("dynamic-alerts");
-
-        // Limpiar alertas anteriores antes de agregar una nueva
-        alertContainer.replaceChildren();
-
-        let alertHtml = `
-            <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
-                <i class="bi ${icon}"></i> ${message}
-            </div>
-        `;
-
-        alertContainer.insertAdjacentHTML("beforeend", alertHtml);
-
-        // Ocultar la alerta automáticamente después de 3 segundos
-        setTimeout(() => {
-            alertContainer.firstElementChild?.remove();
-        }, 3000);
-    }
-
-    // Función para cerrar un modal por ID
-    function cerrarModalFormulario(modalId) {
-        const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-        modal?.hide();
-    }
-
-    // Función para abrir el modal de información adicional
-    function redirigirAModal() {
-        // Determinar qué modal abrir según la página actual
-        let modalId;
-        if (document.location.pathname.includes("empleados")) {
-            modalId = "infoAdicionalModal_emp";
-        } else if (document.location.pathname.includes("aspirantes")) {
-            modalId = "infoAdicionalModal";
-        }
-
-        if (modalId) {
-            const modalElement = document.getElementById(modalId);
-            if (modalElement) {
-                const infoAdicionalModal = new bootstrap.Modal(modalElement);
-                infoAdicionalModal.show();
-            } else {
-                console.error(`Modal con ID ${modalId} no encontrado.`);
+            // Función para cerrar un modal por ID
+            function cerrarModalFormulario(modalId) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                modal?.hide();
             }
-        } else {
-            console.error("No se pudo determinar el modal a abrir.");
-        }
-    }
 
-    // Función para abrir el siguiente modal después de crear un usuario
-    function openNextModal() {
-        // Determinar qué modal cerrar según la página actual
-        let modalIdToClose;
-        if (document.location.pathname.includes("empleados")) {
-            modalIdToClose = "infoPersonalModal_emp";
-        } else if (document.location.pathname.includes("aspirantes")) {
-            modalIdToClose = "infoPersonalModal";
-        }
+            // Función para abrir el modal de información adicional
+            function redirigirAModal() {
+                // Determinar qué modal abrir según la página actual
+                let modalId;
+                if (document.location.pathname.includes("empleados")) {
+                    modalId = "infoAdicionalModal_emp";
+                } else if (document.location.pathname.includes("aspirantes")) {
+                    modalId = "infoAdicionalModal";
+                }
 
-        if (modalIdToClose) {
-            cerrarModalFormulario(modalIdToClose);
-            redirigirAModal();
-        } else {
-            console.error("No se pudo determinar el modal a cerrar.");
-        }
-    }
+                if (modalId) {
+                    const modalElement = document.getElementById(modalId);
+                    if (modalElement) {
+                        const infoAdicionalModal = new bootstrap.Modal(modalElement);
+                        infoAdicionalModal.show();
+                    } else {
+                        console.error(`Modal con ID ${modalId} no encontrado.`);
+                    }
+                } else {
+                    console.error("No se pudo determinar el modal a abrir.");
+                }
+            }
 
-    // Función para agregar una nueva fila a una tabla
-    function agregarFilaATabla(tablaId, data, columnas) {
-        const tabla = document.getElementById(tablaId);
-        let nuevaFila = "<tr>";
+            // Función para abrir el siguiente modal después de crear un usuario
+            function openNextModal() {
+                // Determinar qué modal cerrar según la página actual
+                let modalIdToClose;
+                if (document.location.pathname.includes("empleados")) {
+                    modalIdToClose = "infoPersonalModal_emp";
+                } else if (document.location.pathname.includes("aspirantes")) {
+                    modalIdToClose = "infoPersonalModal";
+                }
 
-        columnas.forEach(columna => {
-            nuevaFila += `<td>${data[columna]}</td>`;
-        });
+                if (modalIdToClose) {
+                    cerrarModalFormulario(modalIdToClose);
+                    redirigirAModal();
+                } else {
+                    console.error("No se pudo determinar el modal a cerrar.");
+                }
+            }
 
-        nuevaFila += "<td><!-- Acciones futuras --></td></tr>";
-        tabla.insertAdjacentHTML("beforeend", nuevaFila);
-    }
-</script>
-</body>
+            // Función para agregar una nueva fila a una tabla
+            function agregarFilaATabla(tablaId, data, columnas) {
+                const tabla = document.getElementById(tablaId);
+                let nuevaFila = "<tr>";
+
+                columnas.forEach(columna => {
+                    nuevaFila += `<td>${data[columna]}</td>`;
+                });
+
+                nuevaFila += "<td><!-- Acciones futuras --></td></tr>";
+                tabla.insertAdjacentHTML("beforeend", nuevaFila);
+            }
+        </script>
+        <script>
+            // Función para verificar el ancho de la pantalla
+            function checkScreenWidth() {
+                const mobileAlert = document.querySelector('.mobile-alert');
+                const mainContent = document.querySelector('body > section');
+
+                if (window.innerWidth <= 768) {
+                    // Pantalla pequeña (móvil)
+                    mobileAlert.style.display = 'flex';
+                    mainContent.style.display = 'none';
+                } else if (window.innerWidth > 768 && window.innerWidth <= 1024) {
+                    // Pantalla mediana (tablet)
+                    mobileAlert.style.display = 'flex';
+                    mainContent.style.display = 'none';
+                } else {
+                    // Pantalla grande (computadora)
+                    mobileAlert.style.display = 'none';
+                    mainContent.style.display = 'block';
+                }
+            }
+
+            // Ejecutar la función al cargar la página
+            window.addEventListener('load', checkScreenWidth);
+
+            // Ejecutar la función al redimensionar la ventana
+            window.addEventListener('resize', checkScreenWidth);
+        </script>
+    </body>
 </html>

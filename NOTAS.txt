@@ -28,6 +28,7 @@ DIRECTORES DE PROGRAMA
 	PENDIENTES:
 	1. Definir como se va a colocar la dedicación del docente (Tiempo Completo - Medio Tiempo - Hora Cátedra)
 	2. Guardar la información de la tabla en la base de datos
+	3. Calcular el valor a pagar por la carga (total de horas x valor a pagar del ultimo nivel de estudio del docente)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -49,3 +50,109 @@ Aprobación de cargas académicas
 Asignación de funciones sustantivas
 
 Reportes
+
+
+const periodoId = document.getElementById('periodoActualId').value;
+const docenteId = document.getElementById("fk_docente_dropdown_matriz").querySelector(".dropdown-item.active")?.getAttribute("data-value") || "";
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+VALOR A pagar
+
+Si es hora catedra:
+
+numero de horas * valor a pagar por el ultimo nivel de estudio del año
+
+Si es TC - MT:
+
+
+
+const nuevaCarga = {
+                periodo_id: parseInt(periodo),
+                semestre_id: semestreId,
+                semestre_nombre: semestreText,
+                materia_id: parseInt(materiaId),
+                materia_nombre: materiaText,
+                docente_id: parseInt(docenteId),
+                docente_nombre: docenteNombre,
+                horas_semanales: horasSemanales,
+                materia_compartida: materiaCompartida,
+                total: totalHoras,
+                programas: programasSeleccionados
+            };
+
+
+const guardarTodoBtn = document.getElementById("guardarTodo");
+
+// Función para guardar todo
+        guardarTodoBtn?.addEventListener("click", async function () {
+            if (!cargasAcademicas.length) {
+                alert("No hay cargas académicas para guardar.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/siuc/dashboard/matriz/guardar_matriz/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ cargas: cargasAcademicas })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message);
+                    // Limpiar tabla y estado
+                    cargasAcademicas = [];
+                    tablaBody.innerHTML = "";
+                    toggleMensajeVacio();
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                alert("Ocurrió un error inesperado.");
+            }
+        });
+
+// Función para obtener el valor de una cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+
+                // ¿Este cookie coincide con el nombre buscado?
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+// Si no hay filas, mostrar el mensaje de vacío
+        function toggleMensajeVacio() {
+            const mensajeVacio = document.getElementById("mensajeVacio");
+            const filasActivas = Array.from(tablaBody.querySelectorAll("tr"))
+                .filter(tr => tr.id !== "mensajeVacio");
+
+            // Mostrar u ocultar el mensaje de vacío
+            mensajeVacio.classList.toggle("d-none", filasActivas.length > 0);
+
+            // Deshabilitar el botón de guardar si no hay filas activas
+            if (filasActivas.length === 0) {
+                guardarTodoBtn.disabled = true;
+            } else {
+                guardarTodoBtn.disabled = false;
+            }
+        }

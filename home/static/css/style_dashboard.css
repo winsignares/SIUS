@@ -191,6 +191,11 @@ body {
     font-size: 0.79rem;
 }
 
+#guardarTodo:disabled {
+    background-color: var(--color-cuaternario) !important;
+    cursor: not-allowed;
+}
+
 /*
 --------------------------------------- GESTIÓN ASPIRTANTES Y EMPLEADOS ---------------------------------------
 */
@@ -378,4 +383,50 @@ table.table tbody td {
 
 .card-body .fs-small {
     font-size: 0.79rem;
+}
+
+/*
+--------------------------------------- MENSAJE PARA DISPOSITIVOS MÓVILES Y TABLETS ---------------------------------------
+*/
+.mobile-alert {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-secundario);
+    z-index: 1000;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    visibility: hidden;
+}
+
+.mobile-alert h1 {
+    font-size: 2.5rem;
+    color: var(--color-terciario);
+    margin-bottom: 1rem;
+
+}
+
+.mobile-alert p {
+    font-size: 1.8rem;
+    color: var(--color-primario);
+}
+
+@media (max-width: 1024px) {
+
+    /* Ocultar todo el contenido principal */
+    body>section {
+        display: none;
+    }
+
+    /* Mostrar el mensaje para dispositivos móviles */
+    .mobile-alert {
+        visibility: visible;
+        display: flex;
+    }
 }

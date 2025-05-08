@@ -129,7 +129,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
-            'docentes_list': Usuario.objects.filter(fk_rol_id=4, estado_revision='Contratado'),
+            'docentes_list': Usuario.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
             'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
         })
@@ -919,9 +919,7 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
             usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
             usuario.fk_modificado_por = request.user
-
-            usuario.fk_modificado_por = request.user
-
+            
             if rol_id := request.POST.get("fk_rol"):
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
             if tipo_documento_id := request.POST.get("fk_tipo_documento"):
@@ -1064,6 +1062,13 @@ def gestion_matriz(request):
     return render(request, 'matriz.html', contexto)
 
 
+def calcular_valor_a_pagar(horas_semanales, total_horas, fk_docente_asignado):
+    """
+    Calcula el valor a pagar según las horas semanales y el total de horas.
+    """
+    ultimo_nivel_estudio = Usuario.objects.get(id=fk_docente_asignado).fk_ultimo_nivel_estudio
+    return
+
 @login_required
 @csrf_exempt
 def guardar_matriz(request):
@@ -1075,16 +1080,33 @@ def guardar_matriz(request):
         data = json.loads(request.body)
 
         try:
-            for carga in data[carga]:
-                CargaAcademica.objects.create(
-                )
+            for carga in data["cargas"]:
+                print(carga)
+                # CargaAcademica.objects.create(
+                #     fk_periodo = carga["fk_periodo"],
+                #     fk_programa = carga["fk_programa"],
+                #     fk_semestre = carga["fk_semestre"],
+                #     fk_materia = carga["fk_materia"],
+                #     fk_docente_asignado = carga["fk_docente_asignado"],
+                #     horas_semanales = carga["horas_semanales"],
+                #     total_horas = carga["total_horas"],
+                #     materia_compartida = carga["materia_compartida"],
+                #     fk_creado_por = request.user,
+                #     fecha_creacion = datetime.now(),
+
+                #     valor_a_pagar = calcular_valor_a_pagar(
+                #         carga["horas_semanales"],
+                #         carga["total_horas"],
+                #         carga["fk_docente_asignado"]
+                #     )
+                # )
             return JsonResponse({
                 'status': 'success',
                 'message': 'Carga académica agregada correctamente.'})
         except IntegrityError:
             return JsonResponse({
                 'status': 'error',
-                'message': 'Error de integridad al agregar la carga académica. Revise los datos ingresados.'
+                'message': 'Error al agregar la carga académica. Revise los datos ingresados.'
             }, status=400)
         except Exception as e:
             print(e)

@@ -2,6 +2,7 @@ from django.db import models
 from .roles import Rol
 from .tipo_documentos import TipoDocumento
 from .datos_adicionales import EPS
+from .niveles_academicos import NivelAcademico
 from django.conf import settings
 
 
@@ -38,7 +39,7 @@ class Usuario(models.Model):
     telefono_fijo = models.CharField(max_length=15, null=True, blank=True)
     celular = models.CharField(max_length=15, null=True, blank=True)
     estado_civil = models.CharField(max_length=255, null=True, blank=True)
-    ultimo_nivel_estudio = models.CharField(max_length=255, null=True, blank=True)
+    fk_ultimo_nivel_estudio = models.ForeignKey(NivelAcademico, on_delete=models.CASCADE, null=True, blank=True)
     fk_eps = models.ForeignKey(EPS, on_delete=models.CASCADE, null=True, blank=True)
     arl = models.CharField(max_length=255, null=True, blank=True)
     afp = models.CharField(max_length=255, null=True, blank=True)

@@ -57,7 +57,7 @@ urlpatterns = [
 
     path("siuc/dashboard/carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"),
     path("siuc/dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),
-    path("siuc/dashboard/matriz/guardar_cargas/", views.guardar_matriz, name="guardar_matriz"),
+    path("siuc/dashboard/matriz/guardar_matriz/", views.guardar_matriz, name="guardar_matriz"),
 
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
 ]

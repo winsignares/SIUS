@@ -418,7 +418,7 @@
                                     <select class="form-select" id="ultimo_nivel_estudio_emp" name="ultimo_nivel_estudio" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for nivel in niveles_academicos_list %}
-                                            <option value="{{ nivel.nombre }}">{{ nivel.nombre }}</option>
+                                            <option value="{{ nivel.id }}">{{ nivel.nombre }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
