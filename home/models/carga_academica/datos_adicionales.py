@@ -99,6 +99,7 @@ class Matricula(models.Model):
         return f"{self.estudiante} matriculado en {self.materia}"
 
     class Meta:
+        db_table = 'Matricula'
         unique_together = ('estudiante', 'materia')
         verbose_name = "Matrícula"
         verbose_name_plural = "Matrículas"
@@ -113,6 +114,7 @@ class Prerrequisito(models.Model):
         return f"{self.materia.codigo} requiere {self.prerequisito.codigo}"
 
     class Meta:
+        db_table = 'Prerrequisito'
         unique_together = ('materia', 'prerequisito')
         verbose_name = "Prerrequisito"
         verbose_name_plural = "Prerrequisitos"
@@ -133,6 +135,7 @@ class MateriaAprobada(models.Model):
         return f"{self.estudiante} cursó {self.materia} desde {self.fecha_inicio} y la aprobó el {self.fecha_aprobacion}"
 
     class Meta:
+        db_table = 'MateriaAprobada'
         unique_together = ('estudiante', 'materia')
         verbose_name = "Materia Aprobada"
         verbose_name_plural = "Materias Aprobadas"
