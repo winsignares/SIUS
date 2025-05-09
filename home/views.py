@@ -65,8 +65,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     except Usuario.DoesNotExist:
         usuario_log = None
 
-    # Obtener el programa del usuario logueado (Almacenado en first_name)
-    programa_usuario = Programa.objects.filter(programa=usuario_autenticado.first_name).first()
+    # Obtener el programa del usuario logueado
+    programa_usuario = Programa.objects.filter(auth_user=usuario_autenticado.id).first()
 
     # Obtener el número de semestres del programa
     num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
@@ -109,6 +109,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     contexto = {
         'usuario_log': usuario_log,
         'user_groups': grupos_usuario,
+        'programa_usuario': programa_usuario
     }
 
     # Incluir datos adicionales si es necesario para otras funciones
@@ -1082,24 +1083,32 @@ def guardar_matriz(request):
         try:
             for carga in data["cargas"]:
                 print(carga)
-                # CargaAcademica.objects.create(
-                #     fk_periodo = carga["fk_periodo"],
-                #     fk_programa = carga["fk_programa"],
-                #     fk_semestre = carga["fk_semestre"],
-                #     fk_materia = carga["fk_materia"],
-                #     fk_docente_asignado = carga["fk_docente_asignado"],
-                #     horas_semanales = carga["horas_semanales"],
-                #     total_horas = carga["total_horas"],
-                #     materia_compartida = carga["materia_compartida"],
-                #     fk_creado_por = request.user,
-                #     fecha_creacion = datetime.now(),
+                # Instanciar los datos enviados desde el front
+                fk_periodo_inst = Periodo.objects.get(id=carga["fk_periodo"])
+                fk_programa_inst = Programa.objects.get(id=carga["fk_programa"])
+                fk_semestre_inst = Semestre.objects.get(id=carga["fk_semestre"])
+                fk_materia_inst = Materia.objects.get(id=carga["fk_materia"])
+                fk_docente_asignado_inst = Usuario.objects.get(id=carga["fk_docente_asignado"])
 
-                #     valor_a_pagar = calcular_valor_a_pagar(
-                #         carga["horas_semanales"],
-                #         carga["total_horas"],
-                #         carga["fk_docente_asignado"]
-                #     )
-                # )
+                # Guardar los datos en la DB
+                CargaAcademica.objects.create(
+                    fk_periodo = fk_periodo_inst,
+                    fk_programa = fk_programa_inst,
+                    fk_semestre = fk_semestre_inst,
+                    fk_materia = fk_materia_inst,
+                    fk_docente_asignado = fk_docente_asignado_inst,
+                    horas_semanales = carga["horas_semanales"],
+                    total_horas = carga["total_horas"],
+                    materia_compartida = carga["materia_compartida"],
+                    # fk_creado_por = request.user,
+                    fecha_creacion = datetime.now(),
+
+                    # valor_a_pagar = calcular_valor_a_pagar(
+                    #     carga["horas_semanales"],
+                    #     carga["total_horas"],
+                    #     carga["fk_docente_asignado"]
+                    # )
+                )
             return JsonResponse({
                 'status': 'success',
                 'message': 'Carga académica agregada correctamente.'})

@@ -16,7 +16,13 @@
                 {% else %}
                     <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
                 {% endif %}
-                <h5 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h5>
+                <h5 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span>
+                    {% if programa_usuario %}
+                        {{ programa_usuario.programa }}
+                    {% else %}
+                        No se puede obtener la información
+                    {% endif %}
+                </h5>
             </div>
             <div class="vr"></div>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarCargaModal">
@@ -44,6 +50,8 @@
                                 <div class="row px-3">
                                     <!-- Campos ocultos -->
                                     <input type="hidden" id="periodoActualId" value="{{ periodo_actual.id }}">
+                                    <input type="hidden" id="programaId" value="{{ programa_usuario.id }}">
+
 
                                     <!-- Campos requeridos al coordinador de programa -->
                                     <div class="col-md-5 mb-2">
@@ -233,6 +241,8 @@
         });
 
         // Filtro de selects con input (docente)
+        let docenteId = ""; // Aquí se almacena el id del docente seleccionado en el dropdown
+
         function setupDropdownFilter(inputId, dropdownId) {
             const inputElement = document.getElementById(inputId);
             const dropdownElement = document.getElementById(dropdownId);
@@ -253,15 +263,17 @@
                 }
             });
 
-            // Ocultar el dropdown al hacer clic fuera de él
+            // Mostrar en el input al docente selccionado
             dropdownElement.addEventListener("click", function (event) {
                 if (event.target.matches(".dropdown-item")) {
                     const selectedText = event.target.textContent.trim();
+                    docenteId = event.target.getAttribute("data-value");
                     inputElement.value = selectedText;
                     dropdownElement.style.display = "none";
                 }
             });
 
+            // Ocultar el dropdown al hacer clic fuera de él
             document.addEventListener("click", function (event) {
                 if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
                     dropdownElement.style.display = "none";
@@ -363,6 +375,7 @@
 
         // Agregar info del formulario a la tabla
         const formAgregarCarga = document.getElementById("formAgregarCargaMatriz");
+        const guardarTodoBtn = document.getElementById("guardarTodo");
         const agregarCargaBtn = document.getElementById("agregarCarga");
         const tablaBody = document.getElementById("infoAgregadaMatrizBody");
         let cargasAcademicas = [];
@@ -378,11 +391,11 @@
             }
 
             const periodoId = document.getElementById('periodoActualId').value;
+            const programaId = document.getElementById('programaId').value;
             const semestreText = semestreSelect.options[semestreSelect.selectedIndex]?.text || '';
             const semestreId = semestreSelect.value;
             const materiaText = materiaSelect.options[materiaSelect.selectedIndex]?.text || '';
             const materiaId = materiaSelect.value;
-            const docenteId = document.getElementById("fk_docente_dropdown_matriz").querySelector(".dropdown-item.active")?.getAttribute("data-value") || "";
             const docenteNombre = document.getElementById("fk_docente_input_matriz")?.value.trim() || "";
             const horasSemanales = horasInput.value;
             const materiaCompartida = checkboxMateriaCompartida.checked;
@@ -404,19 +417,16 @@
             });
 
             const nuevaCarga = {
-                fk_periodo_id: parseInt(periodoId),
-                fk_semestre_id: semestreId,
-                semestre_nombre: semestreText,
-                fk_materia_id: materiaId,
-                materia_nombre: materiaText,
-                docente_nombre: docenteNombre,
-                fk_docente_id: docenteId,
-                horas_semanales: horasSemanales,
+                // Para la BD
+                fk_periodo: parseInt(periodoId),
+                fk_programa:parseInt(programaId),
+                fk_semestre: parseInt(semestreId),
+                fk_materia: parseInt(materiaId),
+                fk_docente_asignado: parseInt(docenteId),
+                horas_semanales: parseInt(horasSemanales),
+                total_horas: parseInt(totalHoras),
                 materia_compartida: materiaCompartida,
-                semanas: semanas,
-                total: totalHoras,
-                programas: programasSeleccionados,
-                programas_id: programasId,
+                programas_seleccionados_id: programasId
             };
 
             console.log("Nueva carga:", nuevaCarga);
@@ -428,16 +438,16 @@
             const fila = document.createElement("tr");
             fila.classList.add("text-center", "fs-small");
             fila.innerHTML = `
-                <td>${nuevaCarga.semestre_nombre}</td>
-                <td>${nuevaCarga.materia_nombre}</td>
-                <td>${nuevaCarga.docente_nombre}</td>
+                <td>${ semestreText }</td>
+                <td>${ materiaText }</td>
+                <td>${ docenteNombre }</td>
                 <td>Tiempo Completo</td>
-                <td>${nuevaCarga.horas_semanales}</td>
-                <td>${nuevaCarga.semanas}</td>
-                <td>${nuevaCarga.total}</td>
+                <td>${ horasSemanales }</td>
+                <td>${ semanas }</td>
+                <td>${ totalHoras }</td>
                 <td>
-                    ${nuevaCarga.materia_compartida && nuevaCarga.programas.length
-                    ? nuevaCarga.programas.map(p => `<div>${p}</div>`).join("")
+                    ${materiaCompartida && programasSeleccionados.length
+                    ? programasSeleccionados.map(p => `<div>${p}</div>`).join("")
                     : "No aplica"}
                 </td>
                 <td><button type="button" class="btn fs-6 btn-alterno-dark eliminarFila"><i class="bi bi-trash"></i></button></td>
@@ -484,13 +494,8 @@
         // Inicializar el mensaje de vacío
         toggleMensajeVacio();
 
-        // Función para guardar todo
+        // Enviar las cargas al backend para guardar en la BD
         guardarTodoBtn?.addEventListener("click", async function () {
-            if (!cargasAcademicas.length) {
-                alert("No hay cargas académicas para guardar.");
-                return;
-            }
-
             try {
                 const response = await fetch("/siuc/dashboard/matriz/guardar_matriz/", {
                     method: "POST",

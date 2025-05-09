@@ -14,7 +14,7 @@
     </head>
     <body>
         <!-- Mensaje para dispositivos móviles -->
-        <div class="mobile-alert">
+        <div class="mobile-alert" id="alertaLogin">
             <div class="d-block justify-content-center align-items-center">
                 <img src="{% static 'images/not_available.png' %}" class="img-fluid w-50 h-50 mb-3" alt="Vista No disponible">
                 <h1>¡Atención!</h1>
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Contenido principal -->
-        <section class="vh-100">
+        <section class="vh-100" id="contenidoLogin">
             <div class="container-fluid h-custom">
                 <div class="row d-flex align-items-center h-100">
                     <!-- Imagen -->
@@ -108,8 +108,8 @@
         <script>
             // Función para verificar el ancho de la pantalla
             function checkScreenWidth() {
-                const mobileAlert = document.querySelector('.mobile-alert');
-                const mainContent = document.querySelector('body > section');
+                const mobileAlert = document.getElementById('alertaLogin');
+                const mainContent = document.getElementById('contenidoLogin');
 
                 if (window.innerWidth <= 768) {
                     // Pantalla pequeña (móvil)
@@ -132,6 +132,5 @@
             // Ejecutar la función al redimensionar la ventana
             window.addEventListener('resize', checkScreenWidth);
         </script>
-
     </body>
 </html>
