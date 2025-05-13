@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Programas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h2 class="mb-4 text-dark">Gestión de Programas Académicos</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header {{ programa|default_if_none:''|yesno:'bg-warning,bg-dark' }} text-white">
+            {{ programa|default_if_none:''|yesno:'Editar programa,Agregar nuevo programa' }}
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                {% if programa %}
+                    <input type="hidden" name="id_programa" value="{{ programa.id }}">
+                {% endif %}
+                
+                <div class="row mb-3">
+                    <label for="codigo_snies" class="col-sm-2 col-form-label">Código SNIES:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="codigo_snies" id="codigo_snies" class="form-control"
+                               value="{{ programa.codigo_snies|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="programa" class="col-sm-2 col-form-label">Nombre del Programa:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="programa" id="programa" class="form-control"
+                               value="{{ programa.programa|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="nivel_formacion" class="col-sm-2 col-form-label">Nivel de Formación:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="nivel_formacion" id="nivel_formacion" class="form-control"
+                               value="{{ programa.nivel_formacion|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="sede" class="col-sm-2 col-form-label">Sede:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="sede" id="sede" class="form-control"
+                               value="{{ programa.sede|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="numero_semestres" class="col-sm-2 col-form-label">Número de Semestres:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="numero_semestres" id="numero_semestres" class="form-control"
+                               value="{{ programa.numero_semestres|default:'' }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark">
+                    {{ programa|default_if_none:''|yesno:'Actualizar,Guardar' }}
+                </button>
+                {% if programa %}
+                    <a href="{% url 'gestion_programa' %}" class="btn btn-secondary">Cancelar</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-dark text-white">Listado de Programas</div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código SNIES</th>
+                    <th>Programa</th>
+                    <th>Nivel</th>
+                    <th>Sede</th>
+                    <th>Semestres</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for p in programas %}
+                    <tr>
+                        <td>{{ p.id }}</td>
+                        <td>{{ p.codigo_snies }}</td>
+                        <td>{{ p.programa }}</td>
+                        <td>{{ p.nivel_formacion }}</td>
+                        <td>{{ p.sede }}</td>
+                        <td>{{ p.numero_semestres }}</td>
+                        <td>
+                            <a href="{% url 'editar_programa' p.id %}" class="btn btn-dark btn-sm">Editar</a>
+                            <a href="{% url 'eliminar_programa' p.id %}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Seguro que deseas eliminar este programa?');">Eliminar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7">No hay programas registrados aún.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

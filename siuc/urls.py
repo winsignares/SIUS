@@ -59,7 +59,9 @@ urlpatterns = [
     path("siuc/dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),
     path("siuc/dashboard/matriz/guardar_cargas/", views.guardar_matriz, name="guardar_matriz"),
 
-    path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')
+    path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion'),
+
+    path('admisiones/', include('admisiones.urls')),
 ]
 
 # Error 404 personalizado

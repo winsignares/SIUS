@@ -122,20 +122,52 @@ class Prerrequisito(models.Model):
 
 
 class MateriaAprobada(models.Model):
+    ESTADO_OPCIONES = [
+        ('aprobada', 'Aprobada'),
+        ('reprobada', 'Reprobada'),
+    ]
+
     estudiante = models.ForeignKey(
         Usuario,
         on_delete=models.CASCADE,
         limit_choices_to={'fk_rol__rol': 'E'}
     )
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
-    fecha_inicio = models.DateField()  
-    fecha_aprobacion = models.DateField()  
+    fecha_inicio = models.DateField()
+    fecha_finalizacion = models.DateField()
+    estado_aprobacion = models.CharField(max_length=10, choices=ESTADO_OPCIONES)
 
     def __str__(self):
-        return f"{self.estudiante} cursó {self.materia} desde {self.fecha_inicio} y la aprobó el {self.fecha_aprobacion}"
+        return f"{self.estudiante} cursó {self.materia} desde {self.fecha_inicio} hasta {self.fecha_finalizacion} - Estado: {self.estado_aprobacion}"
 
     class Meta:
-        db_table = 'MateriaAprobada'
+        db_table = 'materia_cursada'
         unique_together = ('estudiante', 'materia')
-        verbose_name = "Materia Aprobada"
-        verbose_name_plural = "Materias Aprobadas"
+        verbose_name = "Materia Cursada"
+        verbose_name_plural = "Materias Cursadas"
+
+class HistorialAcademico(models.Model):
+    estudiante = models.ForeignKey(Usuario, on_delete=models.CASCADE, limit_choices_to={'fk_rol__rol': 'E'})
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    nota = models.DecimalField(max_digits=4, decimal_places=2)
+    periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE)
+    estado = models.CharField(max_length=50, choices=[('Aprobado', 'Aprobado'), ('Reprobado', 'Reprobado')])
+
+class MateriaDocente(models.Model):
+    docente = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        limit_choices_to={'fk_rol__rol': 'D'},
+        verbose_name="Docente asignado"
+    )
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, verbose_name="Materia asignada")
+    fecha_asignacion = models.DateField("Fecha de asignación", auto_now_add=True)
+
+    class Meta:
+        db_table = 'materias_docentes'
+        unique_together = ('docente', 'materia')
+        verbose_name = "Materia-Docente"
+        verbose_name_plural = "Materias-Docentes"
+
+    def __str__(self):
+        return f"{self.docente} asignado a {self.materia}"

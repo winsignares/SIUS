@@ -129,7 +129,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
-            'docentes_list': Usuario.objects.filter(fk_rol_id=4, estado_revision='Contratado'),
+            'docentes_list': Usuario.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
             'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
         })

@@ -50,6 +50,8 @@ class Usuario(models.Model):
     sede_donde_labora = models.CharField(max_length=255, null=True, blank=True)
     programa = models.ForeignKey('Programa', on_delete=models.CASCADE, null=True, blank=True)
     semestre = models.ForeignKey('Semestre', on_delete=models.CASCADE, null=True, blank=True)
+    codigo_estudiante = models.CharField(max_length=50, null=True, blank=True, unique=True)
+    codigo_docente =models.CharField(max_length=50, null=True, blank=True, unique=True)
     # Enlace a Hoja de Vida
     url_hoja_de_vida = models.URLField(blank=True, null=True)
 
@@ -71,3 +73,5 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.primer_nombre} {self.primer_apellido}"
+
+

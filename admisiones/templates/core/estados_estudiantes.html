@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estados de Estudiantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4">Estados de Estudiantes en {{ materia.materia }}</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Aprobados</h3>
+            {% if aprobados %}
+                <table class="table table-bordered table-success">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Finalización</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in aprobados %}
+                            <tr>
+                                <td>{{ registro.estudiante.codigo_estudiante }}</td>
+                                <td>{{ registro.estudiante.primer_nombre }} {{ registro.estudiante.primer_apellido }}</td>
+                                <td>{{ registro.fecha_inicio }}</td>
+                                <td>{{ registro.fecha_finalizacion }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay estudiantes aprobados.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h3>Reprobados</h3>
+            {% if reprobados %}
+                <table class="table table-bordered table-danger">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Finalización</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in reprobados %}
+                            <tr>
+                                <td>{{ registro.estudiante.codigo_estudiante }}</td>
+                                <td>{{ registro.estudiante.primer_nombre }} {{ registro.estudiante.primer_apellido }}</td>
+                                <td>{{ registro.fecha_inicio }}</td>
+                                <td>{{ registro.fecha_finalizacion }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay estudiantes reprobados.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{% url 'materias_por_programa_semestre' %}" class="btn btn-secondary mt-4">Volver</a>
+</div>
+</body>
+</html>
