@@ -40,7 +40,8 @@ urlpatterns = [
     path('eliminar_estudiante/<int:materia_id>/<int:estudiante_id>/', views_matricula.eliminar_estudiante, name='eliminar_estudiante'),
     path('validar_codigo/', views_matricula.validar_codigo, name='validar_codigo'),
     path('matriculas/validar_materias/', views_matricula.validar_materias, name='validar_materias'),
-   
+    path('matriculas/filtrar_estudiantes/', views_matricula.filtrar_estudiantes, name='filtrar_estudiantes'),
+
 
     # Vistas de Materia Aprobada
     path('materia_aprobada/', views_materia_aprobada.materias_por_programa_semestre, name='materias_por_programa_semestre'),

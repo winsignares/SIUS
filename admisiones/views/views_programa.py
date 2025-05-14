@@ -9,7 +9,7 @@ def gestion_programa(request, programa_id=None):
         programa = get_object_or_404(Programa, id=programa_id)
 
     if request.method == 'POST':
-        # Aquí se obtiene el Código SNIES correctamente
+       
         codigo_snies = request.POST.get('codigo_snies')
         programa_nombre = request.POST.get('programa')
         nivel_formacion = request.POST.get('nivel_formacion')

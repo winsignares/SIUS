@@ -1,71 +1,133 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia, Usuario, Matricula, Prerrequisito, MateriaAprobada
+
 from django.http import JsonResponse
+
 
 def seleccionar_programa_semestre(request):
     programas = Programa.objects.all()
     semestres = Semestre.objects.all()
-    materias = None  # Por defecto no se muestran materias
+    materias = None  
+    estudiantes = []  
 
     programa_id = request.GET.get('programa')
     semestre_id = request.GET.get('semestre')
 
     if programa_id and semestre_id:
+        
         materias = Materia.objects.filter(
             fk_programa_id=programa_id,
             fk_semestre_id=semestre_id
         )
 
-    return render(request, 'core/matricular_estudiante.html', {
+        
+        estudiantes = Usuario.objects.filter(
+            programa_id=programa_id, 
+            semestre_id=semestre_id   
+        )
+
+    return render(request, 'core/matricular_estudiantes.html', {
         'programas': programas,
         'semestres': semestres,
         'materias': materias,
-        'request': request  # Para que funcione el "selected" en el template
+        'estudiantes': estudiantes,  
+        'request': request  
     })
+
+
+def filtrar_estudiantes(request):
+   
+    programa_id = request.GET.get('programa')
+    semestre_id = request.GET.get('semestre')
+
+    
+    if not programa_id or not semestre_id:
+        return JsonResponse({"error": "Faltan parámetros"}, status=400)
+
+    try:
+        
+        programa_id = int(programa_id)
+        semestre_id = int(semestre_id)
+
+        
+        programa = get_object_or_404(Programa, id=programa_id)
+        semestre = get_object_or_404(Semestre, id=semestre_id)
+
+        
+        estudiantes = Usuario.objects.filter(
+            programa=programa,  
+            semestre=semestre  
+        )
+
+        
+        estudiantes_data = [
+            {"codigo_estudiante": estudiante.codigo_estudiante, "nombre": f"{estudiante.primer_nombre} {estudiante.primer_apellido}"}
+            for estudiante in estudiantes
+        ]
+
+       
+        return JsonResponse({"estudiantes": estudiantes_data}, status=200)
+
+    except ValueError:
+        
+        return JsonResponse({"error": "Parámetros inválidos"}, status=400)
+
+    except Exception as e:
+       
+        return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
 
 def validar_codigo(request):
     codigo = request.GET.get('codigo')
     valido = Usuario.objects.filter(codigo_estudiante=codigo, fk_rol__rol='E').exists()
     return JsonResponse({'valido': valido})
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from home.models.carga_academica.datos_adicionales import Materia, Usuario, Matricula
+
 def matricular_estudiante(request):
     if request.method == 'POST':
         codigo_estudiante = request.POST.get('codigo_estudiante')
         materias_ids = request.POST.getlist('materias')
 
-        # Validar si el código corresponde a un usuario con rol 'E'
+       
         estudiante = get_object_or_404(Usuario, codigo_estudiante=codigo_estudiante, fk_rol__rol='E')
 
         materias_a_matricular = []
         errores = []
 
+       
+        materias_matriculadas = Matricula.objects.filter(estudiante=estudiante).values_list('materia_id', flat=True)
+
+        
         for materia_id in materias_ids:
             materia = get_object_or_404(Materia, id=materia_id)
 
-            # Verificar si el estudiante ya está matriculado en la materia
+            
             if Matricula.objects.filter(estudiante=estudiante, materia=materia).exists():
                 errores.append(f'El estudiante ya está matriculado en {materia.materia}.')
             else:
                 materias_a_matricular.append(materia)
 
-        # Registrar los mensajes de error
+        
         if errores:
             for error in errores:
                 messages.warning(request, error)
 
-        # Crear las matrículas
+       
         if materias_a_matricular:
             for materia in materias_a_matricular:
                 Matricula.objects.create(estudiante=estudiante, materia=materia)
             messages.success(request, f'Matrícula completada con éxito para {len(materias_a_matricular)} materias.')
 
-        # Si no hay materias seleccionadas correctamente, mostrar un mensaje
+       
         if not materias_a_matricular and errores:
             messages.error(request, 'No se pudo completar la matrícula debido a conflictos.')
 
         return redirect('seleccionar_programa_semestre')
 
+    
     messages.error(request, 'Método no permitido.')
     return redirect('seleccionar_programa_semestre')
 

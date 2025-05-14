@@ -8,7 +8,7 @@ def gestion_prerrequisito(request):
     semestres = Semestre.objects.all()
     materias_filtradas = []
     materias_prerrequisito = []
-    prerrequisitos = Prerrequisito.objects.none()  # por defecto vacío
+    prerrequisitos = Prerrequisito.objects.none()  
 
     programa_id = request.GET.get('programa')
     semestre_id = request.GET.get('semestre')
@@ -17,7 +17,7 @@ def gestion_prerrequisito(request):
         materias_filtradas = Materia.objects.filter(fk_programa_id=programa_id, fk_semestre_id=semestre_id)
         materias_prerrequisito = Materia.objects.filter(fk_programa_id=programa_id)
 
-        # Solo los prerrequisitos de las materias filtradas (por programa y semestre)
+       
         prerrequisitos = Prerrequisito.objects.select_related('materia', 'prerequisito') \
             .filter(materia__fk_programa_id=programa_id, materia__fk_semestre_id=semestre_id)
 
