@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import views_periodo, views_programa, views_pensum, views_semestre, views_materia, views_prerrequisito, views_materia_aprobada, views_matricula, views_docente
+from .views import views_periodo, views_programa, views_pensum, views_semestre, views_materia, views_prerrequisito, views_materia_aprobada, views_matricula
 
 urlpatterns = [
     # Vistas de Periodo
@@ -29,7 +29,7 @@ urlpatterns = [
     path('materia/eliminar/<int:materia_id>/', views_materia.eliminar_materia, name='eliminar_materia'),
 
     # Vistas de Prerrequisito
-     path('prerrequisitos/', views_prerrequisito.gestion_prerrequisito, name='gestion_prerrequisito'),
+    path('prerrequisitos/', views_prerrequisito.gestion_prerrequisito, name='gestion_prerrequisito'),
     path('prerrequisitos/editar/<int:pk>/', views_prerrequisito.editar_prerrequisito, name='editar_prerrequisito'),
     path('prerrequisitos/eliminar/<int:pk>/', views_prerrequisito.eliminar_prerrequisito, name='eliminar_prerrequisito'),
     
@@ -37,15 +37,16 @@ urlpatterns = [
     path('matriculas/', views_matricula.seleccionar_programa_semestre, name='seleccionar_programa_semestre'),
     path('matriculas/matricular/', views_matricula.matricular_estudiante, name='matricular_estudiante'),
     path('matriculas/inscritos/<int:materia_id>/', views_matricula.estudiantes_inscritos, name='estudiantes_inscritos'),
-     path('eliminar_estudiante/<int:materia_id>/<int:estudiante_id>/', views_matricula.eliminar_estudiante, name='eliminar_estudiante'),
+    path('eliminar_estudiante/<int:materia_id>/<int:estudiante_id>/', views_matricula.eliminar_estudiante, name='eliminar_estudiante'),
+    path('validar_codigo/', views_matricula.validar_codigo, name='validar_codigo'),
+    path('matriculas/validar_materias/', views_matricula.validar_materias, name='validar_materias'),
+   
 
     # Vistas de Materia Aprobada
     path('materia_aprobada/', views_materia_aprobada.materias_por_programa_semestre, name='materias_por_programa_semestre'),
     path('materia_aprobada/<int:materia_id>/gestionar/', views_materia_aprobada.gestionar_estudiantes, name='gestionar_estudiantes'),
     path('materia_aprobada/<int:materia_id>/estados/', views_materia_aprobada.estados_estudiantes, name='estados_estudiantes'),
 
-    # Vistas de docente
-    path('asignar-materia-docente/', views_docente.asignar_materia_docente, name='asignar_materia_docente'),
-    path('asignar-docente/<int:materia_id>/', views_docente.asignar_docente, name='asignar_docente'),
-    path('ver-docentes/<int:materia_id>/', views_docente.ver_docentes_asignados, name='ver_docentes_asignados'),
+
+   
 ]
