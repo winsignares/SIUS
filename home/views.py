@@ -32,7 +32,7 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
-from .models.talento_humano.contrato import Contrato, DetalleContratro
+from .models.talento_humano.contrato import TipoContrato, Contrato, DetalleContratro
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 
 
@@ -747,12 +747,16 @@ def editar_usuario(request, tipo, usuario_id):
 
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
+    # Obtener el listado de tipos de contratos
+    tipos_contrato = TipoContrato.objects.all()
+
     # Obtener el contrato más reciente del usuario (si existe)
     contrato = Contrato.objects.filter(fk_usuario=usuario).order_by('-fecha_inicio').first()
 
     contexto.update({
         "usuario": usuario,
         "tipo": tipo,
+        "tipos_contrato_list": tipos_contrato,
         "contrato": contrato  # Pasamos un solo contrato, no una queryset
     })
 
@@ -920,7 +924,7 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
             usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
             usuario.fk_modificado_por = request.user
-            
+
             if rol_id := request.POST.get("fk_rol"):
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
             if tipo_documento_id := request.POST.get("fk_tipo_documento"):

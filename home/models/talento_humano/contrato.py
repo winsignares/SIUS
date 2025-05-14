@@ -1,7 +1,17 @@
 from django.db import models
 from .usuarios import Usuario
+from .roles import Rol
 
 # Create your models here.
+
+class TipoContrato(models.Model):
+    tipo_contrato = models.CharField(verbose_name=('Tipo Contrato'), max_length=50, null=True, blank=True)
+    descripcion = models.CharField(verbose_name=('Descripción'), max_length=255, null=True, blank=True)
+
+    class Meta:
+        db_table = 'tipos_contrato'
+        verbose_name = 'Tipo de Contrato'
+        verbose_name_plural = 'Tipos de Contrato'
 
 
 class Contrato(models.Model):
@@ -9,13 +19,14 @@ class Contrato(models.Model):
     fk_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="contrato", verbose_name=("Usuario"))
     fecha_inicio = models.DateField(verbose_name=('Fecha Inicio Contrato'), null=True, blank=True)
     fecha_fin = models.DateField(verbose_name=('Fecha Fin Contrato'), null=True, blank=True)
-    tipo_contrato = models.CharField(verbose_name=('Tipo Contrato'), max_length=255, null=True, blank=True)
+    tipo_contrato = models.ForeignKey(TipoContrato, verbose_name=("Tipo Contrato"), on_delete=models.CASCADE, null=True, blank=True)
+    dedicacion = models.CharField(verbose_name=('Dedicación'), max_length=100, null=True, blank=True)
     valor_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True)
     total_dias_laborados = models.IntegerField(verbose_name=('Total Dias Laborados'), null=True, blank=True)
     vigencia_contrato = models.BooleanField(verbose_name=('Vigencia del Contrato'), default=False)
 
     class Meta:
-        db_table = 'contrato'
+        db_table = 'contratos'
         verbose_name = 'Contrato'
         verbose_name_plural = 'Contratos'
 
