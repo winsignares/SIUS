@@ -68,7 +68,6 @@ class Empleado(models.Model):
         db_table = 'empleados'
         verbose_name = 'Empleado'
         verbose_name_plural = 'Empleados'
-        ordering = [id]
 
     def __str__(self):
         return f"{self.primer_nombre} {self.primer_apellido}"
