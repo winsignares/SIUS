@@ -25,67 +25,67 @@
 
                     <div class="col-md-6 mb-2">
                         <dt>Cargo:</dt>
-                        <dd class="text-uppercase">{{ usuario.cargo }}</dd>
+                        <dd class="text-uppercase">{{ usuario.cargo|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Número de Documento:</dt>
-                        <dd class="text-uppercase">{{ usuario.numero_documento }}</dd>
+                        <dd class="text-uppercase">{{ usuario.numero_documento|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Fecha de Nacimiento:</dt>
-                        <dd class="text-uppercase">{{ usuario.fecha_nacimiento }}</dd>
+                        <dd class="text-uppercase">{{ usuario.fecha_nacimiento|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Correo personal:</dt>
-                        <dd class="text-uppercase">{{ usuario.correo_personal }}</dd>
+                        <dd class="text-uppercase">{{ usuario.correo_personal|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Celular:</dt>
-                        <dd class="text-uppercase">{{ usuario.celular }}</dd>
+                        <dd class="text-uppercase">{{ usuario.celular|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Ciudad de Residencia:</dt>
-                        <dd class="text-uppercase">{{ usuario.ciudad_residencia }}</dd>
+                        <dd class="text-uppercase">{{ usuario.ciudad_residencia|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Barrio de Residencia:</dt>
-                        <dd class="text-uppercase">{{ usuario.barrio_residencia }}</dd>
+                        <dd class="text-uppercase">{{ usuario.barrio_residencia|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Dirección:</dt>
-                        <dd class="text-uppercase">{{ usuario.direccion_residencia }}</dd>
+                        <dd class="text-uppercase">{{ usuario.direccion_residencia|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Departamento de Residencia:</dt>
-                        <dd class="text-uppercase">{{ usuario.departamento_residencia }}</dd>
+                        <dd class="text-uppercase">{{ usuario.departamento_residencia|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Estado Civil:</dt>
-                        <dd class="text-uppercase">{{ usuario.estado_civil }}</dd>
+                        <dd class="text-uppercase">{{ usuario.estado_civil|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Último Nivel de Estudio:</dt>
-                        <dd class="text-uppercase">{{ usuario.fk_ultimo_nivel_estudio.nombre }}</dd>
+                        <dd class="text-uppercase">{{ usuario.fk_ultimo_nivel_estudio.nombre|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>EPS:</dt>
-                        <dd class="text-uppercase">{{ usuario.fk_eps.nombre }}</dd>
+                        <dd class="text-uppercase">{{ usuario.fk_eps.nombre|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-0">
                         <dt>AFP:</dt>
-                        <dd class="text-uppercase mb-0">{{ usuario.afp }}</dd>
+                        <dd class="text-uppercase mb-0">{{ usuario.afp|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-0">
@@ -112,16 +112,16 @@
                             <div class="card-body">
                                 <dl class="row">
                                     <dt class="col-md-3 mb-2">Fecha Inicio:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.fecha_inicio }}</dd>
+                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.fecha_inicio|default:"No disponible" }}</dd>
 
                                     <dt class="col-md-3 mb-2">Fecha Fin:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.fecha_fin }}</dd>
+                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.fecha_fin|default:"No disponible" }}</dd>
 
                                     <dt class="col-md-3 mb-2">Tipo de Contrato:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.tipo_contrato }}</dd>
+                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.tipo_contrato|default:"No disponible" }}</dd>
 
                                     <dt class="col-md-3 mb-2">Valor Contrato:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.valor_contrato }}</dd>
+                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.valor_contrato|default:"No disponible" }}</dd>
                                 </dl>
                             </div>
                         </div>
@@ -146,15 +146,15 @@
                         <div class="card-body">
                             <div class="container">
                                 <dl class="row mb-0">
-                                    <dt class="col-md-12 text-uppercase">{{ detalle.titulo_obtenido|default:"No se ha agregado" }}</dt>
+                                    <dt class="col-md-12 text-uppercase">{{ detalle.titulo_obtenido|default:"No disponible" }}</dt>
 
-                                    <dd class="col-md-8 mb-0 text-uppercase fs-small">{{ detalle.institucion|default:"No se ha agregado" }}</dd>
+                                    <dd class="col-md-8 mb-0 text-uppercase fs-small">{{ detalle.institucion|default:"No disponible" }}</dd>
 
-                                    <dd class="col-md-4 mb-0 d-flex justify-content-end align-items-center text-uppercase fs-small">{{ detalle.nivel_academico.nombre|default:"No se ha agregado" }}</dd>
+                                    <dd class="col-md-4 mb-0 d-flex justify-content-end align-items-center text-uppercase fs-small">{{ detalle.nivel_academico.nombre|default:"No disponible" }}</dd>
 
                                     <dt class="col-md-auto text-uppercase fs-small">Fecha de Graduación:</dt>
 
-                                    <dd class="col-md-auto text-uppercase fs-small">{{ detalle.fecha_graduacion|default:"No se ha agregado" }}</dd>
+                                    <dd class="col-md-auto text-uppercase fs-small">{{ detalle.fecha_graduacion|default:"No disponible" }}</dd>
                                 </dl>
                             </div>
                         </div>
@@ -178,11 +178,11 @@
                         <div class="card-body">
                             <div class="container">
                                 <dl class="row mb-0">
-                                    <dt class="col-md-12 text-uppercase">{{ experiencia.cargo|default:"No se ha agregado" }}</dt>
-                                    <dd class="col-md-12 mb-0 text-uppercase fs-small">{{ experiencia.empresa|default:"No se ha agregado" }}</dd>
+                                    <dt class="col-md-12 text-uppercase">{{ experiencia.cargo|default:"No disponible" }}</dt>
+                                    <dd class="col-md-12 mb-0 text-uppercase fs-small">{{ experiencia.empresa|default:"No disponible" }}</dd>
 
                                     <dt class="col-md-2 fs-small">Fecha Inicio:</dt>
-                                    <dd class="col-md-4 mb-0 text-uppercase fs-small">{{ experiencia.fecha_inicio|default:"No se ha agregado" }}</dd>
+                                    <dd class="col-md-4 mb-0 text-uppercase fs-small">{{ experiencia.fecha_inicio|default:"No disponible" }}</dd>
 
                                     <dt class="col-md-2 fs-small text-end">Fecha Fin:</dt>
                                     <dd class="col-md-4 mb-0 text-uppercase fs-small text-end">{{ experiencia.fecha_fin|default:"Actualmente" }}</dd>

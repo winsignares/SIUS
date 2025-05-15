@@ -41,8 +41,6 @@ class Pensum(models.Model):
     id = models.AutoField(primary_key=True)
     fk_programa = models.ForeignKey(Programa, verbose_name="Programa al que Pertenece", on_delete=models.CASCADE)
     pensum = models.IntegerField("Pensum", null=True, blank=True)
-    fecha_apertura = models.DateField("Fecha de Apertura", null=True, blank=True)
-    fecha_cierre = models.DateField("Fecha de Cierre", null=True, blank=True)
     vigente = models.BooleanField(default=False)
 
     class Meta:
