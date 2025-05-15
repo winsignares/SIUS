@@ -61,7 +61,7 @@ urlpatterns = [
 
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion'),
 
-    path('admisiones/', include('admisiones.urls')),
+    path('siuc/admisiones/', include('admisiones.urls')),
 ]
 
 # Error 404 personalizado

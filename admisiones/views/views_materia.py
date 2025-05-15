@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models.carga_academica.datos_adicionales import Materia, Pensum, Semestre, Programa
 from django.contrib import messages
+from .views_home import obtener_db_info
 
 def gestion_materia(request):
     programas = Programa.objects.all()
@@ -42,13 +43,15 @@ def gestion_materia(request):
         if request.GET.get('semestre'):
             materias = materias.filter(fk_semestre_id=request.GET['semestre'])
 
-    context = {
+    contexto = obtener_db_info(request)
+    contexto.update({
         'programas': programas,
         'semestres': semestres,
         'pensums': pensums,
         'materias': materias
-    }
-    return render(request, 'core/materia.html', context)
+    })
+    
+    return render(request, 'core/materia.html', contexto)
 
 
 def actualizar_materia(request, materia_id):

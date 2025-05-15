@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models.carga_academica.datos_adicionales import Pensum, Programa
 from django.contrib import messages
+from .views_home import obtener_db_info
 
 def gestion_pensum(request, pensum_id=None):
     pensums = Pensum.objects.all()
@@ -38,12 +39,15 @@ def gestion_pensum(request, pensum_id=None):
             messages.success(request, 'Pensum creado correctamente.')
 
         return redirect('gestion_pensum')
-
-    return render(request, 'core/pensum.html', {
+    
+    contexto = obtener_db_info(request)
+    contexto.update({
         'pensums': pensums,
         'programas': programas,
         'pensum': pensum
     })
+
+    return render(request, 'core/pensum.html', contexto)
 
 def eliminar_pensum(request, pensum_id):
     pensum = get_object_or_404(Pensum, id=pensum_id)

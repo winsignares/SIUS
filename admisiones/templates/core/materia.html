@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Materias</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
-</head>
+{% extends 'dashboard.html' %}
+{% load static %}
 
-<body class="bg-light">
+{% block content %}
     <div class="container mt-5">
         <h2 class="text-dark mb-4">Gestión de Materias</h2>
 
@@ -90,7 +83,7 @@
                     </div>
                     <div class="col-md-5">
                         <label class="form-label">Semestre:</label>
-                        <select name="semestre" class="form-select">
+                        <select name="semestre" class="form-select" {% if not request.GET.programa %}disabled{% endif %}>
                             <option value="">Todos</option>
                             {% for semestre in semestres %}
                                 <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id %}selected{% endif %}>{{ semestre.semestre }}</option>
@@ -126,18 +119,18 @@
                         <tbody>
                             {% for materia in materias %}
                                 <tr>
-                                    <td>{{ materia.id }}</td>
-                                    <td>{{ materia.materia }}</td>
-                                    <td>{{ materia.codigo }}</td>
-                                    <td>{{ materia.creditos }}</td>
-                                    <td>{{ materia.metodologia }}</td>
-                                    <td>{{ materia.horas }}</td>
-                                    <td>{{ materia.fk_programa.programa }}</td>
-                                    <td>{{ materia.fk_semestre.semestre }}</td>
-                                    <td>{{ materia.fk_pensum.pensum }}</td>
-                                    <td>
-                                        <a href="{% url 'editar_materia' materia.id %}" class="btn btn-dark btn-sm">Editar</a>
-                                        <a href="{% url 'eliminar_materia' materia.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas eliminar esta materia?');">Eliminar</a>
+                                    <td class="text-center">{{ materia.id }}</td>
+                                    <td class="text-center">{{ materia.materia }}</td>
+                                    <td class="text-center">{{ materia.codigo }}</td>
+                                    <td class="text-center">{{ materia.creditos }}</td>
+                                    <td class="text-center">{{ materia.metodologia }}</td>
+                                    <td class="text-center">{{ materia.horas }}</td>
+                                    <td class="text-center">{{ materia.fk_programa.programa }}</td>
+                                    <td class="text-center">{{ materia.fk_semestre.semestre }}</td>
+                                    <td class="text-center">{{ materia.fk_pensum.pensum }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'editar_materia' materia.id %}" class="btn btn-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                        <a href="{% url 'eliminar_materia' materia.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas eliminar esta materia?');"><i class="bi bi-trash3"></i></a>
                                     </td>
                                 </tr>
                             {% empty %}
@@ -151,5 +144,4 @@
             </div>
         {% endif %}
     </div>
-</body>
-</html>
+{% endblock %}

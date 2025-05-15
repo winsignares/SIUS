@@ -1,7 +1,10 @@
 from django.urls import path
-from .views import views_periodo, views_programa, views_pensum, views_semestre, views_materia, views_prerrequisito, views_materia_aprobada, views_matricula
+from .views import views_periodo, views_programa, views_pensum, views_semestre, views_materia, views_prerrequisito, views_materia_aprobada, views_matricula, views_home
 
 urlpatterns = [
+
+   path('home/', views_home.home, name='home_admision'),
+
     # Vistas de Periodo
     path('periodo/', views_periodo.gestion_periodo, name='gestion_periodo'),
     path('periodo/<int:periodo_id>/', views_periodo.gestion_periodo, name='editar_periodo'),

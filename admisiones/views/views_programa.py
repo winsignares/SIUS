@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models.carga_academica.datos_adicionales import Programa
+from .views_home import obtener_db_info
 from django.contrib import messages
+
 def gestion_programa(request, programa_id=None):
     programas = Programa.objects.all()
     programa = None
@@ -30,13 +32,18 @@ def gestion_programa(request, programa_id=None):
             Programa.objects.create(codigo_snies=codigo_snies, programa=programa_nombre, nivel_formacion=nivel_formacion,
                                     sede=sede, numero_semestres=numero_semestres)
             messages.success(request, 'Programa creado correctamente.')
+        
 
         return redirect('gestion_programa')
 
-    return render(request, 'core/programa.html', {
+    contexto = obtener_db_info(request)
+    contexto.update({
         'programas': programas,
-        'programa': programa
+        'programa': programa,
     })
+    
+
+    return render(request, 'core/programa.html', contexto)
 def eliminar_programa(request, programa_id):
     programa = get_object_or_404(Programa, id=programa_id)
     programa.delete()

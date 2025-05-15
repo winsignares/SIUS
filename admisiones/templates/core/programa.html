@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Programas</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
-</head>
-<body class="bg-light">
+{% extends 'dashboard.html' %}
+{% load static %}
+
+
+
+{% block content %}
 <div class="container mt-5">
     <h2 class="mb-4 text-dark">Gestión de Programas Académicos</h2>
 
@@ -96,17 +92,17 @@
                 <tbody>
                 {% for p in programas %}
                     <tr>
-                        <td>{{ p.id }}</td>
-                        <td>{{ p.codigo_snies }}</td>
-                        <td>{{ p.programa }}</td>
-                        <td>{{ p.nivel_formacion }}</td>
-                        <td>{{ p.sede }}</td>
-                        <td>{{ p.numero_semestres }}</td>
-                        <td>
-                            <a href="{% url 'editar_programa' p.id %}" class="btn btn-dark btn-sm">Editar</a>
+                        <td class="text-center">{{ p.id }}</td>
+                        <td class="text-center">{{ p.codigo_snies }}</td>
+                        <td class="text-center">{{ p.programa }}</td>
+                        <td class="text-center">{{ p.nivel_formacion }}</td>
+                        <td class="text-center">{{ p.sede }}</td>
+                        <td class="text-center">{{ p.numero_semestres }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'editar_programa' p.id %}" class="btn btn-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
                             <a href="{% url 'eliminar_programa' p.id %}"
                                class="btn btn-danger btn-sm"
-                               onclick="return confirm('¿Seguro que deseas eliminar este programa?');">Eliminar</a>
+                               onclick="return confirm('¿Seguro que deseas eliminar este programa?');"><i class="bi bi-trash3"></i></a>
                         </td>
                     </tr>
                 {% empty %}
@@ -119,5 +115,4 @@
         </div>
     </div>
 </div>
-</body>
-</html>
+{% endblock %}

@@ -182,7 +182,14 @@ def signin(request):
 
         login(request, user)
 
-        return redirect('dashboard')
+        
+        if user.groups.filter(name='Administrador').exists():
+            return redirect('dashboard')
+        elif user.groups.filter(name='Admisiones').exists():
+            return redirect('home_admision')
+        else:
+            return redirect('dashboard')
+        
 
 
 #
