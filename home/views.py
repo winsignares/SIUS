@@ -767,6 +767,15 @@ def editar_usuario(request, tipo, usuario_id):
     )
 
 
+def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
+    """Calcula los días laborados durante todo el contrato."""
+    fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
+    fecha_final = datetime.strptime(str(fecha_final), "%Y-%m-%d")
+
+    dias_laborados = (fecha_final - fecha_inicio).days + 1
+    return dias_laborados if dias_laborados > 0 else 0
+
+
 def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
     """Calcula los días laborados en cada mes del contrato, con un máximo de 30 días por mes."""
     fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
@@ -832,22 +841,33 @@ def contrato_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
     data = request.POST
 
+    fecha_inicio_contrato = data.get("fecha_inicio_contrato")
+    fecha_fin_contrato = data.get("fecha_fin_contrato")
+
+    dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
+
     try:
         contrato, created = Contrato.objects.get_or_create(
             fk_usuario=usuario,
             defaults={
-                "fecha_inicio": data.get("fecha_inicio_contrato"),
-                "fecha_fin": data.get("fecha_fin_contrato"),
-                "valor_contrato": data.get("valor_contrato"),
+                "fecha_inicio": fecha_inicio_contrato,
+                "fecha_fin": fecha_fin_contrato,
                 "tipo_contrato": data.get("tipo_contrato"),
+                "dedicacion": data.get("dedicacion"),
+                "valor_contrato": data.get("valor_contrato"),
+                "total_dias_laborados": dias_laborados,
+                "vigencia_contrato": True,
             },
         )
 
         if not created:
-            contrato.fecha_inicio = data.get("fecha_inicio_contrato")
-            contrato.fecha_fin = data.get("fecha_fin_contrato")
-            contrato.valor_contrato = data.get("valor_contrato")
+            contrato.fecha_inicio = fecha_inicio_contrato
+            contrato.fecha_fin = fecha_fin_contrato
             contrato.tipo_contrato = data.get("tipo_contrato")
+            contrato.dedicacion = data.get("dedicacion")
+            contrato.valor_contrato = data.get("valor_contrato")
+            contrato.total_dias_laborados = dias_laborados
+            contrato.vigencia_contrato = True
             contrato.save()
 
         # Solo generar detalles si el valor del contrato está definido
@@ -918,8 +938,6 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
             usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
             usuario.cargo = request.POST.get("cargo", usuario.cargo)
-            usuario.ultimo_nivel_estudio = request.POST.get("ultimo_nivel_estudio", usuario.ultimo_nivel_estudio)
-            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
             usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
             usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
@@ -931,6 +949,8 @@ def actualizar_usuario(request, tipo, usuario_id):
                 usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
             if eps_id := request.POST.get("fk_eps"):
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
+            if ultimo_nivel_estudio_id := request.POST.get("fk_ultimo_nivel_estudio"):
+                usuario.fk_ultimo_nivel_estudio = NivelAcademico.objects.get(id=ultimo_nivel_estudio_id)
 
             if usuario.estado_revision == "Contratado":
                 usuario.activo = True
