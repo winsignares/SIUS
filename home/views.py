@@ -387,7 +387,7 @@ def agregar_aspirante(request):
             print(e)
             return JsonResponse({
                 'status': 'error',
-                'message': f"Error inesperado: {e}"
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
 
 @login_required
@@ -446,14 +446,16 @@ def agregar_empleado(request):
             })
 
         except IntegrityError as e:
+            print(e)
             return JsonResponse({
                 'status': 'error',
-                'message': f'Error de integridad al agregar el empleado: {str(e)}'
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=400)
         except Exception as e:
+            print(e)
             return JsonResponse({
                 'status': 'error',
-                'message': f"Error inesperado: {str(e)}"
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
     else:
         return JsonResponse({
@@ -516,12 +518,23 @@ def agregar_detalle_academico(request):
                 }
             }
 
-            return JsonResponse({"status": "success", "message": "Detalle académico agregado exitosamente.", "detalle": contexto["detalle"]})
+            return JsonResponse({
+                "status": "success",
+                "message": "Detalle académico agregado exitosamente.",
+                "detalle": contexto["detalle"]
+            })
 
         except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Error al agregar el detalle académico: {e}"})
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": 'Error inesperado. Por favor, intente nuevamente.'
+            }, status=500)
 
-    return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
+    return JsonResponse({
+        "status": "error",
+        "message": "Método no permitido."
+    }, status=405)
 
 
 @login_required
@@ -563,12 +576,23 @@ def agregar_exp_laboral(request):
                 }
             }
 
-            return JsonResponse({"status": "success", "message": "Experiencia laboral agregada exitosamente.", "detalle": contexto["detalle"]})
+            return JsonResponse({
+                "status": "success",
+                "message": "Experiencia laboral agregada exitosamente.",
+                "detalle": contexto["detalle"]
+            })
 
         except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Error al agregar la experiencia laboral: {e}"})
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": 'Error inesperado. Por favor, intente nuevamente.'
+            }, status=500)
 
-    return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
+    return JsonResponse({
+        "status": "error",
+        "message": "Método no permitido."
+    }, status=405)
 
 
 #
@@ -706,14 +730,21 @@ def cargar_empleados_masivamente(request):
                         'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Tipo de Documento '{fila['fk_tipo_documento']}' no encontrado. Verifica que exista en la base de datos."
                     }, status=400)
 
-            return JsonResponse({'status': 'success', 'message': 'Carga masiva realizada con éxito.'})
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Carga masiva realizada con éxito.'
+            }, status=200)
         except Exception as e:
+            print(e)
             return JsonResponse({
                 'status': 'error',
-                'message': f"Error al procesar el archivo: {e}"
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
 
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'}, status=405)
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Método no permitido.'
+    }, status=405)
 
 
 #
@@ -879,27 +910,29 @@ def contrato_usuario(request, tipo, usuario_id):
         else:
             total_pagado = None
 
-        return JsonResponse(
-            {
-                "status": "success",
-                "message": "Contrato y detalles creados/actualizados correctamente.",
-                "valor_total_pagado": float(total_pagado) if total_pagado else None,
-            }
-        )
+        return JsonResponse({
+            "status": "success",
+            "message": "Contrato y detalles creados/actualizados correctamente.",
+            "valor_total_pagado": float(total_pagado) if total_pagado else None,
+        })
 
     except IntegrityError:
-        return JsonResponse(
-            {"status": "error", "message": "Error de integridad al crear/actualizar el contrato."},
-            status=400,
-        )
+        return JsonResponse({
+            "status": "error",
+            "message": "Error de integridad al crear/actualizar el contrato."
+        }, status=400,)
     except ValueError as e:
-        return JsonResponse(
-            {"status": "error", "message": str(e)}, status=400
-        )
+        print(e)
+        return JsonResponse({
+            "status": "error",
+            "message": 'Error inesperado. Por favor, intente nuevamente.'
+        }, status=405)
     except Exception as e:
-        return JsonResponse(
-            {"status": "error", "message": f"Error inesperado: {e}"}, status=500
-        )
+        print(e)
+        return JsonResponse({
+            "status": "error",
+            "message": 'Error inesperado. Por favor, intente nuevamente.'
+        }, status=500)
 
 
 
@@ -914,13 +947,15 @@ def actualizar_usuario(request, tipo, usuario_id):
             if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exclude(id=usuario_id).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe otro usuario con el número de documento ingresado.'}, status=400)
+                    'message': 'Ya existe otro usuario con el número de documento ingresado.'
+                }, status=400)
 
             # Verificar si ya existe otro usuario con el mismo correo personal
             if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exclude(id=usuario_id).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe otro usuario con el correo personal ingresado.'}, status=400)
+                    'message': 'Ya existe otro usuario con el correo personal ingresado.'
+                }, status=400)
 
             # Actualización de campos de Usuario
             usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
@@ -963,10 +998,10 @@ def actualizar_usuario(request, tipo, usuario_id):
 
             usuario.save()
 
-            return JsonResponse(
-                {"status": "success",
+            return JsonResponse({
+                "status": "success",
                 "message": "Usuario actualizado correctamente."
-                })
+            })
         except IntegrityError:
             return JsonResponse({
                 'status': 'error',
@@ -976,7 +1011,7 @@ def actualizar_usuario(request, tipo, usuario_id):
             print(e)
             return JsonResponse({
                 'status': 'error',
-                'message': f"Error inesperado: {e}"
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
 
 
