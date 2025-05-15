@@ -6,7 +6,7 @@ from .niveles_academicos import NivelAcademico
 from django.conf import settings
 
 
-class Usuario(models.Model):
+class Empleado(models.Model):
 
     # Campos obligatorios
     id = models.AutoField(primary_key=True)
@@ -65,9 +65,10 @@ class Usuario(models.Model):
     auth_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
-        db_table = 'usuarios'
-        verbose_name = 'Usuario'
-        verbose_name_plural = 'Usuarios'
+        db_table = 'empleados'
+        verbose_name = 'Empleado'
+        verbose_name_plural = 'Empleados'
+        ordering = [id]
 
     def __str__(self):
         return f"{self.primer_nombre} {self.primer_apellido}"

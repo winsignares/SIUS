@@ -25,7 +25,7 @@ from io import BytesIO
 import pytz
 
 # Importar Modelos
-from .models.talento_humano.usuarios import Usuario
+from .models.talento_humano.usuarios import Empleado
 from .models.talento_humano.detalles_academicos import DetalleAcademico
 from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
 from .models.talento_humano.tipo_documentos import TipoDocumento
@@ -58,11 +58,11 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     grupos_usuario = usuario_autenticado.groups.values_list('name', flat=True)
 
     try:
-        usuario_log = Usuario.objects.get(auth_user=usuario_autenticado)
+        usuario_log = Empleado.objects.get(auth_user=usuario_autenticado)
         usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
         usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
         usuario_log.cargo = usuario_log.cargo.upper()
-    except Usuario.DoesNotExist:
+    except Empleado.DoesNotExist:
         usuario_log = None
 
     # Obtener el programa del usuario logueado
@@ -130,7 +130,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
-            'docentes_list': Usuario.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
+            'docentes_list': Empleado.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
             'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
         })
@@ -277,11 +277,11 @@ def gestion_aspirantes(request):
     # Capturar parámetros de búsqueda
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()
-    usuarios_aspirantes = Usuario.objects.filter(
+    usuarios_aspirantes = Empleado.objects.filter(
         estado_revision='Pendiente').order_by('-fecha_modificacion')
     # Término de búsqueda para aspirantes en estado 'Rechazado'
     aspirante_rechazado = request.GET.get('aspirante_rechazado', '').strip()
-    usuarios_rechazados = Usuario.objects.filter(
+    usuarios_rechazados = Empleado.objects.filter(
         estado_revision='Rechazado').order_by('-fecha_modificacion')
 
     # Filtrar datos si hay una búsqueda
@@ -332,17 +332,17 @@ def agregar_aspirante(request):
     if request.method == 'POST':
         data = request.POST
         try:
-            if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
+            if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe un aspirante con el número de documento ingresado.'}, status=400)
 
-            if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exists():
+            if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe un aspirante con el correo personal ingresado.'}, status=400)
 
-            nuevo_usuario = Usuario.objects.create(
+            nuevo_usuario = Empleado.objects.create(
                 fk_rol_id=data.get('fk_rol'),
                 fk_tipo_documento_id=data.get('fk_tipo_documento'),
                 cargo=data.get('cargo'),
@@ -396,19 +396,19 @@ def agregar_empleado(request):
         data = request.POST
         try:
             # Verificar si ya existe un usuario con el número de documento ingresado
-            if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exists():
+            if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe un empleado con el número de documento ingresado.'}, status=400)
 
             # Verificar si ya existe un usuario con el correo
-            if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exists():
+            if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe un empleado con el correo personal ingresado.'}, status=400)
 
             # Crear un nuevo usuario
-            nuevo_usuario = Usuario.objects.create(
+            nuevo_usuario = Empleado.objects.create(
                 fk_rol_id=data.get('fk_rol_emp'),
                 fk_tipo_documento_id=data.get('fk_tipo_documento'),
                 cargo=data.get('cargo'),
@@ -482,7 +482,7 @@ def agregar_detalle_academico(request):
 
         try:
             # Validar que el usuario existe
-            usuario = get_object_or_404(Usuario, id=usuario_id)
+            usuario = get_object_or_404(Empleado, id=usuario_id)
 
             # Validar campos numéricos
             if ies_codigo and not ies_codigo.isdigit():
@@ -551,7 +551,7 @@ def agregar_exp_laboral(request):
 
         try:
             # Validar que el usuario existe
-            usuario = get_object_or_404(Usuario, id=usuario_id)
+            usuario = get_object_or_404(Empleado, id=usuario_id)
 
             # Si está laborando actualmente, establecer fecha_fin como None
             if laborando_actualmente or fecha_fin == "":
@@ -611,10 +611,10 @@ def gestion_empleados(request):
     # Capturar parámetros de búsqueda
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     empleado_activo = request.GET.get('empleado_activo', '').strip()
-    empleados_activos = Usuario.objects.filter(activo=True, estado_revision='Contratado').order_by('-fecha_modificacion')
+    empleados_activos = Empleado.objects.filter(activo=True, estado_revision='Contratado').order_by('-fecha_modificacion')
     # Término de búsqueda para aspirantes en estado 'Rechazado'
     empleado_inactivo = request.GET.get('empleado_inactivo', '').strip()
-    empleados_inactivos = Usuario.objects.filter(activo=False, estado_revision='Contratado').order_by('-fecha_modificacion')
+    empleados_inactivos = Empleado.objects.filter(activo=False, estado_revision='Contratado').order_by('-fecha_modificacion')
 
     # Filtrar datos si hay una búsqueda
     if empleado_activo:
@@ -699,7 +699,7 @@ def cargar_empleados_masivamente(request):
                         descripcion=fila['fk_tipo_documento'])
 
                     # Crear o actualizar el usuario
-                    Usuario.objects.update_or_create(
+                    Empleado.objects.update_or_create(
                         numero_documento=fila['numero_documento'],
                         defaults={
                             'primer_nombre': fila['primer_nombre'],
@@ -757,7 +757,7 @@ def detalle_usuario(request, tipo, usuario_id):
     """
     Muestra los detalles de un aspirante o empleado según el tipo y el estado del usuario.
     """
-    usuario = get_object_or_404(Usuario, id=usuario_id)
+    usuario = get_object_or_404(Empleado, id=usuario_id)
     if usuario:
         template = "partials/detalle_usuario.html"
         detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
@@ -774,7 +774,7 @@ def detalle_usuario(request, tipo, usuario_id):
 
 @login_required
 def editar_usuario(request, tipo, usuario_id):
-    usuario = get_object_or_404(Usuario, id=usuario_id)
+    usuario = get_object_or_404(Empleado, id=usuario_id)
 
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
@@ -869,7 +869,7 @@ def generar_detalles_contrato(contrato):
 
 @login_required
 def contrato_usuario(request, tipo, usuario_id):
-    usuario = get_object_or_404(Usuario, id=usuario_id)
+    usuario = get_object_or_404(Empleado, id=usuario_id)
     data = request.POST
 
     fecha_inicio_contrato = data.get("fecha_inicio_contrato")
@@ -938,20 +938,20 @@ def contrato_usuario(request, tipo, usuario_id):
 
 @login_required
 def actualizar_usuario(request, tipo, usuario_id):
-    usuario = get_object_or_404(Usuario, id=usuario_id)
+    usuario = get_object_or_404(Empleado, id=usuario_id)
     if request.method == "POST":
         # Extraer todos los datos del formulario
         data = request.POST
         try:
             # Verificar si ya existe otro usuario con el mismo número de documento
-            if Usuario.objects.filter(numero_documento=data.get('numero_documento')).exclude(id=usuario_id).exists():
+            if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exclude(id=usuario_id).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe otro usuario con el número de documento ingresado.'
                 }, status=400)
 
             # Verificar si ya existe otro usuario con el mismo correo personal
-            if Usuario.objects.filter(correo_personal=data.get('correo_personal')).exclude(id=usuario_id).exists():
+            if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exclude(id=usuario_id).exists():
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Ya existe otro usuario con el correo personal ingresado.'
@@ -1059,7 +1059,7 @@ def gestion_administrativos(request):
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
     # Filtrar usuarios con rol de administrativo
-    administrativos = Usuario.objects.filter(fk_rol__descripcion="Administrativo").order_by('-fecha_modificacion')
+    administrativos = Empleado.objects.filter(fk_rol__descripcion="Administrativo").order_by('-fecha_modificacion')
 
     # Agregar los administrativos al contexto
     contexto.update({
@@ -1129,7 +1129,7 @@ def calcular_valor_a_pagar(horas_semanales, total_horas, fk_docente_asignado):
     """
     Calcula el valor a pagar según las horas semanales y el total de horas.
     """
-    ultimo_nivel_estudio = Usuario.objects.get(id=fk_docente_asignado).fk_ultimo_nivel_estudio
+    ultimo_nivel_estudio = Empleado.objects.get(id=fk_docente_asignado).fk_ultimo_nivel_estudio
     return
 
 @login_required
@@ -1150,7 +1150,7 @@ def guardar_matriz(request):
                 fk_programa_inst = Programa.objects.get(id=carga["fk_programa"])
                 fk_semestre_inst = Semestre.objects.get(id=carga["fk_semestre"])
                 fk_materia_inst = Materia.objects.get(id=carga["fk_materia"])
-                fk_docente_asignado_inst = Usuario.objects.get(id=carga["fk_docente_asignado"])
+                fk_docente_asignado_inst = Empleado.objects.get(id=carga["fk_docente_asignado"])
 
                 # Guardar los datos en la DB
                 CargaAcademica.objects.create(
@@ -1254,7 +1254,7 @@ def reportes(request):
             fecha_creacion = None
 
     # Filtrar datos según los parámetros
-    usuarios = Usuario.objects.all()
+    usuarios = Empleado.objects.all()
     if fecha_creacion:
         usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
 
@@ -1294,7 +1294,7 @@ def generar_reporte_excel(request):
     zona_horaria_local = pytz.timezone('America/Bogota')
 
     # Filtrar datos según los parámetros enviados
-    usuarios = Usuario.objects.all()
+    usuarios = Empleado.objects.all()
     if fecha_creacion:
         try:
             # Convertir la fecha a rango con zona horaria local
@@ -1353,7 +1353,7 @@ def generar_contrato_word(request, usuario_id):
     Genera un contrato en formato Word para el usuario especificado y lo devuelve como archivo descargable.
     """
     # Obtener el usuario y su contrato
-    usuario = get_object_or_404(Usuario, id=usuario_id)
+    usuario = get_object_or_404(Empleado, id=usuario_id)
     contrato = Contrato.objects.filter(fk_usuario=usuario).order_by('-fecha_inicio').first()
 
     # Verificar si el usuario tiene un contrato y está en estado "Contratado"
