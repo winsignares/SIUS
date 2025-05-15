@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from .views_home import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia, Usuario, Matricula, Prerrequisito, MateriaAprobada
 
 from django.http import JsonResponse
@@ -27,13 +28,16 @@ def seleccionar_programa_semestre(request):
             semestre_id=semestre_id   
         )
 
-    return render(request, 'core/matricular_estudiantes.html', {
+    contexto = obtener_db_info(request)
+    contexto.update({
         'programas': programas,
         'semestres': semestres,
         'materias': materias,
         'estudiantes': estudiantes,  
         'request': request  
     })
+
+    return render(request, 'core/matricular_estudiantes.html', contexto)
 
 
 def filtrar_estudiantes(request):

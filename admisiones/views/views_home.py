@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
 from home.models.carga_academica.datos_adicionales  import Programa, Semestre, Materia, Matricula, Periodo
-from home.models.talento_humano.usuarios import Usuario
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 def home(request):
 
     contexto = obtener_db_info(request)
-
-    print(contexto)
 
     return render(request, 'home.html', contexto)
 
@@ -20,11 +18,11 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     grupos_usuario = usuario_autenticado.groups.values_list('name', flat=True)
 
     try:
-        usuario_log = Usuario.objects.get(auth_user=usuario_autenticado)
-        usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
-        usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
-        usuario_log.cargo = usuario_log.cargo.upper()
-    except Usuario.DoesNotExist:
+        usuario_log = User.objects.get(username=usuario_autenticado)
+        usuario_log.primer_nombre = usuario_log.first_name.capitalize()
+        usuario_log.primer_apellido = usuario_log.last_name.capitalize()
+        usuario_log.cargo = usuario_log.groups.first().name.upper()
+    except User.DoesNotExist:
         usuario_log = None
 
     # Obtener el programa del usuario logueado (Almacenado en first_name)
@@ -81,7 +79,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
-            'docentes_list': Usuario.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
+            'docentes_list': User.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
             'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
         })
 
