@@ -844,6 +844,9 @@ def contrato_usuario(request, tipo, usuario_id):
     fecha_inicio_contrato = data.get("fecha_inicio_contrato")
     fecha_fin_contrato = data.get("fecha_fin_contrato")
 
+    tipo_contrato = data.get("tipo_contrato")
+    fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
+
     dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
 
     try:
@@ -852,7 +855,7 @@ def contrato_usuario(request, tipo, usuario_id):
             defaults={
                 "fecha_inicio": fecha_inicio_contrato,
                 "fecha_fin": fecha_fin_contrato,
-                "tipo_contrato": data.get("tipo_contrato"),
+                "fk_tipo_contrato": fk_tipo_contrato,
                 "dedicacion": data.get("dedicacion"),
                 "valor_contrato": data.get("valor_contrato"),
                 "total_dias_laborados": dias_laborados,
@@ -863,7 +866,7 @@ def contrato_usuario(request, tipo, usuario_id):
         if not created:
             contrato.fecha_inicio = fecha_inicio_contrato
             contrato.fecha_fin = fecha_fin_contrato
-            contrato.tipo_contrato = data.get("tipo_contrato")
+            contrato.fk_tipo_contrato = fk_tipo_contrato
             contrato.dedicacion = data.get("dedicacion")
             contrato.valor_contrato = data.get("valor_contrato")
             contrato.total_dias_laborados = dias_laborados

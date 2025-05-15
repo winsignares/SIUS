@@ -19,7 +19,7 @@ class Contrato(models.Model):
     fk_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="contrato", verbose_name=("Usuario"))
     fecha_inicio = models.DateField(verbose_name=('Fecha Inicio Contrato'), null=True, blank=True)
     fecha_fin = models.DateField(verbose_name=('Fecha Fin Contrato'), null=True, blank=True)
-    tipo_contrato = models.ForeignKey(TipoContrato, verbose_name=("Tipo Contrato"), on_delete=models.CASCADE, null=True, blank=True)
+    fk_tipo_contrato = models.ForeignKey(TipoContrato, verbose_name=("Tipo Contrato"), on_delete=models.CASCADE, null=True, blank=True)
     dedicacion = models.CharField(verbose_name=('Dedicación'), max_length=100, null=True, blank=True)
     valor_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True)
     total_dias_laborados = models.IntegerField(verbose_name=('Total Dias Laborados'), null=True, blank=True)
