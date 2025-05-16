@@ -49,7 +49,7 @@ class Pensum(models.Model):
         verbose_name_plural = 'Pensums'
 
     def __str__(self):
-        return f"Programa {self.fk_programa.programa}: {self.pensum} - Vigente: {self.vigente}"
+        return f"Programa {self.fk_programa.programa}: {self.codigo_pensum} - Vigente: {self.vigente}"
 
 
 class Semestre(models.Model):
