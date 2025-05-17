@@ -7,6 +7,7 @@ def gestion_pensum(request, pensum_id=None):
     pensums = Pensum.objects.all()
     programas = Programa.objects.all()
     pensum = None
+    id_pensum = None  # Inicializamos la variable
 
     if pensum_id:
         pensum = get_object_or_404(Pensum, id=pensum_id)
@@ -14,32 +15,26 @@ def gestion_pensum(request, pensum_id=None):
     if request.method == 'POST':
         id_pensum = request.POST.get('id_pensum')
         programa_id = request.POST.get('programa')
-        pensum_valor = request.POST.get('pensum')
-        fecha_apertura = request.POST.get('fecha_apertura')
-        fecha_cierre = request.POST.get('fecha_cierre')
+        pensum_valor = request.POST.get('codigo_pensum')  # Asegúrate que este nombre coincide en tu formulario HTML
         vigente = request.POST.get('vigente') == 'on'
 
         if id_pensum:
             pensum = get_object_or_404(Pensum, id=id_pensum)
             pensum.fk_programa_id = programa_id
-            pensum.pensum = pensum_valor
-            pensum.fecha_apertura = fecha_apertura or None
-            pensum.fecha_cierre = fecha_cierre or None
+            pensum.codigo_pensum = pensum_valor
             pensum.vigente = vigente
             pensum.save()
             messages.success(request, 'Pensum actualizado correctamente.')
         else:
             Pensum.objects.create(
                 fk_programa_id=programa_id,
-                pensum=pensum_valor,
-                fecha_apertura=fecha_apertura or None,
-                fecha_cierre=fecha_cierre or None,
+                codigo_pensum=pensum_valor,  # Campo corregido
                 vigente=vigente
             )
             messages.success(request, 'Pensum creado correctamente.')
 
         return redirect('gestion_pensum')
-    
+
     contexto = obtener_db_info(request)
     contexto.update({
         'pensums': pensums,

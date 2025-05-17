@@ -23,7 +23,8 @@
                     {% endif %}
                     <div class="mb-3">
                         <label for="pensum" class="form-label">Número de Pensum:</label>
-                        <input type="number" name="pensum" id="pensum" class="form-control" required value="{{ pensum.pensum|default:'' }}">
+                        <input type="number" name="codigo_pensum" id="pensum" class="form-control" required value="{{ pensum.codigo_pensum|default:'' }}">
+
                     </div>
                     <div class="mb-3">
                         <label for="programa" class="form-label">Programa Asociado:</label>
@@ -34,14 +35,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="fecha_apertura" class="form-label">Fecha de Apertura:</label>
-                        <input type="date" name="fecha_apertura" id="fecha_apertura" class="form-control" value="{{ pensum.fecha_apertura|date:'Y-m-d' }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="fecha_cierre" class="form-label">Fecha de Cierre:</label>
-                        <input type="date" name="fecha_cierre" id="fecha_cierre" class="form-control" value="{{ pensum.fecha_cierre|date:'Y-m-d' }}">
-                    </div>
+                
                     <div class="form-check mb-3">
                         <input type="checkbox" name="vigente" id="vigente" class="form-check-input" {% if pensum and pensum.vigente %}checked{% endif %}>
                         <label for="vigente" class="form-check-label">Vigente</label>
@@ -58,10 +52,8 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Pensum</th>
+                            <th>Código Pensum</th>
                             <th>Programa</th>
-                            <th>Fecha Apertura</th>
-                            <th>Fecha Cierre</th>
                             <th>Vigente</th>
                             <th>Acciones</th>
                         </tr>
@@ -70,10 +62,8 @@
                         {% for p in pensums %}
                             <tr>
                                 <td class="text-center">{{ p.id }}</td>
-                                <td class="text-center">{{ p.pensum }}</td>
+                                <td class="text-center">{{ p.codigo_pensum }}</td>
                                 <td class="text-center">{{ p.fk_programa.programa }}</td>
-                                <td class="text-center">{{ p.fecha_apertura }}</td>
-                                <td class="text-center">{{ p.fecha_cierre }}</td>
                                 <td class="text-center">{{ p.vigente|yesno:"Sí,No" }}</td>
                                 <td class="text-center">
                                     <a href="{% url 'gestion_pensum' p.id %}" class="btn btn-dark btn-sm"><i class="bi bi-pencil-square"></i></a>

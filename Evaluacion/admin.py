@@ -1,3 +1,10 @@
 from django.contrib import admin
+from .models import CategoriaEstudiante, PreguntaEstudiante, CategoriaDocente, PreguntaDocente, CategoriaDirectivo, PreguntaDirectivo
 
-# Register your models here.
+admin.site.register(CategoriaEstudiante)
+admin.site.register(PreguntaEstudiante)
+admin.site.register(CategoriaDocente)
+admin.site.register(PreguntaDocente)
+admin.site.register(CategoriaDirectivo)
+admin.site.register(PreguntaDirectivo)
+

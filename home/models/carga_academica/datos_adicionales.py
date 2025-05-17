@@ -38,9 +38,7 @@ class Programa(models.Model):
 class Pensum(models.Model):
     id = models.AutoField(primary_key=True)
     fk_programa = models.ForeignKey(Programa, verbose_name="Programa al que Pertenece", on_delete=models.CASCADE)
-    pensum = models.IntegerField("Pensum", null=True, blank=True)
-    fecha_apertura = models.DateField("Fecha de Apertura", null=True, blank=True)
-    fecha_cierre = models.DateField("Fecha de Cierre", null=True, blank=True)
+    codigo_pensum = models.IntegerField("Codigo Pensum", null=True, blank=True)
     vigente = models.BooleanField(default=False)
 
     class Meta:
@@ -49,7 +47,8 @@ class Pensum(models.Model):
         verbose_name_plural = 'Pensums'
 
     def __str__(self):
-        return f"Programa {self.fk_programa.programa}: {self.pensum} - Vigente: {self.vigente}"
+        return f"Programa {self.fk_programa.programa}: {self.codigo_pensum} - Vigente: {self.vigente}"
+
 
 
 class Semestre(models.Model):

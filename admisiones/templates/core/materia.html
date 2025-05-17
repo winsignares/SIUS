@@ -59,7 +59,7 @@
                         <select name="pensum" id="pensum" class="form-select" required>
                             <option value="" disabled selected>Seleccione un pensum</option>
                             {% for pensum in pensums %}
-                                <option value="{{ pensum.id }}" {% if materia_obj.fk_pensum.id == pensum.id %}selected{% endif %}>{{ pensum.pensum }}</option>
+                                <option value="{{ pensum.id }}" {% if materia_obj.fk_pensum.id == pensum.id %}selected{% endif %}>{{ pensum.fk_programa.programa }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -83,7 +83,7 @@
                     </div>
                     <div class="col-md-5">
                         <label class="form-label">Semestre:</label>
-                        <select name="semestre" class="form-select" {% if not request.GET.programa %}disabled{% endif %}>
+                        <select name="semestre" class="form-select">
                             <option value="">Todos</option>
                             {% for semestre in semestres %}
                                 <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id %}selected{% endif %}>{{ semestre.semestre }}</option>
