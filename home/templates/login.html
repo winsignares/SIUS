@@ -13,6 +13,16 @@
         <link rel="icon" href="{% static 'images/icon.png' %}" type="image/x-icon">
     </head>
     <body>
+        <!-- Icono de información (añade esto al principio del body) -->
+        <div class="position-absolute top-0 end-0 m-3">
+                <i class="bi bi-info-circle-fill info-icon fs-3" 
+                id="infoIcon"
+                data-bs-toggle="tooltip" 
+                data-bs-placement="left"
+                data-bs-html="true"
+                title="<b>Sistema de Información SIUC</b><br><b>Creado por:</b> Ramón Montesino, Camilo Mercado<br><b>Versión:</b> 1.0<br><b>">
+                </i>
+            </div>
         <!-- Mensaje para dispositivos móviles -->
         <div class="mobile-alert" id="alertaLogin">
             <div class="d-block justify-content-center align-items-center">
@@ -131,6 +141,17 @@
 
             // Ejecutar la función al redimensionar la ventana
             window.addEventListener('resize', checkScreenWidth);
+        </script>
+
+        <!-- Script para el icono de información -->
+        <script>
+            // Inicializar tooltips de Bootstrap
+            document.addEventListener('DOMContentLoaded', function() {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            });
         </script>
     </body>
 </html>

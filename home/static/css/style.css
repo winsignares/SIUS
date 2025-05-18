@@ -148,6 +148,45 @@ p {
 }
 
 /*
+--------------------------------------- INFORMACIÓN ICONO ---------------------------------------
+*/
+
+.info-icon {
+    color: var(--color-terciario) !important;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+}
+
+.info-icon:hover {
+    transform: scale(1.1);
+    color: var(--color-primario) !important;
+    filter: drop-shadow(0 0 2px rgba(236, 84, 100, 0.5));
+}
+
+
+.tooltip-inner {
+    background-color: var(--color-primario) !important;
+    color: var(--color-secundario) !important;
+    border-radius: var(--borde-redondo) !important;
+    padding: 10px 15px !important;
+    max-width: 300px !important;
+    text-align: left !important;
+}
+
+.bs-tooltip-auto[data-popper-placement^=left] .tooltip-arrow::before, 
+.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: var(--color-primario) !important;
+}
+
+
+
+
+
+/*
 --------------------------------------- MENSAJE PARA DISPOSITIVOS MÓVILES Y TABLETS ---------------------------------------
 */
 .mobile-alert {
