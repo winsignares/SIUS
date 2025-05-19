@@ -1,0 +1,84 @@
+<form id="formDetalleContrato" method="POST" action="{% url 'definir_contrato_usuario' tipo=tipo usuario_id=usuario.id %}" data-ajax-submit="true">
+    {% csrf_token %}
+    <div class="container">
+        <div class="container mb-3">
+            <div class="d-flex gap-3 fs-5 fw-bold">
+                <i class="bi bi-clipboard2-check-fill"></i></i> Detalles de Contrato
+            </div>
+
+            <div class="row px-3 mb-3">
+
+                <!-- Estado del contrato -->
+                <div class="col-md-12">
+                    <label for="estado_contrato" class="form-label mb-0 col-md-12">Estado del Contrato <span class='fw-bold fs-4'>*</span></label>
+                    <div class="form-check form-check-inline">
+                        <input type="radio" class="form-check-input" id="nuevo_contrato" name="estado_contrato" value="1" {% if contrato.estado == 1 %}checked{% endif %} {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                        <label class="form-check-label" for="nuevo_contrato">Nuevo Contrato</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input type="radio" class="form-check-input" id="editar_contrato_existente" name="estado_contrato" value="2" {% if contrato.estado == 2 %}checked{% endif %} {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                        <label class="form-check-label" for="editar_contrato_existente">Editar Contrato Existente</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input type="radio" class="form-check-input" id="agregar_otro_contrato" name="estado_contrato" value="3" {% if contrato.estado == 3 %}checked{% endif %} {% if usuario.estado_revision != "Contratado" %}disabled{% endif %}>
+                        <label class="form-check-label" for="agregar_otro_contrato">Nuevo Contrato</label>
+                    </div>
+                </div>
+
+                <!-- Tipo del Contrato -->
+                <div class="col-md-6">
+                    <label for="tipo_contrato" class="form-label mb-0">Tipo de Contrato <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="tipo_contrato" name="tipo_contrato" required>
+                        <option value="" {% if not contrato or not contrato.tipo_contrato %}selected{% endif %}>Seleccione</option>
+                        {% for tipo in tipos_contrato_list %}
+                            <option value="{{ tipo.id }}" {% if contrato and contrato.tipo_contrato == tipo.id %}selected{% endif %}>
+                                {{ tipo.tipo_contrato }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Dedicación -->
+                <div class="col-md-6">
+                    <label for="dedicacion" class="form-label mb-0">Dedicación <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="dedicacion" name="dedicacion" required>
+                        <option value="" {% if not contrato or not contrato.dedicacion %}selected{% endif %}>Seleccione</option>
+                        <option value="Tiempo Completo - TC" {% if contrato and contrato.dedicacion == "Tiempo Completo - TC" %}selected{% endif %}>Tiempo Completo - TC</option>
+                        <option value="Medio Tiempo - MT" {% if contrato and contrato.dedicacion == "Medio Tiempo - MT" %}selected{% endif %}>Medio Tiempo - MT</option>
+                        {% if usuario.fk_rol.id == 4 %}
+                        <option value="Hora Catedra - HC" {% if contrato and contrato.dedicacion == "Hora Catedra - HC" %}selected{% endif %}>Hora Catedra - HC</option>
+                        {% endif %}
+                    </select>
+                </div>
+
+                <!-- Fecha Inicio del Contrato -->
+                <div class="col-md-6">
+                    <label for="fecha_inicio_contrato" class="form-label mb-0">Fecha Inicio Contrato <span class='fw-bold fs-4'>*</span></label>
+                    <input type="date" class="form-control" id="fecha_inicio_contrato" name="fecha_inicio_contrato" value="{{ contrato.fecha_inicio|date:'Y-m-d' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
+                </div>
+
+                <!-- Fecha Fin del Contrato -->
+                <div class="col-md-6">
+                    <label for="fecha_fin_contrato" class="form-label mb-0">Fecha Fin Contrato <span class='fw-bold fs-4'>*</span></label>
+                    <input type="date" class="form-control" id="fecha_fin_contrato" name="fecha_fin_contrato" value="{{ contrato.fecha_fin|date:'Y-m-d' }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
+                </div>
+
+                <!-- Valor del Contrato -->
+                {% if usuario.fk_rol.id == 3 %}
+                    <div class="col-md-12">
+                        <label for="valor_contrato" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'>*</span></label>
+                        <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" value="{{ contrato.valor_contrato }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Funciones para contenido dinámico
+    }
+</script>

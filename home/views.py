@@ -130,7 +130,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
-            'docentes_list': Empleado.objects.filter(fk_rol_id=4, estado_revision='Pendiente'),
+            'docentes_list': Empleado.objects.filter(fk_rol_id=4, estado_revision='Contratado', activo=True),
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
             'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
         })
@@ -774,6 +774,30 @@ def detalle_usuario(request, tipo, usuario_id):
 
 @login_required
 def editar_usuario(request, tipo, usuario_id):
+    '''
+        Función para mostrar el formulario de edición de información de empleados.
+    '''
+    usuario = get_object_or_404(Empleado, id=usuario_id)
+
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    contexto.update({
+        "usuario": usuario,
+        "tipo": tipo # Pasamos un solo contrato, no una queryset
+    })
+
+    return render(
+        request,
+        "partials/editar_usuario_form.html",
+        contexto,
+    )
+
+
+@login_required
+def definir_contrato(request, tipo, usuario_id):
+    """
+    Muestra el formulario para definir el contrato de un empleado.
+    """
     usuario = get_object_or_404(Empleado, id=usuario_id)
 
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
@@ -788,14 +812,35 @@ def editar_usuario(request, tipo, usuario_id):
         "usuario": usuario,
         "tipo": tipo,
         "tipos_contrato_list": tipos_contrato,
-        "contrato": contrato  # Pasamos un solo contrato, no una queryset
+        "contrato_usuario": contrato # Pasamos un solo contrato, no una queryset
     })
 
     return render(
         request,
-        "partials/editar_usuario_form.html",
+        "partials/detalle_contrato.html",
         contexto,
     )
+
+
+@login_required
+def definir_contrato_usuario(request, tipo, usuario_id):
+    """
+    Muestra el formulario para definir el contrato de un empleado.
+    """
+    usuario = get_object_or_404(Empleado, id=usuario_id)
+    data = request.POST
+    try:
+        print(usuario, data)
+        return JsonResponse({
+            "status": "success",
+            "message": "Contrato definido correctamente.",
+        })
+    except Exception as e:
+        print(e)
+        return JsonResponse({
+            "status": "error",
+            "message": 'Error inesperado. Por favor, intente nuevamente.'
+        }, status=500)
 
 
 def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
@@ -872,35 +917,32 @@ def contrato_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Empleado, id=usuario_id)
     data = request.POST
 
-    fecha_inicio_contrato = data.get("fecha_inicio_contrato")
-    fecha_fin_contrato = data.get("fecha_fin_contrato")
-
     tipo_contrato = data.get("tipo_contrato")
     fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
 
-    dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
+    # dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
 
     try:
         contrato, created = Contrato.objects.get_or_create(
             fk_usuario=usuario,
             defaults={
-                "fecha_inicio": fecha_inicio_contrato,
-                "fecha_fin": fecha_fin_contrato,
+                # "fecha_inicio": fecha_inicio_contrato,
+                # "fecha_fin": fecha_fin_contrato,
                 "fk_tipo_contrato": fk_tipo_contrato,
                 "dedicacion": data.get("dedicacion"),
                 "valor_contrato": data.get("valor_contrato"),
-                "total_dias_laborados": dias_laborados,
+                # "total_dias_laborados": dias_laborados,
                 "vigencia_contrato": True,
             },
         )
 
         if not created:
-            contrato.fecha_inicio = fecha_inicio_contrato
-            contrato.fecha_fin = fecha_fin_contrato
+            # contrato.fecha_inicio = fecha_inicio_contrato
+            # contrato.fecha_fin = fecha_fin_contrato
             contrato.fk_tipo_contrato = fk_tipo_contrato
             contrato.dedicacion = data.get("dedicacion")
             contrato.valor_contrato = data.get("valor_contrato")
-            contrato.total_dias_laborados = dias_laborados
+            # contrato.total_dias_laborados = dias_laborados
             contrato.vigencia_contrato = True
             contrato.save()
 
@@ -979,6 +1021,7 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
             usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
             usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
+            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
             usuario.fk_modificado_por = request.user
 
             if rol_id := request.POST.get("fk_rol"):
@@ -1123,6 +1166,39 @@ def gestion_matriz(request):
         })
 
     return render(request, 'matriz.html', contexto)
+
+
+@login_required
+def obtener_dedicacion_docente(request, docente_id):
+    """
+    Obtiene la dedicación del docente según su ID.
+    """
+    try:
+        contrato = Contrato.objects.filter(fk_usuario_id=docente_id, vigencia_contrato = True).first()
+        if contrato:
+            # Si el contrato existe, obtener la dedicación
+            dedicacion = contrato.dedicacion
+            return JsonResponse({
+                'status': 'success',
+                'dedicacion': dedicacion
+            })
+        else:
+            # Si no hay contrato, devolver un mensaje de error
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No se encontró un contrato activo para el docente.'
+            }, status=404)
+    except Empleado.DoesNotExist:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Docente no encontrado.'
+        }, status=404)
+    except Exception as e:
+            print(e)
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
+            }, status=500)
 
 
 def calcular_valor_a_pagar(horas_semanales, total_horas, fk_docente_asignado):

@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <!-- Modal para detalles de usuario -->
+        <!-- Modal para detalles del usuario -->
         <div class="modal fade" id="detalleUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="detalleUsuarioLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-forms modal-content">
@@ -56,6 +56,7 @@
             </div>
         </div>
 
+        <!-- Modal para editar la información del usuario -->
         <div class="modal fade" id="editarUsuarioModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="editarUsuarioLabel" aria-hidden="true">
             <div class="modal-dialog {% if "Director Talento Humano" in user_groups %}modal-lg{% else %}modal-xl{% endif %} modal-dialog-scrollable">
                 <div class="modal-forms modal-content">
@@ -78,13 +79,36 @@
             </div>
         </div>
 
+        <!-- Modal para definir el contrato del usuario -->
+        <div class="modal fade" id="definirContratoModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="definirContratoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="definirContratoLabel">Definir Contrato del Usuario</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="definirContratoContent">
+                        <!-- Contenido dinámico cargado por AJAX -->
+                    </div>
+
+                    <!-- Botón para enviar el formulario -->
+                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                        <!-- Nota -->
+                        <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                        <button type="submit" class="btn btn-primary" form="formDetalleContrato">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Aquí se generarán alertas dinámicas del frontend -->
         <div id="dynamic-alerts" class="position-fixed bottom-0 end-0 mb-1 me-2"></div>
 
         <!-- Importar Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-        <!-- Detalles de un usuario -->
+        <!-- Detalles del usuario -->
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 const detalleModal = document.getElementById('detalleUsuarioModal');
@@ -117,6 +141,7 @@
             });
         </script>
 
+        <!-- Editar información del usuario -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const editarModal = document.getElementById("editarUsuarioModal");
@@ -150,6 +175,40 @@
             });
         </script>
 
+        <!-- Definir contrato del usuario -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const editarModal = document.getElementById("definirContratoModal");
+
+                editarModal.addEventListener("show.bs.modal", function (event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute("data-id");
+                    const userType = button.getAttribute("data-tipo");
+                    const modalContent = document.getElementById("definirContratoContent");
+
+                    // Mostrar un spinner mientras se cargan los datos
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-color-terciario" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Realizar la solicitud AJAX para cargar los datos
+                    fetch(`/siuc/dashboard/definir_contrato/${userType}/${userId}/`)
+                        .then(response => response.text())
+                        .then(data => {
+                            modalContent.innerHTML = data;
+                        })
+                        .catch(error => {
+                            modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
+                            console.error("Error:", error);
+                        });
+                });
+            });
+        </script>
+
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 // Manejo de formularios con atributo `data-ajax-submit="true"`
@@ -157,19 +216,35 @@
                     form.addEventListener("submit", function (e) {
                         e.preventDefault();
                         handleFormSubmission(this, function (data) {
-                            if (form.id === "formInfoPersonal" || form.id === "formInfoPersonal_emp") {
+                            if ( form.id === "formInfoPersonal" || form.id === "formInfoPersonal_emp" ) {
                                 window.usuarioIdCreado = data.usuario_id;
                                 openNextModal();
-                            } else if (form.id === "formDetalleAcademico" || form.id === "formDetalleAcademico_emp") {
+                            } else if ( form.id === "formDetalleAcademico" || form.id === "formDetalleAcademico_emp" ) {
                                 agregarFilaATabla("tablaAcademica", data.detalle, ["institucion", "titulo_obtenido", "nivel_academico", "fecha_graduacion"]);
                                 cerrarModalFormulario("formDetalleAcademicoModal");
                                 cerrarModalFormulario("formDetalleAcademicoModal_emp");
                                 redirigirAModal();
-                            } else if (form.id === "formExpLaboral") {
+                            } else if ( form.id === "formExpLaboral" ) {
                                 agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
                                 cerrarModalFormulario("formExpLaboralModal");
                                 cerrarModalFormulario("formExpLaboralModal_emp");
                                 redirigirAModal();
+                            } else if ( form.id === "formEditarUsuario" || form.id === "formDetalleContrato" ) {
+                                cerrarModalFormulario("editarUsuarioModal");
+                                cerrarModalFormulario("definirContratoModal");
+
+                                // Redirigir a la vista correspondiente
+                                const currentPath = document.location.pathname;
+                                setTimeout(() => {
+                                    if (currentPath.includes("empleados")) {
+                                        window.location.href = "{% url 'gestion_empleados' %}";
+                                    } else if (currentPath.includes("aspirantes")) {
+                                        window.location.href = "{% url 'gestion_aspirantes' %}";
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                }, 1500);
+
                             }
                         });
                     });
@@ -196,41 +271,6 @@
                 }
             });
 
-            document.addEventListener("DOMContentLoaded", function () {
-                const editarUsuarioModal = document.getElementById("editarUsuarioModal");
-
-                // Delegación de eventos para capturar el submit del formulario dinámico
-                editarUsuarioModal.addEventListener("shown.bs.modal", function () {
-                    const formEditarUsuario = document.getElementById("formEditarUsuario");
-
-                    if (formEditarUsuario) {
-                        formEditarUsuario.removeEventListener("submit", submitEditarUsuario);
-                        formEditarUsuario.addEventListener("submit", submitEditarUsuario);
-                    }
-                });
-            });
-
-            // Función mejorada para manejar el envío del formulario y recargar correctamente la vista
-            function submitEditarUsuario(e) {
-                e.preventDefault();
-                handleFormSubmission(this, function (data) {
-                    showAlert(data.message, "success");
-                    cerrarModalFormulario("editarUsuarioModal");
-
-                    // Detectar la vista actual para redirigir correctamente
-                    const currentPath = document.location.pathname;
-
-                    setTimeout(() => {
-                        if (currentPath.includes("empleados")) {
-                            window.location.href = "{% url 'gestion_empleados' %}";
-                        } else if (currentPath.includes("aspirantes")) {
-                            window.location.href = "{% url 'gestion_aspirantes' %}";
-                        } else {
-                            window.location.reload();
-                        }
-                    }, 1500);
-                });
-            }
 
             // Función para manejar el envío de formularios vía AJAX
             function handleFormSubmission(form, onSuccess = null) {
@@ -349,6 +389,7 @@
                 tabla.insertAdjacentHTML("beforeend", nuevaFila);
             }
         </script>
+
         <script>
             // Función para verificar el ancho de la pantalla
             function checkScreenWidth() {

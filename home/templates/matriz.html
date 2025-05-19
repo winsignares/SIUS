@@ -79,22 +79,28 @@
                                         <label for="fk_docente_input_matriz" class="form-label">Docente <span class="fw-bold fs-4">*</span></label>
                                         <input type="text" id="fk_docente_input_matriz" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off" required>
                                         <ul id="fk_docente_dropdown_matriz" class="dropdown-menu">
-                                            {% for docente in docentes_list %}
-                                                <li>
-                                                    <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
-                                                        {{ docente.primer_nombre }}{% if docente.segundo_nombre %} {{ docente.segundo_nombre }}{% endif %} {{ docente.primer_apellido }}{% if docente.segundo_apellido %} {{ docente.segundo_apellido }}{% endif %}
-                                                    </button>
-                                                </li>
-                                            {% endfor %}
+                                            {% if docentes_list %}
+                                                {% for docente in docentes_list %}
+                                                    <li>
+                                                        <button class="dropdown-item" type="button" data-value="{{ docente.id }}" data-dedicacion="{{ docente.dedicacion }}">
+                                                            {{ docente.primer_nombre }}{% if docente.segundo_nombre %} {{ docente.segundo_nombre }}{% endif %} {{ docente.primer_apellido }}{% if docente.segundo_apellido %} {{ docente.segundo_apellido }}{% endif %}
+                                                        </button>
+                                                    </li>
+                                                {% endfor %}
+                                            {% else %}
+                                                <li class="dropdown-item text-muted fst-italic disabled">Docentes no disponibles</li>
+                                            {% endif %}
                                         </ul>
                                     </div>
 
-                                    <div class="col-md-12 mb-2 ms-2 form-check">
-                                        <input type="checkbox" class="form-check-input" id="materia_compartida">
-                                        <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
+                                    <div class="col-md-12 mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="materia_compartida">
+                                            <label class="form-check-label" for="materia_compartida">Materia Compartida</label>
+                                        </div>
                                     </div>
 
-                                    <div id="materiasCompartidas" class="container col-12">
+                                    <div id="materiasCompartidas" class="container col--md-12">
                                         <div class="d-flex justify-content-center align-items-center row">
                                             <div class="col flex-column d-flex justify-content-center align-items-center col-md-5">
                                                 <label for="materias_disponibles" class="form-label">Materias Disponibles</label>
@@ -242,6 +248,7 @@
 
         // Filtro de selects con input (docente)
         let docenteId = ""; // Aquí se almacena el id del docente seleccionado en el dropdown
+        let dedicacion = ""; // Aquí se almacena la dedicación del docente seleccionado en el dropdown
 
         function setupDropdownFilter(inputId, dropdownId) {
             const inputElement = document.getElementById(inputId);
@@ -268,6 +275,19 @@
                 if (event.target.matches(".dropdown-item")) {
                     const selectedText = event.target.textContent.trim();
                     docenteId = event.target.getAttribute("data-value");
+
+                    // Obtener la dedicación del docente seleccionado
+                    fetch(`/siuc/dashboard/matriz/dedicacion_docente/${docenteId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            dedicacion = data.dedicacion || "No disponible";
+                            console.log("Dedicación del docente:", dedicacion);
+                        })
+                        .catch(error => {
+                            console.error("Error al obtener la dedicación del docente:", error);
+                            dedicacion = "";
+                        });
+
                     inputElement.value = selectedText;
                     dropdownElement.style.display = "none";
                 }
@@ -441,7 +461,7 @@
                 <td>${ semestreText }</td>
                 <td>${ materiaText }</td>
                 <td>${ docenteNombre }</td>
-                <td>Tiempo Completo</td>
+                <td>${ dedicacion }</td>
                 <td>${ horasSemanales }</td>
                 <td>${ semanas }</td>
                 <td>${ totalHoras }</td>

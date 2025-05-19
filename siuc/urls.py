@@ -54,9 +54,12 @@ urlpatterns = [
     path('siuc/dashboard/detalle_usuario/<str:tipo>/<int:usuario_id>/', detalle_usuario, name='detalle_usuario'),
     path("siuc/dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", views.editar_usuario, name="editar_usuario"),
     path("siuc/dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.actualizar_usuario, name="actualizar_usuario"),
+    path("siuc/dashboard/definir_contrato/<str:tipo>/<int:usuario_id>/", views.definir_contrato, name="definir_contrato"),
+    path("siuc/dashboard/definir_contrato_usuario/<str:tipo>/<int:usuario_id>/", views.definir_contrato_usuario, name="definir_contrato_usuario"),
 
     path("siuc/dashboard/carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"),
     path("siuc/dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),
+    path("siuc/dashboard/matriz/dedicacion_docente/<int:docente_id>/", views.obtener_dedicacion_docente, name="obtener_dedicacion_docente"),
     path("siuc/dashboard/matriz/guardar_matriz/", views.guardar_matriz, name="guardar_matriz"),
 
     path('siuc/logout/', views.cerrar_sesion, name='cerrar_sesion')

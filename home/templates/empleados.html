@@ -92,15 +92,19 @@
                                     {% endif %}
                                     <td>
                                         <div class="d-flex justify-content-center gap-3">
-                                            <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
-                                            <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                            <a href="#" class="btn btn-sm btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#detalleUsuarioModal" data-id="{{ usuario.id }}" data-tipo="empleado">
                                                 <i class="bi bi-eye"></i>
                                             </a>
+                                            <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#definirContratoModal" data-id="{{ usuario.id }}" data-tipo="empleado">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </a>
+
                                             <!-- Botón de descargar contrato (Habilitar más adelante quitando el d-none) -->
                                             {% if usuario.estado_revision == 'Contratado' and "Director Talento Humano" in user_groups %}
-                                                <a href="{% url 'generar_contrato' usuario_id=usuario.id %}" class="btn btn-primary d-flex justify-content-center align-items-center d-none" target="_blank">
+                                                <a href="{% url 'generar_contrato' usuario_id=usuario.id %}" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center d-none" target="_blank">
                                                     <i class="bi bi-download"></i>
                                                 </a>
                                             {% endif %}
@@ -722,7 +726,7 @@
     </div>
 </div>
 
-<!-- Modal para Carga Masiva -->
+<!-- Modal para Carga Masiva
 <div class="modal fade" id="cargaMasivaModal" tabindex="-1" aria-labelledby="cargaMasivaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -750,7 +754,7 @@
     </div>
 </div>
 
-<!-- Script para Carga masiva -->
+Script para Carga masiva
 <script>
     document.getElementById("formCargaMasiva").addEventListener("submit", function (e) {
         e.preventDefault();
@@ -777,7 +781,7 @@
             alert("Hubo un problema al procesar el archivo.");
         });
     });
-</script>
+</script> -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
