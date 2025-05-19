@@ -128,14 +128,19 @@
                     `;
 
                     // Hacer una solicitud AJAX para obtener los detalles
-                    fetch(`/siuc/dashboard/detalle_usuario/${userType}/${userId}/`)
+                    fetch(`/siuc/dashboard/detalle_usuario/${userType}/${userId}/`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                    })
                     .then(response => response.text())
-                    .then(data => {
-                        modalContent.innerHTML = data;
+                    .then(html => {
+                        modalContent.innerHTML = html;
                     })
                     .catch(error => {
-                        modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
-                        console.error('Error:', error);
+                        showAlert("Error en el servidor, intenta de nuevo.", "error");
+                        console.error("Error:", error);
                     });
                 });
             });
@@ -152,7 +157,6 @@
                     const userType = button.getAttribute("data-tipo");
                     const modalContent = document.getElementById("editarUsuarioContent");
 
-                    // Mostrar un spinner mientras se cargan los datos
                     modalContent.innerHTML = `
                         <div class="text-center">
                             <div class="spinner-border text-color-terciario" role="status">
@@ -161,16 +165,20 @@
                         </div>
                     `;
 
-                    // Realizar la solicitud AJAX para cargar los datos
-                    fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`)
-                        .then(response => response.text())
-                        .then(data => {
-                            modalContent.innerHTML = data;
-                        })
-                        .catch(error => {
-                            modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
-                            console.error("Error:", error);
-                        });
+                    fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`, {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        modalContent.innerHTML = html;
+                    })
+                    .catch(error => {
+                        showAlert("Error en el servidor, intenta de nuevo.", "error");
+                        console.error("Error:", error);
+                    });
                 });
             });
         </script>
@@ -178,15 +186,14 @@
         <!-- Definir contrato del usuario -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const editarModal = document.getElementById("definirContratoModal");
+                const contratoModal = document.getElementById("definirContratoModal");
 
-                editarModal.addEventListener("show.bs.modal", function (event) {
+                contratoModal.addEventListener("show.bs.modal", function (event) {
                     const button = event.relatedTarget;
                     const userId = button.getAttribute("data-id");
                     const userType = button.getAttribute("data-tipo");
                     const modalContent = document.getElementById("definirContratoContent");
 
-                    // Mostrar un spinner mientras se cargan los datos
                     modalContent.innerHTML = `
                         <div class="text-center">
                             <div class="spinner-border text-color-terciario" role="status">
@@ -195,18 +202,77 @@
                         </div>
                     `;
 
-                    // Realizar la solicitud AJAX para cargar los datos
-                    fetch(`/siuc/dashboard/definir_contrato/${userType}/${userId}/`)
-                        .then(response => response.text())
-                        .then(data => {
-                            modalContent.innerHTML = data;
-                        })
-                        .catch(error => {
-                            modalContent.innerHTML = `<p class="text-danger">Error al cargar los datos. Inténtelo nuevamente.</p>`;
-                            console.error("Error:", error);
-                        });
+                    fetch(`/siuc/dashboard/definir_contrato/${userType}/${userId}/`, {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        modalContent.innerHTML = html;
+                    })
+                    .catch(error => {
+                        showAlert("Error en el servidor, intenta de nuevo.", "error");
+                        console.error("Error:", error);
+                    });
                 });
             });
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Editar usuario
+                const editarModalBody = document.getElementById("editarUsuarioContent");
+                editarModalBody.addEventListener("submit", function(e) {
+                    if (e.target && e.target.id === "formEditarUsuario") {
+                    e.preventDefault();
+                    handleFormSubmission(e.target, function(data) {
+                        showAlert(data.message, data.status === "success" ? "success" : "error");
+                        if (data.status === "success") {
+                        cerrarModalFormulario("editarUsuarioModal");
+                        // Actualizar la página
+                        const currentPath = document.location.pathname;
+                            setTimeout(() => {
+                                if (currentPath.includes("empleados")) {
+                                    window.location.href = "{% url 'gestion_empleados' %}";
+                                } else if (currentPath.includes("aspirantes")) {
+                                    window.location.href = "{% url 'gestion_aspirantes' %}";
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 1500);
+                        }
+                    });
+                    }
+                });
+
+                // Definir contrato
+                const definirContratoBody = document.getElementById("definirContratoContent");
+                definirContratoBody.addEventListener("submit", function(e) {
+                    if (e.target && e.target.id === "formDetalleContrato") {
+                    e.preventDefault();
+                    handleFormSubmission(e.target, function(data) {
+                        showAlert(data.message, data.status === "success" ? "success" : "error");
+                        if (data.status === "success") {
+                        cerrarModalFormulario("definirContratoModal");
+                        // Actualizar la página
+                        const currentPath = document.location.pathname;
+                            setTimeout(() => {
+                                if (currentPath.includes("empleados")) {
+                                    window.location.href = "{% url 'gestion_empleados' %}";
+                                } else if (currentPath.includes("aspirantes")) {
+                                    window.location.href = "{% url 'gestion_aspirantes' %}";
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 1500);
+                        }
+                    });
+                    }
+                });
+            });
+
         </script>
 
         <script>
@@ -229,9 +295,6 @@
                                 cerrarModalFormulario("formExpLaboralModal");
                                 cerrarModalFormulario("formExpLaboralModal_emp");
                                 redirigirAModal();
-                            } else if ( form.id === "formEditarUsuario" || form.id === "formDetalleContrato" ) {
-                                cerrarModalFormulario("editarUsuarioModal");
-                                cerrarModalFormulario("definirContratoModal");
 
                                 // Redirigir a la vista correspondiente
                                 const currentPath = document.location.pathname;
@@ -292,6 +355,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+
                     showAlert(data.message, data.status === "success" ? "success" : "error");
 
                     // Ejecutar función de éxito si la respuesta es correcta

@@ -1,6 +1,7 @@
 # Importar Librerias
 from collections import defaultdict
 import json
+import traceback
 from decimal import Decimal
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
@@ -325,7 +326,7 @@ def gestion_aspirantes(request):
 
     return render(request, 'aspirantes.html', contexto)
 
-
+# Revisado ✅
 @login_required
 def agregar_aspirante(request):
     print(request.POST)
@@ -342,14 +343,22 @@ def agregar_aspirante(request):
                     'status': 'error',
                     'message': 'Ya existe un aspirante con el correo personal ingresado.'}, status=400)
 
+            # Instanciar ForeignKeys
+            fk_ultimo_nivel_estudio_ins = NivelAcademico.objects.get(id=data.get('fk_ultimo_nivel_estudio'))
+            fk_afp_ins = AFP.objects.get(id=data.get('fk_afp'))
+            fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia'))
+
             nuevo_usuario = Empleado.objects.create(
-                fk_rol_id=data.get('fk_rol'),
+                # Campos obligatorios
+                fk_rol_id= data.get('fk_rol'),
                 fk_tipo_documento_id=data.get('fk_tipo_documento'),
                 cargo=data.get('cargo'),
                 primer_nombre=data.get('primer_nombre'),
                 primer_apellido=data.get('primer_apellido'),
                 numero_documento=data.get('numero_documento'),
                 correo_personal=data.get('correo_personal'),
+                estado_revision=data.get('estado_revision'),
+                # Campos opcionales
                 segundo_nombre=data.get('segundo_nombre'),
                 segundo_apellido=data.get('segundo_apellido'),
                 fecha_nacimiento=data.get('fecha_nacimiento'),
@@ -357,20 +366,20 @@ def agregar_aspirante(request):
                 fecha_expedicion_documento=data.get('fecha_expedicion_documento'),
                 lugar_expedicion_documento=data.get('lugar_expedicion_documento'),
                 sexo=data.get('sexo'),
-                celular=data.get('celular'),
                 telefono_fijo=data.get('telefono_fijo'),
+                celular=data.get('celular'),
+                estado_civil=data.get('estado_civil'),
+                fk_ultimo_nivel_estudio=fk_ultimo_nivel_estudio_ins,
+                fk_eps_id=data.get('fk_eps'),
+                fk_afp=fk_afp_ins,
                 direccion_residencia=data.get('direccion_residencia'),
-                departamento_residencia=data.get('departamento_residencia'),
+                fk_departamento_residencia=fk_departamento_residencia_ins,
                 ciudad_residencia=data.get('ciudad_residencia'),
                 barrio_residencia=data.get('barrio_residencia'),
-                estado_civil=data.get('estado_civil'),
-                ultimo_nivel_estudio=data.get('ultimo_nivel_estudio'),
-                fk_eps_id=data.get('fk_eps'),
-                afp=data.get('afp'),
-                url_hoja_de_vida=data.get('url_hoja_de_vida'),
-                estado_revision="Pendiente",
                 sede_donde_labora=data.get('sede_donde_labora'),
-                fk_creado_por=request.user
+                url_hoja_de_vida=data.get('url_hoja_de_vida'),
+                fk_creado_por=request.user,
+                activo=False
             )
             return JsonResponse({
                 'status': 'success',
@@ -379,6 +388,7 @@ def agregar_aspirante(request):
             })
 
         except IntegrityError:
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
                 'message': 'Error de integridad al agregar el aspirante. Revise los datos ingresados.'
@@ -392,6 +402,7 @@ def agregar_aspirante(request):
 
 @login_required
 def agregar_empleado(request):
+    print(request.POST)
     if request.method == 'POST':
         data = request.POST
         try:
@@ -407,37 +418,47 @@ def agregar_empleado(request):
                     'status': 'error',
                     'message': 'Ya existe un empleado con el correo personal ingresado.'}, status=400)
 
-            # Crear un nuevo usuario
+            # Instanciar ForeignKeys
+            fk_ultimo_nivel_estudio_ins = NivelAcademico.objects.get(id=data.get('fk_ultimo_nivel_estudio_emp'))
+            fk_afp_ins = AFP.objects.get(id=data.get('fk_afp_emp'))
+            fk_arl_ins = ARL.objects.get(id=data.get('fk_arl_emp'))
+            fk_caja_compensacion_ins = CajaCompensacion.objects.get(id=data.get('fk_caja_compensacion_emp'))
+            fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia_emp'))
+
             nuevo_usuario = Empleado.objects.create(
-                fk_rol_id=data.get('fk_rol_emp'),
-                fk_tipo_documento_id=data.get('fk_tipo_documento'),
-                cargo=data.get('cargo'),
-                primer_nombre=data.get('primer_nombre'),
-                primer_apellido=data.get('primer_apellido'),
-                numero_documento=data.get('numero_documento'),
-                correo_personal=data.get('correo_personal'),
-                segundo_nombre=data.get('segundo_nombre'),
-                segundo_apellido=data.get('segundo_apellido'),
-                fecha_nacimiento=data.get('fecha_nacimiento'),
-                lugar_nacimiento=data.get('lugar_nacimiento'),
-                fecha_expedicion_documento=data.get('fecha_expedicion_documento'),
-                lugar_expedicion_documento=data.get('lugar_expedicion_documento'),
-                sexo=data.get('sexo'),
-                celular=data.get('celular'),
-                telefono_fijo=data.get('telefono_fijo'),
-                direccion_residencia=data.get('direccion_residencia'),
-                departamento_residencia=data.get('departamento_residencia'),
-                ciudad_residencia=data.get('ciudad_residencia'),
-                barrio_residencia=data.get('barrio_residencia'),
-                estado_civil=data.get('estado_civil'),
-                ultimo_nivel_estudio=data.get('ultimo_nivel_estudio'),
-                fk_eps_id=data.get('fk_eps'),
-                afp=data.get('afp'),
-                url_hoja_de_vida=data.get('url_hoja_de_vida'),
-                estado_revision="Contratado",
-                activo=True,
-                sede_donde_labora=data.get('sede_donde_labora'),
-                fk_creado_por=request.user
+                # Campos obligatorios
+                fk_rol_id= data.get('fk_rol_emp'),
+                fk_tipo_documento_id=data.get('fk_tipo_documento_emp'),
+                cargo=data.get('cargo_emp'),
+                primer_nombre=data.get('primer_nombre_emp'),
+                primer_apellido=data.get('primer_apellido_emp'),
+                numero_documento=data.get('numero_documento_emp'),
+                correo_personal=data.get('correo_personal_emp'),
+                estado_revision=data.get('estado_revision_emp'),
+                # Campos opcionales
+                segundo_nombre=data.get('segundo_nombre_emp'),
+                segundo_apellido=data.get('segundo_apellido_emp'),
+                fecha_nacimiento=data.get('fecha_nacimiento_emp'),
+                lugar_nacimiento=data.get('lugar_nacimiento_emp'),
+                fecha_expedicion_documento=data.get('fecha_expedicion_documento_emp'),
+                lugar_expedicion_documento=data.get('lugar_expedicion_documento_emp'),
+                sexo=data.get('sexo_emp'),
+                telefono_fijo=data.get('telefono_fijo_emp'),
+                celular=data.get('celular_emp'),
+                estado_civil=data.get('estado_civil_emp'),
+                fk_ultimo_nivel_estudio=fk_ultimo_nivel_estudio_ins,
+                fk_eps_id=data.get('fk_eps_emp'),
+                fk_arl=fk_arl_ins,
+                fk_afp=fk_afp_ins,
+                fk_caja_compensacion=fk_caja_compensacion_ins,
+                direccion_residencia=data.get('direccion_residencia_emp'),
+                fk_departamento_residencia=fk_departamento_residencia_ins,
+                ciudad_residencia=data.get('ciudad_residencia_emp'),
+                barrio_residencia=data.get('barrio_residencia_emp'),
+                sede_donde_labora=data.get('sede_donde_labora_emp'),
+                url_hoja_de_vida=data.get('url_hoja_de_vida_emp'),
+                fk_creado_por=request.user,
+                activo=True
             )
             return JsonResponse({
                 'status': 'success',
@@ -446,13 +467,13 @@ def agregar_empleado(request):
             })
 
         except IntegrityError as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
                 'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=400)
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
                 'message': 'Error inesperado. Por favor, intente nuevamente.'
@@ -658,93 +679,95 @@ def gestion_empleados(request):
     return render(request, 'empleados.html', contexto)
 
 
+# Falta configurar 🚫
 @login_required
 @csrf_exempt
 def cargar_empleados_masivamente(request):
-    if request.method == 'POST' and 'archivoExcel' in request.FILES:
-        archivo = request.FILES['archivoExcel']
-        try:
-            # Leer el archivo Excel usando pandas
-            import pandas as pd
-            datos = pd.read_excel(archivo)
+    # if request.method == 'POST' and 'archivoExcel' in request.FILES:
+    #     archivo = request.FILES['archivoExcel']
+    #     try:
+    #         # Leer el archivo Excel usando pandas
+    #         import pandas as pd
+    #         datos = pd.read_excel(archivo)
 
-            # Validar que las columnas requeridas existan en el archivo
-            columnas_requeridas = [
-                'primer_nombre', 'primer_apellido', 'fk_rol', 'cargo',
-                'fecha_nacimiento', 'fk_tipo_documento', 'numero_documento',
-                'correo_personal', 'celular', 'departamento_residencia',
-                'ultimo_nivel_estudio', 'eps', 'afp'
-            ]
-            if not all(col in datos.columns for col in columnas_requeridas):
-                return JsonResponse({
-                    'status': 'error',
-                    'message': f"El archivo debe contener las columnas: {', '.join(columnas_requeridas)}"
-                }, status=400)
+    #         # Validar que las columnas requeridas existan en el archivo
+    #         columnas_requeridas = [
+    #             'primer_nombre', 'primer_apellido', 'fk_rol', 'cargo',
+    #             'fecha_nacimiento', 'fk_tipo_documento', 'numero_documento',
+    #             'correo_personal', 'celular', 'departamento_residencia',
+    #             'ultimo_nivel_estudio', 'eps', 'afp'
+    #         ]
+    #         if not all(col in datos.columns for col in columnas_requeridas):
+    #             return JsonResponse({
+    #                 'status': 'error',
+    #                 'message': f"El archivo debe contener las columnas: {', '.join(columnas_requeridas)}"
+    #             }, status=400)
 
-            # Validar que todos los roles en el Excel existen
-            roles_no_encontrados = set(
-                datos['fk_rol']) - set(Rol.objects.values_list('descripcion', flat=True))
-            if roles_no_encontrados:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': f"Los siguientes roles no existen en la base de datos: {', '.join(roles_no_encontrados)}"
-                }, status=400)
+    #         # Validar que todos los roles en el Excel existen
+    #         roles_no_encontrados = set(
+    #             datos['fk_rol']) - set(Rol.objects.values_list('descripcion', flat=True))
+    #         if roles_no_encontrados:
+    #             return JsonResponse({
+    #                 'status': 'error',
+    #                 'message': f"Los siguientes roles no existen en la base de datos: {', '.join(roles_no_encontrados)}"
+    #             }, status=400)
 
-            # Iterar sobre las filas del archivo y crear empleados
-            for _, fila in datos.iterrows():
-                try:
-                    # Validar que el rol existe
-                    rol = Rol.objects.get(descripcion=fila['fk_rol'])
-                    tipo_documento = TipoDocumento.objects.get(
-                        descripcion=fila['fk_tipo_documento'])
+    #         # Iterar sobre las filas del archivo y crear empleados
+    #         for _, fila in datos.iterrows():
+    #             try:
+    #                 # Validar que el rol existe
+    #                 rol = Rol.objects.get(descripcion=fila['fk_rol'])
+    #                 tipo_documento = TipoDocumento.objects.get(
+    #                     descripcion=fila['fk_tipo_documento'])
 
-                    # Crear o actualizar el usuario
-                    Empleado.objects.update_or_create(
-                        numero_documento=fila['numero_documento'],
-                        defaults={
-                            'primer_nombre': fila['primer_nombre'],
-                            'primer_apellido': fila['primer_apellido'],
-                            'fk_rol': rol,
-                            'cargo': fila['cargo'],
-                            'fecha_nacimiento': fila['fecha_nacimiento'],
-                            'fk_tipo_documento': tipo_documento,
-                            'correo_personal': fila['correo_personal'],
-                            'celular': fila['celular'],
-                            'departamento_residencia': fila['departamento_residencia'],
-                            'ultimo_nivel_estudio': fila['ultimo_nivel_estudio'],
-                            'eps': fila['eps'],
-                            'afp': fila['afp'],
-                            'estado_revision': 'Contratado',
-                            'activo': True,
-                            'fk_creado_por': request.user
-                        }
-                    )
-                except Rol.DoesNotExist:
-                    return JsonResponse({
-                        'status': 'error',
-                        'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Rol '{fila['fk_rol']}' no encontrado. Verifica que el rol exista en la base de datos."
-                    }, status=400)
-                except TipoDocumento.DoesNotExist:
-                    return JsonResponse({
-                        'status': 'error',
-                        'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Tipo de Documento '{fila['fk_tipo_documento']}' no encontrado. Verifica que exista en la base de datos."
-                    }, status=400)
+    #                 # Crear o actualizar el usuario
+    #                 Empleado.objects.update_or_create(
+    #                     numero_documento=fila['numero_documento'],
+    #                     defaults={
+    #                         'primer_nombre': fila['primer_nombre'],
+    #                         'primer_apellido': fila['primer_apellido'],
+    #                         'fk_rol': rol,
+    #                         'cargo': fila['cargo'],
+    #                         'fecha_nacimiento': fila['fecha_nacimiento'],
+    #                         'fk_tipo_documento': tipo_documento,
+    #                         'correo_personal': fila['correo_personal'],
+    #                         'celular': fila['celular'],
+    #                         'departamento_residencia': fila['departamento_residencia'],
+    #                         'ultimo_nivel_estudio': fila['ultimo_nivel_estudio'],
+    #                         'eps': fila['eps'],
+    #                         'afp': fila['afp'],
+    #                         'estado_revision': 'Contratado',
+    #                         'activo': True,
+    #                         'fk_creado_por': request.user
+    #                     }
+    #                 )
+    #             except Rol.DoesNotExist:
+    #                 return JsonResponse({
+    #                     'status': 'error',
+    #                     'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Rol '{fila['fk_rol']}' no encontrado. Verifica que el rol exista en la base de datos."
+    #                 }, status=400)
+    #             except TipoDocumento.DoesNotExist:
+    #                 return JsonResponse({
+    #                     'status': 'error',
+    #                     'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Tipo de Documento '{fila['fk_tipo_documento']}' no encontrado. Verifica que exista en la base de datos."
+    #                 }, status=400)
 
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Carga masiva realizada con éxito.'
-            }, status=200)
-        except Exception as e:
-            print(e)
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Error inesperado. Por favor, intente nuevamente.'
-            }, status=500)
+    #         return JsonResponse({
+    #             'status': 'success',
+    #             'message': 'Carga masiva realizada con éxito.'
+    #         }, status=200)
+    #     except Exception as e:
+    #         print(e)
+    #         return JsonResponse({
+    #             'status': 'error',
+    #             'message': 'Error inesperado. Por favor, intente nuevamente.'
+    #         }, status=500)
 
-    return JsonResponse({
-        'status': 'error',
-        'message': 'Método no permitido.'
-    }, status=405)
+    # return JsonResponse({
+    #     'status': 'error',
+    #     'message': 'Método no permitido.'
+    # }, status=405)
+    pass
 
 
 #
@@ -773,6 +796,7 @@ def detalle_usuario(request, tipo, usuario_id):
 
 
 @login_required
+@csrf_exempt
 def editar_usuario(request, tipo, usuario_id):
     '''
         Función para mostrar el formulario de edición de información de empleados.
@@ -794,6 +818,7 @@ def editar_usuario(request, tipo, usuario_id):
 
 
 @login_required
+@csrf_exempt
 def definir_contrato(request, tipo, usuario_id):
     """
     Muestra el formulario para definir el contrato de un empleado.
@@ -833,7 +858,7 @@ def definir_contrato_usuario(request, tipo, usuario_id):
         print(usuario, data)
         return JsonResponse({
             "status": "success",
-            "message": "Contrato definido correctamente.",
+            "message": "Contrato guardado correctamente.",
         })
     except Exception as e:
         print(e)
@@ -842,7 +867,7 @@ def definir_contrato_usuario(request, tipo, usuario_id):
             "message": 'Error inesperado. Por favor, intente nuevamente.'
         }, status=500)
 
-
+# Falta configurar 🚫
 def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
     """Calcula los días laborados durante todo el contrato."""
     fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
@@ -875,7 +900,7 @@ def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
 
     return dias_laborados_por_mes
 
-
+# Falta configurar 🚫
 def generar_detalles_contrato(contrato):
     """Genera registros de detalles del contrato con días laborados y valores a pagar por mes."""
     fecha_inicio = contrato.fecha_inicio
@@ -911,7 +936,7 @@ def generar_detalles_contrato(contrato):
     DetalleContratro.objects.bulk_create(detalles)
     return total_pagado
 
-
+# Falta configurar 🚫
 @login_required
 def contrato_usuario(request, tipo, usuario_id):
     usuario = get_object_or_404(Empleado, id=usuario_id)
@@ -999,45 +1024,57 @@ def actualizar_usuario(request, tipo, usuario_id):
                     'message': 'Ya existe otro usuario con el correo personal ingresado.'
                 }, status=400)
 
-            # Actualización de campos de Usuario
-            usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
-            usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
-            usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
-            usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
-            usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
-            usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
-            usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
-            usuario.sexo = request.POST.get("sexo", usuario.sexo)
-            usuario.celular = request.POST.get("celular", usuario.celular)
-            usuario.telefono_fijo = request.POST.get("telefono_fijo", usuario.telefono_fijo)
-            usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
-            usuario.departamento_residencia = request.POST.get("departamento_residencia", usuario.departamento_residencia)
-            usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
-            usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
-            usuario.estado_civil = request.POST.get("estado_civil", usuario.estado_civil)
-            usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
-            usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
-            usuario.cargo = request.POST.get("cargo", usuario.cargo)
-            usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
-            usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
-            usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
-            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
-            usuario.fk_modificado_por = request.user
-
+            # Actualización de campos obligatorios
             if rol_id := request.POST.get("fk_rol"):
                 usuario.fk_rol = Rol.objects.get(id=rol_id)
             if tipo_documento_id := request.POST.get("fk_tipo_documento"):
                 usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
-            if eps_id := request.POST.get("fk_eps"):
-                usuario.fk_eps = EPS.objects.get(id=eps_id)
+            usuario.cargo = request.POST.get("cargo", usuario.cargo)
+            usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
+            usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
+            usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
+            usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
+            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
+
+            # Campos opcionales
+            usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
+            usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
+            usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
+            usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
+            usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+            usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+            usuario.sexo = request.POST.get("sexo", usuario.sexo)
+            usuario.telefono_fijo = request.POST.get("telefono_fijo", usuario.telefono_fijo)
+            usuario.celular = request.POST.get("celular", usuario.celular)
+            usuario.estado_civil = request.POST.get("estado_civil", usuario.estado_civil)
             if ultimo_nivel_estudio_id := request.POST.get("fk_ultimo_nivel_estudio"):
                 usuario.fk_ultimo_nivel_estudio = NivelAcademico.objects.get(id=ultimo_nivel_estudio_id)
+            if eps_id := request.POST.get("fk_eps"):
+                usuario.fk_eps = EPS.objects.get(id=eps_id)
+            if arl_id := request.POST.get("fk_arl"):
+                usuario.fk_arl = EPS.objects.get(id=arl_id)
+            if afp_id := request.POST.get("fk_afp"):
+                usuario.fk_afp = EPS.objects.get(id=afp_id)
+            if caja_compensacion_id := request.POST.get("fk_caja_compensacion"):
+                usuario.fk_caja_compensacion = EPS.objects.get(id=caja_compensacion_id)
+            usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
+            if departamento_residencia_id := request.POST.get("fk_departamento_residencia"):
+                usuario.fk_departamento_residencia = EPS.objects.get(id=departamento_residencia_id)
+            usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
+            usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
+            usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
+            usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
 
+            # Cambiar el estado de activo según el estado de revisión
             if usuario.estado_revision == "Contratado":
                 usuario.activo = True
-                contrato_response = contrato_usuario(request, tipo, usuario_id)
-                if contrato_response.status_code != 200:
-                    return contrato_response
+            if usuario.estado_revision == "Rechazado":
+                usuario.activo = False
+            if usuario.estado_revision == "Pendiente":
+                usuario.activo = False
+
+            # Actualizar el usuario modificado por
+            usuario.fk_modificado_por = request.user
 
             usuario.save()
 
@@ -1051,7 +1088,7 @@ def actualizar_usuario(request, tipo, usuario_id):
                 'message': 'Error de integridad al agregar el usuario. Revise los datos ingresados.'
             }, status=400)
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
                 'message': 'Error inesperado. Por favor, intente nuevamente.'
