@@ -6,57 +6,120 @@
     <title>Gestión de Roles</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
+    <style>
+        body {
+             background-color: #fef5f6;
+             font-family: 'Poppins', sans-serif;
+        }
+        .list-group-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        .list-group-item {
+        background-color: #ffffff;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    h1, h2 {
+        color: #343a40;
+        font-weight: 600;
+    }
+
+    
+    .shadow-sm {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+        background-color: #ffffff;
+        border-radius: 10px; 
+    }
+
+    
+    .btn-dark {
+        font-weight: 500;
+    }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">Gestión de Roles</h1>
+        <h1 class="text-center mb-4">Gestión de Roles</h1>
 
         <!-- Formulario para seleccionar el rol -->
-        <form id="roleForm" method="POST" action=".">
+        <form id="roleForm" method="POST" action="." class="mb-4">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="rol" class="form-label">Seleccione su Rol:</label>
-                <select class="form-select" name="rol" id="rol" required onchange="this.form.submit()">
-                    <option value="">Seleccione...</option>
-                    <option value="E" {% if rol == 'E' %}selected{% endif %}>Estudiante</option>
-                    <option value="D" {% if rol == 'D' %}selected{% endif %}>Docente</option>
-                    <option value="DR" {% if rol == 'DR' %}selected{% endif %}>Directivo</option>
-                </select>
-            </div>
+            <label for="rol" class="form-label">Seleccione su Rol:</label>
+            <select class="form-select" name="rol" id="rol" required onchange="this.form.submit()">
+                <option value="">Seleccione...</option>
+                <option value="E" {% if rol == 'E' %}selected{% endif %}>Estudiante</option>
+                <option value="D" {% if rol == 'D' %}selected{% endif %}>Docente</option>
+                <option value="DR" {% if rol == 'DR' %}selected{% endif %}>Directivo</option>
+            </select>
         </form>
 
         <!-- Mostrar categorías si hay un rol seleccionado -->
         {% if categorias %}
         <div class="mt-5">
-            <h2>Categorías del Rol Seleccionado</h2>
+            <h2 class="mb-3">Categorías del Rol Seleccionado</h2>
             <ul class="list-group">
                 {% for categoria in categorias %}
-                <li class="list-group-item">
-                    <strong>{{ categoria.nombre }}</strong> - {{ categoria.descripcion }}
-                    <ul class="mt-3">
+                <li class="list-group-item shadow-sm">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                        <div>
+                            <strong class="text-dark">{{ categoria.nombre }}</strong><br>
+                            <small class="text-muted">{{ categoria.descripcion }}</small>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- Formulario para editar categoría -->
+                            <form method="POST" action="{% url 'evaluacion:editar_categoria' %}" class="d-flex flex-wrap align-items-center">
+                                {% csrf_token %}
+                                <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
+                                <input type="hidden" name="rol" value="{{ rol }}">
+                                <input type="text" name="nuevo_nombre" class="form-control form-control-sm me-1 mb-1" placeholder="Nuevo nombre" required>
+                                <input type="text" name="nueva_descripcion" class="form-control form-control-sm me-1 mb-1" placeholder="Nueva descripción" required>
+                                <button type="submit" class="btn btn-sm btn-dark mb-1">Actualizar categoria</button>
+                            </form>
+
+                            <!-- Formulario para eliminar categoría -->
+                            <form method="POST" action="{% url 'evaluacion:eliminar_categoria' %}" class="d-inline-block mb-1">
+                                {% csrf_token %}
+                                <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
+                                <input type="hidden" name="rol" value="{{ rol }}">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar categoría"
+                                        onclick="return confirm('¿Estás seguro de eliminar esta categoría? Esta acción no se puede deshacer.');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Lista de preguntas -->
+                    <ul class="ps-3">
                         {% for pregunta in categoria.preguntas.all %}
-                        <li class="d-flex align-items-center">
+                        <li class="d-flex align-items-center mb-2">
                             <!-- Formulario para editar pregunta -->
-                            <form method="POST" action="{% url 'evaluacion:gestion_roles' %}" class="d-flex align-items-center flex-grow-1 me-3">
+                            <form method="POST" action="{% url 'evaluacion:gestion_roles' %}" class="d-flex align-items-center flex-grow-1 me-2">
                                 {% csrf_token %}
                                 <input type="hidden" name="accion" value="editar">
                                 <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
                                 <input type="hidden" name="rol" value="{{ rol }}">
-                                <input type="text" name="nuevo_texto" class="form-control" value="{{ pregunta.texto }}" required>
-                                <button type="submit" class="btn btn-sm btn-warning ms-2">
-                                    <i class="fas fa-edit"></i>
-                                </button>
+                                <input type="text" name="nuevo_texto" class="form-control me-2" value="{{ pregunta.texto }}" required>
+                                <button type="submit" class="btn btn-sm btn-dark">Actualizar</button>
                             </form>
 
                             <!-- Formulario para eliminar pregunta -->
-                            <form method="POST" action="{% url 'evaluacion:gestion_roles' %}" class="d-inline-block">
+                            <form method="POST" action="{% url 'evaluacion:gestion_roles' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="accion" value="eliminar">
                                 <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
                                 <input type="hidden" name="rol" value="{{ rol }}">
-                                <button type="submit" class="btn btn-sm btn-danger ms-2">
+                                <button type="submit" class="btn btn-sm btn-danger ms-1" title="Eliminar pregunta">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -72,8 +135,8 @@
         <!-- Formulario para crear categorías -->
         {% if rol %}
         <div class="mt-5">
-            <h2>Crear Categoría</h2>
-            <form method="POST" action="{% url 'evaluacion:crear_categoria' %}">
+            <h2 class="mb-3">Crear Categoría</h2>
+            <form method="POST" action="{% url 'evaluacion:crear_categoria' %}" class="shadow-sm p-4 rounded bg-white">
                 {% csrf_token %}
                 <input type="hidden" name="rol" value="{{ rol }}">
                 <div class="mb-3">
@@ -82,16 +145,16 @@
                 </div>
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción:</label>
-                    <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
+                    <textarea name="descripcion" id="descripcion" class="form-control" rows="3" placeholder="Descripción breve..."></textarea>
                 </div>
-                <button type="submit" class="btn btn-success">Crear Categoría</button>
+                <button type="submit" class="btn btn-dark">Crear Categoría</button>
             </form>
         </div>
 
         <!-- Formulario para crear preguntas -->
         <div class="mt-5">
-            <h2>Crear Pregunta</h2>
-            <form method="POST" action="{% url 'evaluacion:crear_pregunta' %}">
+            <h2 class="mb-3">Crear Pregunta</h2>
+            <form method="POST" action="{% url 'evaluacion:crear_pregunta' %}" class="shadow-sm p-4 rounded bg-white">
                 {% csrf_token %}
                 <input type="hidden" name="rol" value="{{ rol }}">
                 <div class="mb-3">
@@ -106,15 +169,13 @@
                     <label for="pregunta" class="form-label">Nueva Pregunta:</label>
                     <input type="text" name="pregunta" id="pregunta" class="form-control" placeholder="Texto de la pregunta" required>
                 </div>
-                <button type="submit" class="btn btn-success">Crear Pregunta</button>
+                <button type="submit" class="btn btn-dark">Crear Pregunta</button>
             </form>
         </div>
         {% endif %}
 
-        <!-- Botón para volver al selector de roles -->
-        <div class="mt-5 text-center">
-            <a href="{% url 'evaluacion:gestion_roles' %}" class="btn btn-secondary">Volver a Seleccionar Rol</a>
-        </div>
+        
     </div>
 </body>
 </html>
+

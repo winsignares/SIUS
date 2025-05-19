@@ -15,6 +15,58 @@ def obtener_pregunta_por_rol(rol, pregunta_id):
         return get_object_or_404(modelo, id=pregunta_id)
     return None
 
+def obtener_categoria_por_rol(rol, categoria_id):
+    modelos = {
+        'E': CategoriaEstudiante,
+        'D': CategoriaDocente,
+        'DR': CategoriaDirectivo,
+    }
+    modelo = modelos.get(rol)
+    if modelo:
+        return get_object_or_404(modelo, id=categoria_id)
+    return None
+
+
+def editar_categoria(request):
+    if request.method == 'POST':
+        categoria_id = request.POST.get("categoria_id")
+        nuevo_nombre = request.POST.get("nuevo_nombre", "").strip()
+        nueva_descripcion = request.POST.get("nueva_descripcion", "").strip()
+        rol = request.POST.get("rol")
+
+        if not nuevo_nombre:
+            messages.error(request, "El nombre de la categoría no puede estar vacío.")
+        else:
+            categoria = obtener_categoria_por_rol(rol, categoria_id)
+            if categoria:
+                categoria.nombre = nuevo_nombre
+                categoria.descripcion = nueva_descripcion
+                categoria.save()
+                messages.success(request, "Categoría actualizada correctamente.")
+            else:
+                messages.error(request, "Categoría no encontrada.")
+
+        return redirect(f"{reverse('evaluacion:gestion_roles')}?rol={rol}")
+
+    return HttpResponse("Método no permitido", status=405)
+
+
+def eliminar_categoria(request):
+    if request.method == 'POST':
+        categoria_id = request.POST.get("categoria_id")
+        rol = request.POST.get("rol")
+
+        categoria = obtener_categoria_por_rol(rol, categoria_id)
+        if categoria:
+            categoria.delete()
+            messages.success(request, "Categoría eliminada correctamente.")
+        else:
+            messages.error(request, "No se pudo encontrar la categoría.")
+
+        return redirect(f"{reverse('evaluacion:gestion_roles')}?rol={rol}")
+
+    return HttpResponse("Método no permitido", status=405)
+
 def gestion_roles(request):
     rol = request.POST.get('rol') or request.GET.get('rol')
     categorias = []
