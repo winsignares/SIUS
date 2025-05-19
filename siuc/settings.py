@@ -88,16 +88,18 @@ WSGI_APPLICATION = 'siuc.wsgi.application'
 #         "PORT": "50013",                           # Puerto de conexión
 #     }
 # }
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "proyecto_unicorsalud2",
+        "NAME": "proyecto_unicorsalud",
         "USER": "postgres",
         "PASSWORD": "12345",
         "HOST": "127.0.0.1",
-        "PORT": "5436",
+        "PORT": "5435",
     }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
