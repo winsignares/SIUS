@@ -1126,7 +1126,7 @@ def gestion_docentes(request):
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
     dia_actual = datetime.now().date()
-    
+
     contexto.update ({
         'programa_list': Programa.objects.all(),
     })

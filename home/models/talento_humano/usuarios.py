@@ -10,25 +10,25 @@ class Empleado(models.Model):
 
     # Campos obligatorios
     id = models.AutoField(primary_key=True)
-    fk_rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
-    fk_tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.CASCADE)
-    cargo = models.CharField(max_length=255)
-    primer_nombre = models.CharField(max_length=255)
-    primer_apellido = models.CharField(max_length=255)
-    numero_documento = models.BigIntegerField(unique=True)
-    correo_personal = models.EmailField()
+    fk_rol = models.ForeignKey(Rol, on_delete=models.CASCADE) # ✅
+    fk_tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.CASCADE) # ✅
+    cargo = models.CharField(max_length=255) # ✅
+    primer_nombre = models.CharField(max_length=255) # ✅
+    primer_apellido = models.CharField(max_length=255) # ✅
+    numero_documento = models.BigIntegerField(unique=True) # ✅
+    correo_personal = models.EmailField() # ✅
     estado_revision = models.CharField(max_length=50) # Pendiente - Rechazado - Aceptado
 
 # Campos opcionales
-    segundo_nombre = models.CharField(max_length=255, null=True, blank=True)
-    segundo_apellido = models.CharField(max_length=255, null=True, blank=True)
-    fecha_nacimiento = models.DateField(null=True, blank=True)
-    lugar_nacimiento = models.CharField(max_length=255, null=True, blank=True)
+    segundo_nombre = models.CharField(max_length=255, null=True, blank=True) # ✅
+    segundo_apellido = models.CharField(max_length=255, null=True, blank=True) # ✅
+    fecha_nacimiento = models.DateField(null=True, blank=True) # ✅
+    lugar_nacimiento = models.CharField(max_length=255, null=True, blank=True) # ✅
     fecha_expedicion_documento = models.DateField(null=True, blank=True)
     lugar_expedicion_documento = models.CharField(max_length=255, null=True, blank=True)
     sexo = models.CharField(max_length=50, null=True, blank=True)
     telefono_fijo = models.CharField(max_length=15, null=True, blank=True)
-    celular = models.CharField(max_length=15, null=True, blank=True)
+    celular = models.CharField(max_length=15, null=True, blank=True) # ✅
     estado_civil = models.CharField(max_length=255, null=True, blank=True)
     fk_ultimo_nivel_estudio = models.ForeignKey(NivelAcademico, on_delete=models.CASCADE, null=True, blank=True)
     fk_eps = models.ForeignKey(EPS, on_delete=models.CASCADE, null=True, blank=True)
@@ -40,7 +40,6 @@ class Empleado(models.Model):
     ciudad_residencia = models.CharField(max_length=255, null=True, blank=True)
     barrio_residencia = models.CharField(max_length=255, null=True, blank=True)
     fk_sede_donde_labora = models.ForeignKey(Sede, on_delete=models.CASCADE, null=True, blank=True)
-    sede_donde_labora = models.CharField(max_length=255, null=True, blank=True) # Eliminar
     url_hoja_de_vida = models.URLField(blank=True, null=True) # Enlace a Hoja de Vida
     activo = models.BooleanField(default=False) # True = Activo - False = Inactivo
 

@@ -11,7 +11,7 @@
             </a>
         </div>
         <div class="card-body p-3">
-            <div class="container">
+            <div class="container px-0">
                 <dl class="row m-0">
                     <div class="col-md-6 mb-2">
                         <dt>Nombre Completo:</dt>
@@ -29,13 +29,13 @@
                     </div>
 
                     <div class="col-md-6 mb-2">
-                        <dt>Número de Documento:</dt>
-                        <dd class="text-uppercase">{{ usuario.numero_documento|default:"No disponible" }}</dd>
+                        <dt>Documento de Identidad:</dt>
+                        <dd class="text-uppercase"> {{ usuario.fk_tipo_documento.tipo_documento }} - {{ usuario.numero_documento|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
-                        <dt>Fecha de Nacimiento:</dt>
-                        <dd class="text-uppercase">{{ usuario.fecha_nacimiento|default:"No disponible" }}</dd>
+                        <dt>Fecha y Lugar de Nacimiento:</dt>
+                        <dd class="text-uppercase">{{ usuario.lugar_nacimiento|default:"No disponible" }} - {{ usuario.fecha_nacimiento|date:'d/m/Y'|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="col-md-6 mb-2">
-                        <dt>Celular:</dt>
+                        <dt>Números de contacto:</dt>
                         <dd class="text-uppercase">{{ usuario.celular|default:"No disponible" }}</dd>
                     </div>
 
@@ -100,10 +100,10 @@
     {% if usuario.estado_revision == "Contratado" %}
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex gap-3 fs-5 fw-bold">
-            <i class="bi bi-file-earmark-text"></i> Información del Contrato
+            <i class="bi bi-file-earmark-text"></i> Detalles de Contratatación
         </div>
-        <div class="card-body">
-            <div class="container">
+        <div class="card-body p-3">
+            <div class="container px-0">
                 {% if not usuario.contrato.all %}
                 <p class="text-center mb-2">No se ha encontrado información relacionada</dd>
                 {% else %}

@@ -441,11 +441,11 @@
                                 </div>
 
                                 <div class="col-md-6 mb-2">
-                                    <label for="sede_donde_labora" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
-                                    <select class="form-select" id="sede_donde_labora" name="sede_donde_labora" required>
+                                    <label for="fk_sede_donde_labora" class="form-label mb-0">Sede donde laborará <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_sede_donde_labora" name="fk_sede_donde_labora" required>
                                         <option value="" selected>Seleccione</option>
                                         {% for sede in sedes_list %}
-                                            <option value="{{ sede.ubicacion }}">{{ sede.ubicacion }}</option>
+                                            <option value="{{ sede.id }}">{{ sede.ubicacion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
