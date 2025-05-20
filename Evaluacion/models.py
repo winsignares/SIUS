@@ -2,6 +2,7 @@ from django.db import models
 from home.models.carga_academica.datos_adicionales import  Materia
 from home.models.talento_humano import Usuario
 from admisiones.models import Estudiantes
+from django.contrib.auth.models import User
 class CategoriaEstudiante(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     
@@ -92,15 +93,14 @@ class EvaluacionEstudiante(models.Model):
 
 class EvaluacionDocente(models.Model):
     docente = models.ForeignKey(
-        Usuario,
+        User,
         on_delete=models.CASCADE,
-        limit_choices_to={'fk_rol__rol': 'D'}
     )
     pregunta = models.ForeignKey(
         PreguntaDocente,
         on_delete=models.CASCADE
     )
-    respuesta = models.PositiveSmallIntegerField()  
+    respuesta = models.PositiveSmallIntegerField()  # Valores entre 0 y 5
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -112,11 +112,16 @@ class EvaluacionDocente(models.Model):
         verbose_name_plural = 'Evaluaciones Docentes'
 
 
+    class Meta:
+        db_table = 'evaluacion_docente'
+        verbose_name = 'Evaluación Docente'
+        verbose_name_plural = 'Evaluaciones Docentes'
+
+
 class EvaluacionDirectivo(models.Model):
-    directivo = models.ForeignKey(
-        Usuario,
+    docente = models.ForeignKey(
+        User,
         on_delete=models.CASCADE,
-        limit_choices_to={'fk_rol__rol': 'DR'}
     )
     docente_evaluado = models.ForeignKey(
         Usuario,

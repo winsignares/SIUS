@@ -9,56 +9,46 @@
 </head>
 <body>
 <div class="container mt-4">
-
     <h2 class="text-center mb-4">Autoevaluación Docente</h2>
-
-    {% if messages %}
-        <div class="mb-4">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
 
     <div class="mb-4">
         <p><strong>Docente:</strong> {{ docente.get_full_name }}</p>
         <p><strong>Usuario:</strong> {{ docente.username }}</p>
     </div>
 
-    {% if preguntas_por_categoria %}
-        <form method="POST">
-            {% csrf_token %}
-            {% for categoria, preguntas in preguntas_por_categoria.items %}
-                <div class="mb-5">
-                    <h4 class="fw-bold">{{ categoria.nombre }}</h4>
-                    {% for pregunta in preguntas %}
-                        <div class="mb-3">
-                            <label class="form-label">{{ pregunta.texto }}</label>
-                            <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
-                            <select name="respuesta_{{ pregunta.id }}" class="form-select" required>
-                                <option value="0">No sabe / No opina</option>
-                                <option value="1">Totalmente en desacuerdo</option>
-                                <option value="2">Medianamente en desacuerdo</option>
-                                <option value="3">Medianamente de acuerdo</option>
-                                <option value="4">Totalmente de acuerdo</option>
-                            </select>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success">Enviar Autoevaluación</button>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
             </div>
-        </form>
-    {% else %}
-        <div class="alert alert-warning text-center">
-            No hay preguntas disponibles para la autoevaluación.
-        </div>
+        {% endfor %}
     {% endif %}
 
+    <form method="POST">
+        {% csrf_token %}
+        {% for categoria, preguntas in preguntas_por_categoria.items %}
+            <div class="mb-5">
+                <h4 class="fw-bold">{{ categoria.nombre }}</h4>
+                {% for pregunta in preguntas %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ pregunta.texto }}</label>
+                        <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
+                        <select name="respuesta_{{ pregunta.id }}" class="form-select" required>
+                            <option value="0">No sabe / No opina</option>
+                            <option value="1">Totalmente en desacuerdo</option>
+                            <option value="2">Medianamente en desacuerdo</option>
+                            <option value="3">Medianamente de acuerdo</option>
+                            <option value="4">Totalmente de acuerdo</option>
+                        </select>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success">Enviar Autoevaluación</button>
+        </div>
+    </form>
 </div>
 </body>
 </html>
