@@ -45,7 +45,7 @@
 
                     <div class="col-md-6 mb-2">
                         <dt>Números de contacto:</dt>
-                        <dd class="text-uppercase">{{ usuario.celular|default:"No disponible" }}</dd>
+                        <dd class="text-uppercase">{{ usuario.celular|default:"No disponible" }} {% if usuario.tel %}{% endif %}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">

@@ -47,29 +47,27 @@
                 </div>
 
                 <!-- Valor del Contrato -->
-                {% if usuario.fk_rol.id == 3 %}
-                    <div class="col-md-12">
-                        <label for="valor_contrato" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'>*</span></label>
-                        <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" value="{{ contrato.valor_contrato }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
-                    </div>
-                {% endif %}
+                <div class="col-md-12">
+                    <label for="valor_contrato" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'>*</span></label>
+                    <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" value="{{ contrato.valor_contrato }}" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
+                </div>
 
                 <!-- Estado del contrato -->
                 <div class="col-md-12 mt-3">
                     <label for="estado_contrato" class="form-label mb-0 col-md-12">Estado del Contrato <span class='fw-bold fs-4'>*</span></label>
                     <div class="col-md-12 d-flex justify-content-between align-items-center m-0">
                         <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="nuevo_contrato" name="estado_contrato" value="1" {% if contrato.estado == 1 %}checked{% endif %} {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
+                            <input type="radio" class="form-check-input" id="nuevo_contrato" name="estado_contrato" value="1" {% if usuario.estado_revision != "Contratado" %}disabled{% endif %} required>
                             <label class="form-check-label" for="nuevo_contrato">Nuevo Contrato</label>
                         </div>
 
                         <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="editar_contrato_existente" name="estado_contrato" value="2" {% if contrato.estado == 2 %}checked{% endif %} {% if usuario.estado_revision != "Contratado" or not contrato %}disabled{% endif %} required>
+                            <input type="radio" class="form-check-input" id="editar_contrato_existente" name="estado_contrato" {% if usuario.estado_revision != "Contratado" or not contrato %}disabled{% endif %} required>
                             <label class="form-check-label" for="editar_contrato_existente">Editar Contrato Existente</label>
                         </div>
 
                         <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="agregar_otro_contrato" name="estado_contrato" value="3" {% if contrato.estado == 3 %}checked{% endif %} {% if usuario.estado_revision != "Contratado" or not contrato %}disabled{% endif %} required>
+                            <input type="radio" class="form-check-input" id="agregar_otro_contrato" name="estado_contrato" value="3" {% if usuario.estado_revision != "Contratado" or not contrato %}disabled{% endif %} required>
                             <label class="form-check-label" for="agregar_otro_contrato">Anexar Nuevo Contrato</label>
                         </div>
                     </div>
@@ -81,6 +79,21 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Funciones para contenido dinámico
-    }
+        const dedicacionSelect = document.getElementById("dedicacion");
+        const valorContratoInput = document.getElementById("valor_contrato");
+        const valorContratoDiv = valorContratoInput.closest('.col-md-12');
+
+        function toggleValorContrato() {
+            const esHoraCatedra = dedicacionSelect.value === "Hora Catedra - HC";
+            valorContratoInput.disabled = esHoraCatedra;
+            valorContratoDiv.classList.toggle('opacity-50', esHoraCatedra);
+            // Limpiar el valor si se deshabilita
+            if (esHoraCatedra) valorContratoInput.value = "";
+        }
+
+        dedicacionSelect.addEventListener("change", toggleValorContrato);
+
+        // Ejecutar al cargar la página
+        toggleValorContrato();
+    });
 </script>

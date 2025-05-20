@@ -123,7 +123,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'cajas_compensacion_list': CajaCompensacion.objects.all(),
             'afp_list': AFP.objects.all(),
             'niveles_academicos_list': NivelAcademico.objects.all(),
-            'roles_list': Rol.objects.all(),
+            'roles_list': Rol.objects.filter(id__in=[2, 3, 4]),
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
             'semestres_list': semestres_list,
@@ -168,7 +168,8 @@ def signin(request):
             user = User.objects.get(username=postEmail)
         except User.DoesNotExist:
             messages.error(
-                request, "El usuario ingresado no tiene una cuenta asociada.")
+                request,
+                "El usuario ingresado no tiene una cuenta asociada.")
             return redirect('iniciar_sesion_form')
 
         user = authenticate(
@@ -179,7 +180,8 @@ def signin(request):
 
         if user is None:
             messages.error(
-                request, "La contraseña ingresada es incorrecta.")
+                request,
+                "La contraseña ingresada es incorrecta.")
             return render(request, 'login.html', {'email': postEmail})
 
         login(request, user)
@@ -217,13 +219,15 @@ def actualizar_contraseña(request):
             user = User.objects.get(username=reset_email)
         except User.DoesNotExist:
             messages.error(
-                request, "El usuario ingresado no tiene una cuenta asociada.")
+                request,
+                "El usuario ingresado no tiene una cuenta asociada.")
             return redirect('restablecer_contraseña_form')
 
         # Validar si las contraseñas coinciden
         if new_password != confirm_password:
             messages.error(
-                request, "Las contraseñas no coinciden. Inténtalo nuevamente.")
+                request,
+                "Las contraseñas no coinciden. Inténtalo nuevamente.")
             return render(request, 'restablecer_contraseña.html', {'reset_email': reset_email})
 
         # Actualizar la contraseña
@@ -336,12 +340,14 @@ def agregar_aspirante(request):
             if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe un aspirante con el número de documento ingresado.'}, status=400)
+                    'message': 'Ya existe un aspirante con el número de documento ingresado.'
+                }, status=400)
 
             if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe un aspirante con el correo personal ingresado.'}, status=400)
+                    'message': 'Ya existe un aspirante con el correo personal ingresado.'
+                }, status=400)
 
             # Instanciar ForeignKeys
             fk_ultimo_nivel_estudio_ins = NivelAcademico.objects.get(id=data.get('fk_ultimo_nivel_estudio'))
@@ -395,7 +401,7 @@ def agregar_aspirante(request):
                 'message': 'Error de integridad al agregar el aspirante. Revise los datos ingresados.'
             }, status=400)
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
                 'message': 'Error inesperado. Por favor, intente nuevamente.'
@@ -411,13 +417,15 @@ def agregar_empleado(request):
             if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe un empleado con el número de documento ingresado.'}, status=400)
+                    'message': 'Ya existe un empleado con el número de documento ingresado.'
+                }, status=400)
 
             # Verificar si ya existe un usuario con el correo
             if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Ya existe un empleado con el correo personal ingresado.'}, status=400)
+                    'message': 'Ya existe un empleado con el correo personal ingresado.'
+                }, status=400)
 
             # Instanciar ForeignKeys
             fk_ultimo_nivel_estudio_ins = NivelAcademico.objects.get(id=data.get('fk_ultimo_nivel_estudio_emp'))
@@ -480,11 +488,6 @@ def agregar_empleado(request):
                 'status': 'error',
                 'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
-    else:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Método no permitido.'
-        }, status=405)
 
 
 @login_required
@@ -509,9 +512,16 @@ def agregar_detalle_academico(request):
 
             # Validar campos numéricos
             if ies_codigo and not ies_codigo.isdigit():
-                return JsonResponse({"status": "error", "message": "El código IES debe ser numérico."})
+                return JsonResponse({
+                    "status": "error",
+                    "message": "El código IES debe ser numérico."
+                }, status=400)
+
             if codigo_pais and not codigo_pais.isdigit():
-                return JsonResponse({"status": "error", "message": "El código del país debe ser numérico."})
+                return JsonResponse({
+                    "status": "error",
+                    "message": "El código del país debe ser numérico."
+                }, status=400)
 
             # Crear el detalle académico
             detalle = DetalleAcademico.objects.create(
@@ -548,16 +558,11 @@ def agregar_detalle_academico(request):
             })
 
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 "status": "error",
                 "message": 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
-
-    return JsonResponse({
-        "status": "error",
-        "message": "Método no permitido."
-    }, status=405)
 
 
 @login_required
@@ -606,16 +611,11 @@ def agregar_exp_laboral(request):
             })
 
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 "status": "error",
                 "message": 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
-
-    return JsonResponse({
-        "status": "error",
-        "message": "Método no permitido."
-    }, status=405)
 
 
 #
@@ -856,6 +856,7 @@ def definir_contrato_usuario(request, tipo, usuario_id):
     """
     usuario = get_object_or_404(Empleado, id=usuario_id)
     data = request.POST
+    
     try:
         print(usuario, data)
         return JsonResponse({
@@ -1062,7 +1063,7 @@ def actualizar_usuario(request, tipo, usuario_id):
                 usuario.fk_caja_compensacion = CajaCompensacion.objects.get(id=caja_compensacion_id)
             usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
             if departamento_residencia_id := request.POST.get("fk_departamento_residencia"):
-                usuario.fk_departamento_residencia = EPS.objects.get(id=departamento_residencia_id)
+                usuario.fk_departamento_residencia = Departamento.objects.get(id=departamento_residencia_id)
             usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
             usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
             if sede_donde_labora_id := request.POST.get("fk_sede_donde_labora"):

@@ -211,6 +211,9 @@
                     .then(response => response.text())
                     .then(html => {
                         modalContent.innerHTML = html;
+
+                        // Aquí inicializamos la función para el select y input recién cargados
+                        inicializarToggleValorContrato();
                     })
                     .catch(error => {
                         showAlert("Error en el servidor, intenta de nuevo.", "error");
@@ -218,6 +221,31 @@
                     });
                 });
             });
+
+            // Función que habilita o deshabilita el input "valor_contrato" según selección en "dedicacion"
+            function inicializarToggleValorContrato() {
+                const dedicacionSelect = document.getElementById("dedicacion");
+                const valorContratoInput = document.getElementById("valor_contrato");
+
+                // Protección en caso de que el formulario no esté cargado aún
+                if (!dedicacionSelect || !valorContratoInput) return;
+
+                const valorContratoDiv = valorContratoInput.closest('.col-md-12');
+
+                function toggleValorContrato() {
+                    const esHoraCatedra = dedicacionSelect.value === "Hora Catedra - HC";
+                    valorContratoInput.disabled = esHoraCatedra;
+                    valorContratoDiv.classList.toggle('opacity-50', esHoraCatedra);
+                    if (esHoraCatedra) valorContratoInput.value = "";
+                }
+
+                // Limpiar posibles listeners previos para evitar acumulación
+                dedicacionSelect.removeEventListener("change", toggleValorContrato);
+                dedicacionSelect.addEventListener("change", toggleValorContrato);
+
+                // Ejecutar inmediatamente para reflejar estado inicial
+                toggleValorContrato();
+            }
         </script>
 
         <script>

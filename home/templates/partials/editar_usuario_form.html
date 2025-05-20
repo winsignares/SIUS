@@ -214,7 +214,7 @@
                         <select type="text" class="form-select" id="fk_caja_compensacion" name="fk_caja_compensacion" required>
                             <option value="" {% if not usuario.fk_caja_compensacion %}{% endif %}>Seleccione</option>
                             {% for caja in cajas_compensacion_list %}
-                                <option value="{{ caja.id }}" {% if usuario.fk_caja_compensacion.id == caja.id %}{% endif %}>{{ caja.nombre }}</option>
+                                <option value="{{ caja.id }}" {% if usuario.fk_caja_compensacion.id == caja.id %}selected{% endif %}>{{ caja.nombre }}</option>
                             {% endfor %}
                         </select>
                     </div>
