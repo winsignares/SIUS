@@ -112,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Bogota'
-USE_THOUSAND_SEPARATOR = True # Separador de miles
 USE_I18N = True  # Activa internacionalización
 USE_L10N = True  # Utiliza la localización para formatos de fecha/hora
 USE_TZ = True

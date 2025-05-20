@@ -1,7 +1,7 @@
 from django.db import models
 from .roles import Rol
 from .tipo_documentos import TipoDocumento
-from .datos_adicionales import EPS, AFP, ARL, CajaCompensacion, Departamento
+from .datos_adicionales import EPS, AFP, ARL, CajaCompensacion, Departamento, Sede
 from .niveles_academicos import NivelAcademico
 from django.conf import settings
 
@@ -39,7 +39,8 @@ class Empleado(models.Model):
     fk_departamento_residencia = models.ForeignKey(Departamento, on_delete=models.CASCADE, null=True, blank=True)
     ciudad_residencia = models.CharField(max_length=255, null=True, blank=True)
     barrio_residencia = models.CharField(max_length=255, null=True, blank=True)
-    sede_donde_labora = models.CharField(max_length=255, null=True, blank=True)
+    fk_sede_donde_labora = models.ForeignKey(Sede, on_delete=models.CASCADE, null=True, blank=True)
+    sede_donde_labora = models.CharField(max_length=255, null=True, blank=True) # Eliminar
     url_hoja_de_vida = models.URLField(blank=True, null=True) # Enlace a Hoja de Vida
     activo = models.BooleanField(default=False) # True = Activo - False = Inactivo
 

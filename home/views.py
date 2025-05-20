@@ -347,6 +347,7 @@ def agregar_aspirante(request):
             fk_ultimo_nivel_estudio_ins = NivelAcademico.objects.get(id=data.get('fk_ultimo_nivel_estudio'))
             fk_afp_ins = AFP.objects.get(id=data.get('fk_afp'))
             fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia'))
+            fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora'))
 
             nuevo_usuario = Empleado.objects.create(
                 # Campos obligatorios
@@ -376,7 +377,7 @@ def agregar_aspirante(request):
                 fk_departamento_residencia=fk_departamento_residencia_ins,
                 ciudad_residencia=data.get('ciudad_residencia'),
                 barrio_residencia=data.get('barrio_residencia'),
-                sede_donde_labora=data.get('sede_donde_labora'),
+                fk_sede_donde_labora=fk_sede_donde_labora_ins,
                 url_hoja_de_vida=data.get('url_hoja_de_vida'),
                 fk_creado_por=request.user,
                 activo=False
@@ -424,6 +425,7 @@ def agregar_empleado(request):
             fk_arl_ins = ARL.objects.get(id=data.get('fk_arl_emp'))
             fk_caja_compensacion_ins = CajaCompensacion.objects.get(id=data.get('fk_caja_compensacion_emp'))
             fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia_emp'))
+            fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora_emp'))
 
             nuevo_usuario = Empleado.objects.create(
                 # Campos obligatorios
@@ -455,7 +457,7 @@ def agregar_empleado(request):
                 fk_departamento_residencia=fk_departamento_residencia_ins,
                 ciudad_residencia=data.get('ciudad_residencia_emp'),
                 barrio_residencia=data.get('barrio_residencia_emp'),
-                sede_donde_labora=data.get('sede_donde_labora_emp'),
+                fk_sede_donde_labora=fk_sede_donde_labora_ins,
                 url_hoja_de_vida=data.get('url_hoja_de_vida_emp'),
                 fk_creado_por=request.user,
                 activo=True
@@ -1005,6 +1007,7 @@ def contrato_usuario(request, tipo, usuario_id):
 
 @login_required
 def actualizar_usuario(request, tipo, usuario_id):
+    print(request.POST)
     usuario = get_object_or_404(Empleado, id=usuario_id)
     if request.method == "POST":
         # Extraer todos los datos del formulario
@@ -1052,25 +1055,24 @@ def actualizar_usuario(request, tipo, usuario_id):
             if eps_id := request.POST.get("fk_eps"):
                 usuario.fk_eps = EPS.objects.get(id=eps_id)
             if arl_id := request.POST.get("fk_arl"):
-                usuario.fk_arl = EPS.objects.get(id=arl_id)
+                usuario.fk_arl = ARL.objects.get(id=arl_id)
             if afp_id := request.POST.get("fk_afp"):
-                usuario.fk_afp = EPS.objects.get(id=afp_id)
+                usuario.fk_afp = AFP.objects.get(id=afp_id)
             if caja_compensacion_id := request.POST.get("fk_caja_compensacion"):
-                usuario.fk_caja_compensacion = EPS.objects.get(id=caja_compensacion_id)
+                usuario.fk_caja_compensacion = CajaCompensacion.objects.get(id=caja_compensacion_id)
             usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
             if departamento_residencia_id := request.POST.get("fk_departamento_residencia"):
                 usuario.fk_departamento_residencia = EPS.objects.get(id=departamento_residencia_id)
             usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
             usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
-            usuario.sede_donde_labora = request.POST.get("sede_donde_labora", usuario.sede_donde_labora)
+            if sede_donde_labora_id := request.POST.get("fk_sede_donde_labora"):
+                usuario.fk_sede_donde_labora = Sede.objects.get(id=sede_donde_labora_id)
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
 
             # Cambiar el estado de activo según el estado de revisión
             if usuario.estado_revision == "Contratado":
                 usuario.activo = True
-            if usuario.estado_revision == "Rechazado":
-                usuario.activo = False
-            if usuario.estado_revision == "Pendiente":
+            else:
                 usuario.activo = False
 
             # Actualizar el usuario modificado por

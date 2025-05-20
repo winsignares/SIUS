@@ -40,7 +40,7 @@
 
                     <div class="col-md-6 mb-2">
                         <dt>Correo personal:</dt>
-                        <dd class="text-uppercase">{{ usuario.correo_personal|default:"No disponible" }}</dd>
+                        <dd class="text-lowercase">{{ usuario.correo_personal|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
@@ -85,7 +85,7 @@
 
                     <div class="col-md-6 mb-0">
                         <dt>AFP:</dt>
-                        <dd class="text-uppercase mb-0">{{ usuario.afp|default:"No disponible" }}</dd>
+                        <dd class="text-uppercase mb-0">{{ usuario.fk_afp.nombre|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-0">
