@@ -92,11 +92,11 @@ WSGI_APPLICATION = 'siuc.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "proyecto_unicorsalud",
+        "NAME": "proyecto_unicorsalud2",
         "USER": "postgres",
         "PASSWORD": "12345",
         "HOST": "127.0.0.1",
-        "PORT": "5435",
+        "PORT": "5436",
     }
 }
 # Password validation

@@ -79,7 +79,7 @@ class EvaluacionEstudiante(models.Model):
         PreguntaEstudiante,
         on_delete=models.CASCADE
     )
-    respuesta = models.PositiveSmallIntegerField()  # Valores entre 0 y 5
+    respuesta = models.PositiveSmallIntegerField()  
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -100,7 +100,7 @@ class EvaluacionDocente(models.Model):
         PreguntaDocente,
         on_delete=models.CASCADE
     )
-    respuesta = models.PositiveSmallIntegerField()  # Valores entre 0 y 5
+    respuesta = models.PositiveSmallIntegerField()  
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -128,7 +128,7 @@ class EvaluacionDirectivo(models.Model):
         PreguntaDirectivo,
         on_delete=models.CASCADE
     )
-    respuesta = models.PositiveSmallIntegerField()  # Valores entre 0 y 5
+    respuesta = models.PositiveSmallIntegerField()  
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -138,4 +138,3 @@ class EvaluacionDirectivo(models.Model):
         db_table = 'evaluacion_directivo'
         verbose_name = 'Evaluación Directivo'
         verbose_name_plural = 'Evaluaciones Directivos'
-
