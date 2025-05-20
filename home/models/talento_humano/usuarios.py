@@ -35,10 +35,8 @@ class Empleado(models.Model):
     fk_arl = models.ForeignKey(ARL, on_delete=models.CASCADE, null=True, blank=True)
     fk_afp = models.ForeignKey(AFP, on_delete=models.CASCADE, null=True, blank=True)
     fk_caja_compensacion = models.ForeignKey(CajaCompensacion, on_delete=models.CASCADE, null=True, blank=True)
-    afp = models.CharField(max_length=255, null=True, blank=True) # Eliminar
     direccion_residencia = models.CharField(max_length=255, null=True, blank=True)
     fk_departamento_residencia = models.ForeignKey(Departamento, on_delete=models.CASCADE, null=True, blank=True)
-    departamento_residencia = models.CharField(max_length=255, null=True, blank=True) # Eliminar
     ciudad_residencia = models.CharField(max_length=255, null=True, blank=True)
     barrio_residencia = models.CharField(max_length=255, null=True, blank=True)
     sede_donde_labora = models.CharField(max_length=255, null=True, blank=True)

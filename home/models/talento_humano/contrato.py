@@ -1,6 +1,7 @@
 from django.db import models
 from .usuarios import Empleado
 from .roles import Rol
+from ..carga_academica.datos_adicionales import Periodo
 
 # Create your models here.
 
@@ -16,12 +17,13 @@ class TipoContrato(models.Model):
 
 class Contrato(models.Model):
     id = models.AutoField(primary_key=True)
+    fk_periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE, verbose_name=("Periodo de contratación"), null=True, blank=True)
     fk_usuario = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name="contrato", verbose_name=("Usuario"))
     fecha_inicio = models.DateField(verbose_name=('Fecha Inicio Contrato'), null=True, blank=True)
     fecha_fin = models.DateField(verbose_name=('Fecha Fin Contrato'), null=True, blank=True)
     fk_tipo_contrato = models.ForeignKey(TipoContrato, verbose_name=("Tipo Contrato"), on_delete=models.CASCADE, null=True, blank=True)
     dedicacion = models.CharField(verbose_name=('Dedicación'), max_length=100, null=True, blank=True)
-    valor_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True)
+    valor_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True) # Solo para administrativos
     total_dias_laborados = models.IntegerField(verbose_name=('Total Dias Laborados'), null=True, blank=True)
     vigencia_contrato = models.BooleanField(verbose_name=('Vigencia del Contrato'), default=False)
 
