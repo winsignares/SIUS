@@ -1,71 +1,78 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from home.models.carga_academica.datos_adicionales import Usuario, Programa, Semestre, Materia, Matricula
+from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
 from ..models import PreguntaEstudiante, EvaluacionEstudiante, CategoriaEstudiante
+from admisiones.models import Estudiantes, Matricula
 from collections import defaultdict
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
+
+
+@login_required
 def materias_estudiante_view(request):
-    programas = Programa.objects.all()
-    semestres = Semestre.objects.all()
-    estudiantes = None
-    materias = None
-    estudiante = None
+    estudiante_model = Estudiantes.objects.get(estudiante=request.user)
 
-    programa_id = request.GET.get('programa')
-    semestre_id = request.GET.get('semestre')
-    estudiante_id = request.GET.get('estudiante')
+    # Todas las materias donde el estudiante está matriculado
+    materias = Materia.objects.filter(
+        matricula__estudiante=estudiante_model,
+        fk_programa=estudiante_model.programa,
+        fk_semestre=estudiante_model.semestre
+    ).distinct()
 
-    if programa_id and semestre_id:
-        estudiantes = Usuario.objects.filter(
-            fk_rol__rol='E',
-            programa_id=programa_id,
-            semestre_id=semestre_id
-        )
-    if estudiante_id:
-        estudiante = get_object_or_404(Usuario, id=estudiante_id, fk_rol__rol="E")
-        materias = Materia.objects.filter(
-            matricula__estudiante=estudiante,
-            fk_programa=estudiante.programa,
-            fk_semestre=estudiante.semestre
-        ).distinct()
+    # Obtener materias ya evaluadas por el estudiante (si respondió alguna pregunta de esa materia)
+    materias_evaluadas_ids = EvaluacionEstudiante.objects.filter(
+        estudiante=estudiante_model
+    ).values_list('materia_id', flat=True).distinct()
+
+    # Excluir materias ya evaluadas
+    materias_no_evaluadas = materias.exclude(id__in=materias_evaluadas_ids)
 
     return render(request, 'core/materias_estudiante.html', {
-        'programas': programas,
-        'semestres': semestres,
-        'estudiantes': estudiantes,
-        'selected_programa': programa_id,
-        'selected_semestre': semestre_id,
-        'selected_estudiante': estudiante_id,
-        'materias': materias,
-        'estudiante': estudiante,
+        'materias': materias_no_evaluadas,
+        'estudiante': estudiante_model,
     })
 
-
-
-def evaluar_materia(request, estudiante_id, materia_id):
-    # Obtener estudiante y materia
-    estudiante = get_object_or_404(Usuario, pk=estudiante_id)
+@login_required
+def evaluar_materia(request, materia_id):
+    estudiante = get_object_or_404(Estudiantes, estudiante=request.user)
     materia = get_object_or_404(Materia, pk=materia_id)
-    
-    # Obtener todas las preguntas activas agrupadas por categoría
+
     categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
-    
-    # Agrupar preguntas activas por categoría
     preguntas_por_categoria = {
         categoria: categoria.preguntas.filter(activo=True)
         for categoria in categorias
     }
 
     if request.method == 'POST':
-        respuestas = request.POST.getlist('respuesta')
         pregunta_ids = request.POST.getlist('pregunta_id')
 
-        for pregunta_id, respuesta in zip(pregunta_ids, respuestas):
-            EvaluacionEstudiante.objects.create(
-                estudiante=estudiante,
-                materia=materia,
-                pregunta_id=pregunta_id,
-                respuesta=respuesta
-            )
+        evaluaciones_existentes = EvaluacionEstudiante.objects.filter(
+            estudiante=estudiante,
+            materia=materia,
+            pregunta_id__in=pregunta_ids
+        ).values_list('pregunta_id', flat=True)
+
+        nuevas_evaluaciones = 0
+
+        for pregunta_id in pregunta_ids:
+            if int(pregunta_id) in evaluaciones_existentes:
+                continue  # Ya existe, no la guarda de nuevo
+
+            respuesta = request.POST.get(f'respuesta_{pregunta_id}')
+            if respuesta is not None:
+                EvaluacionEstudiante.objects.create(
+                    estudiante=estudiante,
+                    materia=materia,
+                    pregunta_id=pregunta_id,
+                    respuesta=respuesta
+                )
+                nuevas_evaluaciones += 1
+
+        if nuevas_evaluaciones == 0:
+            messages.warning(request, "Ya has realizado esta evaluación previamente.")
+        else:
+            messages.success(request, "Evaluación registrada correctamente.")
+
         return redirect('evaluacion:materias_estudiante')
 
     context = {

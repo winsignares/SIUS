@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CategoriaEstudiante, PreguntaEstudiante, CategoriaDocente, PreguntaDocente, CategoriaDirectivo, PreguntaDirectivo, EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
+from .models import CategoriaEstudiante, PreguntaEstudiante, CategoriaDocente, PreguntaDocente, CategoriaDirectivo, PreguntaDirectivo, EvaluacionDirectivo, EvaluacionDocente, EvaluacionEstudiante
 
 admin.site.register(CategoriaEstudiante)
 admin.site.register(PreguntaEstudiante)

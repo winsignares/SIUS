@@ -15,9 +15,8 @@
         <table class="table table-striped table-bordered">
             <thead class="bg-dark text-white">
                 <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
+                    <th>numero documento</th>
+                    <th>Nombre completo</th>
                     <th>Correo</th>
                     <th>Acciones</th>
                 </tr>
@@ -25,9 +24,8 @@
             <tbody>
                 {% for estudiante in estudiantes %}
                     <tr>
-                        <td>{{ estudiante.codigo_estudiante }}</td>
-                        <td>{{ estudiante.primer_nombre }}</td>
-                        <td>{{ estudiante.primer_apellido }}</td>
+                        <td>{{ estudiante.numero_documento }}</td>
+                        <td>{{ estudiante.nombre_completo }}</td>
                         <td>{{ estudiante.correo_personal }}</td>
                         <td>
                             <form method="POST" action="{% url 'eliminar_estudiante' materia.id estudiante.id %}" class="d-inline">

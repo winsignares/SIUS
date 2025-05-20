@@ -22,19 +22,14 @@
             <tbody>
                 {% for estudiante in estudiantes %}
                     <tr>
-                        <td>{{ estudiante.codigo_estudiante }}</td>
-                        <td>{{ estudiante.primer_nombre }} {{ estudiante.primer_apellido }}</td>
+                        <td>{{ estudiante.numero_documento }}</td>
+                        <td>{{ estudiante.nombre_completo }} </td>
                         <td>
                             <form method="post" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="estudiante_id" value="{{ estudiante.id }}">
                                 <div class="row">
-                                    <div class="col">
-                                        <input type="date" name="fecha_inicio" class="form-control" required>
-                                    </div>
-                                    <div class="col">
-                                        <input type="date" name="fecha_finalizacion" class="form-control" required>
-                                    </div>
+                                    
                                     <div class="col">
                                         <select name="estado" class="form-control" required>
                                             <option value="aprobada">Aprobada</option>

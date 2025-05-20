@@ -3,58 +3,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Prerrequisitos</title>
+    <title>Listado de Materias</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
-    <style>
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='gray' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.08 5.221 2.388 4.5 2.951 4.5h10.098c.563 0 .87.72.5 1.158l-4.796 5.482a.513.513 0 0 1-.758 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1em;
-            padding-right: 2rem;
-        }
-    </style>
 </head>
 <body>
 <div class="container mt-4">
 
-    <h1>Listado de Materias por Estudiante</h1>
+    <h1 class="mb-4">Listado de Materias Matriculadas</h1>
 
-    <!-- Formulario de filtro -->
-    <form method="get" action="{% url 'evaluacion:materias_estudiante' %}" class="row g-3 mb-4">
-
-        <div class="col-md-4">
-            <label for="programa" class="form-label">Programa</label>
-            <select name="programa" id="programa" class="form-select" required onchange="this.form.submit()">
-                <option value="">Seleccione Programa</option>
-                {% for programa in programas %}
-                    <option value="{{ programa.id }}" {% if programa.id|stringformat:"s" == request.GET.programa %}selected{% endif %}>{{ programa }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-4">
-            <label for="semestre" class="form-label">Semestre</label>
-            <select name="semestre" id="semestre" class="form-select" required onchange="this.form.submit()">
-                <option value="">Seleccione Semestre</option>
-                {% for semestre in semestres %}
-                    <option value="{{ semestre.id }}" {% if semestre.id|stringformat:"s" == request.GET.semestre %}selected{% endif %}>{{ semestre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-4">
-            <label for="estudiante" class="form-label">Estudiante</label>
-            <select name="estudiante" id="estudiante" class="form-select" required onchange="this.form.submit()">
-                <option value="">Seleccione Estudiante</option>
-                {% for est in estudiantes %}
-                    <option value="{{ est.id }}" {% if est.id|stringformat:"s" == request.GET.estudiante %}selected{% endif %}>{{ est }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </form>
+    <!-- Información del estudiante -->
+    <div class="mb-4">
+        <h5>Información del Estudiante</h5>
+        <p><strong>Nombre:</strong> {{ estudiante.nombre_completo }}</p>
+        <p><strong>Programa:</strong> {{ estudiante.programa.programa }}</p>
+        <p><strong>Semestre:</strong> {{ estudiante.semestre.descripcion }}</p>
+    </div>
 
     {% if materias %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
@@ -64,14 +28,14 @@
                         <div class="card-body d-flex flex-column justify-content-center align-items-center">
                             <h5 class="card-title">{{ materia.materia }}</h5>
                             <p class="card-text">Código: {{ materia.codigo }}</p>
-                            <a href="{% url 'evaluacion:evaluacion_materia' estudiante_id=estudiante.id materia_id=materia.id %}" class="btn btn-primary mt-auto">Evaluar</a>
+                            <a href="{% url 'evaluacion:evaluacion_materia' materia_id=materia.id %}" class="btn btn-primary mt-auto">Evaluar</a>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p>No hay materias para mostrar.</p>
+        <p>No hay materias disponibles para evaluar.</p>
     {% endif %}
 </div>
 

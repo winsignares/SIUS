@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from home.models.carga_academica.datos_adicionales  import Programa, Semestre, Materia, Matricula, Periodo
+from home.models.carga_academica.datos_adicionales  import Programa, Semestre, Materia, Periodo
+from ..models import Matricula
 from django.contrib.auth.models import User
 from django.utils import timezone
 

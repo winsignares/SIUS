@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from home.models.carga_academica.datos_adicionales import Prerrequisito, Materia, Programa, Semestre
+from home.models.carga_academica.datos_adicionales import Materia, Programa, Semestre
+from ..models import Prerrequisito
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 

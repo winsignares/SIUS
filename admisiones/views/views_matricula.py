@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .views_home import obtener_db_info
-from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia, Usuario, Matricula, Prerrequisito, MateriaAprobada
-
+from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
+from ..models import Estudiantes, Matricula
 from django.http import JsonResponse
 
 
@@ -23,7 +23,7 @@ def seleccionar_programa_semestre(request):
         )
 
         
-        estudiantes = Usuario.objects.filter(
+        estudiantes = Estudiantes.objects.filter(
             programa_id=programa_id, 
             semestre_id=semestre_id   
         )
@@ -41,71 +41,62 @@ def seleccionar_programa_semestre(request):
 
 
 def filtrar_estudiantes(request):
-   
     programa_id = request.GET.get('programa')
     semestre_id = request.GET.get('semestre')
 
-    
     if not programa_id or not semestre_id:
         return JsonResponse({"error": "Faltan parámetros"}, status=400)
 
     try:
-        
         programa_id = int(programa_id)
         semestre_id = int(semestre_id)
 
-        
         programa = get_object_or_404(Programa, id=programa_id)
         semestre = get_object_or_404(Semestre, id=semestre_id)
 
-        
-        estudiantes = Usuario.objects.filter(
-            programa=programa,  
-            semestre=semestre  
+        estudiantes = Estudiantes.objects.filter(
+            programa=programa,
+            semestre=semestre
         )
 
-        
         estudiantes_data = [
-            {"codigo_estudiante": estudiante.codigo_estudiante, "nombre": f"{estudiante.primer_nombre} {estudiante.primer_apellido}"}
+            {
+                "numero_documento": estudiante.numero_documento,
+                "nombre_completo": estudiante.nombre_completo
+            }
             for estudiante in estudiantes
         ]
 
-       
         return JsonResponse({"estudiantes": estudiantes_data}, status=200)
 
     except ValueError:
-        
         return JsonResponse({"error": "Parámetros inválidos"}, status=400)
 
     except Exception as e:
-       
         return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
 
 def validar_codigo(request):
-    codigo = request.GET.get('codigo')
-    valido = Usuario.objects.filter(codigo_estudiante=codigo, fk_rol__rol='E').exists()
+    codigo = request.GET.get('numero_documento')
+    valido = Estudiantes.objects.filter(numero_documento=codigo).exists()
     return JsonResponse({'valido': valido})
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from home.models.carga_academica.datos_adicionales import Materia, Usuario, Matricula
+
 
 def matricular_estudiante(request):
     if request.method == 'POST':
-        codigo_estudiante = request.POST.get('codigo_estudiante')
+        identificacion = request.POST.get('numero_documento')
         materias_ids = request.POST.getlist('materias')
 
         # Validación inicial del código del estudiante
-        if not codigo_estudiante:
+        if not identificacion :
             messages.error(request, 'Código de estudiante no proporcionado.')
             return redirect('seleccionar_programa_semestre')
 
         try:
-            estudiante = Usuario.objects.get(
-                codigo_estudiante=codigo_estudiante,
-                fk_rol__rol='E'
+            estudiante = Estudiantes.objects.get(
+                numero_documento=identificacion,
             )
-        except Usuario.DoesNotExist:
+        except Estudiantes.DoesNotExist:
             messages.error(request, 'Estudiante no encontrado o no tiene rol de estudiante.')
             return redirect('seleccionar_programa_semestre')
 
@@ -150,8 +141,8 @@ def matricular_estudiante(request):
 def validar_materias(request):
     codigo = request.GET.get('codigo')
     try:
-        estudiante = Usuario.objects.get(codigo_estudiante=codigo, fk_rol__rol='E')
-    except Usuario.DoesNotExist:
+        estudiante = Estudiantes.objects.get(codigo_estudiante=codigo, fk_rol__rol='E')
+    except Estudiantes.DoesNotExist:
         return JsonResponse({'error': 'Estudiante no encontrado.'}, status=400)
 
     materias_inscritas = list(Matricula.objects.filter(estudiante=estudiante).values_list('materia_id', flat=True))
@@ -171,7 +162,7 @@ def estudiantes_inscritos(request, materia_id):
 def eliminar_estudiante(request, materia_id, estudiante_id):
     
     if request.method == 'POST':
-        estudiante = get_object_or_404(Usuario, id=estudiante_id)
+        estudiante = get_object_or_404(Estudiantes, id=estudiante_id)
         materia = get_object_or_404(Materia, id=materia_id)
         
        
@@ -180,7 +171,7 @@ def eliminar_estudiante(request, materia_id, estudiante_id):
     
         matricula.delete()
         
-        messages.success(request, f"El estudiante {estudiante.primer_nombre} fue eliminado de la materia {materia.materia}.")
+        messages.success(request, f"El estudiante  {estudiante.nombre_completo} con una identificación: {estudiante.numero_documento},fue eliminado de la materia {materia.materia}.")
         return redirect('estudiantes_inscritos', materia_id=materia.id)
     
     return redirect('estudiantes_inscritos', materia_id=materia_id)

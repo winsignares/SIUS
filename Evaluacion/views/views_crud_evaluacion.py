@@ -31,7 +31,6 @@ def editar_categoria(request):
     if request.method == 'POST':
         categoria_id = request.POST.get("categoria_id")
         nuevo_nombre = request.POST.get("nuevo_nombre", "").strip()
-        nueva_descripcion = request.POST.get("nueva_descripcion", "").strip()
         rol = request.POST.get("rol")
 
         if not nuevo_nombre:
@@ -40,7 +39,7 @@ def editar_categoria(request):
             categoria = obtener_categoria_por_rol(rol, categoria_id)
             if categoria:
                 categoria.nombre = nuevo_nombre
-                categoria.descripcion = nueva_descripcion
+                
                 categoria.save()
                 messages.success(request, "Categoría actualizada correctamente.")
             else:
@@ -116,14 +115,14 @@ def crear_categoria(request):
     if request.method == 'POST':
         rol = request.POST.get('rol')
         nombre = request.POST.get('categoria')
-        descripcion = request.POST.get('descripcion')
+       
 
         if rol == 'E':
-            CategoriaEstudiante.objects.create(nombre=nombre, descripcion=descripcion)
+            CategoriaEstudiante.objects.create(nombre=nombre)
         elif rol == 'D':
-            CategoriaDocente.objects.create(nombre=nombre, descripcion=descripcion)
+            CategoriaDocente.objects.create(nombre=nombre)
         elif rol == 'DR':
-            CategoriaDirectivo.objects.create(nombre=nombre, descripcion=descripcion)
+            CategoriaDirectivo.objects.create(nombre=nombre)
 
         return redirect(f"{reverse('evaluacion:gestion_roles')}?rol={rol}")
 

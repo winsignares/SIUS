@@ -1,9 +1,10 @@
 from django.db import models
-from home.models.carga_academica.datos_adicionales import Usuario, Materia
-
+from home.models.carga_academica.datos_adicionales import  Materia
+from home.models.talento_humano import Usuario
+from admisiones.models import Estudiantes
 class CategoriaEstudiante(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    descripcion = models.TextField(blank=True, null=True)
+    
 
     def __str__(self):
         return self.nombre
@@ -23,7 +24,7 @@ class PreguntaEstudiante(models.Model):
 
 class CategoriaDocente(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    descripcion = models.TextField(blank=True, null=True)
+    
 
     def __str__(self):
         return self.nombre
@@ -43,7 +44,7 @@ class PreguntaDocente(models.Model):
 
 class CategoriaDirectivo(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    descripcion = models.TextField(blank=True, null=True)
+    
 
     def __str__(self):
         return self.nombre
@@ -60,12 +61,15 @@ class PreguntaDirectivo(models.Model):
 
     def __str__(self):
         return self.texto
+    
+
+#zona de prueba
 
 class EvaluacionEstudiante(models.Model):
     estudiante = models.ForeignKey(
-        Usuario,
+        Estudiantes,
         on_delete=models.CASCADE,
-        limit_choices_to={'fk_rol__rol': 'E'}
+        
     )
     materia = models.ForeignKey(
         Materia,
@@ -134,3 +138,4 @@ class EvaluacionDirectivo(models.Model):
         db_table = 'evaluacion_directivo'
         verbose_name = 'Evaluación Directivo'
         verbose_name_plural = 'Evaluaciones Directivos'
+

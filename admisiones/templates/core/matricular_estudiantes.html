@@ -6,7 +6,6 @@
     <div class="container mt-4">
         <h1>Seleccionar Programa y Semestre</h1>
 
-      
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">{{ message }}</div>
@@ -40,34 +39,31 @@
         </form>
 
         {% if materias %}
-           
             <button class="btn btn-dark mt-4" data-bs-toggle="modal" data-bs-target="#modalMaterias">Seleccionar Materias</button>
 
-            
             <div class="modal fade" id="modalMaterias" tabindex="-1" aria-labelledby="modalMateriasLabel">
                 <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
-                       
                         <div class="modal-header bg-dark text-white">
                             <h5 class="modal-title" id="modalMateriasLabel">Materias Disponibles</h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <!-- Cuerpo del modal -->
                         <div class="modal-body">
                             <form id="formMatricular" method="POST" action="{% url 'matricular_estudiante' %}">
                                 {% csrf_token %}
                                 <div class="mb-3">
-                                    <label for="codigo_estudiante" class="form-label">Estudiante</label>
-                                    <select name="codigo_estudiante" id="codigo_estudiante" class="form-control" required>
+                                    <label for="numero_documento" class="form-label">Estudiante</label>
+                                    <select name="numero_documento" id="numero_documento" class="form-control" required>
                                         <option value="">Seleccione un estudiante</option>
                                         {% for estudiante in estudiantes %}
-                                            <option value="{{ estudiante.codigo_estudiante }}">{{ estudiante.primer_nombre }} {{ estudiante.primer_apellido }}</option>
+                                            <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }}</option>
                                         {% empty %}
                                             <option value="">No hay estudiantes disponibles</option>
                                         {% endfor %}
                                     </select>
                                     <div class="text-danger" id="codigoError" style="display: none;">Estudiante no válido.</div>
                                 </div>
+
                                 <table class="table table-bordered">
                                     <thead class="bg-dark text-white">
                                         <tr>
@@ -90,6 +86,7 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
+
                                 <button type="submit" class="btn btn-dark" id="btnMatricular">Matricular</button>
                             </form>
                         </div>
@@ -98,23 +95,25 @@
             </div>
         {% endif %}
     </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-      
+
         function cargarEstudiantes(programaId, semestreId) {
             if (programaId && semestreId) {
                 $.ajax({
-                    url: "{% url 'filtrar_estudiantes' %}",  
+                    url: "{% url 'filtrar_estudiantes' %}",
                     method: "GET",
                     data: { programa: programaId, semestre: semestreId },
                     success: function (response) {
-                        const selectEstudiantes = $('#codigo_estudiante');
+                        const selectEstudiantes = $('#numero_documento');
                         selectEstudiantes.empty().append('<option value="">Seleccione un estudiante</option>');
 
                         if (response.estudiantes.length > 0) {
                             response.estudiantes.forEach(estudiante => {
                                 selectEstudiantes.append(
-                                    `<option value="${estudiante.codigo_estudiante}">${estudiante.nombre}</option>`
+                                    `<option value="${estudiante.numero_documento}">${estudiante.nombre_completo}</option>`
                                 );
                             });
                         } else {
@@ -128,15 +127,13 @@
             }
         }
 
-        
         $('#programa, #semestre').change(function () {
             const programaId = $('#programa').val();
             const semestreId = $('#semestre').val();
-            cargarEstudiantes(programaId, semestreId);  
+            cargarEstudiantes(programaId, semestreId);
         });
 
-        
-        $('#codigo_estudiante').change(function () {
+        $('#numero_documento').change(function () {
             const codigo = $(this).val();
             if (codigo) {
                 $('input[type="checkbox"]').prop('disabled', false);
@@ -149,9 +146,7 @@
             }
         });
 
-       
         $('#modalMaterias').on('hidden.bs.modal', function () {
-           
             $('.btn[data-bs-target="#modalMaterias"]').hide();
         });
     });

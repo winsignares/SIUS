@@ -11,7 +11,7 @@ urlpatterns = [
 
 
     path('materias_listado/', views_estudiante.materias_estudiante_view, name='materias_estudiante'),
-    path('evaluacion/<int:estudiante_id>/<int:materia_id>/', views_estudiante.evaluar_materia, name='evaluacion_materia'),
+    path('evaluacion/<int:materia_id>/', views_estudiante.evaluar_materia, name='evaluacion_materia'),
     
     
 

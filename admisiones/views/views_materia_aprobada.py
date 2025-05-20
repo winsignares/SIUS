@@ -1,6 +1,9 @@
 # views_materia_aprobada.py
 from django.shortcuts import render, redirect, get_object_or_404
-from home.models.carga_academica.datos_adicionales  import MateriaAprobada, Usuario, Programa, Semestre, Materia, Matricula
+from home.models.carga_academica.datos_adicionales  import  Programa, Semestre, Materia
+from home.models.talento_humano import Usuario
+from ..models import Matricula, Estudiantes
+from ..models import MateriaAprobada
 from django.contrib import messages
 
 
@@ -28,17 +31,15 @@ def gestionar_estudiantes(request, materia_id):
     if request.method == 'POST':
         estudiante_id = request.POST.get('estudiante_id')
         estado = request.POST.get('estado')
-        fecha_inicio = request.POST.get('fecha_inicio')
-        fecha_finalizacion = request.POST.get('fecha_finalizacion')
+        
 
-        estudiante = get_object_or_404(Usuario, id=estudiante_id)
+        estudiante = get_object_or_404(Estudiantes, id=estudiante_id)
 
        
         MateriaAprobada.objects.create(
             estudiante=estudiante,
             materia=materia,
-            fecha_inicio=fecha_inicio,
-            fecha_finalizacion=fecha_finalizacion,
+
             estado_aprobacion=estado
         )
 
