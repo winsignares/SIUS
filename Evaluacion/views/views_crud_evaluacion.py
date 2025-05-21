@@ -130,19 +130,30 @@ def crear_pregunta(request):
     if request.method == 'POST':
         rol = request.POST.get('rol')
         categoria_id = request.POST.get('categoria_id')
-        texto = request.POST.get('pregunta')
+        preguntas = request.POST.getlist('preguntas[]')
 
-        if rol == 'E':
-            categoria = CategoriaEstudiante.objects.get(id=categoria_id)
-            PreguntaEstudiante.objects.create(categoria=categoria, texto=texto)
-        elif rol == 'D':
-            categoria = CategoriaDocente.objects.get(id=categoria_id)
-            PreguntaDocente.objects.create(categoria=categoria, texto=texto)
-        elif rol == 'DR':
-            categoria = CategoriaDirectivo.objects.get(id=categoria_id)
-            PreguntaDirectivo.objects.create(categoria=categoria, texto=texto)
+        modelo_categoria = {
+            'E': CategoriaEstudiante,
+            'D': CategoriaDocente,
+            'DR': CategoriaDirectivo,
+        }.get(rol)
+
+        modelo_pregunta = {
+            'E': PreguntaEstudiante,
+            'D': PreguntaDocente,
+            'DR': PreguntaDirectivo,
+        }.get(rol)
+
+        if modelo_categoria and modelo_pregunta:
+            categoria = get_object_or_404(modelo_categoria, id=categoria_id)
+            for texto in preguntas:
+                if texto.strip():  # Validación simple
+                    modelo_pregunta.objects.create(categoria=categoria, texto=texto.strip())
 
         return redirect(f"{reverse('evaluacion:gestion_roles')}?rol={rol}")
+
+    return HttpResponse("Método no permitido", status=405)
+
     
 
 def editar_pregunta(request):

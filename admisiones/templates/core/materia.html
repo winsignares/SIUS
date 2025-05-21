@@ -58,9 +58,13 @@
                         <label for="pensum" class="form-label">Pensum:</label>
                         <select name="pensum" id="pensum" class="form-select" required>
                             <option value="" disabled selected>Seleccione un pensum</option>
-                            {% for pensum in pensums %}
-                                <option value="{{ pensum.id }}" {% if materia_obj.fk_pensum.id == pensum.id %}selected{% endif %}>{{ pensum.fk_programa.programa }}</option>
-                            {% endfor %}
+                           {% for pensum in pensums %}
+                            {% if pensum.vigente %}
+                        <option value="{{ pensum.id }}" {% if materia_obj.fk_pensum.id == pensum.id %}selected{% endif %}>
+                             ({{ pensum.codigo_pensum }}) {{ pensum.fk_programa.programa }}
+                        </option>
+                         {% endif %}
+                           {% endfor %}
                         </select>
                     </div>
                     <button type="submit" class="btn btn-dark">Guardar</button>
