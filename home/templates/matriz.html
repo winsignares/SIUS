@@ -274,19 +274,9 @@
                 if (event.target.matches(".dropdown-item")) {
                     const selectedText = event.target.textContent.trim();
                     docenteId = event.target.getAttribute("data-value");
-
-                    // Obtener la dedicación del docente seleccionado
-                    fetch(`/siuc/dashboard/matriz/dedicacion_docente/${docenteId}/`)
-                        .then(response => response.json())
-                        .then(data => {
-                            dedicacion = data.dedicacion || "No disponible";
-                            console.log("Dedicación del docente:", dedicacion);
-                        })
-                        .catch(error => {
-                            console.error("Error al obtener la dedicación del docente:", error);
-                            dedicacion = "";
-                        });
-
+                    dedicacion = event.target.getAttribute("data-dedicacion");
+                    console.log("Docente ID:", docenteId);
+                    console.log("Dedicación:", dedicacion);
                     inputElement.value = selectedText;
                     dropdownElement.style.display = "none";
                 }

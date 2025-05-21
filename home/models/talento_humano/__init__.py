@@ -1,6 +1,6 @@
 from .tipo_documentos import TipoDocumento
 from .roles import Rol
-from .usuarios import Empleado
+from .usuarios import Empleado, EmpleadoUser
 from .detalles_academicos import DetalleAcademico
 from .tarifas import Tarifa
 from .niveles_academicos import NivelAcademico, NivelAcademicoHistorico

@@ -51,9 +51,6 @@ class Empleado(models.Model):
     fk_modificado_por = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='usuarios_modificados', null=True, blank=True, on_delete=models.SET_NULL)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
-    # Relación con auth_user para definir si el usuario puede iniciar sesión en el aplicativo
-    auth_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-
     class Meta:
         db_table = 'empleados'
         verbose_name = 'Empleado'
@@ -61,3 +58,19 @@ class Empleado(models.Model):
 
     def __str__(self):
         return f"{self.primer_nombre} {self.primer_apellido}"
+
+
+class EmpleadoUser(models.Model):
+
+    fk_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name='usuarios', verbose_name='Empleado')
+    fk_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='empleados', verbose_name='User Asignado')
+    fecha_asignacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'empleado_user'
+        verbose_name = "EmpleadoUser"
+        verbose_name_plural = "EmpleadoUsers"
+        unique_together = ('fk_empleado', 'fk_user')
+
+    def __str__(self):
+        return f'{self.fk_empleado.primer_nombre} {self.fk_empleado.primer_apellido} - {self.fk_user.username}'

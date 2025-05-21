@@ -26,11 +26,11 @@ from io import BytesIO
 import pytz
 
 # Importar Modelos
-from .models.talento_humano.usuarios import Empleado
+from .models.talento_humano.usuarios import Empleado, EmpleadoUser
 from .models.talento_humano.detalles_academicos import DetalleAcademico
 from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
 from .models.talento_humano.tipo_documentos import TipoDocumento
-from .models.talento_humano.niveles_academicos import NivelAcademico
+from .models.talento_humano.niveles_academicos import NivelAcademico, NivelAcademicoHistorico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
 from .models.talento_humano.contrato import TipoContrato, Contrato, DetalleContratro
@@ -59,15 +59,22 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     grupos_usuario = usuario_autenticado.groups.values_list('name', flat=True)
 
     try:
-        usuario_log = Empleado.objects.get(auth_user=usuario_autenticado)
-        usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
-        usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
-        usuario_log.cargo = usuario_log.cargo.upper()
-    except Empleado.DoesNotExist:
+        empleado_usuario = EmpleadoUser.objects.filter(usuario=usuario_autenticado).select_related('empleado').first()
+        if empleado_usuario:
+            usuario_log = empleado_usuario.empleado
+            usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
+            usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
+            usuario_log.cargo = usuario_log.cargo.upper()
+        else:
+            usuario_log = None
+    except EmpleadoUser.DoesNotExist:
         usuario_log = None
 
     # Obtener el programa del usuario logueado
-    programa_usuario = Programa.objects.filter(auth_user=usuario_autenticado.id).first()
+    programa_usuario = None
+    if usuario_log:
+        programa_usuario = Programa.objects.filter(empleado=usuario_log).first()
+
 
     # Obtener el número de semestres del programa
     num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
@@ -77,6 +84,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
 
     # Obtener la fecha actual
     fecha_actual = timezone.now().date()
+
+    periodo_actual = Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
 
     programas = Programa.objects.all().values(
         'id',
@@ -106,6 +115,24 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'fk_semestre_id'
         )
 
+    # Obtener la dedicación de cada docente y anexarla a cada objeto docente
+    docentes = Empleado.objects.filter(fk_rol_id=4, estado_revision='Contratado', activo=True)
+    docentes_con_dedicacion = []
+    for docente in docentes:
+        contrato = Contrato.objects.filter(fk_usuario=docente.id, fk_periodo_id=periodo_actual.id, vigencia_contrato=True).first()
+        dedicacion = contrato.dedicacion if contrato else "No definida"
+        # Crear un dict o puedes usar setattr en el objeto si quieres
+        docente_dict = {
+            'id': docente.id,
+            'primer_nombre': docente.primer_nombre,
+            'segundo_nombre': docente.segundo_nombre,
+            'primer_apellido': docente.primer_apellido,
+            'segundo_apellido': docente.segundo_apellido,
+            'dedicacion': dedicacion or '',
+            # otros campos que necesites
+        }
+        docentes_con_dedicacion.append(docente_dict)
+
     # Contexto inicial
     contexto = {
         'usuario_log': usuario_log,
@@ -131,9 +158,9 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list_all': list(materias_list_all),
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
-            'docentes_list': Empleado.objects.filter(fk_rol_id=4, estado_revision='Contratado', activo=True),
+            'docentes_list': docentes_con_dedicacion,
             'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
-            'periodo_actual': Periodo.objects.filter(fecha_apertura__lte=fecha_actual, fecha_cierre__gte=fecha_actual).first()
+            'periodo_actual': periodo_actual
         })
 
     return contexto
@@ -952,7 +979,7 @@ def definir_contrato_usuario(request, tipo, usuario_id):
                     valor_contrato = Decimal(valor_contrato.replace(",", ""))
 
                 # Agregar nuevo contrato
-                nuevo_contrato = Contrato.objects.create(
+                Contrato.objects.create(
                     fk_periodo=fk_periodo,
                     fk_usuario=fk_usuario,
                     fecha_inicio=fecha_inicio_contrato,
@@ -1185,45 +1212,15 @@ def gestion_matriz(request):
     return render(request, 'matriz.html', contexto)
 
 
-@login_required
-def obtener_dedicacion_docente(request, docente_id):
-    """
-    Obtiene la dedicación del docente según su ID.
-    """
-    try:
-        contrato = Contrato.objects.filter(fk_usuario_id=docente_id, vigencia_contrato = True).first()
-        if contrato:
-            # Si el contrato existe, obtener la dedicación
-            dedicacion = contrato.dedicacion
-            return JsonResponse({
-                'status': 'success',
-                'dedicacion': dedicacion
-            })
-        else:
-            # Si no hay contrato, devolver un mensaje de error
-            return JsonResponse({
-                'status': 'error',
-                'message': 'No se encontró un contrato activo para el docente.'
-            }, status=404)
-    except Empleado.DoesNotExist:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Docente no encontrado.'
-        }, status=404)
-    except Exception as e:
-            print(e)
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Error inesperado. Por favor, intente nuevamente.'
-            }, status=500)
-
-
-def calcular_valor_a_pagar(horas_semanales, total_horas, id_docente):
+def calcular_valor_a_pagar(total_horas, id_docente):
     """
     Calcula el valor a pagar según las horas semanales y el total de horas.
     """
-    ultimo_nivel_estudio = Empleado.objects.get(id=id_docente).fk_ultimo_nivel_estudio
-    return
+    fk_ultimo_nivel_estudio = Empleado.objects.get(id=id_docente).fk_ultimo_nivel_estudio
+    tarifa_base_por_hora = NivelAcademicoHistorico.objects.get(id=fk_ultimo_nivel_estudio.id).tarifa_base_por_hora
+    valor_a_pagar = (total_horas * tarifa_base_por_hora)
+    print(tarifa_base_por_hora)
+    return valor_a_pagar
 
 @login_required
 @csrf_exempt
@@ -1258,11 +1255,7 @@ def guardar_matriz(request):
                     # fk_creado_por = request.user,
                     fecha_creacion = datetime.now(),
 
-                    # valor_a_pagar = calcular_valor_a_pagar(
-                    #     carga["horas_semanales"],
-                    #     carga["total_horas"],
-                    #     carga["fk_docente_asignado"]
-                    # )
+                    valor_a_pagar = calcular_valor_a_pagar(carga["total_horas"], fk_docente_asignado_inst.id)
                 )
             return JsonResponse({
                 'status': 'success',
