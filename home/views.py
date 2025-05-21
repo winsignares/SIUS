@@ -58,10 +58,11 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     usuario_autenticado = request.user
     grupos_usuario = usuario_autenticado.groups.values_list('name', flat=True)
 
+    # Obtener el empleado vinculado a este usuario (puede haber varios; tomamos el primero)
     try:
-        empleado_usuario = EmpleadoUser.objects.filter(usuario=usuario_autenticado).select_related('empleado').first()
-        if empleado_usuario:
-            usuario_log = empleado_usuario.empleado
+        empleado_user = EmpleadoUser.objects.select_related('fk_empleado').filter(fk_user=usuario_autenticado).first()
+        if empleado_user:
+            usuario_log = empleado_user.fk_empleado
             usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
             usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
             usuario_log.cargo = usuario_log.cargo.upper()
@@ -71,10 +72,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         usuario_log = None
 
     # Obtener el programa del usuario logueado
-    programa_usuario = None
-    if usuario_log:
-        programa_usuario = Programa.objects.filter(empleado=usuario_log).first()
-
+    programa_usuario = Programa.objects.filter(auth_user=usuario_autenticado.id).first()
 
     # Obtener el número de semestres del programa
     num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
