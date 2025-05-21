@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .views_home import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
+from django.contrib.auth.models import User
 from ..models import Estudiantes, Matricula
 from django.http import JsonResponse
 
@@ -27,6 +28,15 @@ def seleccionar_programa_semestre(request):
             programa_id=programa_id, 
             semestre_id=semestre_id   
         )
+
+        for estudiante in estudiantes:
+            try:
+                user = User.objects.get(username=estudiante.estudiante)
+                estudiante.nombre_completo = user.get_full_name()  
+                estudiante.correo_personal = user.email  
+            except User.DoesNotExist:
+                estudiante.nombre_completo = "Usuario no encontrado"
+                estudiante.correo_personal = "Correo no disponible"
 
     contexto = obtener_db_info(request)
     contexto.update({
@@ -62,10 +72,12 @@ def filtrar_estudiantes(request):
         estudiantes_data = [
             {
                 "numero_documento": estudiante.numero_documento,
-                "nombre_completo": estudiante.nombre_completo
+                "nombre_completo": User.objects.get(username=estudiante.estudiante).get_full_name() 
             }
             for estudiante in estudiantes
         ]
+        
+        print(estudiantes_data)
 
         return JsonResponse({"estudiantes": estudiantes_data}, status=200)
 
@@ -152,6 +164,11 @@ def estudiantes_inscritos(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
     matriculas = Matricula.objects.filter(materia=materia).select_related('estudiante')
     estudiantes = [matricula.estudiante for matricula in matriculas]
+
+    for estudiante in estudiantes:
+        estudiante.nombre_completo = User.objects.get(username=estudiante.estudiante).get_full_name() 
+        estudiante.correo_personal = User.objects.get(username=estudiante.estudiante).email 
+
 
     context = {
         'materia': materia,

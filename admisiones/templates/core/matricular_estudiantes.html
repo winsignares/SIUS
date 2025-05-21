@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block content %}
-<body class="bg-light">
-    <div class="container mt-4">
-        <h1>Seleccionar Programa y Semestre</h1>
+    <div class="container h-100 mt-5">
+        <h2>Gestión de Matriculas</h2>
 
         {% if messages %}
             {% for message in messages %}
@@ -12,34 +11,42 @@
             {% endfor %}
         {% endif %}
 
-        <form method="GET" action="">
-            <div class="mb-3">
-                <label for="programa" class="form-label">Programa</label>
-                <select name="programa" id="programa" class="form-control" required>
-                    <option value="">Seleccione un programa</option>
-                    {% for programa in programas %}
-                        <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>
-                            {{ programa.programa }}
-                        </option>
-                    {% endfor %}
-                </select>
+        <div class="card m-4">
+            <div class="card-header bg-dark text-white">
+                Matriculas
             </div>
-            <div class="mb-3">
-                <label for="semestre" class="form-label">Semestre</label>
-                <select name="semestre" id="semestre" class="form-control" required>
-                    <option value="">Seleccione un semestre</option>
-                    {% for semestre in semestres %}
-                        <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>
-                            {{ semestre.semestre }}
-                        </option>
-                    {% endfor %}
-                </select>
+            <div class="card-body">
+
+                <form method="GET" action="">
+                    <div class="mb-3">
+                        <label for="programa" class="form-label">Programa</label>
+                        <select name="programa" id="programa" class="form-control" required>
+                            <option value="">Seleccione un programa</option>
+                            {% for programa in programas %}
+                                <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ programa.programa }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="semestre" class="form-label">Semestre</label>
+                        <select name="semestre" id="semestre" class="form-control" required>
+                            <option value="">Seleccione un semestre</option>
+                            {% for semestre in semestres %}
+                                <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ semestre.semestre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-dark">Buscar Materias</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-dark">Buscar Materias</button>
-        </form>
+        </div>
 
         {% if materias %}
-            <button class="btn btn-dark mt-4" data-bs-toggle="modal" data-bs-target="#modalMaterias">Seleccionar Materias</button>
+            <button class="btn btn-dark m-4" data-bs-toggle="modal" data-bs-target="#modalMaterias">Seleccionar Materias</button>
 
             <div class="modal fade" id="modalMaterias" tabindex="-1" aria-labelledby="modalMateriasLabel">
                 <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -54,11 +61,11 @@
                                 <div class="mb-3">
                                     <label for="numero_documento" class="form-label">Estudiante</label>
                                     <select name="numero_documento" id="numero_documento" class="form-control" required>
-                                        <option value="">Seleccione un estudiante</option>
+                                        <option value="" selected disabled>Seleccione un estudiante</option>
                                         {% for estudiante in estudiantes %}
                                             <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }}</option>
                                         {% empty %}
-                                            <option value="">No hay estudiantes disponibles</option>
+                                            <option value="" disabled>No hay estudiantes disponibles</option>
                                         {% endfor %}
                                     </select>
                                     <div class="text-danger" id="codigoError" style="display: none;">Estudiante no válido.</div>
@@ -101,7 +108,8 @@
     $(document).ready(function () {
 
         function cargarEstudiantes(programaId, semestreId) {
-            if (programaId && semestreId) {
+            if (programaId && semestreId) { 
+                print('cargarEstudiantes');
                 $.ajax({
                     url: "{% url 'filtrar_estudiantes' %}",
                     method: "GET",
@@ -113,11 +121,11 @@
                         if (response.estudiantes.length > 0) {
                             response.estudiantes.forEach(estudiante => {
                                 selectEstudiantes.append(
-                                    `<option value="${estudiante.numero_documento}">${estudiante.nombre_completo}</option>`
+                                    `<option value="${estudiante.numero_documento}">${estudiante.nombre_completo} P</option>`
                                 );
                             });
                         } else {
-                            selectEstudiantes.append('<option value="">No hay estudiantes disponibles</option>');
+                            selectEstudiantes.append('<option value="" disable>No hay estudiantes disponibles</option>');
                         }
                     },
                     error: function () {

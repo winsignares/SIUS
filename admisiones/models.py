@@ -10,8 +10,6 @@ class Estudiantes(models.Model):
     fk_tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.CASCADE, default=0)
     numero_documento = models.BigIntegerField(unique=True, default=0)
     fecha_nacimiento = models.DateField(null=True, blank=True)
-    nombre_completo= models.CharField(max_length=255, null=True, blank=True)
-    correo_personal = models.EmailField()
     programa = models.ForeignKey(Programa, on_delete=models.CASCADE, null=True, blank=True)
     semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE, null=True, blank=True)
     
