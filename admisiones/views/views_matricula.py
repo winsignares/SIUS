@@ -77,7 +77,6 @@ def filtrar_estudiantes(request):
             for estudiante in estudiantes
         ]
         
-        print(estudiantes_data)
 
         return JsonResponse({"estudiantes": estudiantes_data}, status=200)
 

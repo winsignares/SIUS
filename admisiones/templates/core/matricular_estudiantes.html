@@ -109,7 +109,6 @@
 
         function cargarEstudiantes(programaId, semestreId) {
             if (programaId && semestreId) { 
-                print('cargarEstudiantes');
                 $.ajax({
                     url: "{% url 'filtrar_estudiantes' %}",
                     method: "GET",
@@ -121,7 +120,7 @@
                         if (response.estudiantes.length > 0) {
                             response.estudiantes.forEach(estudiante => {
                                 selectEstudiantes.append(
-                                    `<option value="${estudiante.numero_documento}">${estudiante.nombre_completo} P</option>`
+                                    `<option value="${estudiante.numero_documento}">${estudiante.nombre_completo}</option>`
                                 );
                             });
                         } else {
