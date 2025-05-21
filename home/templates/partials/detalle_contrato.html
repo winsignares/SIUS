@@ -7,6 +7,10 @@
             </div>
 
             <div class="row px-3 mb-3">
+                <!-- Periodo del Contrato -->
+                {% if usuario.fk_rol.id == 4 %}
+                <input type="hidden" name="periodo_contrato" value="{{ periodo_actual.id }}">
+                {% endif %}
 
                 <!-- Tipo del Contrato -->
                 <div class="col-md-6">
@@ -29,7 +33,7 @@
                         <option value="Tiempo Completo - TC" {% if contrato and contrato.dedicacion == "Tiempo Completo - TC" %}selected{% endif %}>Tiempo Completo - TC</option>
                         <option value="Medio Tiempo - MT" {% if contrato and contrato.dedicacion == "Medio Tiempo - MT" %}selected{% endif %}>Medio Tiempo - MT</option>
                         {% if usuario.fk_rol.id == 4 %}
-                        <option value="Hora Catedra - HC" {% if contrato and contrato.dedicacion == "Hora Catedra - HC" %}selected{% endif %}>Hora Catedra - HC</option>
+                        <option value="Hora Cátedra - HC" {% if contrato and contrato.dedicacion == "Hora Cátedra - HC" %}selected{% endif %}>Hora Cátedra - HC</option>
                         {% endif %}
                     </select>
                 </div>

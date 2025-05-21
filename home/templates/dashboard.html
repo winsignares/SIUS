@@ -233,7 +233,7 @@
                 const valorContratoDiv = valorContratoInput.closest('.col-md-12');
 
                 function toggleValorContrato() {
-                    const esHoraCatedra = dedicacionSelect.value === "Hora Catedra - HC";
+                    const esHoraCatedra = dedicacionSelect.value === "Hora Cátedra - HC";
                     valorContratoInput.disabled = esHoraCatedra;
                     valorContratoDiv.classList.toggle('opacity-50', esHoraCatedra);
                     if (esHoraCatedra) valorContratoInput.value = "";

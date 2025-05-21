@@ -849,27 +849,6 @@ def definir_contrato(request, tipo, usuario_id):
     )
 
 
-@login_required
-def definir_contrato_usuario(request, tipo, usuario_id):
-    """
-    Muestra el formulario para definir el contrato de un empleado.
-    """
-    usuario = get_object_or_404(Empleado, id=usuario_id)
-    data = request.POST
-    
-    try:
-        print(usuario, data)
-        return JsonResponse({
-            "status": "success",
-            "message": "Contrato guardado correctamente.",
-        })
-    except Exception as e:
-        print(e)
-        return JsonResponse({
-            "status": "error",
-            "message": 'Error inesperado. Por favor, intente nuevamente.'
-        }, status=500)
-
 # Falta configurar 🚫
 def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
     """Calcula los días laborados durante todo el contrato."""
@@ -939,71 +918,69 @@ def generar_detalles_contrato(contrato):
     DetalleContratro.objects.bulk_create(detalles)
     return total_pagado
 
-# Falta configurar 🚫
+
 @login_required
-def contrato_usuario(request, tipo, usuario_id):
+def definir_contrato_usuario(request, tipo, usuario_id):
+    """
+    Muestra el formulario para definir el contrato de un empleado.
+    """
     usuario = get_object_or_404(Empleado, id=usuario_id)
-    data = request.POST
 
-    tipo_contrato = data.get("tipo_contrato")
-    fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
+    if request.method == "POST":
+        data = request.POST
+        print(request.POST)
+        try:
+            # Instanciar valores recibidos
+            tipo_contrato = data.get("tipo_contrato")
+            dedicacion = data.get("dedicacion")
+            fecha_inicio_contrato = data.get("fecha_inicio_contrato")
+            fecha_fin_contrato = data.get("fecha_fin_contrato")
+            estado_contrato = data.get("estado_contrato")
 
-    # dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
+            # Convertir fechas a datetime
+            fecha_inicio_contrato = datetime.strptime(fecha_inicio_contrato, "%Y-%m-%d")
+            fecha_fin_contrato = datetime.strptime(fecha_fin_contrato, "%Y-%m-%d")
 
-    try:
-        contrato, created = Contrato.objects.get_or_create(
-            fk_usuario=usuario,
-            defaults={
-                # "fecha_inicio": fecha_inicio_contrato,
-                # "fecha_fin": fecha_fin_contrato,
-                "fk_tipo_contrato": fk_tipo_contrato,
-                "dedicacion": data.get("dedicacion"),
-                "valor_contrato": data.get("valor_contrato"),
-                # "total_dias_laborados": dias_laborados,
-                "vigencia_contrato": True,
-            },
-        )
+            # Lógica segun el tipo de contrato
+            if estado_contrato == "1":
+                # Instanciar ForeignKeys
+                fk_usuario = Empleado.objects.get(id=usuario_id)
+                if fk_periodo := data.get("fk_periodo"):
+                    fk_periodo = Periodo.objects.get(id=fk_periodo)
+                fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
+                if valor_contrato := data.get("valor_contrato"):
+                    valor_contrato = Decimal(valor_contrato.replace(",", ""))
 
-        if not created:
-            # contrato.fecha_inicio = fecha_inicio_contrato
-            # contrato.fecha_fin = fecha_fin_contrato
-            contrato.fk_tipo_contrato = fk_tipo_contrato
-            contrato.dedicacion = data.get("dedicacion")
-            contrato.valor_contrato = data.get("valor_contrato")
-            # contrato.total_dias_laborados = dias_laborados
-            contrato.vigencia_contrato = True
-            contrato.save()
+                # Agregar nuevo contrato
+                nuevo_contrato = Contrato.objects.create(
+                    fk_periodo=fk_periodo,
+                    fk_usuario=fk_usuario,
+                    fecha_inicio=fecha_inicio_contrato,
+                    fecha_fin=fecha_fin_contrato,
+                    fk_tipo_contrato=fk_tipo_contrato,
+                    dedicacion=dedicacion,
+                    vigencia_contrato=True,
+                    valor_contrato=valor_contrato,
+                )
 
-        # Solo generar detalles si el valor del contrato está definido
-        if contrato.valor_contrato:
-            total_pagado = generar_detalles_contrato(contrato)
-        else:
-            total_pagado = None
+            if estado_contrato == "2":
+                # Editar contrato existente
+                pass
 
-        return JsonResponse({
-            "status": "success",
-            "message": "Contrato y detalles creados/actualizados correctamente.",
-            "valor_total_pagado": float(total_pagado) if total_pagado else None,
-        })
+            if estado_contrato == "3":
+                # Anexar contrato
+                pass
 
-    except IntegrityError:
-        return JsonResponse({
-            "status": "error",
-            "message": "Error de integridad al crear/actualizar el contrato."
-        }, status=400,)
-    except ValueError as e:
-        print(e)
-        return JsonResponse({
-            "status": "error",
-            "message": 'Error inesperado. Por favor, intente nuevamente.'
-        }, status=405)
-    except Exception as e:
-        print(e)
-        return JsonResponse({
-            "status": "error",
-            "message": 'Error inesperado. Por favor, intente nuevamente.'
-        }, status=500)
-
+            return JsonResponse({
+                "status": "success",
+                "message": "Usuario actualizado correctamente."
+            })
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                "status": "error",
+                "message": 'Error inesperado. Por favor, intente nuevamente.'
+            }, status=500)
 
 
 @login_required
@@ -1241,11 +1218,11 @@ def obtener_dedicacion_docente(request, docente_id):
             }, status=500)
 
 
-def calcular_valor_a_pagar(horas_semanales, total_horas, fk_docente_asignado):
+def calcular_valor_a_pagar(horas_semanales, total_horas, id_docente):
     """
     Calcula el valor a pagar según las horas semanales y el total de horas.
     """
-    ultimo_nivel_estudio = Empleado.objects.get(id=fk_docente_asignado).fk_ultimo_nivel_estudio
+    ultimo_nivel_estudio = Empleado.objects.get(id=id_docente).fk_ultimo_nivel_estudio
     return
 
 @login_required
