@@ -11,47 +11,34 @@
     <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
     <style>
         body {
-             background-color: #fef5f6;
-             font-family: 'Poppins', sans-serif;
+            background-color: #fef5f6;
+            font-family: 'Poppins', sans-serif;
         }
         .list-group-item {
             background-color: #ffffff;
             border-radius: 8px;
             margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
         h1, h2 {
             color: #343a40;
+            font-weight: 600;
         }
-        .list-group-item {
-        background-color: #ffffff;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    }
-
-    h1, h2 {
-        color: #343a40;
-        font-weight: 600;
-    }
-
-    
-    .shadow-sm {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
-        background-color: #ffffff;
-        border-radius: 10px; 
-    }
-
-    
-    .btn-dark {
-        font-weight: 500;
-    }
+        .shadow-sm {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+            background-color: #ffffff;
+            border-radius: 10px; 
+        }
+        .btn-dark {
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Gestión de Roles</h1>
 
-        <!-- Formulario para seleccionar el rol -->
+        <!-- Formulario de selección de rol -->
         <form id="roleForm" method="POST" action="." class="mb-4">
             {% csrf_token %}
             <label for="rol" class="form-label">Seleccione su Rol:</label>
@@ -63,7 +50,6 @@
             </select>
         </form>
 
-        <!-- Mostrar categorías si hay un rol seleccionado -->
         {% if categorias %}
         <div class="mt-5">
             <h2 class="mb-3">Categorías del Rol Seleccionado</h2>
@@ -73,37 +59,28 @@
                     <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
                         <div>
                             <strong class="text-dark">{{ categoria.nombre }}</strong><br>
-                    
                         </div>
                         <div class="d-flex flex-wrap gap-2">
-                            <!-- Formulario para editar categoría -->
                             <form method="POST" action="{% url 'evaluacion:editar_categoria' %}" class="d-flex flex-wrap align-items-center">
                                 {% csrf_token %}
                                 <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
                                 <input type="hidden" name="rol" value="{{ rol }}">
                                 <input type="text" name="nuevo_nombre" class="form-control form-control-sm me-1 mb-1" placeholder="Nuevo nombre" required>
-                                
                                 <button type="submit" class="btn btn-sm btn-dark mb-1">Actualizar categoria</button>
                             </form>
-
-                            <!-- Formulario para eliminar categoría -->
                             <form method="POST" action="{% url 'evaluacion:eliminar_categoria' %}" class="d-inline-block mb-1">
                                 {% csrf_token %}
                                 <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
                                 <input type="hidden" name="rol" value="{{ rol }}">
-                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar categoría"
-                                        onclick="return confirm('¿Estás seguro de eliminar esta categoría? Esta acción no se puede deshacer.');">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar categoría" onclick="return confirm('¿Estás seguro de eliminar esta categoría? Esta acción no se puede deshacer.');">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                         </div>
                     </div>
-
-                    <!-- Lista de preguntas -->
                     <ul class="ps-3">
                         {% for pregunta in categoria.preguntas.all %}
                         <li class="d-flex align-items-center mb-2">
-                            <!-- Formulario para editar pregunta -->
                             <form method="POST" action="{% url 'evaluacion:gestion_roles' %}" class="d-flex align-items-center flex-grow-1 me-2">
                                 {% csrf_token %}
                                 <input type="hidden" name="accion" value="editar">
@@ -112,8 +89,6 @@
                                 <input type="text" name="nuevo_texto" class="form-control me-2" value="{{ pregunta.texto }}" required>
                                 <button type="submit" class="btn btn-sm btn-dark">Actualizar</button>
                             </form>
-
-                            <!-- Formulario para eliminar pregunta -->
                             <form method="POST" action="{% url 'evaluacion:gestion_roles' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="accion" value="eliminar">
@@ -132,7 +107,6 @@
         </div>
         {% endif %}
 
-        <!-- Formulario para crear categorías -->
         {% if rol %}
         <div class="mt-5">
             <h2 class="mb-3">Crear Categoría</h2>
@@ -143,15 +117,13 @@
                     <label for="categoria" class="form-label">Nueva Categoría:</label>
                     <input type="text" name="categoria" id="categoria" class="form-control" placeholder="Nombre de la categoría" required>
                 </div>
-                
                 <button type="submit" class="btn btn-dark">Crear Categoría</button>
             </form>
         </div>
 
-        <!-- Formulario para crear preguntas -->
         <div class="mt-5">
-            <h2 class="mb-3">Crear Pregunta</h2>
-            <form method="POST" action="{% url 'evaluacion:crear_pregunta' %}" class="shadow-sm p-4 rounded bg-white">
+            <h2 class="mb-3">Crear Preguntas</h2>
+            <form method="POST" action="{% url 'evaluacion:crear_pregunta' %}" class="shadow-sm p-4 rounded bg-white" id="preguntaForm">
                 {% csrf_token %}
                 <input type="hidden" name="rol" value="{{ rol }}">
                 <div class="mb-3">
@@ -162,17 +134,47 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="mb-3">
-                    <label for="pregunta" class="form-label">Nueva Pregunta:</label>
-                    <input type="text" name="pregunta" id="pregunta" class="form-control" placeholder="Texto de la pregunta" required>
+
+                <div id="preguntasContainer" class="mb-3">
+                    <label class="form-label">Preguntas:</label>
+                    <div class="input-group mb-2 pregunta-item">
+                        <input type="text" name="preguntas[]" class="form-control" placeholder="Texto de la pregunta" required>
+                        <button type="button" class="btn btn-outline-danger remove-btn"><i class="fas fa-minus"></i></button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-dark">Crear Pregunta</button>
+
+                <button type="button" class="btn btn-outline-primary mb-3" id="addPreguntaBtn"><i class="fas fa-plus"></i> Agregar Pregunta</button>
+                <br>
+                <button type="submit" class="btn btn-dark">Crear Preguntas</button>
             </form>
         </div>
         {% endif %}
-
-        
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addBtn = document.getElementById('addPreguntaBtn');
+            const container = document.getElementById('preguntasContainer');
+
+            addBtn.addEventListener('click', function () {
+                const div = document.createElement('div');
+                div.classList.add('input-group', 'mb-2', 'pregunta-item');
+                div.innerHTML = `
+                    <input type="text" name="preguntas[]" class="form-control" placeholder="Texto de la pregunta" required>
+                    <button type="button" class="btn btn-outline-danger remove-btn"><i class="fas fa-minus"></i></button>
+                `;
+                container.appendChild(div);
+            });
+
+            container.addEventListener('click', function (e) {
+                if (e.target.closest('.remove-btn')) {
+                    const preguntaItem = e.target.closest('.pregunta-item');
+                    if (document.querySelectorAll('.pregunta-item').length > 1) {
+                        preguntaItem.remove();
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-
