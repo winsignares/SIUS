@@ -6,8 +6,17 @@ from .niveles_academicos import NivelAcademico
 from django.conf import settings
 
 
-class Empleado(models.Model):
+class EstadoRevision(models.Model):
+    estado = models.CharField(max_length=50)
+    class Meta:
+        db_table = 'estado_revision'
+        verbose_name = 'Estado de Revisión'
+        verbose_name_plural = 'Estados de Revisión'
 
+    def __str__(self):
+        return f"{self.primer_nombre} {self.primer_apellido}"
+
+class Empleado(models.Model):
     # Campos obligatorios
     id = models.AutoField(primary_key=True)
     fk_rol = models.ForeignKey(Rol, on_delete=models.CASCADE) # ✅
@@ -17,7 +26,8 @@ class Empleado(models.Model):
     primer_apellido = models.CharField(max_length=255) # ✅
     numero_documento = models.BigIntegerField(unique=True) # ✅
     correo_personal = models.EmailField() # ✅
-    estado_revision = models.CharField(max_length=50) # Pendiente - Rechazado - Aceptado
+    estado_revision = models.CharField(max_length=50) # Eliminar
+    fk_estado_revision = models.ForeignKey(EstadoRevision, on_delete=models.CASCADE, null=True, blank=True) # Pendiente - Rechazado - Aceptado
 
 # Campos opcionales
     segundo_nombre = models.CharField(max_length=255, null=True, blank=True) # ✅

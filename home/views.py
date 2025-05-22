@@ -27,7 +27,7 @@ from io import BytesIO
 import pytz
 
 # Importar Modelos
-from .models.talento_humano.usuarios import Empleado, EmpleadoUser
+from .models.talento_humano.usuarios import Empleado, EmpleadoUser, EstadoRevision
 from .models.talento_humano.detalles_academicos import DetalleAcademico
 from .models.talento_humano.detalles_exp_laboral import DetalleExperienciaLaboral
 from .models.talento_humano.tipo_documentos import TipoDocumento
