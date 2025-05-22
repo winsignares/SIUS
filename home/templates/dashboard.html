@@ -222,9 +222,9 @@
                 });
             });
 
-            // Función que habilita o deshabilita el input "valor_contrato" según selección en "dedicacion"
+            // Función que habilita o deshabilita el input "valor_contrato" según selección en "fk_dedicacion"
             function inicializarToggleValorContrato() {
-                const dedicacionSelect = document.getElementById("dedicacion");
+                const dedicacionSelect = document.getElementById("fk_dedicacion");
                 const valorContratoInput = document.getElementById("valor_contrato");
 
                 // Protección en caso de que el formulario no esté cargado aún
@@ -233,7 +233,10 @@
                 const valorContratoDiv = valorContratoInput.closest('.col-md-12');
 
                 function toggleValorContrato() {
-                    const esHoraCatedra = dedicacionSelect.value === "Hora Cátedra - HC";
+                    const selectedOption = dedicacionSelect.options[dedicacionSelect.selectedIndex];
+                    const nombreCorto = selectedOption ? selectedOption.getAttribute('data-nombre-corto') : null;
+                    const esHoraCatedra = nombreCorto === "HC";
+
                     valorContratoInput.disabled = esHoraCatedra;
                     valorContratoDiv.classList.toggle('opacity-50', esHoraCatedra);
                     if (esHoraCatedra) valorContratoInput.value = "";
@@ -284,17 +287,6 @@
                         showAlert(data.message, data.status === "success" ? "success" : "error");
                         if (data.status === "success") {
                         cerrarModalFormulario("definirContratoModal");
-                        // Actualizar la página
-                        const currentPath = document.location.pathname;
-                            setTimeout(() => {
-                                if (currentPath.includes("empleados")) {
-                                    window.location.href = "{% url 'gestion_empleados' %}";
-                                } else if (currentPath.includes("aspirantes")) {
-                                    window.location.href = "{% url 'gestion_aspirantes' %}";
-                                } else {
-                                    window.location.reload();
-                                }
-                            }, 1500);
                         }
                     });
                     }

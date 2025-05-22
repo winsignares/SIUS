@@ -66,9 +66,7 @@
                             <tr class="text-center">
                                 <td>{{ forloop.counter0|add:page_obj_activos.start_index }}</td>
                                 <td>
-                                    {{ usuario.primer_nombre }}
-                                    {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
-                                    {{ usuario.primer_apellido }}
+                                    {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}
                                     {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
                                 </td>
                                 <td>
@@ -191,9 +189,7 @@
                             <tr class="text-center">
                                 <td>{{ forloop.counter0|add:page_obj_inactivos.start_index }}</td>
                                 <td>
-                                    {{ usuario.primer_nombre }}
-                                    {% if usuario.segundo_nombre %} {{ usuario.segundo_nombre }}{% endif %}
-                                    {{ usuario.primer_apellido }}
+                                    {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}
                                     {% if usuario.segundo_apellido %} {{ usuario.segundo_apellido }}{% endif %}
                                 </td>
                                 <td>

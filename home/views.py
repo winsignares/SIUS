@@ -3,6 +3,7 @@ from collections import defaultdict
 import json
 import traceback
 from decimal import Decimal
+from django.db.models import Sum, F
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
@@ -33,7 +34,7 @@ from .models.talento_humano.tipo_documentos import TipoDocumento
 from .models.talento_humano.niveles_academicos import NivelAcademico, NivelAcademicoHistorico
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
-from .models.talento_humano.contrato import TipoContrato, Contrato, DetalleContratro
+from .models.talento_humano.contrato import TipoContrato, Contrato, DetalleContratro, Dedicacion
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
 
 
@@ -109,16 +110,16 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'id',
             'materia',
             'codigo',
-            'horas',
+            'horas_semanales',
             'fk_semestre_id'
         )
 
     # Obtener la dedicación de cada docente y anexarla a cada objeto docente
-    docentes = Empleado.objects.filter(fk_rol_id=4, estado_revision='Contratado', activo=True)
+    docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4], estado_revision='Contratado', activo=True).order_by('primer_nombre')
     docentes_con_dedicacion = []
     for docente in docentes:
         contrato = Contrato.objects.filter(fk_usuario=docente.id, fk_periodo_id=periodo_actual.id, vigencia_contrato=True).first()
-        dedicacion = contrato.dedicacion if contrato else "No definida"
+        fk_dedicacion = contrato.fk_dedicacion.id if contrato and contrato.fk_dedicacion else None
         # Crear un dict o puedes usar setattr en el objeto si quieres
         docente_dict = {
             'id': docente.id,
@@ -126,8 +127,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'segundo_nombre': docente.segundo_nombre,
             'primer_apellido': docente.primer_apellido,
             'segundo_apellido': docente.segundo_apellido,
-            'dedicacion': dedicacion or '',
-            # otros campos que necesites
+            'dedicacion': fk_dedicacion,
         }
         docentes_con_dedicacion.append(docente_dict)
 
@@ -157,8 +157,9 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
             'docentes_list': docentes_con_dedicacion,
-            'cargas_academicas': CargaAcademica.objects.all().order_by('id'),
-            'periodo_actual': periodo_actual
+            'cargas_academicas': CargaAcademica.objects.filter(fk_periodo_id=periodo_actual.id).order_by('id'),
+            'periodo_actual': periodo_actual,
+            'dedicacion_list': Dedicacion.objects.all()
         })
 
     return contexto
@@ -854,11 +855,15 @@ def definir_contrato(request, tipo, usuario_id):
 
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
+    periodo_actual = contexto.get("periodo_actual")
+
     # Obtener el listado de tipos de contratos
     tipos_contrato = TipoContrato.objects.all()
 
     # Obtener el contrato más reciente del usuario (si existe)
-    contrato = Contrato.objects.filter(fk_usuario=usuario).order_by('-fecha_inicio').first()
+    contrato = Contrato.objects.filter(fk_usuario=usuario.id, fk_periodo=periodo_actual.id).order_by('-fecha_inicio').first()
+
+    print(contrato)
 
     contexto.update({
         "usuario": usuario,
@@ -956,8 +961,11 @@ def definir_contrato_usuario(request, tipo, usuario_id):
         print(request.POST)
         try:
             # Instanciar valores recibidos
+            if fk_periodo := data.get("fk_periodo"):
+                    fk_periodo = Periodo.objects.get(id=fk_periodo)
             tipo_contrato = data.get("tipo_contrato")
-            dedicacion = data.get("dedicacion")
+            if fk_dedicacion := data.get("fk_dedicacion"):
+                fk_dedicacion = Dedicacion.objects.get(id=fk_dedicacion)
             fecha_inicio_contrato = data.get("fecha_inicio_contrato")
             fecha_fin_contrato = data.get("fecha_fin_contrato")
             estado_contrato = data.get("estado_contrato")
@@ -970,8 +978,6 @@ def definir_contrato_usuario(request, tipo, usuario_id):
             if estado_contrato == "1":
                 # Instanciar ForeignKeys
                 fk_usuario = Empleado.objects.get(id=usuario_id)
-                if fk_periodo := data.get("fk_periodo"):
-                    fk_periodo = Periodo.objects.get(id=fk_periodo)
                 fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
                 if valor_contrato := data.get("valor_contrato"):
                     valor_contrato = Decimal(valor_contrato.replace(",", ""))
@@ -983,7 +989,7 @@ def definir_contrato_usuario(request, tipo, usuario_id):
                     fecha_inicio=fecha_inicio_contrato,
                     fecha_fin=fecha_fin_contrato,
                     fk_tipo_contrato=fk_tipo_contrato,
-                    dedicacion=dedicacion,
+                    fk_dedicacion=fk_dedicacion,
                     vigencia_contrato=True,
                     valor_contrato=valor_contrato,
                 )
@@ -1172,19 +1178,31 @@ def gestion_carga_academica(request):
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    dia_actual = datetime.now().date()
+    cargas_academicas = contexto["cargas_academicas"]
 
     # Agrupar cargas académicas por semestre
     cargas_dict = defaultdict(list)
-    for carga in contexto["cargas_academicas"]:
+    for carga in cargas_academicas:
         cargas_dict[carga.fk_semestre.semestre].append(carga)
+
+    # Calcular total valor_a_pagar por semestre usando ORM para eficiencia
+    totales_qs = cargas_academicas.values('fk_semestre__semestre').annotate(
+        total_valor=Sum('valor_a_pagar')
+    )
+
+    print(totales_qs)
+
+    # Convertir queryset a dict para acceso fácil en template
+    totales_por_semestre = {
+        item['fk_semestre__semestre']: item['total_valor'] or 0 for item in totales_qs
+    }
+
+    print(totales_por_semestre)
 
     # Convertir a diccionario normal para el template
     contexto["cargas_dict"] = dict(cargas_dict)
-
-    contexto.update({
-            "dia_actual": dia_actual,
-        })
+    contexto["cargas_dict"] = dict(cargas_dict)
+    contexto["totales_por_semestre"] = totales_por_semestre
 
     return render(request, 'carga_academica.html', contexto)
 
@@ -1212,12 +1230,15 @@ def gestion_matriz(request):
 
 def calcular_valor_a_pagar(total_horas, id_docente):
     """
-    Calcula el valor a pagar según las horas semanales y el total de horas.
+    Calcula el valor a pagar según las horas semanales y el total de horas, además de la dedicación del docente.
     """
+
     fk_ultimo_nivel_estudio = Empleado.objects.get(id=id_docente).fk_ultimo_nivel_estudio
     tarifa_base_por_hora = NivelAcademicoHistorico.objects.get(id=fk_ultimo_nivel_estudio.id).tarifa_base_por_hora
-    valor_a_pagar = (total_horas * tarifa_base_por_hora)
     print(tarifa_base_por_hora)
+    valor_a_pagar = (total_horas * tarifa_base_por_hora)
+    print(valor_a_pagar)
+
     return valor_a_pagar
 
 @login_required
@@ -1240,6 +1261,27 @@ def guardar_matriz(request):
                 fk_materia_inst = Materia.objects.get(id=carga["fk_materia"])
                 fk_docente_asignado_inst = Empleado.objects.get(id=carga["fk_docente_asignado"])
 
+                # Validar que la carga académica no exista ya
+                if CargaAcademica.objects.filter(
+                    fk_periodo=fk_periodo_inst,
+                    fk_programa=fk_programa_inst,
+                    fk_semestre=fk_semestre_inst,
+                    fk_materia=fk_materia_inst,
+                    fk_docente_asignado=fk_docente_asignado_inst
+                ).exists():
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'La carga académica ya existe para este docente y materia.'
+                    }, status=400)
+
+                # Valor a pagar si la dedicación es "Hora Cátedra - HC"
+                fk_dedicacion = Contrato.objects.get(fk_usuario=fk_docente_asignado_inst).fk_dedicacion
+                print(fk_dedicacion.nombre_corto)
+                if fk_dedicacion == 1:
+                    valor_a_pagar = calcular_valor_a_pagar(carga["total_horas"], fk_docente_asignado_inst.id)
+                else:
+                    valor_a_pagar = None
+
                 # Guardar los datos en la DB
                 CargaAcademica.objects.create(
                     fk_periodo = fk_periodo_inst,
@@ -1253,21 +1295,22 @@ def guardar_matriz(request):
                     # fk_creado_por = request.user,
                     fecha_creacion = datetime.now(),
 
-                    valor_a_pagar = calcular_valor_a_pagar(carga["total_horas"], fk_docente_asignado_inst.id)
+                    valor_a_pagar = valor_a_pagar
                 )
             return JsonResponse({
                 'status': 'success',
                 'message': 'Carga académica agregada correctamente.'})
         except IntegrityError:
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
                 'message': 'Error al agregar la carga académica. Revise los datos ingresados.'
             }, status=400)
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             return JsonResponse({
                 'status': 'error',
-                'message': f"Error inesperado: {e}"
+                'message': "Error inesperado. Por favor, intente nuevamente."
             }, status=500)
 
 

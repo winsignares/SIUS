@@ -4,7 +4,7 @@ from django.db import models
 
 class Periodo(models.Model):
     id = models.AutoField(primary_key=True)
-    year = models.CharField("Año", max_length=255, unique=True)
+    year = models.CharField("Año", max_length=255, null=True, blank=True)
     periodo = models.CharField("Periodo", max_length=255, null=True, blank=True)
     fecha_apertura = models.DateField("Fecha de Apertura", null=True, blank=True)
     fecha_cierre = models.DateField("Fecha de Cierre", null=True, blank=True)
@@ -15,6 +15,7 @@ class Periodo(models.Model):
         db_table = 'periodos'
         verbose_name = 'Periodo'
         verbose_name_plural = 'Periodos'
+        unique_together = ('year', 'periodo')
 
     def __str__(self):
         return f"{self.year}-{self.periodo}"
@@ -72,7 +73,7 @@ class Materia(models.Model):
     materia = models.CharField("Materia", max_length=255, null=True, blank=True)
     creditos = models.CharField("Número de Créditos", max_length=255, null=True, blank=True)
     metodologia = models.CharField("Metodología", max_length=50, null=True, blank=True)
-    horas = models.IntegerField("Total de Horas", null=True, blank=True)
+    horas_semanales = models.IntegerField("Horas Semanales", null=True, blank=True)
     fk_programa = models.ForeignKey(Programa, verbose_name="Programa al que Pertenece", on_delete=models.CASCADE, null=True, blank=True)
     fk_pensum = models.ForeignKey(Pensum, verbose_name="Pensum al que Pertenece", on_delete=models.CASCADE, null=True, blank=True)
     fk_semestre = models.ForeignKey(Semestre, verbose_name="Semestre al que Pertenece", on_delete=models.CASCADE, null=True, blank=True)

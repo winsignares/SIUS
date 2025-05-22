@@ -1,9 +1,12 @@
 {% extends "dashboard.html" %}
 
+
 {% block title %}Carga Acádemica - SIUC{% endblock %}
 {% block container_class %}justify-content-start align-items-start{% endblock %}
 
 {% block content %}
+{% load format_extras %}
+
 <div class="container-fluid m-4">
     <!-- Título de la página -->
     <div class="row mb-3">
@@ -40,7 +43,7 @@
                                         <th scope="col">Docente</th>
                                         <th scope="col">N° de Identificación</th>
                                         <th scope="col">Créditos</th>
-                                        <th scope="col">Horas Semanales</th>
+                                        <th scope="col">Horas Totales</th>
                                         <th scope="col">Valor a Pagar</th>
                                         <th scope="col">Acciones</th>
                                     </tr>
@@ -58,25 +61,25 @@
                                                         ({{ carga_academica.fk_materia.codigo }}) {{ carga_academica.fk_materia.materia }}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}
+                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }} {{ carga_academica.fk_docente_asignado.segundo_apellido }}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.fk_docente_asignado.numero_documento }}
+                                                        {{ carga_academica.fk_docente_asignado.numero_documento|miles_co }}
                                                     </td>
                                                     <td>
                                                         {{ carga_academica.fk_materia.creditos }}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.fk_materia.horas }}
+                                                        {{ carga_academica.total_horas }}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.valor_a_pagar }}
+                                                        {{ carga_academica.valor_a_pagar|default_if_none:'No aplica'|contabilidad_co }}
                                                     </td>
                                                     <td class="d-flex justify-content-center gap-3">
-                                                        <a href="#" class="btn btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                        <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
                                                             <i class="bi bi-pencil-square"></i>
                                                         </a>
-                                                        <a href="#" class="btn btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                        <a href="#" class="btn btn-sm btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
                                                     </td>
@@ -85,6 +88,14 @@
                                         {% endfor %}
                                     {% endif %}
                                 </tbody>
+                                <tfoot>
+                                    <tr class="table-bordered">
+                                        <td colspan="6" class="text-end fw-bold">Total Semestre:</td>
+                                        <td colspan="1" class="text-end">
+                                            {{ totales_por_semestre|get_item:semestre.semestre|default:"0" |contabilidad_co }}
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -92,121 +103,6 @@
             </div>
         </div>
         {% endfor %}
-    </div>    
-</div>
-
-<!-- Modal Nueva Carga Académica -->
-<div class="modal fade" id="nuevaCargaModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="nuevaCargaModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-forms modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="nuevaCargaModalLabel">Nuevo Carga Acádemica</h4>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-2">
-                <form id="formCargaAcademica" method="POST"  action="#">
-                    {# Asegúrate de agregar la vista correspondiente en el archivo urls.py más adelante #}
-                    {% csrf_token %}
-                    <div class="container">
-                        <div class="container mb-3">
-                            <div class="d-flex gap-3 fs-5 fw-bold">
-                                <i class="bi bi-file-earmark-text"></i>Detalles
-                            </div>
-                            <div class="row px-3">
-                                <div class="col-md-12 mb-2">
-                                    <label for="programa" class="form-label mb-0">Programa <span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="programa" name="programa" value="{{ usuario_log.auth_user.first_name }}" disabled required>
-                                </div>
-
-                                <div class="col-md-12 mb-2" style="position: relative;">
-                                    <label for="fk_docente_input" class="form-label mb-0">Docente <span class="fw-bold fs-4">*</span></label>
-                                    <input type="text" id="fk_docente_input" class="form-control mb-2" placeholder="Buscar o escribir docente..." autocomplete="off">
-                                    <ul id="fk_docente_dropdown" class="dropdown-menu">
-                                        {% for docente in docentes_list %}
-                                            <li>
-                                                <button class="dropdown-item" type="button" data-value="{{ docente.id }}">
-                                                    {{ docente.primer_nombre }} {{ docente.primer_apellido }}
-                                                </button>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-
-                                <div class="col-md-6 mb-2">
-                                    <label for="primer_nombre" class="form-label mb-0">xxxxxxxxxxxxx <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="text" class="form-control" id="primer_nombre" name="primer_nombre" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Botón para enviar el formulario -->
-            <div class="modal-footer d-flex justify-content-between align-items-center">
-                <!-- Nota -->
-                <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
-
-                <button type="submit" class="btn btn-primary" form="formCargaAcademica">Guardar</button>
-            </div>
-        </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        function setupDropdownFilter(inputId, dropdownId) {
-            const inputElement = document.getElementById(inputId);
-            const dropdownElement = document.getElementById(dropdownId);
-            const originalItems = Array.from(dropdownElement.querySelectorAll("button"));
-
-            // Mostrar/ocultar el dropdown según el input
-            inputElement.addEventListener("input", function () {
-                const query = inputElement.value.toLowerCase();
-
-                // Filtrar las opciones según el texto ingresado
-                const filteredItems = originalItems.filter(item =>
-                    item.textContent.toLowerCase().includes(query)
-                );
-
-                // Limpiar y actualizar el dropdown
-                dropdownElement.innerHTML = "";
-                if (filteredItems.length > 0) {
-                    filteredItems.forEach(item => dropdownElement.appendChild(item.parentElement));
-                    dropdownElement.style.display = "block";
-                } else {
-                    dropdownElement.style.display = "none";
-                }
-            });
-
-            // Cuando seleccionas una opción
-            dropdownElement.addEventListener("click", function (event) {
-                if (event.target.matches(".dropdown-item")) {
-                    const selectedText = event.target.textContent.trim(); // Elimina cualquier espacio extra
-                    inputElement.value = selectedText; // Inserta solo el texto limpio
-                    dropdownElement.style.display = "none"; // Oculta el dropdown
-                }
-            });
-
-            // Ocultar el dropdown al hacer clic fuera
-            document.addEventListener("click", function (event) {
-                if (!event.target.closest(`#${inputId}`) && !event.target.closest(`#${dropdownId}`)) {
-                    dropdownElement.style.display = "none";
-                }
-            });
-
-            // Mostrar todas las opciones si el input está vacío
-            inputElement.addEventListener("focus", function () {
-                if (inputElement.value.trim() === "") {
-                    dropdownElement.innerHTML = "";
-                    originalItems.forEach(item => dropdownElement.appendChild(item.parentElement));
-                    dropdownElement.style.display = "block";
-                }
-            });
-        }
-
-        // Reutiliza la función para diferentes inputs y dropdowns
-        setupDropdownFilter("fk_docente_input", "fk_docente_dropdown");
-    });
-</script>
 {% endblock %}

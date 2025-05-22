@@ -18,6 +18,7 @@ class EPS(models.Model):
     id = models.AutoField(primary_key=True)
     codigo_eps = models.CharField(max_length=255, unique=True, null=True, blank=True)
     nombre = models.CharField(max_length=255, null=False, blank=False)
+    nombre_corto = models.CharField(max_length=255, null=True, blank=True)
     regimen = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:

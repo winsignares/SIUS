@@ -233,7 +233,7 @@
                 const option = document.createElement("option");
                 option.value = m.id;
                 option.textContent = `${m.codigo} - ${m.materia}`;
-                option.setAttribute("data-horas", m.horas ?? "");
+                option.setAttribute("data-horas", m.horas_semanales ?? "");
                 materiaSelect.appendChild(option);
             });
         });
