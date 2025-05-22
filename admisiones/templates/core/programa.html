@@ -1,11 +1,10 @@
 {% extends 'dashboard.html' %}
 {% load static %}
-
-
+<link rel="stylesheet" href="{% static 'css/estilos_personalizados.css' %}">
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4 text-dark">Gestión de Programas Académicos</h2>
+    <h2 class="mb-4 text-color-primario">Gestión de Programas Académicos</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -14,8 +13,8 @@
     {% endif %}
 
     <div class="card mb-4">
-        <div class="card-header {{ programa|default_if_none:''|yesno:'bg-warning,bg-dark' }} text-white">
-            {{ programa|default_if_none:''|yesno:'Editar programa,Agregar nuevo programa' }}
+        <div class="card-header text-white" style="background-color: var(--color-primario);">
+            {% if programa %}Editar Programa{% else %}Agregar Nuevo Programa{% endif %}
         </div>
         <div class="card-body">
             <form method="POST">
@@ -23,103 +22,113 @@
                 {% if programa %}
                     <input type="hidden" name="id_programa" value="{{ programa.id }}">
                 {% endif %}
-                
                 <div class="row mb-3">
-                    <label for="codigo_snies" class="col-sm-2 col-form-label">Código SNIES:</label>
+                    <label for="codigo_snies" class="col-sm-2 col-form-label text-color-primario">Código SNIES:</label>
                     <div class="col-sm-10">
                         <input type="text" name="codigo_snies" id="codigo_snies" class="form-control"
                                value="{{ programa.codigo_snies|default:'' }}" required>
                     </div>
                 </div>
-
                 <div class="row mb-3">
-                    <label for="programa" class="col-sm-2 col-form-label">Nombre del Programa:</label>
+                    <label for="programa" class="col-sm-2 col-form-label text-color-primario">Nombre del Programa:</label>
                     <div class="col-sm-10">
                         <input type="text" name="programa" id="programa" class="form-control"
                                value="{{ programa.programa|default:'' }}" required>
                     </div>
                 </div>
-
-<div class="row mb-3">
-    <label for="nivel_formacion" class="col-sm-2 col-form-label">Nivel de Formación:</label>
-    <div class="col-sm-10">
-        <select name="nivel_formacion" id="nivel_formacion" class="form-control" required>
-            <option value="">Seleccione una opción</option>
-            <option value="TÉCNICO" {% if programa.nivel_formacion == "TÉCNICO" %}selected{% endif %}>TÉCNICO</option>
-            <option value="PREGRADO" {% if programa.nivel_formacion == "PREGRADO" %}selected{% endif %}>PREGRADO</option>
-            <option value="POSTGRADO" {% if programa.nivel_formacion == "POSTGRADO" %}selected{% endif %}>POSTGRADO</option>
-        </select>
-    </div>
-</div>
-
-<div class="row mb-3">
-    <label for="sede" class="col-sm-2 col-form-label">Sede:</label>
-    <div class="col-sm-10">
-        <select name="sede" id="sede" class="form-control" required>
-            <option value="">Seleccione una sede</option>
-            <option value="SEDE ACADÉMICA CARRERA 53 BARRANQUILLA" {% if programa.sede == "SEDE ACADÉMICA CARRERA 53 BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA CARRERA 53 BARRANQUILLA</option>
-            <option value="SEDE ACADÉMICA CALLE 64 BARRANQUILLA" {% if programa.sede == "SEDE ACADÉMICA CALLE 64 BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA CALLE 64 BARRANQUILLA</option>
-            <option value="SEDE ACADÉMICA CALLE 30 MONTERIA" {% if programa.sede == "SEDE ACADÉMICA CALLE 30 MONTERIA" %}selected{% endif %}>SEDE ACADÉMICA CALLE 30 MONTERIA</option>
-        </select>
-    </div>
-</div>
-
                 <div class="row mb-3">
-                    <label for="numero_semestres" class="col-sm-2 col-form-label">Número de Semestres:</label>
+                    <label for="nivel_formacion" class="col-sm-2 col-form-label text-color-primario">Nivel de Formación:</label>
+                    <div class="col-sm-10">
+                        <select name="nivel_formacion" id="nivel_formacion" class="form-control" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="TÉCNICO" {% if programa.nivel_formacion == "TÉCNICO" %}selected{% endif %}>TÉCNICO</option>
+                            <option value="PREGRADO" {% if programa.nivel_formacion == "PREGRADO" %}selected{% endif %}>PREGRADO</option>
+                            <option value="POSTGRADO" {% if programa.nivel_formacion == "POSTGRADO" %}selected{% endif %}>POSTGRADO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="sede" class="col-sm-2 col-form-label text-color-primario">Sede:</label>
+                    <div class="col-sm-10">
+                        <select name="sede" id="sede" class="form-control" required>
+                            <option value="">Seleccione una sede</option>
+                            <option value="SEDE ACADÉMICA CARRERA 53 BARRANQUILLA" {% if programa.sede == "SEDE ACADÉMICA CARRERA 53 BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA CARRERA 53 BARRANQUILLA</option>
+                            <option value="SEDE ACADÉMICA CALLE 64 BARRANQUILLA" {% if programa.sede == "SEDE ACADÉMICA CALLE 64 BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA CALLE 64 BARRANQUILLA</option>
+                            <option value="SEDE ACADÉMICA CALLE 30 MONTERIA" {% if programa.sede == "SEDE ACADÉMICA CALLE 30 MONTERIA" %}selected{% endif %}>SEDE ACADÉMICA CALLE 30 MONTERIA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="numero_semestres" class="col-sm-2 col-form-label text-color-primario">Número de Semestres:</label>
                     <div class="col-sm-10">
                         <input type="text" name="numero_semestres" id="numero_semestres" class="form-control"
                                value="{{ programa.numero_semestres|default:'' }}">
                     </div>
                 </div>
-
-                <button type="submit" class="btn btn-dark">
-                    {{ programa|default_if_none:''|yesno:'Actualizar,Guardar' }}
+                <button type="submit" class="btn btn-alterno-dark">
+                    {% if programa %}Actualizar{% else %}Guardar{% endif %}
                 </button>
                 {% if programa %}
-                    <a href="{% url 'gestion_programa' %}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{% url 'gestion_programa' %}" class="btn btn-alterno-red">Cancelar</a>
                 {% endif %}
             </form>
         </div>
     </div>
 
     <div class="card">
-        <div class="card-header bg-dark text-white">Listado de Programas</div>
-        <div class="card-body">
+        <div class="card-header text-white" style="background-color: var(--color-primario);">
+            Listado de Programas
+        </div>
+        <div class="card-body table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Código SNIES</th>
-                    <th>Programa</th>
-                    <th>Nivel</th>
-                    <th>Sede</th>
-                    <th>Semestres</th>
-                    <th>Acciones</th>
-                </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código SNIES</th>
+                        <th>Programa</th>
+                        <th>Nivel</th>
+                        <th>Sede</th>
+                        <th>Semestres</th>
+                        <th>Acciones</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for p in programas %}
-                    <tr>
-                        <td class="text-center">{{ p.id }}</td>
-                        <td class="text-center">{{ p.codigo_snies }}</td>
-                        <td class="text-center">{{ p.programa }}</td>
-                        <td class="text-center">{{ p.nivel_formacion }}</td>
-                        <td class="text-center">{{ p.sede }}</td>
-                        <td class="text-center">{{ p.numero_semestres }}</td>
-                        <td class="text-center">
-                            <a href="{% url 'editar_programa' p.id %}" class="btn btn-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
-                            <a href="{% url 'eliminar_programa' p.id %}"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('¿Seguro que deseas eliminar este programa?');"><i class="bi bi-trash3"></i></a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="7">No hay programas registrados aún.</td>
-                    </tr>
-                {% endfor %}
+                    {% for p in programas %}
+                        <tr>
+                            <td class="text-center">{{ p.id }}</td>
+                            <td class="text-center">{{ p.codigo_snies }}</td>
+                            <td class="text-center">{{ p.programa }}</td>
+                            <td class="text-center">{{ p.nivel_formacion }}</td>
+                            <td class="text-center">{{ p.sede }}</td>
+                            <td class="text-center">{{ p.numero_semestres }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_programa' p.id %}" class="btn btn-alterno-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                <a href="{% url 'eliminar_programa' p.id %}" class="btn btn-alterno-red btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este programa?');"><i class="bi bi-trash3"></i></a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No hay programas registrados aún.</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
+
+            <!-- Paginación -->
+            <div class="d-flex justify-content-center align-items-center mt-3">
+                <span>Página {{ programas.number }} de {{ programas.paginator.num_pages }}</span>
+                {% if programas.has_previous %}
+                    <a class="btn btn-link ms-2" href="?page={{ programas.previous_page_number }}">◀</a>
+                {% else %}
+                    <span class="btn btn-link ms-2 disabled">◀</span>
+                {% endif %}
+
+                {% if programas.has_next %}
+                    <a class="btn btn-link ms-2" href="?page={{ programas.next_page_number }}">▶</a>
+                {% else %}
+                    <span class="btn btn-link ms-2 disabled">▶</span>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

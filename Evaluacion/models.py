@@ -119,7 +119,7 @@ class EvaluacionDocente(models.Model):
 
 
 class EvaluacionDirectivo(models.Model):
-    docente = models.ForeignKey(
+    evaluador = models.ForeignKey(  
         User,
         on_delete=models.CASCADE,
     )
@@ -133,11 +133,11 @@ class EvaluacionDirectivo(models.Model):
         PreguntaDirectivo,
         on_delete=models.CASCADE
     )
-    respuesta = models.PositiveSmallIntegerField()  
+    respuesta = models.PositiveSmallIntegerField()
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Evaluación de {self.docente_evaluado} por {self.directivo}: {self.pregunta} -> {self.respuesta}"
+        return f"Evaluación de {self.docente_evaluado} por {self.evaluador}: {self.pregunta} -> {self.respuesta}"
 
     class Meta:
         db_table = 'evaluacion_directivo'

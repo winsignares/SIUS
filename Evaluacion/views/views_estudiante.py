@@ -5,13 +5,17 @@ from admisiones.models import Estudiantes, Matricula
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.contrib.auth.models import User
 
 
 @login_required
 def materias_estudiante_view(request):
     estudiante_model = Estudiantes.objects.get(estudiante=request.user)
 
+    user = User.objects.get(username=estudiante_model.estudiante)
+    estudiante_model.nombre_completo = user.get_full_name()  
+    estudiante_model.correo_personal = user.email  
+      
     # Todas las materias donde el estudiante está matriculado
     materias = Materia.objects.filter(
         matricula__estudiante=estudiante_model,

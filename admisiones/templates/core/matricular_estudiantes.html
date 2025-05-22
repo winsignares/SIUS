@@ -2,25 +2,39 @@
 {% load static %}
 
 {% block content %}
-    <div class="container h-100 mt-5">
-        <h2>Gestión de Matriculas</h2>
+<style>
+  
+  .btn, .btn-primary, .btn-alterno-red, .btn-alterno-dark, .btn-sm {
+    font-size: 1rem !important; 
+    padding: 6px 12px !important; 
+    border-radius: 7px !important; 
+  }
+  .btn-sm {
+    font-size: 0.85rem !important;
+    padding: 4px 10px !important;
+  }
+</style>
+<div class="container mt-5">
+    <h2 class="text-color-primario mb-4 text-uppercase">Gestión de Matrículas</h2>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="card m-4">
-            <div class="card-header bg-dark text-white">
-                Matriculas
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="border-radius: var(--borde-redondo); font-weight: bold;">
+                {{ message }}
             </div>
-            <div class="card-body">
+        {% endfor %}
+    {% endif %}
 
-                <form method="GET" action="">
-                    <div class="mb-3">
-                        <label for="programa" class="form-label">Programa</label>
-                        <select name="programa" id="programa" class="form-control" required>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
+            Filtrar Materias
+        </div>
+        <div class="card-body">
+            <form method="GET">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="programa" class="form-label text-uppercase" style="color: var(--color-primario);">Programa</label>
+                        <select name="programa" id="programa" class="form-select" required style="border-radius: var(--borde-redondo);">
                             <option value="">Seleccione un programa</option>
                             {% for programa in programas %}
                                 <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>
@@ -29,9 +43,9 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="semestre" class="form-label">Semestre</label>
-                        <select name="semestre" id="semestre" class="form-control" required>
+                    <div class="col-md-6">
+                        <label for="semestre" class="form-label text-uppercase" style="color: var(--color-primario);">Semestre</label>
+                        <select name="semestre" id="semestre" class="form-select" required style="border-radius: var(--borde-redondo);">
                             <option value="">Seleccione un semestre</option>
                             {% for semestre in semestres %}
                                 <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>
@@ -40,75 +54,100 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-dark">Buscar Materias</button>
-                </form>
-            </div>
-        </div>
-
-        {% if materias %}
-            <button class="btn btn-dark m-4" data-bs-toggle="modal" data-bs-target="#modalMaterias">Seleccionar Materias</button>
-
-            <div class="modal fade" id="modalMaterias" tabindex="-1" aria-labelledby="modalMateriasLabel">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header bg-dark text-white">
-                            <h5 class="modal-title" id="modalMateriasLabel">Materias Disponibles</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formMatricular" method="POST" action="{% url 'matricular_estudiante' %}">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label for="numero_documento" class="form-label">Estudiante</label>
-                                    <select name="numero_documento" id="numero_documento" class="form-control" required>
-                                        <option value="" selected disabled>Seleccione un estudiante</option>
-                                        {% for estudiante in estudiantes %}
-                                            <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }}</option>
-                                        {% empty %}
-                                            <option value="" disabled>No hay estudiantes disponibles</option>
-                                        {% endfor %}
-                                    </select>
-                                    <div class="text-danger" id="codigoError" style="display: none;">Estudiante no válido.</div>
-                                </div>
-
-                                <table class="table table-bordered">
-                                    <thead class="bg-dark text-white">
-                                        <tr>
-                                            <th>Seleccionar</th>
-                                            <th>Materia</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for materia in materias %}
-                                            <tr>
-                                                <td>
-                                                    <input type="checkbox" name="materias" value="{{ materia.id }}" class="form-check-input" {% if materia.id in materias_matriculadas %}disabled{% endif %}>
-                                                </td>
-                                                <td>{{ materia.materia }}</td>
-                                                <td>
-                                                    <a href="{% url 'estudiantes_inscritos' materia.id %}" class="btn btn-outline-dark btn-sm">Inscritos</a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-
-                                <button type="submit" class="btn btn-dark" id="btnMatricular">Matricular</button>
-                            </form>
-                        </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-alterno-dark text-uppercase" style="border-radius: var(--borde-redondo);">
+                            Buscar Materias
+                        </button>
                     </div>
                 </div>
-            </div>
-        {% endif %}
+            </form>
+        </div>
     </div>
+
+    {% if materias %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
+            Materias Encontradas
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-start">
+                <button class="btn btn-alterno-dark text-uppercase" data-bs-toggle="modal" data-bs-target="#modalMaterias" style="border-radius: var(--borde-redondo);">
+                    Seleccionar Materias
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-forms" id="modalMaterias" tabindex="-1" aria-labelledby="modalMateriasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius: var(--borde-redondo);">
+                <div class="modal-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
+                    <h5 class="modal-title text-uppercase" id="modalMateriasLabel">Materias Disponibles</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formMatricular" method="POST" action="{% url 'matricular_estudiante' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="numero_documento" class="form-label text-uppercase" style="color: var(--color-primario);">Estudiante</label>
+                            <select name="numero_documento" id="numero_documento" class="form-select" required style="border-radius: var(--borde-redondo);">
+                                <option value="" disabled selected>Seleccione un estudiante</option>
+                                {% for estudiante in estudiantes %}
+                                    <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }}</option>
+                                {% empty %}
+                                    <option value="" disabled>No hay estudiantes disponibles</option>
+                                {% endfor %}
+                            </select>
+                            <div class="text-danger text-uppercase fs-small" id="codigoError" style="display: none;">
+                                Estudiante no válido.
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="text-center text-uppercase">Seleccionar</th>
+                                        <th scope="col" class="text-uppercase">Materia</th>
+                                        <th scope="col" class="text-uppercase">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for materia in materias %}
+                                        <tr>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="materias" value="{{ materia.id }}" class="form-check-input" {% if materia.id in materias_matriculadas %}disabled{% endif %} style="cursor:pointer;">
+                                            </td>
+                                            <td>{{ materia.materia }}</td>
+                                            <td>
+                                                <a href="{% url 'estudiantes_inscritos' materia.id %}" class="btn btn-alterno-dark btn-sm text-uppercase" style="border-radius: var(--borde-redondo);">
+                                                    Inscritos
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-alterno-dark text-uppercase" id="btnMatricular" style="border-radius: var(--borde-redondo);">
+                                Matricular
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-
         function cargarEstudiantes(programaId, semestreId) {
-            if (programaId && semestreId) { 
+            if (programaId && semestreId) {
                 $.ajax({
                     url: "{% url 'filtrar_estudiantes' %}",
                     method: "GET",
@@ -118,13 +157,13 @@
                         selectEstudiantes.empty().append('<option value="">Seleccione un estudiante</option>');
 
                         if (response.estudiantes.length > 0) {
-                            response.estudiantes.forEach(estudiante => {
+                            response.estudiantes.forEach(est => {
                                 selectEstudiantes.append(
-                                    `<option value="${estudiante.numero_documento}">${estudiante.nombre_completo}</option>`
+                                    `<option value="${est.numero_documento}">${est.nombre_completo}</option>`
                                 );
                             });
                         } else {
-                            selectEstudiantes.append('<option value="" disable>No hay estudiantes disponibles</option>');
+                            selectEstudiantes.append('<option value="" disabled>No hay estudiantes disponibles</option>');
                         }
                     },
                     error: function () {
