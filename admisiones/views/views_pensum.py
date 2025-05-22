@@ -5,8 +5,12 @@ from .views_home import obtener_db_info
 from django.core.paginator import Paginator
 
 
-def gestion_pensum(request):
-    
+def gestion_pensum(request, pensum_id=None):
+    pensum = None  
+
+    if pensum_id:  
+        pensum = get_object_or_404(Pensum, id=pensum_id)
+
     pensums_list = Pensum.objects.all().order_by('id')
     paginator = Paginator(pensums_list, 5)  
 
@@ -15,23 +19,19 @@ def gestion_pensum(request):
 
     programas = Programa.objects.all()
 
-    pensum = None
-
     if request.method == 'POST':
         id_pensum = request.POST.get('id_pensum')
         programa_id = request.POST.get('programa')
         codigo_pensum = request.POST.get('codigo_pensum')
         vigente = request.POST.get('vigente') == 'on'
 
-        if id_pensum:
-            pensum = get_object_or_404(Pensum, id=id_pensum)
+        if pensum:  # Actualizar pensum existente
             pensum.fk_programa_id = programa_id
             pensum.codigo_pensum = codigo_pensum
             pensum.vigente = vigente
             pensum.save()
             messages.success(request, 'Pensum actualizado correctamente.')
-        else:
-           
+        else:  # Crear nuevo pensum
             Pensum.objects.create(
                 fk_programa_id=programa_id,
                 codigo_pensum=codigo_pensum,
@@ -41,7 +41,6 @@ def gestion_pensum(request):
 
         return redirect('gestion_pensum')
 
-
     contexto = obtener_db_info(request)
     contexto.update({
         'pensums': pensums,
@@ -49,8 +48,8 @@ def gestion_pensum(request):
         'pensum': pensum
     })
 
- 
     return render(request, 'core/pensum.html', contexto)
+
 
 def eliminar_pensum(request, pensum_id):
     pensum = get_object_or_404(Pensum, id=pensum_id)

@@ -5,26 +5,26 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 
-def gestion_programa(request):
+def gestion_programa(request, programa_id=None):
+    programa = None  
+    
+    if programa_id:  
+        programa = get_object_or_404(Programa, id=programa_id)
     
     programas_list = Programa.objects.all().order_by('id')  
     paginator = Paginator(programas_list, 5)  
     page_number = request.GET.get('page')  
     programas = paginator.get_page(page_number)  
 
-    programa = None 
-
     if request.method == 'POST':
-        
+        # Capturar datos del formulario
         codigo_snies = request.POST.get('codigo_snies')
         programa_nombre = request.POST.get('programa')
         nivel_formacion = request.POST.get('nivel_formacion')
         sede = request.POST.get('sede')
         numero_semestres = request.POST.get('numero_semestres')
-        id_programa = request.POST.get('id_programa')
 
-        if id_programa:  
-            programa = get_object_or_404(Programa, id=id_programa)
+        if programa:  # Si existe, actualizarlo
             programa.codigo_snies = codigo_snies
             programa.programa = programa_nombre
             programa.nivel_formacion = nivel_formacion
@@ -32,7 +32,7 @@ def gestion_programa(request):
             programa.numero_semestres = numero_semestres
             programa.save()
             messages.success(request, 'Programa actualizado correctamente.')
-        else: 
+        else:  # Crear uno nuevo
             Programa.objects.create(
                 codigo_snies=codigo_snies,
                 programa=programa_nombre,
@@ -46,7 +46,7 @@ def gestion_programa(request):
 
     contexto = obtener_db_info(request)
     contexto.update({
-        'programas': programas,  
+        'programas': programas,
         'programa': programa,  
     })
     
