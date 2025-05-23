@@ -9,51 +9,54 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Evaluación del Docente</h2>
+    <h2 class="text-center mb-4 text-color-primario">Evaluación del Docente</h2>
 
     <div class="mb-4">
-        <p><strong>Docente evaluado:</strong> {{ docente.primer_nombre }} {{ docente.primer_apellido }}</p>
-        <p><strong>Cargo:</strong> {{ docente.cargo }}</p>
+        <p class="text-color-primario"><strong>Docente evaluado:</strong> {{ docente.primer_nombre }} {{ docente.primer_apellido }}</p>
+        <p class="text-color-primario"><strong>Cargo:</strong> {{ docente.cargo }}</p>
     </div>
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
+            <div class="alert alert-{{ message.tags }} text-color-primario">
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
 
     {% if evaluacion_existente %}
-        <div class="alert alert-info text-center">
+        <div class="alert alert-info text-center text-color-primario">
             Ya realizaste esta evaluación para este docente. Gracias.
         </div>
     {% else %}
-        <form method="POST">
+        <form method="POST" class="shadow p-4 bg-white rounded" style="border-radius: var(--borde-redondo);">
             {% csrf_token %}
             {% for categoria, preguntas in preguntas_por_categoria.items %}
                 <div class="mb-5">
-                    <h4 class="fw-bold">{{ categoria.nombre }}</h4>
+                    <h4 class="fw-bold text-color-primario">{{ categoria.nombre }}</h4>
                     {% for pregunta in preguntas %}
                         <div class="mb-3">
-                            <label class="form-label" for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
+                            <label class="form-label text-color-primario" for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
                             <select id="respuesta_{{ pregunta.id }}" name="respuesta_{{ pregunta.id }}" class="form-select" required>
-                                <option value="0">No sabe / No opina</option>
+                                
                                 <option value="1">Totalmente en desacuerdo</option>
                                 <option value="2">Medianamente en desacuerdo</option>
                                 <option value="3">Medianamente de acuerdo</option>
-                                <option value="4">Totalmente de acuerdo</option>
+                                <option value="4">De acuerdo</option>
+                                <option value="5">Totalmente de acuerdo</option>
                             </select>
                         </div>
                     {% endfor %}
                 </div>
             {% endfor %}
-
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success">Enviar Evaluación</button>
+                <button type="submit" class="btn btn-dark">Enviar Evaluación</button>
             </div>
         </form>
     {% endif %}
 </div>
+<footer class="mt-5 text-center">
+    <a href="{% url 'evaluacion:listado_docentes' %}" class="btn btn-alterno-dark">Volver</a>
+</footer>
 </body>
 </html>

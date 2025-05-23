@@ -43,6 +43,11 @@ def evaluar_materia(request, materia_id):
     estudiante = get_object_or_404(Estudiantes, estudiante=request.user)
     materia = get_object_or_404(Materia, pk=materia_id)
 
+    user = User.objects.get(username=estudiante.estudiante)
+    estudiante.nombre_completo = user.get_full_name()  
+    estudiante.correo_personal = user.email  
+
+
     categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
     preguntas_por_categoria = {
         categoria: categoria.preguntas.filter(activo=True)

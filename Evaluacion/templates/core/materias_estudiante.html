@@ -17,7 +17,7 @@
         <h5>Información del Estudiante</h5>
         <p><strong>Nombre:</strong> {{ estudiante.nombre_completo }}</p>
         <p><strong>Programa:</strong> {{ estudiante.programa.programa }}</p>
-        <p><strong>Semestre:</strong> {{ estudiante.semestre.descripcion }}</p>
+        <p><strong>Semestre:</strong> {{ estudiante.semestre.descripcion|lower}}</p>
     </div>
 
     {% if materias %}
