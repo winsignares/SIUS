@@ -31,7 +31,6 @@ class Contrato(models.Model):
     fecha_fin = models.DateField(verbose_name=('Fecha Fin Contrato'), null=True, blank=True)
     fk_tipo_contrato = models.ForeignKey(TipoContrato, verbose_name=("Tipo Contrato"), on_delete=models.CASCADE, null=True, blank=True)
     fk_dedicacion = models.ForeignKey(Dedicacion, verbose_name=("Dedicación"), on_delete=models.CASCADE, null=True, blank=True)
-    dedicacion = models.CharField(verbose_name=('Dedicación'), max_length=100, null=True, blank=True)
     valor_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True) # Solo para administrativos
     total_dias_laborados = models.IntegerField(verbose_name=('Total Dias Laborados'), null=True, blank=True)
     vigencia_contrato = models.BooleanField(verbose_name=('Vigencia del Contrato'), default=False)
