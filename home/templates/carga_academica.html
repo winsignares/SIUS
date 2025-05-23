@@ -37,34 +37,49 @@
                     <div class="col-md-12">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover mb-0 align-middle">
-                                <thead>
+                                <thead class="align-middle text-warp">
                                     <tr>
-                                        <th scope="col">Materia</th>
-                                        <th scope="col">Docente</th>
-                                        <th scope="col">N° de Identificación</th>
-                                        <th scope="col">Créditos</th>
-                                        <th scope="col">Horas Totales</th>
-                                        <th scope="col">Valor a Pagar</th>
-                                        <th scope="col">Acciones</th>
+                                        <th class="col-2" scope="col">Materia</th>
+                                        <th class="col-2" scope="col">Compartida con</th>
+                                        <th class="col-1" scope="col">Docente</th>
+                                        <th scope="col">Documento</th>
+                                        <th class="col-1" scope="col">Dedicación</th>
+                                        <th class="col-1" scope="col">Créditos</th>
+                                        <th class="col-1" scope="col">Horas Totales</th>
+                                        <th class="col-1" scope="col">Valor a Pagar</th>
+                                        <th class="col-1" scope="col">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% if semestre.semestre not in cargas_dict %}
                                         <tr>
-                                            <td colspan="9" class="text-center">No se encontraron datos disponibles</td>
+                                            <td colspan="8" class="text-center">No se encontraron datos disponibles</td>
                                         </tr>
                                     {% else %}
                                         {% for carga_academica in cargas_academicas %}
                                             {% if carga_academica.fk_semestre.semestre == semestre.semestre %}
-                                                <tr class="text-center">
+                                                <tr class="text-center fs-small">
                                                     <td>
-                                                        ({{ carga_academica.fk_materia.codigo }}) {{ carga_academica.fk_materia.materia }}
+                                                        {{ carga_academica.fk_materia.codigo }}<br>{{ carga_academica.fk_materia.materia }}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }} {{ carga_academica.fk_docente_asignado.segundo_apellido }}
+                                                        <span class="badge bg-primary">{{ carga_academica.fk_programa.programa }}</span>
+                                                        {% with programas=materias_compartidas_dict|get_item:carga_academica.id %}
+                                                            {% if programas %}
+                                                                {% for programa in programas %}
+                                                                    <span class="badge bg-info text-dark">{{ programa }}</span>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        {% endwith %}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.fk_docente_asignado.numero_documento|miles_co }}
+                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.fk_docente_asignado.fk_tipo_documento.tipo_documento }} - {{ carga_academica.fk_docente_asignado.numero_documento|miles_co }}
+                                                    </td>
+                                                    <td>
+                                                        {{ carga_academica.fk_docente_asignado|dedicacion_docente }}
                                                     </td>
                                                     <td>
                                                         {{ carga_academica.fk_materia.creditos }}
@@ -73,7 +88,11 @@
                                                         {{ carga_academica.total_horas }}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.valor_a_pagar|default_if_none:'No aplica'|contabilidad_co }}
+                                                        {% if carga_academica.valor_a_pagar %}
+                                                            {{ carga_academica.valor_a_pagar|contabilidad_co }}
+                                                        {% else %}
+                                                            <span class="fst-italic">No aplica</span>
+                                                        {% endif %}
                                                     </td>
                                                     <td>
                                                         <div class="d-flex justify-content-center gap-3">
@@ -91,10 +110,10 @@
                                     {% endif %}
                                 </tbody>
                                 <tfoot>
-                                    <tr class="table-bordered">
-                                        <td colspan="6" class="text-end fw-bold">Total Semestre:</td>
-                                        <td colspan="1" class="text-end">
-                                            {{ totales_por_semestre|get_item:semestre.semestre|default:"0" |contabilidad_co }}
+                                    <tr class="fs-small">
+                                        <td colspan="8" class="text-end fw-bold">Total Semestre:</td>
+                                        <td class="text-end">
+                                            {{ totales_por_semestre|get_item:semestre.semestre|default_if_none:"0"|contabilidad_co }}
                                         </td>
                                     </tr>
                                 </tfoot>

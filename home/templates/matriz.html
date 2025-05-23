@@ -519,9 +519,10 @@
 
                 if (response.ok) {
                     alert(result.message);
-                    // Limpiar tabla y estado
                     cargasAcademicas = [];
-                    tablaBody.innerHTML = "";
+                    // Elimina todas las filas excepto mensajeVacio
+                    Array.from(tablaBody.querySelectorAll("tr"))
+                        .forEach(tr => { if (tr.id !== "mensajeVacio") tr.remove(); });
                     toggleMensajeVacio();
                 } else {
                     alert(`Error: ${result.message}`);

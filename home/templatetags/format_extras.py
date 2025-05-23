@@ -1,4 +1,5 @@
 from django import template
+from home.models.talento_humano.contrato import Contrato
 
 register = template.Library()
 
@@ -35,3 +36,8 @@ def fijo_co(value):
         return f"{s[:3]} {s[3:]}"
     except:
         return value
+
+@register.filter
+def dedicacion_docente(docente):
+    contrato = Contrato.objects.filter(fk_usuario=docente, vigencia_contrato=True).order_by('-fecha_inicio').first()
+    return contrato.fk_dedicacion.nombre_corto if contrato and contrato.fk_dedicacion else None

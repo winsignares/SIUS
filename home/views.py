@@ -1,9 +1,11 @@
 # Importar Librerias
 from collections import defaultdict
+from itertools import chain
 import json
 import traceback
 from decimal import Decimal
-from django.db.models import Sum, F
+from django.db.models import Sum, Value, Exists, OuterRef
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.db import models, IntegrityError
@@ -35,7 +37,7 @@ from .models.talento_humano.niveles_academicos import NivelAcademico, NivelAcade
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
 from .models.talento_humano.contrato import TipoContrato, Contrato, DetalleContratro, Dedicacion
-from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre
+from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre, MateriaCompartida, FuncionesSustantivas
 
 
 #
@@ -114,12 +116,12 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'fk_semestre_id'
         )
 
-    # Obtener la dedicación de cada docente y anexarla a cada objeto docente
-    docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4], fk_estado_revision=1, activo=True).order_by('primer_nombre')
+    # Obtener los docentes con contrato vigente en el periodo actual
+    docentes = Empleado.objects.annotate(tiene_contrato=Exists(Contrato.objects.filter(fk_usuario=OuterRef('id'),fk_periodo_id=periodo_actual.id,vigencia_contrato=True))).filter(fk_rol_id__in=[2, 4],fk_estado_revision=1,activo=True,tiene_contrato=True).order_by('primer_nombre')
     docentes_con_dedicacion = []
     for docente in docentes:
         contrato = Contrato.objects.filter(fk_usuario=docente.id, fk_periodo_id=periodo_actual.id, vigencia_contrato=True).first()
-        fk_dedicacion = contrato.fk_dedicacion.id if contrato and contrato.fk_dedicacion else None
+        dedicacion_nombre_corto = contrato.fk_dedicacion.nombre_corto if contrato and contrato.fk_dedicacion else None
         # Crear un dict o puedes usar setattr en el objeto si quieres
         docente_dict = {
             'id': docente.id,
@@ -127,9 +129,17 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'segundo_nombre': docente.segundo_nombre,
             'primer_apellido': docente.primer_apellido,
             'segundo_apellido': docente.segundo_apellido,
-            'dedicacion': fk_dedicacion,
+            'dedicacion': dedicacion_nombre_corto,
         }
         docentes_con_dedicacion.append(docente_dict)
+
+    if programa_usuario and periodo_actual:
+        cargas_academicas = CargaAcademica.objects.filter(
+            fk_periodo_id=periodo_actual.id,
+            fk_programa=programa_usuario.id
+        ).order_by('id')
+    else:
+        cargas_academicas = CargaAcademica.objects.none()
 
     # Contexto inicial
     contexto = {
@@ -157,7 +167,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
             'docentes_list': docentes_con_dedicacion,
-            'cargas_academicas': CargaAcademica.objects.filter(fk_periodo_id=periodo_actual.id, fk_programa=programa_usuario.id).order_by('id'),
+            'cargas_academicas': cargas_academicas,
             'periodo_actual': periodo_actual,
             'dedicacion_list': Dedicacion.objects.all(),
             'estado_revision_list': EstadoRevision.objects.all()
@@ -775,8 +785,6 @@ def definir_contrato(request, tipo, usuario_id):
     # Obtener el contrato más reciente del usuario (si existe)
     contrato = Contrato.objects.filter(fk_usuario=usuario.id, fk_periodo=periodo_actual.id).order_by('-fecha_inicio').first()
 
-    print(contrato)
-
     contexto.update({
         "usuario": usuario,
         "tipo": tipo,
@@ -870,7 +878,6 @@ def definir_contrato_usuario(request, tipo, usuario_id):
 
     if request.method == "POST":
         data = request.POST
-        print(request.POST)
         try:
             # Instanciar valores recibidos
             if fk_periodo := data.get("fk_periodo"):
@@ -908,10 +915,12 @@ def definir_contrato_usuario(request, tipo, usuario_id):
 
             if estado_contrato == "2":
                 # Editar contrato existente
+                print(data)
                 pass
 
             if estado_contrato == "3":
                 # Anexar contrato
+                print(data)
                 pass
 
             return JsonResponse({
@@ -992,7 +1001,7 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
 
             # Cambiar el estado de activo según el estado de revisión
-            if usuario.fk_estado_revision == 1:
+            if usuario.fk_estado_revision.id == 1:
                 usuario.activo = True
             else:
                 usuario.activo = False
@@ -1079,11 +1088,6 @@ def gestion_administrativos(request):
 #
 
 
-def calcular_dias_laborados_docentes(fecha_inicio, fecha_fin):
-
-    pass
-
-
 @login_required
 def gestion_carga_academica(request):
     """
@@ -1091,7 +1095,32 @@ def gestion_carga_academica(request):
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    cargas_academicas = contexto["cargas_academicas"]
+    programa_usuario = contexto["programa_usuario"]
+    periodo_actual = contexto["periodo_actual"]
+
+    # Cargas propias (programa madre)
+    cargas_propias = CargaAcademica.objects.filter(
+        fk_periodo=periodo_actual,
+        fk_programa=programa_usuario
+    )
+
+    # Cargas compartidas (donde el usuario es "invitado")
+    cargas_compartidas_ids = MateriaCompartida.objects.filter(
+        fk_programa=programa_usuario,
+        fk_periodo=periodo_actual
+    ).values_list('fk_carga_academica_id', flat=True)
+
+    cargas_compartidas = CargaAcademica.objects.filter(id__in=cargas_compartidas_ids)
+
+    # Unir ambos querysets y eliminar duplicados
+    cargas_academicas = list({c.id: c for c in chain(cargas_propias, cargas_compartidas)}.values())
+
+    # Diccionario de programas compartidos para cada carga
+    materias_compartidas_dict = {}
+    for carga in cargas_academicas:
+        # Programas con los que se comparte (no incluye el programa madre)
+        programas = MateriaCompartida.objects.filter(fk_carga_academica=carga).values_list('fk_programa__programa', flat=True)
+        materias_compartidas_dict[carga.id] = list(programas)
 
     # Agrupar cargas académicas por semestre
     cargas_dict = defaultdict(list)
@@ -1099,23 +1128,18 @@ def gestion_carga_academica(request):
         cargas_dict[carga.fk_semestre.semestre].append(carga)
 
     # Calcular total valor_a_pagar por semestre usando ORM para eficiencia
-    totales_qs = cargas_academicas.values('fk_semestre__semestre').annotate(
-        total_valor=Sum('valor_a_pagar')
-    )
-
-    print(totales_qs)
+    totales_qs = CargaAcademica.objects.filter(fk_periodo=periodo_actual,fk_programa=programa_usuario).values('fk_semestre__semestre').annotate(total_valor=Sum(Coalesce('valor_a_pagar', Value(0))))
 
     # Convertir queryset a dict para acceso fácil en template
     totales_por_semestre = {
         item['fk_semestre__semestre']: item['total_valor'] or 0 for item in totales_qs
     }
 
-    print(totales_por_semestre)
-
     # Convertir a diccionario normal para el template
     contexto["cargas_dict"] = dict(cargas_dict)
-    contexto["cargas_dict"] = dict(cargas_dict)
     contexto["totales_por_semestre"] = totales_por_semestre
+    contexto["materias_compartidas_dict"] = materias_compartidas_dict
+    contexto["cargas_academicas"] = cargas_academicas
 
     return render(request, 'carga_academica.html', contexto)
 
@@ -1123,6 +1147,11 @@ def gestion_carga_academica(request):
 #
 # ----------------------------  VISTA MATRIZ DOCENTES ---------------------------------
 #
+
+# Falta configurar 🚫
+def calcular_dias_laborados_docentes(fecha_inicio, fecha_fin):
+
+    pass
 
 
 @login_required
@@ -1145,13 +1174,11 @@ def calcular_valor_a_pagar(total_horas, id_docente):
     """
     Calcula el valor a pagar según las horas semanales y el total de horas, además de la dedicación del docente.
     """
-
     fk_ultimo_nivel_estudio = Empleado.objects.get(id=id_docente).fk_ultimo_nivel_estudio
-    tarifa_base_por_hora = NivelAcademicoHistorico.objects.get(id=fk_ultimo_nivel_estudio.id).tarifa_base_por_hora
-    print(tarifa_base_por_hora)
-    valor_a_pagar = (total_horas * tarifa_base_por_hora)
-    print(valor_a_pagar)
-
+    tarifa_base = NivelAcademicoHistorico.objects.filter(fk_nivel_academico=fk_ultimo_nivel_estudio).order_by('-año_vigencia').first()
+    if not tarifa_base:
+        raise Exception("No existe tarifa base para el nivel académico del docente.")
+    valor_a_pagar = total_horas * tarifa_base.tarifa_base_por_hora
     return valor_a_pagar
 
 @login_required
@@ -1204,14 +1231,19 @@ def guardar_matriz(request):
                     horas_semanales = carga["horas_semanales"],
                     total_horas = carga["total_horas"],
                     materia_compartida = carga["materia_compartida"],
-                    # fk_creado_por = request.user,
-                    fecha_creacion = datetime.now(),
-
+                    fk_creado_por = request.user,
                     valor_a_pagar = valor_a_pagar
                 )
 
                 # Almacenar Materias Compartidas:
-                
+                if carga.get("materia_compartida") and carga.get("programas_seleccionados_id"):
+                    for programa_id in carga["programas_seleccionados_id"]:
+                        MateriaCompartida.objects.create(
+                            fk_carga_academica=carga_academica,
+                            fk_programa_id=programa_id,
+                            fk_periodo=fk_periodo_inst
+                        )
+
             return JsonResponse({
                 'status': 'success',
                 'message': 'Carga académica agregada correctamente.'})
