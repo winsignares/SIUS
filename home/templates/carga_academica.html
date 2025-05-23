@@ -40,8 +40,8 @@
                                 <thead class="align-middle text-warp">
                                     <tr>
                                         <th class="col-2" scope="col">Materia</th>
-                                        <th class="col-2" scope="col">Compartida con</th>
-                                        <th class="col-1" scope="col">Docente</th>
+                                        <th class="col-1" scope="col">Compartida con</th>
+                                        <th class="col-2" scope="col">Docente</th>
                                         <th scope="col">Documento</th>
                                         <th class="col-1" scope="col">Dedicación</th>
                                         <th class="col-1" scope="col">Créditos</th>
@@ -60,20 +60,28 @@
                                             {% if carga_academica.fk_semestre.semestre == semestre.semestre %}
                                                 <tr class="text-center fs-small">
                                                     <td>
-                                                        {{ carga_academica.fk_materia.codigo }}<br>{{ carga_academica.fk_materia.materia }}
+                                                        {{ carga_academica.fk_materia.materia }}
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-primary">{{ carga_academica.fk_programa.programa }}</span>
                                                         {% with programas=materias_compartidas_dict|get_item:carga_academica.id %}
-                                                            {% if programas %}
+                                                            {% if programas and programas|length > 0 %}
+                                                                {# Mostrar el programa madre solo si el usuario está en los programas compartidos #}
+                                                                {% if programa_usuario.programa in programas %}
+                                                                    <span class="badge bg-programa-madre">{{ carga_academica.fk_programa.programa }}</span>
+                                                                {% endif %}
+                                                                {# Mostrar los demás programas compartidos, excepto el del usuario logueado #}
                                                                 {% for programa in programas %}
-                                                                    <span class="badge bg-info text-dark">{{ programa }}</span>
+                                                                    {% if programa != programa_usuario.programa %}
+                                                                        <span class="badge bg-programa">{{ programa }}</span>
+                                                                    {% endif %}
                                                                 {% endfor %}
+                                                            {% else %}
+                                                                <span class="fst-italic">No aplica</span>
                                                             {% endif %}
                                                         {% endwith %}
                                                     </td>
                                                     <td>
-                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}
+                                                        {{ carga_academica.fk_docente_asignado.primer_nombre }} {{ carga_academica.fk_docente_asignado.primer_apellido }}{% if carga_academica.fk_docente_asignado.segundo_apellido %} {{ carga_academica.fk_docente_asignado.segundo_apellido }}{% endif %}
                                                     </td>
                                                     <td>
                                                         {{ carga_academica.fk_docente_asignado.fk_tipo_documento.tipo_documento }} - {{ carga_academica.fk_docente_asignado.numero_documento|miles_co }}

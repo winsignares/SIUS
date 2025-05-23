@@ -196,6 +196,16 @@ body {
     cursor: not-allowed;
 }
 
+.bg-programa-madre {
+    background-color: var(--color-cuaternario);
+    color: var(--color-secundario);
+}
+
+.bg-programa {
+    background-color: none;
+    color: var(--color-primario);
+}
+
 /*
 --------------------------------------- GESTIÓN ASPIRTANTES Y EMPLEADOS ---------------------------------------
 */

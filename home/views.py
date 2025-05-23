@@ -1128,7 +1128,8 @@ def gestion_carga_academica(request):
         cargas_dict[carga.fk_semestre.semestre].append(carga)
 
     # Calcular total valor_a_pagar por semestre usando ORM para eficiencia
-    totales_qs = CargaAcademica.objects.filter(fk_periodo=periodo_actual,fk_programa=programa_usuario).values('fk_semestre__semestre').annotate(total_valor=Sum(Coalesce('valor_a_pagar', Value(0))))
+    ids_cargas = [c.id for c in cargas_academicas]
+    totales_qs = CargaAcademica.objects.filter(id__in=ids_cargas).values('fk_semestre__semestre').annotate(total_valor=Sum(Coalesce('valor_a_pagar', Value(0))))
 
     # Convertir queryset a dict para acceso fácil en template
     totales_por_semestre = {
