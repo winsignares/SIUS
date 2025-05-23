@@ -27,12 +27,12 @@
 
                     <div class="col-md-6 mb-2">
                         <dt>Expedición del Documento:</dt>
-                        <dd>{% if usuario.lugar_expedicion_documento %}{{ usuario.lugar_expedicion_documento|fijo_co|default:"No disponible" }} - {% endif %}{{ usuario.fecha_expedicion_documento|date:'d/m/Y' }}</dd>
+                        <dd><span class="fst-italic">{{ usuario.lugar_expedicion_documento|fijo_co|default:"No disponible" }}</span> - {{ usuario.fecha_expedicion_documento|date:'d/m/Y' }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
                         <dt>Lugar y Fecha de Nacimiento:</dt>
-                        <dd>{{ usuario.lugar_nacimiento|default:"No disponible" }} - {{ usuario.fecha_nacimiento|date:'d/m/Y'|default:"No disponible" }}</dd>
+                        <dd><span class="fst-italic">{{ usuario.lugar_nacimiento|default:"No disponible" }} </span>  - {{ usuario.fecha_nacimiento|date:'d/m/Y'|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">
@@ -102,10 +102,10 @@
     </div>
 
         <!-- Información del Contrato -->
-    {% if usuario.estado_revision == "Contratado" %}
+    {% if usuario.fk_estado_revision.id == 1 %}
         <div class="card shadow-sm mb-4">
             <div class="card-header d-flex gap-3 fs-5 fw-bold">
-                <i class="bi bi-file-earmark-text"></i> Detalles de Contratatación
+                <i class="bi bi-file-earmark-text"></i> Detalles de Contratación
             </div>
             <div class="card-body py-0">
                 {% if not usuario.contrato.all %}

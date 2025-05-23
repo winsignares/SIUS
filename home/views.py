@@ -157,7 +157,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'materias_list': list(materias_queryset),
             'periodos_list': Periodo.objects.all(),
             'docentes_list': docentes_con_dedicacion,
-            'cargas_academicas': CargaAcademica.objects.filter(fk_periodo_id=periodo_actual.id).order_by('id'),
+            'cargas_academicas': CargaAcademica.objects.filter(fk_periodo_id=periodo_actual.id, fk_programa=programa_usuario.id).order_by('id'),
             'periodo_actual': periodo_actual,
             'dedicacion_list': Dedicacion.objects.all(),
             'estado_revision_list': EstadoRevision.objects.all()
@@ -1188,15 +1188,14 @@ def guardar_matriz(request):
                     }, status=400)
 
                 # Valor a pagar si la dedicación es "Hora Cátedra - HC"
-                fk_dedicacion = Contrato.objects.get(fk_usuario=fk_docente_asignado_inst).fk_dedicacion
-                print(fk_dedicacion.nombre_corto)
-                if fk_dedicacion == 1:
+                contrato = Contrato.objects.filter(fk_usuario=fk_docente_asignado_inst.id, vigencia_contrato=True).first()
+                if contrato and contrato.fk_dedicacion and contrato.fk_dedicacion.id == 1:
                     valor_a_pagar = calcular_valor_a_pagar(carga["total_horas"], fk_docente_asignado_inst.id)
                 else:
                     valor_a_pagar = None
 
                 # Guardar los datos en la DB
-                CargaAcademica.objects.create(
+                carga_academica = CargaAcademica.objects.create(
                     fk_periodo = fk_periodo_inst,
                     fk_programa = fk_programa_inst,
                     fk_semestre = fk_semestre_inst,
@@ -1210,6 +1209,9 @@ def guardar_matriz(request):
 
                     valor_a_pagar = valor_a_pagar
                 )
+
+                # Almacenar Materias Compartidas:
+                
             return JsonResponse({
                 'status': 'success',
                 'message': 'Carga académica agregada correctamente.'})

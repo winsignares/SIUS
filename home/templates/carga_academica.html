@@ -75,13 +75,15 @@
                                                     <td>
                                                         {{ carga_academica.valor_a_pagar|default_if_none:'No aplica'|contabilidad_co }}
                                                     </td>
-                                                    <td class="d-flex justify-content-center gap-3">
-                                                        <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
-                                                            <i class="bi bi-pencil-square"></i>
-                                                        </a>
-                                                        <a href="#" class="btn btn-sm btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
+                                                    <td>
+                                                        <div class="d-flex justify-content-center gap-3">
+                                                            <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </a>
+                                                            <a href="#" class="btn btn-sm btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                                <i class="bi bi-trash"></i>
+                                                            </a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             {% endif %}

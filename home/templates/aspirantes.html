@@ -436,7 +436,7 @@
 
                                 <div class="col-md-12">
                                     <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
-                                    <input type="url" class="form-control" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
+                                    <input type="url" class="form-control text-lowercase" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
@@ -452,7 +452,7 @@
                                 <div class="col-md-6">
                                     <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
                                     {% for estado in estado_revision_list %}
-                                        {% if estado.id == 1 %}
+                                        {% if estado.id == 2 %}
                                             <input type="text" class="form-control" id="estado_revision_emp" value="{{ estado.estado }}" disabled required>
                                             <input type="hidden" id="fk_estado_revision" name="fk_estado_revision" value="{{ estado.id }}">
                                         {% endif %}

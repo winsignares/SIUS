@@ -14,83 +14,80 @@
     <ul class="nav flex-column">
         <!-- Opción visible para todos los grupos -->
         <li class="nav-item mb-2">
-            <a href="{% url 'dashboard' %}" class="d-flex gap-2 nav-link">
+            <a href="{% url 'dashboard' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                 <i class="bi bi-house-door-fill"></i></i>Inicio
             </a>
         </li>
 
-        <!-- Opciones específicas según el grupo -->
-
+        <!-- Opciones para el rol Director de Programa -->
         {% if "Director de Programa" in user_groups %}
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_matriz' %}" class="lh-sm d-flex gap-2 nav-link align-items-center">
-                <i class="bi bi-file-earmark-fill"></i></i>Matriz
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_matriz' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-file-earmark-fill"></i></i>Matriz
+                </a>
+            </li>
 
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_carga_academica' %}" class="lh-sm d-flex gap-2 nav-link align-items-center">
-                <i class="bi bi-file-earmark-medical-fill"></i>Carga Acádemica
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_carga_academica' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-file-earmark-medical-fill"></i>Carga Acádemica
+                </a>
+            </li>
 
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_contratos' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
+                </a>
+            </li>
         {% endif %}
-        
+
+        <!-- Opciones para el rol Director Talento Humano -->
         {% if "Director Talento Humano" in user_groups %}
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_aspirantes' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
+                </a>
+            </li>
 
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_empleados' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-people-fill"></i></i>Empleados
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i></i>Empleados
+                </a>
+            </li>
         {% endif %}
 
-        <!-- Rol Contabilidad -->
+        <!-- Opciones para el rol Contabilidad -->
         {% if "Contabilidad" in user_groups %}
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_docentes' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-person-video3"></i> Docentes
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-video3"></i> Docentes
+                </a>
+            </li>
 
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_administrativos' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-briefcase-fill"></i> Administrativos
-            </a>
-        </li>
-        
-        
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-briefcase-fill"></i> Administrativos
+                </a>
+            </li>
         {% endif %}
 
-
-    
+        <!-- Opciones para el rol Secretaria Talento Humano -->
         {% if "Secretaria Talento Humano" in user_groups %}
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_aspirantes' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
+                </a>
+            </li>
 
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_empleados' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-people-fill"></i></i>Empleados
-            </a>
-        </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i></i>Empleados
+                </a>
+            </li>
         {% endif %}
 
-        <!-- Opción visible para todos los grupos -->
+        <!-- Opción visible para todos los grupos (quitar el d-none) -->
         <li class="nav-item mb-2 d-none">
-            <a href="{% url 'reportes' %}" class="d-flex gap-2 nav-link">
+            <a href="{% url 'reportes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                 <i class="bi bi-clipboard-data-fill"></i></i>Reportes
             </a>
         </li>
