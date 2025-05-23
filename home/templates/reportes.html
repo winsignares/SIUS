@@ -33,12 +33,12 @@
                     <input type="date" id="filtro_fecha" name="fecha_creacion" class="form-control" value="{{ fecha_creacion }}">
                 </div>
                 <div class="col-md-3">
-                    <label for="estado" class="form-label">Estado</label>
-                    <select id="estado" name="estado" class="form-select">
-                        <option value="" {% if not estado %}selected{% endif %}>Todos</option>
-                        <option value="Pendiente" {% if estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
-                        <option value="Rechazado" {% if estado == 'Rechazado' %}selected{% endif %}>Rechazado</option>
-                        <option value="Contratado" {% if estado == 'Contratado' %}selected{% endif %}>Contratado</option>
+                    <label for="fk_estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_estado_revision" name="fk_estado_revision" required>
+                        <option value="">Seleccione</option>
+                        {% for estado in estado_revision_list %}
+                            <option value="{{ estado.id }}">{{ estado.estado }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">

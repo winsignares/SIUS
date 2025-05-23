@@ -69,7 +69,7 @@
                                 </td>
                                 <td>
                                     <span class="alert alert-warning d-inline-block py-1 px-2 mb-0">
-                                        {{ usuario.estado_revision }}
+                                        {{ usuario.fk_estado_revision.estado }}
                                     </span>
                                 </td=>
                                 <td>
@@ -191,7 +191,7 @@
                                 </td>
                                 <td>
                                     <span class="alert alert-danger d-inline-block py-1 px-2 mb-0">
-                                        {{ usuario.estado_revision }}
+                                        {{ usuario.fk_estado_revision.estado }}
                                     </span>
                                 </td>
                                 <td>
@@ -451,8 +451,12 @@
 
                                 <div class="col-md-6">
                                     <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="estado_revision" value="Pendiente" disabled required>
-                                    <input type="hidden" id="estado_revision_input" name="estado_revision" value="Pendiente">
+                                    {% for estado in estado_revision_list %}
+                                        {% if estado.id == 1 %}
+                                            <input type="text" class="form-control" id="estado_revision_emp" value="{{ estado.estado }}" disabled required>
+                                            <input type="hidden" id="fk_estado_revision" name="fk_estado_revision" value="{{ estado.id }}">
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>

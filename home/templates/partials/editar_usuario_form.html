@@ -9,12 +9,14 @@
 
             <div class="row px-3 mb-3">
                 <div class="col-md-12 mb-2">
-                    <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
-                    <select class="form-select" id="estado_revision" name="estado_revision" required>
-                        <option value="" {% if not usuario.estado_revision %}selected{% endif %}>Seleccione</option>
-                        <option value="Pendiente" {% if usuario.estado_revision == "Pendiente" %}selected{% endif %}>Pendiente</option>
-                        <option value="Contratado" {% if usuario.estado_revision == "Contratado" %}selected{% endif %}>Contratado</option>
-                        <option value="Rechazado" {% if usuario.estado_revision == "Rechazado" %}selected{% endif %}>Rechazado</option>
+                    <label for="fk_estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_estado_revision" name="fk_estado_revision" required>
+                        <option value="" {% if not usuario.fk_estado_revision %}selected{% endif %}>Seleccione</option>
+                        {% for estado in estado_revision_list %}
+                            <option value="{{ estado.id }}" {% if usuario.fk_estado_revision.id == estado.id %}selected{% endif %}>
+                                {{ estado.estado }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -240,7 +242,11 @@
                 {% if 'Secretaria Talento Humano' in user_groups %}
                     <div class="col-md-6">
                         <label for="estado_revision" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
-                        <input type="text" class="form-control" id="estado_revision" value="{% if usuario.estado_revision == 'Contratado' %}Contratado{% elif usuario.estado_revision == 'Pendiente' %}Pendiente{% else %}Rechazado{% endif %}" disabled required>
+                        {% for estado in estado_revision_list %}
+                            {% if usuario.fk_estado_revision.id == estado.id %}
+                                <input type="text" class="form-control" id="estado_revision" value="{{ estado.estado }}" disabled required>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 {% endif %}
             </div>

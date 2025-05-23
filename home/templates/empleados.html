@@ -78,7 +78,7 @@
                                 <td>
                                     {% if usuario.activo == True %}
                                     <span class="alert alert-success d-inline-block py-1 px-2 mb-0">
-                                        {{ usuario.estado_revision }}
+                                        {{ usuario.fk_estado_revision.estado }}
                                     </span>
                                     {% endif %}
                                 </td=>
@@ -487,8 +487,12 @@
 
                                 <div class="col-md-6">
                                     <label for="estado_revision_emp" class="form-label mb-0">Estado de Revisión <span class='fw-bold fs-4'></span></label>
-                                    <input type="text" class="form-control" id="estado_revision_emp" value="Contratado" disabled required>
-                                    <input type="hidden" id="estado_revision_emp" name="estado_revision_emp" value="Contratado">
+                                    {% for estado in estado_revision_list %}
+                                        {% if estado.id == 1 %}
+                                            <input type="text" class="form-control" id="estado_revision_emp" value="{{ estado.estado }}" disabled required>
+                                            <input type="hidden" id="fk_estado_revision_emp" name="fk_estado_revision_emp" value="{{ estado.id }}">
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -771,36 +775,7 @@
             </div>
         </div>
     </div>
-</div>
-
-Script para Carga masiva
-<script>
-    document.getElementById("formCargaMasiva").addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        let formData = new FormData(this);
-        fetch("{% url 'cargar_empleados' %}", {
-            method: "POST",
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Hubo un problema al procesar el archivo.");
-        });
-    });
-</script> -->
+</div> -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

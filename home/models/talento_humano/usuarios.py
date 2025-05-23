@@ -26,7 +26,6 @@ class Empleado(models.Model):
     primer_apellido = models.CharField(max_length=255) # ✅
     numero_documento = models.BigIntegerField(unique=True) # ✅
     correo_personal = models.EmailField() # ✅
-    estado_revision = models.CharField(max_length=50) # Eliminar
     fk_estado_revision = models.ForeignKey(EstadoRevision, on_delete=models.CASCADE, null=True, blank=True) # Pendiente - Rechazado - Aceptado
 
 # Campos opcionales

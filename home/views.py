@@ -115,7 +115,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         )
 
     # Obtener la dedicación de cada docente y anexarla a cada objeto docente
-    docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4], estado_revision='Contratado', activo=True).order_by('primer_nombre')
+    docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4], fk_estado_revision=1, activo=True).order_by('primer_nombre')
     docentes_con_dedicacion = []
     for docente in docentes:
         contrato = Contrato.objects.filter(fk_usuario=docente.id, fk_periodo_id=periodo_actual.id, vigencia_contrato=True).first()
@@ -159,7 +159,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'docentes_list': docentes_con_dedicacion,
             'cargas_academicas': CargaAcademica.objects.filter(fk_periodo_id=periodo_actual.id).order_by('id'),
             'periodo_actual': periodo_actual,
-            'dedicacion_list': Dedicacion.objects.all()
+            'dedicacion_list': Dedicacion.objects.all(),
+            'estado_revision_list': EstadoRevision.objects.all()
         })
 
     return contexto
@@ -309,11 +310,11 @@ def gestion_aspirantes(request):
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     aspirante_pendiente = request.GET.get('aspirante_pendiente', '').strip()
     usuarios_aspirantes = Empleado.objects.filter(
-        estado_revision='Pendiente').order_by('-fecha_modificacion')
+        fk_estado_revision=2).order_by('-fecha_modificacion')
     # Término de búsqueda para aspirantes en estado 'Rechazado'
     aspirante_rechazado = request.GET.get('aspirante_rechazado', '').strip()
     usuarios_rechazados = Empleado.objects.filter(
-        estado_revision='Rechazado').order_by('-fecha_modificacion')
+        fk_estado_revision=3).order_by('-fecha_modificacion')
 
     # Filtrar datos si hay una búsqueda
     if aspirante_pendiente:
@@ -380,6 +381,7 @@ def agregar_aspirante(request):
             fk_afp_ins = AFP.objects.get(id=data.get('fk_afp'))
             fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia'))
             fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora'))
+            fk_estado_revision_ins = EstadoRevision.objects.get(id=data.get('fk_estado_revision'))
 
             nuevo_usuario = Empleado.objects.create(
                 # Campos obligatorios
@@ -390,7 +392,7 @@ def agregar_aspirante(request):
                 primer_apellido=data.get('primer_apellido'),
                 numero_documento=data.get('numero_documento'),
                 correo_personal=data.get('correo_personal'),
-                estado_revision=data.get('estado_revision'),
+                fk_estado_revision=fk_estado_revision_ins,
                 # Campos opcionales
                 segundo_nombre=data.get('segundo_nombre'),
                 segundo_apellido=data.get('segundo_apellido'),
@@ -460,6 +462,7 @@ def agregar_empleado(request):
             fk_caja_compensacion_ins = CajaCompensacion.objects.get(id=data.get('fk_caja_compensacion_emp'))
             fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia_emp'))
             fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora_emp'))
+            fk_estado_revision_ins = EstadoRevision.objects.get(id=data.get('fk_estado_revision_emp'))
 
             nuevo_usuario = Empleado.objects.create(
                 # Campos obligatorios
@@ -470,7 +473,7 @@ def agregar_empleado(request):
                 primer_apellido=data.get('primer_apellido_emp'),
                 numero_documento=data.get('numero_documento_emp'),
                 correo_personal=data.get('correo_personal_emp'),
-                estado_revision=data.get('estado_revision_emp'),
+                fk_estado_revision=fk_estado_revision_ins,
                 # Campos opcionales
                 segundo_nombre=data.get('segundo_nombre_emp'),
                 segundo_apellido=data.get('segundo_apellido_emp'),
@@ -660,10 +663,10 @@ def gestion_empleados(request):
     # Capturar parámetros de búsqueda
     # Término de búsqueda para aspirantes en estado 'Pendiente'
     empleado_activo = request.GET.get('empleado_activo', '').strip()
-    empleados_activos = Empleado.objects.filter(activo=True, estado_revision='Contratado').order_by('-fecha_modificacion')
+    empleados_activos = Empleado.objects.filter(activo=True, fk_estado_revision=1).order_by('-fecha_modificacion')
     # Término de búsqueda para aspirantes en estado 'Rechazado'
     empleado_inactivo = request.GET.get('empleado_inactivo', '').strip()
-    empleados_inactivos = Empleado.objects.filter(activo=False, estado_revision='Contratado').order_by('-fecha_modificacion')
+    empleados_inactivos = Empleado.objects.filter(activo=False, fk_estado_revision=1).order_by('-fecha_modificacion')
 
     # Filtrar datos si hay una búsqueda
     if empleado_activo:
@@ -705,97 +708,6 @@ def gestion_empleados(request):
     })
 
     return render(request, 'empleados.html', contexto)
-
-
-# Falta configurar 🚫
-@login_required
-@csrf_exempt
-def cargar_empleados_masivamente(request):
-    # if request.method == 'POST' and 'archivoExcel' in request.FILES:
-    #     archivo = request.FILES['archivoExcel']
-    #     try:
-    #         # Leer el archivo Excel usando pandas
-    #         import pandas as pd
-    #         datos = pd.read_excel(archivo)
-
-    #         # Validar que las columnas requeridas existan en el archivo
-    #         columnas_requeridas = [
-    #             'primer_nombre', 'primer_apellido', 'fk_rol', 'cargo',
-    #             'fecha_nacimiento', 'fk_tipo_documento', 'numero_documento',
-    #             'correo_personal', 'celular', 'departamento_residencia',
-    #             'ultimo_nivel_estudio', 'eps', 'afp'
-    #         ]
-    #         if not all(col in datos.columns for col in columnas_requeridas):
-    #             return JsonResponse({
-    #                 'status': 'error',
-    #                 'message': f"El archivo debe contener las columnas: {', '.join(columnas_requeridas)}"
-    #             }, status=400)
-
-    #         # Validar que todos los roles en el Excel existen
-    #         roles_no_encontrados = set(
-    #             datos['fk_rol']) - set(Rol.objects.values_list('descripcion', flat=True))
-    #         if roles_no_encontrados:
-    #             return JsonResponse({
-    #                 'status': 'error',
-    #                 'message': f"Los siguientes roles no existen en la base de datos: {', '.join(roles_no_encontrados)}"
-    #             }, status=400)
-
-    #         # Iterar sobre las filas del archivo y crear empleados
-    #         for _, fila in datos.iterrows():
-    #             try:
-    #                 # Validar que el rol existe
-    #                 rol = Rol.objects.get(descripcion=fila['fk_rol'])
-    #                 tipo_documento = TipoDocumento.objects.get(
-    #                     descripcion=fila['fk_tipo_documento'])
-
-    #                 # Crear o actualizar el usuario
-    #                 Empleado.objects.update_or_create(
-    #                     numero_documento=fila['numero_documento'],
-    #                     defaults={
-    #                         'primer_nombre': fila['primer_nombre'],
-    #                         'primer_apellido': fila['primer_apellido'],
-    #                         'fk_rol': rol,
-    #                         'cargo': fila['cargo'],
-    #                         'fecha_nacimiento': fila['fecha_nacimiento'],
-    #                         'fk_tipo_documento': tipo_documento,
-    #                         'correo_personal': fila['correo_personal'],
-    #                         'celular': fila['celular'],
-    #                         'departamento_residencia': fila['departamento_residencia'],
-    #                         'ultimo_nivel_estudio': fila['ultimo_nivel_estudio'],
-    #                         'eps': fila['eps'],
-    #                         'afp': fila['afp'],
-    #                         'estado_revision': 'Contratado',
-    #                         'activo': True,
-    #                         'fk_creado_por': request.user
-    #                     }
-    #                 )
-    #             except Rol.DoesNotExist:
-    #                 return JsonResponse({
-    #                     'status': 'error',
-    #                     'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Rol '{fila['fk_rol']}' no encontrado. Verifica que el rol exista en la base de datos."
-    #                 }, status=400)
-    #             except TipoDocumento.DoesNotExist:
-    #                 return JsonResponse({
-    #                     'status': 'error',
-    #                     'message': f"Error al procesar la fila con documento {fila['numero_documento']}: Tipo de Documento '{fila['fk_tipo_documento']}' no encontrado. Verifica que exista en la base de datos."
-    #                 }, status=400)
-
-    #         return JsonResponse({
-    #             'status': 'success',
-    #             'message': 'Carga masiva realizada con éxito.'
-    #         }, status=200)
-    #     except Exception as e:
-    #         print(e)
-    #         return JsonResponse({
-    #             'status': 'error',
-    #             'message': 'Error inesperado. Por favor, intente nuevamente.'
-    #         }, status=500)
-
-    # return JsonResponse({
-    #     'status': 'error',
-    #     'message': 'Método no permitido.'
-    # }, status=405)
-    pass
 
 
 #
@@ -1046,7 +958,8 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
             usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
             usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
-            usuario.estado_revision = request.POST.get("estado_revision", usuario.estado_revision)
+            if fk_estado_revision := request.POST.get('fk_estado_revision'):
+                usuario.fk_estado_revision = EstadoRevision.objects.get(id=fk_estado_revision)
 
             # Campos opcionales
             usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
@@ -1079,7 +992,7 @@ def actualizar_usuario(request, tipo, usuario_id):
             usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
 
             # Cambiar el estado de activo según el estado de revisión
-            if usuario.estado_revision == "Contratado":
+            if usuario.fk_estado_revision == 1:
                 usuario.activo = True
             else:
                 usuario.activo = False
@@ -1370,7 +1283,7 @@ def reportes(request):
 
     # Capturar parámetros del request
     fecha_creacion = request.GET.get('fecha_creacion')
-    estado = request.GET.get('estado')
+    fk_estado_revision_ins = EstadoRevision.objects.get(id=request.get('fk_estado_revision'))
     activo = request.GET.get('activo')  # Nuevo filtro
     page = request.GET.get('page', 1)  # Página actual, por defecto 1
 
@@ -1386,8 +1299,8 @@ def reportes(request):
         usuarios = usuarios.filter(fecha_creacion__date=fecha_creacion)
 
     # Filtrar por estado
-    if estado:
-        usuarios = usuarios.filter(estado_revision=estado)
+    if fk_estado_revision_ins:
+        usuarios = usuarios.filter(fk_estado_revision=fk_estado_revision_ins)
 
     # Filtrar por activo/inactivo
     if activo:
@@ -1415,7 +1328,8 @@ def reportes(request):
 def generar_reporte_excel(request):
     # Capturar filtros de la URL
     fecha_creacion = request.GET.get('fecha_creacion')
-    estado = request.GET.get('estado')
+    fk_estado_revision_ins = EstadoRevision.objects.get(id=request.get('fk_estado_revision'))
+
 
     # Configuración de la zona horaria local
     zona_horaria_local = pytz.timezone('America/Bogota')
@@ -1431,8 +1345,8 @@ def generar_reporte_excel(request):
         except ValueError:
             fecha_creacion = None
 
-    if estado:
-        usuarios = usuarios.filter(estado_revision=estado)
+    if fk_estado_revision_ins:
+        usuarios = usuarios.filter(fk_estado_revision=fk_estado_revision_ins)
 
     # Crear libro de Excel
     workbook = openpyxl.Workbook()
@@ -1451,7 +1365,7 @@ def generar_reporte_excel(request):
             usuario.cargo,
             usuario.numero_documento,
             usuario.correo_personal,
-            usuario.estado_revision,
+            usuario.fk_estado_revision.estado,
             # Mostrar en la zona local
             fecha_local.strftime("%d-%m-%Y %H:%M:%S")
         ])
@@ -1484,7 +1398,7 @@ def generar_contrato_word(request, usuario_id):
     contrato = Contrato.objects.filter(fk_usuario=usuario).order_by('-fecha_inicio').first()
 
     # Verificar si el usuario tiene un contrato y está en estado "Contratado"
-    if not contrato or usuario.estado_revision != "Contratado":
+    if not contrato or usuario.fk_estado_revision != 1:
         return JsonResponse({
             'status': 'error',
             'message': 'El usuario no tiene un contrato asociado o no está en estado "Contratado".'
