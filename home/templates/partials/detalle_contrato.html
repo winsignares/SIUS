@@ -1,4 +1,4 @@
-<form id="formDetalleContrato" method="POST" action="{% url 'definir_contrato_usuario' tipo=tipo usuario_id=usuario.id %}" data-ajax-submit="true">
+<form id="formDetalleContrato" method="POST" action="{% url 'definir_contrato_usuario' usuario_id=usuario.id %}" data-ajax-submit="true">
     {% csrf_token %}
     <div class="container">
         <div class="container mb-3">
@@ -61,12 +61,12 @@
                 <!-- Valor del Contrato -->
                 <div class="col-md-12 mb-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <label for="valor_contrato" class="form-label mb-0">Valor del Contrato <span class='fw-bold fs-4'>*</span></label>
+                        <label for="valor_mensual_contrato" class="form-label mb-0">Valor Mensual a Pagar <span class='fw-bold fs-4'>*</span></label>
                         <label class="form-label mb-0 text-end d-block fst-italic fs-small">El último nivel de estudio es <span class='fw-bold'>{{ usuario.fk_ultimo_nivel_estudio.nombre}}</span></label>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text">$</span>
-                        <input type="number" class="form-control" id="valor_contrato" name="valor_contrato" {% if usuario.fk_estado_revision.id != 1 %}disabled{% endif %} required>
+                        <input type="number" class="form-control" id="valor_mensual_contrato" name="valor_mensual_contrato" {% if usuario.fk_estado_revision.id != 1 %}disabled{% endif %} required>
                     </div>
                 </div>
 

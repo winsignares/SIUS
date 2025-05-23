@@ -37,7 +37,7 @@ from .models.talento_humano.niveles_academicos import NivelAcademico, NivelAcade
 from .models.talento_humano.datos_adicionales import EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede
 from .models.talento_humano.roles import Rol
 from .models.talento_humano.contrato import TipoContrato, Contrato, DetalleContratro, Dedicacion
-from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre, MateriaCompartida, FuncionesSustantivas
+from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, ProgramaUser, Semestre, MateriaCompartida, FuncionesSustantivas
 
 
 #
@@ -75,7 +75,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         usuario_log = None
 
     # Obtener el programa del usuario logueado
-    programa_usuario = Programa.objects.filter(auth_user=usuario_autenticado.id).first()
+    programa_usuario_log = ProgramaUser.objects.filter(fk_user=usuario_autenticado.id).first()
+    programa_usuario = programa_usuario_log.fk_programa if programa_usuario_log else None
 
     # Obtener el número de semestres del programa
     num_semestres = int(programa_usuario.numero_semestres) if programa_usuario else 0
@@ -769,7 +770,7 @@ def editar_usuario(request, tipo, usuario_id):
 
 @login_required
 @csrf_exempt
-def definir_contrato(request, tipo, usuario_id):
+def definir_contrato(request, usuario_id):
     """
     Muestra el formulario para definir el contrato de un empleado.
     """
@@ -787,7 +788,6 @@ def definir_contrato(request, tipo, usuario_id):
 
     contexto.update({
         "usuario": usuario,
-        "tipo": tipo,
         "tipos_contrato_list": tipos_contrato,
         "contrato_usuario": contrato # Pasamos un solo contrato, no una queryset
     })
@@ -870,13 +870,12 @@ def generar_detalles_contrato(contrato):
 
 
 @login_required
-def definir_contrato_usuario(request, tipo, usuario_id):
+def definir_contrato_usuario(request, usuario_id):
     """
     Muestra el formulario para definir el contrato de un empleado.
     """
-    usuario = get_object_or_404(Empleado, id=usuario_id)
-
     if request.method == "POST":
+        usuario = get_object_or_404(Empleado, id=usuario_id)
         data = request.POST
         try:
             # Instanciar valores recibidos
@@ -896,26 +895,31 @@ def definir_contrato_usuario(request, tipo, usuario_id):
             # Lógica segun el tipo de contrato
             if estado_contrato == "1":
                 # Instanciar ForeignKeys
-                fk_usuario = Empleado.objects.get(id=usuario_id)
                 fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
-                if valor_contrato := data.get("valor_contrato"):
-                    valor_contrato = Decimal(valor_contrato.replace(",", ""))
+                if valor_mensual_contrato := data.get("valor_mensual_contrato"):
+                    valor_mensual_contrato = Decimal(valor_mensual_contrato.replace(",", ""))
+
+                if usuario.fk_rol.id == 2:
+                    pass
 
                 # Agregar nuevo contrato
                 Contrato.objects.create(
                     fk_periodo=fk_periodo,
-                    fk_usuario=fk_usuario,
+                    fk_usuario=usuario.id,
                     fecha_inicio=fecha_inicio_contrato,
                     fecha_fin=fecha_fin_contrato,
                     fk_tipo_contrato=fk_tipo_contrato,
                     fk_dedicacion=fk_dedicacion,
                     vigencia_contrato=True,
-                    valor_contrato=valor_contrato,
+                    # valor_contrato= valor_contrato,
+                    # total_dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
                 )
 
             if estado_contrato == "2":
                 # Editar contrato existente
                 print(data)
+                total_dias_laborados = calcular_dias_laborados_por_contrato(fecha_inicio_contrato, fecha_fin_contrato)
+                print(total_dias_laborados)
                 pass
 
             if estado_contrato == "3":
@@ -1056,8 +1060,6 @@ def gestion_docentes(request):
     """
     contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
-    dia_actual = datetime.now().date()
-
     contexto.update ({
         'programa_list': Programa.objects.all(),
     })
@@ -1148,11 +1150,6 @@ def gestion_carga_academica(request):
 #
 # ----------------------------  VISTA MATRIZ DOCENTES ---------------------------------
 #
-
-# Falta configurar 🚫
-def calcular_dias_laborados_docentes(fecha_inicio, fecha_fin):
-
-    pass
 
 
 @login_required

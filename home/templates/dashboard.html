@@ -191,7 +191,6 @@
                 contratoModal.addEventListener("show.bs.modal", function (event) {
                     const button = event.relatedTarget;
                     const userId = button.getAttribute("data-id");
-                    const userType = button.getAttribute("data-tipo");
                     const modalContent = document.getElementById("definirContratoContent");
 
                     modalContent.innerHTML = `
@@ -202,7 +201,7 @@
                         </div>
                     `;
 
-                    fetch(`/siuc/dashboard/definir_contrato/${userType}/${userId}/`, {
+                    fetch(`/siuc/dashboard/definir_contrato/${userId}/`, {
                         method: "GET",
                         headers: {
                             "X-Requested-With": "XMLHttpRequest"
@@ -213,7 +212,7 @@
                         modalContent.innerHTML = html;
 
                         // Aquí inicializamos la función para el select y input recién cargados
-                        inicializarToggleValorContrato();
+                        inicializarToggleValorMensual();
                     })
                     .catch(error => {
                         showAlert("Error en el servidor, intenta de nuevo.", "error");
@@ -222,17 +221,17 @@
                 });
             });
 
-            // Función que habilita o deshabilita el input "valor_contrato" según selección en "fk_dedicacion"
-            function inicializarToggleValorContrato() {
+            // Función que habilita o deshabilita el input "valor_mensual_contrato" según selección en "fk_dedicacion"
+            function inicializarToggleValorMensual() {
                 const dedicacionSelect = document.getElementById("fk_dedicacion");
-                const valorContratoInput = document.getElementById("valor_contrato");
+                const valorContratoInput = document.getElementById("valor_mensual_contrato");
 
                 // Protección en caso de que el formulario no esté cargado aún
                 if (!dedicacionSelect || !valorContratoInput) return;
 
                 const valorContratoDiv = valorContratoInput.closest('.col-md-12');
 
-                function toggleValorContrato() {
+                function toggleValorMensual() {
                     const selectedOption = dedicacionSelect.options[dedicacionSelect.selectedIndex];
                     const nombreCorto = selectedOption ? selectedOption.getAttribute('data-nombre-corto') : null;
                     const esHoraCatedra = nombreCorto === "HC";
@@ -243,11 +242,11 @@
                 }
 
                 // Limpiar posibles listeners previos para evitar acumulación
-                dedicacionSelect.removeEventListener("change", toggleValorContrato);
-                dedicacionSelect.addEventListener("change", toggleValorContrato);
+                dedicacionSelect.removeEventListener("change", toggleValorMensual);
+                dedicacionSelect.addEventListener("change", toggleValorMensual);
 
                 // Ejecutar inmediatamente para reflejar estado inicial
-                toggleValorContrato();
+                toggleValorMensual();
             }
         </script>
 

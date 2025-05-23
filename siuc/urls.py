@@ -53,8 +53,8 @@ urlpatterns = [
     path('siuc/dashboard/detalle_usuario/<str:tipo>/<int:usuario_id>/', detalle_usuario, name='detalle_usuario'),
     path("siuc/dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", views.editar_usuario, name="editar_usuario"),
     path("siuc/dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.actualizar_usuario, name="actualizar_usuario"),
-    path("siuc/dashboard/definir_contrato/<str:tipo>/<int:usuario_id>/", views.definir_contrato, name="definir_contrato"),
-    path("siuc/dashboard/definir_contrato_usuario/<str:tipo>/<int:usuario_id>/", views.definir_contrato_usuario, name="definir_contrato_usuario"),
+    path("siuc/dashboard/definir_contrato/<int:usuario_id>/", views.definir_contrato, name="definir_contrato"),
+    path("siuc/dashboard/definir_contrato_usuario/<int:usuario_id>/", views.definir_contrato_usuario, name="definir_contrato_usuario"),
 
     path("siuc/dashboard/carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"),
     path("siuc/dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),
