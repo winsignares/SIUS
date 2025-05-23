@@ -64,52 +64,54 @@ class PreguntaDirectivo(models.Model):
         return self.texto
     
 
-#zona de prueba
+from django.db import models
+from admisiones.models import Estudiantes
+from home.models.carga_academica.datos_adicionales import Materia
 
 class EvaluacionEstudiante(models.Model):
     estudiante = models.ForeignKey(
         Estudiantes,
         on_delete=models.CASCADE,
-        
+        related_name='evaluaciones'
     )
     materia = models.ForeignKey(
         Materia,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='evaluaciones'
     )
-    pregunta = models.ForeignKey(
-        PreguntaEstudiante,
-        on_delete=models.CASCADE
+    respuestas = models.JSONField(
+        help_text="Diccionario con claves de pregunta_id y valores con respuesta"
     )
-    respuesta = models.PositiveSmallIntegerField()  
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Respuesta de {self.estudiante} en {self.materia}: {self.pregunta} -> {self.respuesta}"
+        return f"Evaluación de {self.estudiante} en {self.materia} ({self.fecha_respuesta.date()})"
 
     class Meta:
         db_table = 'evaluacion_estudiante'
         verbose_name = 'Evaluación Estudiante'
         verbose_name_plural = 'Evaluaciones Estudiantes'
+        unique_together = ('estudiante', 'materia')
+
+from django.db import models
+from django.contrib.auth.models import User
 
 class EvaluacionDocente(models.Model):
     docente = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
-    pregunta = models.ForeignKey(
-        PreguntaDocente,
-        on_delete=models.CASCADE
-    )
-    respuesta = models.PositiveSmallIntegerField()  # Valores entre 0 y 5
+    respuestas = models.JSONField()  # Guarda todas las respuestas en un JSON: {pregunta_id: respuesta}
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Autoevaluación de {self.docente}: {self.pregunta} -> {self.respuesta}"
+        return f"Autoevaluación de {self.docente}"
 
     class Meta:
         db_table = 'evaluacion_docente'
         verbose_name = 'Evaluación Docente'
         verbose_name_plural = 'Evaluaciones Docentes'
+
 
 
     class Meta:
@@ -119,7 +121,7 @@ class EvaluacionDocente(models.Model):
 
 
 class EvaluacionDirectivo(models.Model):
-    evaluador = models.ForeignKey(  
+    evaluador = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
@@ -129,15 +131,11 @@ class EvaluacionDirectivo(models.Model):
         related_name='evaluaciones_directivos',
         limit_choices_to={'fk_rol__rol': 'D'}
     )
-    pregunta = models.ForeignKey(
-        PreguntaDirectivo,
-        on_delete=models.CASCADE
-    )
-    respuesta = models.PositiveSmallIntegerField()
+    respuestas = models.JSONField()  
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Evaluación de {self.docente_evaluado} por {self.evaluador}: {self.pregunta} -> {self.respuesta}"
+        return f"Evaluación de {self.docente_evaluado} por {self.evaluador}"
 
     class Meta:
         db_table = 'evaluacion_directivo'

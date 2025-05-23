@@ -14,6 +14,7 @@ def listado_docentes(request):
 @login_required
 def evaluar_docente(request, docente_id):
     docente_evaluado = get_object_or_404(Usuario, id=docente_id)
+    evaluador = request.user
 
     categorias = CategoriaDirectivo.objects.prefetch_related('preguntas').all()
     preguntas_por_categoria = {
@@ -21,41 +22,39 @@ def evaluar_docente(request, docente_id):
         for categoria in categorias
     }
 
-    if request.method == 'POST':
-        pregunta_ids = request.POST.getlist('pregunta_id')
-        evaluador = request.user
+    # Comprobar si ya existe evaluación previa de este evaluador para este docente
+    evaluacion_existente = EvaluacionDirectivo.objects.filter(
+        evaluador=evaluador,
+        docente_evaluado=docente_evaluado
+    ).first()
 
-        evaluaciones_existentes = EvaluacionDirectivo.objects.filter(
+    if request.method == 'POST':
+        if evaluacion_existente:
+            messages.warning(request, "Ya realizaste esta evaluación anteriormente.")
+            return redirect('evaluacion:listado_docentes')
+
+        respuestas = {}
+        for categoria, preguntas in preguntas_por_categoria.items():
+            for pregunta in preguntas:
+                respuesta = request.POST.get(f'respuesta_{pregunta.id}')
+                if respuesta is not None:
+                    respuestas[str(pregunta.id)] = int(respuesta)
+
+        if not respuestas:
+            messages.error(request, "No se registraron evaluaciones.")
+            return redirect('evaluacion:listado_docentes')
+
+        EvaluacionDirectivo.objects.create(
             evaluador=evaluador,
             docente_evaluado=docente_evaluado,
-            pregunta_id__in=pregunta_ids
-        ).values_list('pregunta_id', flat=True)
-
-        nuevas_evaluaciones = 0
-
-        for pregunta_id in pregunta_ids:
-            if int(pregunta_id) in evaluaciones_existentes:
-                continue
-
-            respuesta = request.POST.get(f'respuesta_{pregunta_id}')
-            if respuesta is not None:
-                EvaluacionDirectivo.objects.create(
-                    evaluador=evaluador,
-                    docente_evaluado=docente_evaluado,
-                    pregunta_id=pregunta_id,
-                    respuesta=respuesta
-                )
-                nuevas_evaluaciones += 1
-
-        if nuevas_evaluaciones == 0:
-            messages.warning(request, "Ya realizaste esta evaluación anteriormente.")
-        else:
-            messages.success(request, "Evaluación registrada correctamente.")
-
+            respuestas=respuestas
+        )
+        messages.success(request, "Evaluación registrada correctamente.")
         return redirect('evaluacion:listado_docentes')
 
     context = {
         'docente': docente_evaluado,
         'preguntas_por_categoria': preguntas_por_categoria,
+        'evaluacion_existente': evaluacion_existente,
     }
     return render(request, 'core/evaluar_docente.html', context)

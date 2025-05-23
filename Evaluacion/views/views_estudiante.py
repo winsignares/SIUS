@@ -15,26 +15,28 @@ def materias_estudiante_view(request):
     user = User.objects.get(username=estudiante_model.estudiante)
     estudiante_model.nombre_completo = user.get_full_name()  
     estudiante_model.correo_personal = user.email  
-      
-    # Todas las materias donde el estudiante está matriculado
+
+    
     materias = Materia.objects.filter(
         matricula__estudiante=estudiante_model,
         fk_programa=estudiante_model.programa,
         fk_semestre=estudiante_model.semestre
     ).distinct()
 
-    # Obtener materias ya evaluadas por el estudiante (si respondió alguna pregunta de esa materia)
+   
     materias_evaluadas_ids = EvaluacionEstudiante.objects.filter(
         estudiante=estudiante_model
-    ).values_list('materia_id', flat=True).distinct()
+    ).values_list('materia_id', flat=True)
 
-    # Excluir materias ya evaluadas
+   
     materias_no_evaluadas = materias.exclude(id__in=materias_evaluadas_ids)
 
     return render(request, 'core/materias_estudiante.html', {
         'materias': materias_no_evaluadas,
         'estudiante': estudiante_model,
     })
+
+ # Para pruebas rápidas de salida (opcional)
 
 @login_required
 def evaluar_materia(request, materia_id):
@@ -48,35 +50,24 @@ def evaluar_materia(request, materia_id):
     }
 
     if request.method == 'POST':
-        pregunta_ids = request.POST.getlist('pregunta_id')
+        respuestas = {}
+        for key, value in request.POST.items():
+            if key.startswith('respuestas[') and key.endswith(']'):
+                # Extraer el id de la pregunta entre los corchetes
+                pregunta_id = key[len('respuestas['):-1]
+                respuestas[pregunta_id] = value
 
-        evaluaciones_existentes = EvaluacionEstudiante.objects.filter(
+        if not respuestas:
+            messages.error(request, "No se recibieron respuestas. Completa el formulario.")
+            return redirect('evaluacion:evaluacion_materia', materia_id=materia.id)
+
+        evaluacion, created = EvaluacionEstudiante.objects.update_or_create(
             estudiante=estudiante,
             materia=materia,
-            pregunta_id__in=pregunta_ids
-        ).values_list('pregunta_id', flat=True)
+            defaults={'respuestas': respuestas}
+        )
 
-        nuevas_evaluaciones = 0
-
-        for pregunta_id in pregunta_ids:
-            if int(pregunta_id) in evaluaciones_existentes:
-                continue  # Ya existe, no la guarda de nuevo
-
-            respuesta = request.POST.get(f'respuesta_{pregunta_id}')
-            if respuesta is not None:
-                EvaluacionEstudiante.objects.create(
-                    estudiante=estudiante,
-                    materia=materia,
-                    pregunta_id=pregunta_id,
-                    respuesta=respuesta
-                )
-                nuevas_evaluaciones += 1
-
-        if nuevas_evaluaciones == 0:
-            messages.warning(request, "Ya has realizado esta evaluación previamente.")
-        else:
-            messages.success(request, "Evaluación registrada correctamente.")
-
+        messages.success(request, "Evaluación guardada correctamente.")
         return redirect('evaluacion:materias_estudiante')
 
     context = {

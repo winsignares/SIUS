@@ -67,4 +67,3 @@ def gestion_directivo(request):
         return redirect(reverse('evaluacion:gestion_directivo'))
 
     return render(request, 'core/crud_directivo.html', {'categorias': categorias})
-

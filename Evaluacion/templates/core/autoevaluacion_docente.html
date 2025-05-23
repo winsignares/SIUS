@@ -12,7 +12,6 @@
     <h2 class="text-center mb-4">Autoevaluación Docente</h2>
 
     <div class="mb-4">
-        
         <p><strong>Docente:</strong> {{ docente.username }}</p>
     </div>
 
@@ -24,16 +23,16 @@
         {% endfor %}
     {% endif %}
 
-    <form method="POST">
+    <form method="POST" {% if ya_evaluado %}class="disabled"{% endif %}>
         {% csrf_token %}
         {% for categoria, preguntas in preguntas_por_categoria.items %}
             <div class="mb-5">
                 <h4 class="fw-bold">{{ categoria.nombre }}</h4>
                 {% for pregunta in preguntas %}
                     <div class="mb-3">
-                        <label class="form-label">{{ pregunta.texto }}</label>
-                        <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
-                        <select name="respuesta_{{ pregunta.id }}" class="form-select" required>
+                        <label class="form-label" for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
+                        <select id="respuesta_{{ pregunta.id }}" name="respuesta_{{ pregunta.id }}" class="form-select" required
+                                {% if ya_evaluado %}disabled{% endif %}>
                             <option value="0">No sabe / No opina</option>
                             <option value="1">Totalmente en desacuerdo</option>
                             <option value="2">Medianamente en desacuerdo</option>
@@ -46,7 +45,7 @@
         {% endfor %}
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success">Enviar Autoevaluación</button>
+            <button type="submit" class="btn btn-success" {% if ya_evaluado %}disabled{% endif %}>Enviar Autoevaluación</button>
         </div>
     </form>
 </div>

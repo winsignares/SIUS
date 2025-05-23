@@ -24,31 +24,36 @@
         {% endfor %}
     {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
-        {% for categoria, preguntas in preguntas_por_categoria.items %}
-            <div class="mb-5">
-                <h4 class="fw-bold">{{ categoria.nombre }}</h4>
-                {% for pregunta in preguntas %}
-                    <div class="mb-3">
-                        <label class="form-label">{{ pregunta.texto }}</label>
-                        <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
-                        <select name="respuesta_{{ pregunta.id }}" class="form-select" required>
-                            <option value="0">No sabe / No opina</option>
-                            <option value="1">Totalmente en desacuerdo</option>
-                            <option value="2">Medianamente en desacuerdo</option>
-                            <option value="3">Medianamente de acuerdo</option>
-                            <option value="4">Totalmente de acuerdo</option>
-                        </select>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success">Enviar Evaluación</button>
+    {% if evaluacion_existente %}
+        <div class="alert alert-info text-center">
+            Ya realizaste esta evaluación para este docente. Gracias.
         </div>
-    </form>
+    {% else %}
+        <form method="POST">
+            {% csrf_token %}
+            {% for categoria, preguntas in preguntas_por_categoria.items %}
+                <div class="mb-5">
+                    <h4 class="fw-bold">{{ categoria.nombre }}</h4>
+                    {% for pregunta in preguntas %}
+                        <div class="mb-3">
+                            <label class="form-label" for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
+                            <select id="respuesta_{{ pregunta.id }}" name="respuesta_{{ pregunta.id }}" class="form-select" required>
+                                <option value="0">No sabe / No opina</option>
+                                <option value="1">Totalmente en desacuerdo</option>
+                                <option value="2">Medianamente en desacuerdo</option>
+                                <option value="3">Medianamente de acuerdo</option>
+                                <option value="4">Totalmente de acuerdo</option>
+                            </select>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success">Enviar Evaluación</button>
+            </div>
+        </form>
+    {% endif %}
 </div>
 </body>
 </html>

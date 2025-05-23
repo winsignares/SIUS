@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import director_crud, estuadiante_crud, docente_crud, views_estudiante, views_docente, view_director
+from .views import director_crud, estudiante_crud, docente_crud, views_estudiante, views_docente, view_director
 app_name = 'evaluacion'
 urlpatterns = [
-    path('crud/estudiante/', estuadiante_crud.gestion_estudiante, name='gestion_estudiante'),
+    path('crud/estudiante/', estudiante_crud.gestion_estudiante, name='gestion_estudiante'),
     path('crud/directivo/', director_crud.gestion_directivo, name='gestion_directivo'),
     path('crud/docente/', docente_crud.gestion_docente, name='gestion_docente'),
 

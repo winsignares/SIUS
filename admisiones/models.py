@@ -71,7 +71,7 @@ class MateriaAprobada(models.Model):
     estado_aprobacion = models.CharField(max_length=10, choices=ESTADO_OPCIONES)
 
     def __str__(self):
-        return f"{self.estudiante} cursó {self.materia} desde {self.fecha_inicio} hasta {self.fecha_finalizacion} - Estado: {self.estado_aprobacion}"
+        return f"{self.estudiante} cursó {self.materia} - Estado: {self.estado_aprobacion}"
 
     class Meta:
         db_table = 'materia_cursada'

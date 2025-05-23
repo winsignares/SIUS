@@ -24,10 +24,8 @@
                 <h4 class="fw-bold">{{ categoria.nombre }}</h4>
                 {% for pregunta in preguntas %}
                     <div class="mb-3">
-                        <label class="form-label">{{ pregunta.texto }}</label>
-                        <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
-                        <select name="respuesta_{{ pregunta.id }}" class="form-select" required>
-
+                        <label class="form-label" for="pregunta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
+                        <select id="pregunta_{{ pregunta.id }}" name="respuestas[{{ pregunta.id }}]" class="form-select" required>
                             <option value="0">No sabe / No opina</option>
                             <option value="1">Totalmente en desacuerdo</option>
                             <option value="2">Medianamente en desacuerdo</option>

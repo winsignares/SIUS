@@ -64,6 +64,6 @@ def gestion_docente(request):
                     PreguntaDocente.objects.create(categoria=categoria, texto=texto)
             messages.success(request, "Preguntas creadas correctamente.")
 
-        return redirect(reverse('evaluacion:gestion_docente'))
+        return redirect('evaluacion:gestion_docente')
 
     return render(request, 'core/crud_docente.html', {'categorias': categorias})
