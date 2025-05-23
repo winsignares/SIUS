@@ -38,6 +38,23 @@ class Programa(models.Model):
     def __str__(self):
         return f"(Código SNIES: {self.codigo_snies}) {self.nivel_formacion} en {self.programa} - {self.sede}"
 
+
+class ProgramaUser(models.Model):
+
+    fk_programa = models.ForeignKey(Programa, on_delete=models.CASCADE, related_name='programa_user', verbose_name='Programa')
+    fk_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_programa', verbose_name='User Asignado')
+    fecha_asignacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'programa_user'
+        verbose_name = "ProgramaUser"
+        verbose_name_plural = "ProgramaUsers"
+        unique_together = ('fk_programa', 'fk_user')
+
+    def __str__(self):
+        return f'{self.fk_programa.programa} - {self.fk_user.username}'
+
+
 class Pensum(models.Model):
     id = models.AutoField(primary_key=True)
     fk_programa = models.ForeignKey(Programa, verbose_name="Programa al que Pertenece", on_delete=models.CASCADE)
