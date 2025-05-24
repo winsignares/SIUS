@@ -14,11 +14,7 @@ class Tarifa(models.Model):
         verbose_name = 'Tarifa'
         verbose_name_plural = 'Tarifas'
         # Evita duplicados para el mismo nivel académico, experiencia y año
-        unique_together = ('nivel_academico',
-                        'anios_experiencia_min',
-                        'anios_experiencia_max',
-                        'vigencia'
-        )
+        unique_together = ('nivel_academico', 'anios_experiencia_min', 'anios_experiencia_max', 'vigencia')
 
     def __str__(self):
         return f"{self.nivel_academico.nombre} ({self.vigencia}) - {self.anios_experiencia_min}-{self.anios_experiencia_max} años - ${self.tarifa_por_hora}/hora"

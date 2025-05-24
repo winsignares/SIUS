@@ -33,8 +33,8 @@
                 </a>
             </li>
 
-            <li class="nav-item mb-2">
-                <a href="{% url 'gestion_contratos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+            <li class="nav-item mb-2 ">
+                <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
                 </a>
             </li>
@@ -58,14 +58,14 @@
         <!-- Opciones para el rol Contabilidad -->
         {% if "Contabilidad" in user_groups %}
             <li class="nav-item mb-2">
-                <a href="{% url 'gestion_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-person-video3"></i> Docentes
+                <a href="{% url 'gestion_contratos_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-video3"></i> Contratos Docentes
                 </a>
             </li>
 
             <li class="nav-item mb-2">
-                <a href="{% url 'gestion_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-briefcase-fill"></i> Administrativos
+                <a href="{% url 'gestion_contratos_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-briefcase-fill"></i> Contratos Administrativos
                 </a>
             </li>
         {% endif %}
