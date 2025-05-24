@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from .views_home import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Materia, Programa, Semestre
 from ..models import Prerrequisito
 from django.contrib import messages
@@ -35,13 +36,17 @@ def gestion_prerrequisito(request):
         else:
             messages.error(request, "Error al asignar prerrequisito.")
 
-    return render(request, 'core/prerrequisito.html', {
+    contexto = obtener_db_info(request)
+    
+    contexto.update({
         'programas': programas,
         'semestres': semestres,
         'materias_filtradas': materias_filtradas,
         'materias_prerrequisito': materias_prerrequisito,
         'prerrequisitos': prerrequisitos
     })
+
+    return render(request, 'core/prerrequisito.html',contexto)
 
 @require_POST
 def editar_prerrequisito(request, pk):
