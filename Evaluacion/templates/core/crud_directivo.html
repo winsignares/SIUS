@@ -1,9 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Categorías y Preguntas - Directivos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'styles/estilos.css' %}" />
     <style>
         body {
             background-color: #fef5f6;
@@ -22,7 +25,7 @@
         .shadow-sm {
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
             background-color: #ffffff;
-            border-radius: 10px; 
+            border-radius: 10px;
         }
         .btn-dark {
             font-weight: 500;
@@ -37,35 +40,35 @@
     {% endif %}
 
     <div class="container mt-5">
-        <h1 class="text-center">Gestión de Categorías y Preguntas - Directivos</h1>
+        <h1 class="text-center text-color-primario">Gestión de Categorías y Preguntas - Directivos</h1>
 
         <!-- Crear nueva categoría -->
         <form method="post" class="mb-4">
             {% csrf_token %}
-            <input type="hidden" name="accion" value="crear_categoria">
+            <input type="hidden" name="accion" value="crear_categoria" />
             <div class="mb-3">
-                <label for="categoria" class="form-label">Nueva Categoría</label>
-                <input type="text" class="form-control" name="categoria" id="categoria" required>
+                <label for="categoria" class="form-label text-color-primario">Nueva Categoría</label>
+                <input type="text" class="form-control" name="categoria" id="categoria" required />
             </div>
-            <button type="submit" class="btn btn-dark">Crear Categoría</button>
+            <button type="submit" class="btn btn-alterno-dark">Crear Categoría</button>
         </form>
 
-        <hr>
+        <hr />
 
         {% for categoria in categorias %}
-        <div class="card mb-4">
+        <div class="card mb-4 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                 <form method="post" class="d-flex mb-2 mb-md-0">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="editar_categoria">
-                    <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
-                    <input type="text" class="form-control me-2" name="nuevo_nombre" value="{{ categoria.nombre }}" required>
-                    <button type="submit" class="btn btn-dark me-2">Editar</button>
+                    <input type="hidden" name="accion" value="editar_categoria" />
+                    <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
+                    <input type="text" class="form-control me-2" name="nuevo_nombre" value="{{ categoria.nombre }}" required />
+                    <button type="submit" class="btn btn-alterno-dark me-2">Editar</button>
                 </form>
                 <form method="post" class="mb-2 mb-md-0">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="eliminar_categoria">
-                    <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
+                    <input type="hidden" name="accion" value="eliminar_categoria" />
+                    <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
                     <button type="submit" class="btn btn-danger btn-sm">Eliminar Categoría</button>
                 </form>
                 <!-- Botón para abrir modal crear preguntas -->
@@ -74,19 +77,19 @@
                 </button>
             </div>
             <div class="card-body">
-                <h5>Preguntas</h5>
+                <h5 class="text-color-primario">Preguntas</h5>
                 {% for pregunta in categoria.preguntas.all %}
                 <form method="post" class="d-flex mb-2">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="editar_pregunta">
-                    <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
-                    <input type="text" name="nuevo_texto" class="form-control me-2" value="{{ pregunta.texto }}" required>
-                    <button type="submit" class="btn btn-dark me-2">Editar</button>
+                    <input type="hidden" name="accion" value="editar_pregunta" />
+                    <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}" />
+                    <input type="text" name="nuevo_texto" class="form-control me-2" value="{{ pregunta.texto }}" required />
+                    <button type="submit" class="btn btn-alterno-dark me-2">Editar</button>
                 </form>
                 <form method="post" class="mb-2">
                     {% csrf_token %}
-                    <input type="hidden" name="accion" value="eliminar_pregunta">
-                    <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
+                    <input type="hidden" name="accion" value="eliminar_pregunta" />
+                    <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}" />
                     <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
                 </form>
                 {% empty %}
@@ -98,17 +101,17 @@
         <!-- Modal para crear preguntas -->
         <div class="modal fade" id="crearPreguntasModal{{ categoria.id }}" tabindex="-1" aria-labelledby="modalLabel{{ categoria.id }}" aria-hidden="true">
           <div class="modal-dialog">
-            <form method="post" class="modal-content">
+            <form method="post" class="modal-content modal-forms">
               {% csrf_token %}
-              <input type="hidden" name="accion" value="crear_preguntas">
-              <input type="hidden" name="categoria_id" value="{{ categoria.id }}">
+              <input type="hidden" name="accion" value="crear_preguntas" />
+              <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
               <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel{{ categoria.id }}">Crear preguntas para {{ categoria.nombre }}</h5>
+                <h5 class="modal-title text-color-secundario" id="modalLabel{{ categoria.id }}">Crear preguntas para {{ categoria.nombre }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
               <div class="modal-body">
                 <div id="inputsPreguntas{{ categoria.id }}">
-                  <input type="text" name="preguntas[]" class="form-control mb-2" placeholder="Nueva pregunta" required>
+                  <input type="text" name="preguntas[]" class="form-control mb-2" placeholder="Nueva pregunta" required />
                 </div>
                 <button type="button" class="btn btn-secondary" onclick="agregarCampoModal('{{ categoria.id }}')">Agregar otra pregunta</button>
               </div>
