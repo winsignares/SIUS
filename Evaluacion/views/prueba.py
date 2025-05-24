@@ -1,110 +1,140 @@
 from ..models import EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
-from home.models.carga_academica import CargaAcademica
 from django.db.models import Avg
+from home.models.talento_humano.usuarios import Usuario
+
+PONDERACIONES = {
+    "estudiantes": 0.4,
+    "directivos": 0.4,
+    "autoevaluacion": 0.2,
+}
+
 def obtener_calificaciones_estudiantes_por_docente():
-    evaluaciones = EvaluacionEstudiante.objects.all()
-    
-    # Diccionario para almacenar suma y cantidad por docente
-    docente_suma = {}
-    docente_cantidad = {}
-    
-    for ev in evaluaciones:
-        # Supongamos que la calificación total está en ev.respuestas['total'] (ajusta esto según tu JSON)
-        calificacion = ev.respuestas.get('total', 0)  # Cambia 'total' por la clave real
-        
-        # Obtener el docente asignado a la materia (relacionado con carga académica)
-        carga = CargaAcademica.objects.filter(fk_materia=ev.materia).first()
-        if not carga:
-            continue
-        docente = carga.fk_docente_asignado
-        
-        if docente not in docente_suma:
-            docente_suma[docente] = 0
-            docente_cantidad[docente] = 0
-        
-        docente_suma[docente] += calificacion
-        docente_cantidad[docente] += 1
-    
-    # Calcular promedio por docente
-    promedios = []
-    for docente, suma in docente_suma.items():
-        promedio = suma / docente_cantidad[docente] if docente_cantidad[docente] > 0 else 0
-        promedios.append({'docente': docente, 'promedio_calificacion': promedio})
-    
-    return promedios
+    evaluaciones = EvaluacionEstudiante.objects.select_related('materia')
+    resultados = []
 
-def obtener_calificaciones_directivo():
-    # Obtiene promedio de calificaciones de evaluaciones directivas agrupadas por docente evaluado
-    return (
-        EvaluacionDirectivo.objects
-        .values('docente_evaluado')
-        .annotate(promedio_calificacion=Avg('calificacion'))  # Requiere campo 'calificacion' en EvaluacionDirectivo
-    )
+    for evaluacion in evaluaciones:
+        respuestas = evaluacion.respuestas
+        if respuestas:
+            calificaciones = [int(v) for v in respuestas.values()]
+            promedio = sum(calificaciones) / len(calificaciones) if calificaciones else 0
+            carga_academica = evaluacion.materia.cargaacademica_set.first()
 
-def obtener_calificaciones_autoevaluacion_docente():
-    # Obtiene promedio de calificaciones de autoevaluaciones agrupadas por docente
-    return (
-        EvaluacionDocente.objects
-        .values('docente')
-        .annotate(promedio_calificacion=Avg('calificacion'))  # Requiere campo 'calificacion' en EvaluacionDocente
-    )
-
-def calcular_desempeno_docentes():
-    # Junta los datos de las tres evaluaciones en un solo dict
-    estudiantes = list(obtener_calificaciones_estudiantes_por_docente())
-    directivos = list(obtener_calificaciones_directivo())
-    autoevaluacion = list(obtener_calificaciones_autoevaluacion_docente())
-
-    return {
-        "estudiantes": estudiantes,
-        "directivos": directivos,
-        "autoevaluacion": autoevaluacion
-    }
-
-def categorizar_desempeno(promedio):
-    if promedio is None:
-        return "Sin datos"
-    elif promedio >= 4.5:
-        return "Excelente"
-    elif promedio >= 3.5:
-        return "Bueno"
-    elif promedio >= 2.5:
-        return "Regular"
-    else:
-        return "Insuficiente"
-
-def calcular_desempeno_docentes_categorizado():
-    datos = calcular_desempeno_docentes()
-
-    resultados = {
-        "estudiantes": [],
-        "directivos": [],
-        "autoevaluacion": []
-    }
-
-    for eval_tipo in ["estudiantes", "directivos", "autoevaluacion"]:
-        for item in datos[eval_tipo]:
-            promedio = item.get('promedio_calificacion')
-            docente_id = None
-
-            if eval_tipo == "estudiantes":
-                docente_id = item.get('materia__cargaacademica__fk_docente_asignado')
-            elif eval_tipo == "directivos":
-                docente_id = item.get('docente_evaluado')
-            elif eval_tipo == "autoevaluacion":
-                docente_id = item.get('docente')
-
-            desempeño = categorizar_desempeno(promedio)
-
-            resultados[eval_tipo].append({
-                "docente_id": docente_id,
-                "promedio": promedio,
-                "desempeño": desempeño
-            })
+            if carga_academica:
+                resultados.append({
+                    # Aquí la clave es 'docente', no 'docente_id'
+                    'docente': carga_academica.fk_docente_asignado.id,
+                    'promedio_calificacion': promedio,
+                })
 
     return resultados
 
+
+def obtener_calificaciones_directivo():
+    evaluaciones = EvaluacionDirectivo.objects.all()
+    resultados = []
+
+    for evaluacion in evaluaciones:
+        respuestas = evaluacion.respuestas
+        calificaciones = [int(valor) for valor in respuestas.values()]
+        promedio = sum(calificaciones) / len(calificaciones) if calificaciones else 0
+
+        docente_evaluado_id = evaluacion.docente_evaluado.id
+        existente = next((item for item in resultados if item['docente_evaluado'] == docente_evaluado_id), None)
+
+        if existente:
+            existente['promedio_calificacion'].append(promedio)
+        else:
+            resultados.append({
+                'docente_evaluado': docente_evaluado_id,
+                'promedio_calificacion': [promedio],
+            })
+
+    for resultado in resultados:
+        resultado['promedio_calificacion'] = sum(resultado['promedio_calificacion']) / len(resultado['promedio_calificacion'])
+
+    return resultados
+
+
+def obtener_calificaciones_autoevaluacion_docente():
+    """
+    Obtiene el promedio de calificaciones de autoevaluación por docente, procesando los datos en Python.
+    """
+    evaluaciones = EvaluacionDocente.objects.select_related('docente')
+
+    resultados = []
+    for evaluacion in evaluaciones:
+        respuestas = evaluacion.respuestas  # JSON con {pregunta_id: respuesta}
+        valores = [valor for valor in respuestas.values() if isinstance(valor, (int, float))]
+        promedio_calificacion = sum(valores) / len(valores) if valores else None
+
+        usuario = Usuario.objects.filter(auth_user=evaluacion.docente).first()
+        resultados.append({
+            'docente_id': usuario.id if usuario else None,
+            'usuario_id': evaluacion.docente.id,
+            'promedio_calificacion': promedio_calificacion,
+        })
+
+    return resultados
+
+
+def calcular_desempeno_docentes_categorizado():
+    estudiantes = obtener_calificaciones_estudiantes_por_docente()
+    directivos = obtener_calificaciones_directivo()
+    autoevaluacion = obtener_calificaciones_autoevaluacion_docente()
+
+    resultados = {}
+
+    # Ajuste aquí: clave 'docente' en estudiantes
+    for item in estudiantes:
+        docente_id = item['docente']  
+        promedio = item['promedio_calificacion']
+        if docente_id not in resultados:
+            resultados[docente_id] = {'estudiantes': 0, 'directivos': 0, 'autoevaluacion': 0}
+        resultados[docente_id]['estudiantes'] = promedio
+
+    # Aquí la clave es 'docente_evaluado' en directivos
+    for item in directivos:
+        docente_id = item['docente_evaluado']
+        promedio = item['promedio_calificacion']
+        if docente_id not in resultados:
+            resultados[docente_id] = {'estudiantes': 0, 'directivos': 0, 'autoevaluacion': 0}
+        resultados[docente_id]['directivos'] = promedio
+
+    # Aquí la clave es 'docente_id' en autoevaluacion
+    for item in autoevaluacion:
+        docente_id = item['docente_id']
+        promedio = item['promedio_calificacion']
+        if docente_id not in resultados:
+            resultados[docente_id] = {'estudiantes': 0, 'directivos': 0, 'autoevaluacion': 0}
+        resultados[docente_id]['autoevaluacion'] = promedio
+
+    desempeno = []
+    for docente_id, promedios in resultados.items():
+        promedio_ponderado = (
+            promedios['estudiantes'] * PONDERACIONES['estudiantes'] +
+            promedios['directivos'] * PONDERACIONES['directivos'] +
+            promedios['autoevaluacion'] * PONDERACIONES['autoevaluacion']
+        )
+        desempeno.append({
+            'docente_id': docente_id,
+            'promedio': promedio_ponderado,
+            'desempeño': categorizar_desempeno(promedio_ponderado),
+        })
+
+    return desempeno
+
+
+def categorizar_desempeno(promedio):
+    if promedio >= 4.5:
+        return "Excelente"
+    elif promedio >= 4.0:
+        return "Bueno"
+    elif promedio >= 3.5:
+        return "Aceptable"
+    else:
+        return "Bajo"
+
+
+# Importaciones finales si las necesitas
 from Evaluacion.models import EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
-from home.models.carga_academica import CargaAcademica
-from django.db.models import Avg
-from Evaluacion.views.prueba import obtener_calificaciones_estudiantes_por_docente, calcular_desempeno_docentes
+from Evaluacion.views.prueba import calcular_desempeno_docentes_categorizado, categorizar_desempeno, obtener_calificaciones_autoevaluacion_docente

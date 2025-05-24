@@ -3,7 +3,7 @@ from django.contrib import messages
 from .views_home import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
 from django.contrib.auth.models import User
-from ..models import Estudiantes, Matricula
+from ..models import Estudiantes, Matricula, Prerrequisito, MateriaAprobada
 from django.http import JsonResponse
 
 
@@ -91,52 +91,63 @@ def validar_codigo(request):
     valido = Estudiantes.objects.filter(numero_documento=codigo).exists()
     return JsonResponse({'valido': valido})
 
-
-
 def matricular_estudiante(request):
     if request.method == 'POST':
         identificacion = request.POST.get('numero_documento')
         materias_ids = request.POST.getlist('materias')
 
-        # Validación inicial del código del estudiante
-        if not identificacion :
+        if not identificacion:
             messages.error(request, 'Código de estudiante no proporcionado.')
             return redirect('seleccionar_programa_semestre')
 
         try:
-            estudiante = Estudiantes.objects.get(
-                numero_documento=identificacion,
-            )
+            estudiante = Estudiantes.objects.get(numero_documento=identificacion)
         except Estudiantes.DoesNotExist:
             messages.error(request, 'Estudiante no encontrado o no tiene rol de estudiante.')
             return redirect('seleccionar_programa_semestre')
 
-        # Validar que el estudiante tenga programa y semestre asignados
         if not estudiante.programa or not estudiante.semestre:
             messages.error(request, 'El estudiante no tiene asignado un programa o semestre.')
             return redirect('seleccionar_programa_semestre')
 
         materias_a_matricular = []
         errores = []
-
-        # Evitar duplicación de matrícula
         materias_matriculadas = Matricula.objects.filter(estudiante=estudiante).values_list('materia_id', flat=True)
 
         for materia_id in materias_ids:
             try:
                 materia = Materia.objects.get(id=materia_id)
+
                 if materia.id in materias_matriculadas:
                     errores.append(f'Ya está matriculado en {materia.materia}.')
-                else:
-                    materias_a_matricular.append(materia)
+                    continue
+
+                prerrequisitos = Prerrequisito.objects.filter(materia=materia)
+                prerrequisito_no_aprobado = False
+
+                for prerrequisito in prerrequisitos:
+                    if not MateriaAprobada.objects.filter(
+                        estudiante=estudiante,
+                        materia=prerrequisito.prerequisito,
+                        estado_aprobacion='aprobada'
+                    ).exists():
+                        errores.append(
+                            f'No cumple con el prerrequisito "{prerrequisito.prerequisito.materia}" para la materia "{materia.materia}".'
+                        )
+                        prerrequisito_no_aprobado = True
+                        break
+
+                if prerrequisito_no_aprobado:
+                    continue
+
+                materias_a_matricular.append(materia)
+
             except Materia.DoesNotExist:
                 errores.append(f'La materia con ID {materia_id} no existe.')
 
-        # Mostrar errores si existen
         for error in errores:
             messages.warning(request, error)
 
-        # Guardar matrícula si hay materias válidas
         if materias_a_matricular:
             for materia in materias_a_matricular:
                 Matricula.objects.create(estudiante=estudiante, materia=materia)
@@ -187,7 +198,7 @@ def eliminar_estudiante(request, materia_id, estudiante_id):
     
         matricula.delete()
         
-        messages.success(request, f"El estudiante  {estudiante.nombre_completo} con una identificación: {estudiante.numero_documento},fue eliminado de la materia {materia.materia}.")
+        messages.success(request, f"El estudiante con una identificación: {estudiante.numero_documento},fue eliminado de la materia {materia.materia}.")
         return redirect('estudiantes_inscritos', materia_id=materia.id)
     
     return redirect('estudiantes_inscritos', materia_id=materia_id)

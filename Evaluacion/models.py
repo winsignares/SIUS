@@ -3,6 +3,7 @@ from home.models.carga_academica.datos_adicionales import  Materia
 from home.models.talento_humano import Usuario
 from admisiones.models import Estudiantes
 from django.contrib.auth.models import User
+from home.models.talento_humano.usuarios import Usuario
 class CategoriaEstudiante(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     
@@ -96,23 +97,22 @@ class EvaluacionEstudiante(models.Model):
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class EvaluacionDocente(models.Model):
     docente = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
-    respuestas = models.JSONField()  # Guarda todas las respuestas en un JSON: {pregunta_id: respuesta}
+    respuestas = models.JSONField()
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Autoevaluación de {self.docente}"
 
-    class Meta:
-        db_table = 'evaluacion_docente'
-        verbose_name = 'Evaluación Docente'
-        verbose_name_plural = 'Evaluaciones Docentes'
-
-
+    @property
+    def usuario(self):
+        from home.models.talento_humano.usuarios import Usuario
+        return Usuario.objects.filter(auth_user=self.docente).first()
 
     class Meta:
         db_table = 'evaluacion_docente'

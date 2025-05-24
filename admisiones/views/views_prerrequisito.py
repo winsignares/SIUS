@@ -5,27 +5,21 @@ from ..models import Prerrequisito
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 
+
+
 def gestion_prerrequisito(request):
     programas = Programa.objects.all()
     semestres = Semestre.objects.all()
     materias_filtradas = []
     materias_prerrequisito = []
-    prerrequisitos = Prerrequisito.objects.none()  
-
-    programa_id = request.GET.get('programa')
-    semestre_id = request.GET.get('semestre')
-
-    if programa_id and semestre_id:
-        materias_filtradas = Materia.objects.filter(fk_programa_id=programa_id, fk_semestre_id=semestre_id)
-        materias_prerrequisito = Materia.objects.filter(fk_programa_id=programa_id)
-
-       
-        prerrequisitos = Prerrequisito.objects.select_related('materia', 'prerequisito') \
-            .filter(materia__fk_programa_id=programa_id, materia__fk_semestre_id=semestre_id)
+    prerrequisitos = Prerrequisito.objects.none()
 
     if request.method == 'POST':
+        programa_id = request.POST.get('programa')
+        semestre_id = request.POST.get('semestre')
         materia_id = request.POST.get('materia')
         prereq_id = request.POST.get('prerrequisito')
+
         if materia_id and prereq_id and materia_id != prereq_id:
             Prerrequisito.objects.get_or_create(
                 materia_id=materia_id,
@@ -35,9 +29,24 @@ def gestion_prerrequisito(request):
             return redirect(f'{request.path}?programa={programa_id}&semestre={semestre_id}')
         else:
             messages.error(request, "Error al asignar prerrequisito.")
+    else:
+        programa_id = request.GET.get('programa')
+        semestre_id = request.GET.get('semestre')
+
+    bloquear_filtro = False
+    if semestre_id:
+        semestre = Semestre.objects.filter(id=semestre_id).first()
+        if semestre and semestre.semestre.strip() == "1":
+            messages.error(request, "No se puede filtrar para el semestre 1.")
+            bloquear_filtro = True
+
+    if programa_id and semestre_id and not bloquear_filtro:
+        materias_filtradas = Materia.objects.filter(fk_programa_id=programa_id, fk_semestre_id=semestre_id)
+        materias_prerrequisito = Materia.objects.filter(fk_programa_id=programa_id)
+        prerrequisitos = Prerrequisito.objects.select_related('materia', 'prerequisito') \
+            .filter(materia__fk_programa_id=programa_id, materia__fk_semestre_id=semestre_id)
 
     contexto = obtener_db_info(request)
-    
     contexto.update({
         'programas': programas,
         'semestres': semestres,
@@ -46,7 +55,7 @@ def gestion_prerrequisito(request):
         'prerrequisitos': prerrequisitos
     })
 
-    return render(request, 'core/prerrequisito.html',contexto)
+    return render(request, 'core/prerrequisito.html', contexto)
 
 @require_POST
 def editar_prerrequisito(request, pk):
