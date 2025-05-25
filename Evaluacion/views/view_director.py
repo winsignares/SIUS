@@ -5,11 +5,34 @@ from django.contrib import messages
 from ..models import CategoriaDirectivo, PreguntaDirectivo, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Usuario
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def listado_docentes(request):
-    docentes = Usuario.objects.filter(fk_rol__rol='D', activo=True)
-    return render(request, 'core/listado_docentes.html', {'docentes': docentes})
+    usuario_actual = Usuario.objects.filter(auth_user=request.user).first()
+
+    if not usuario_actual:
+        messages.error(request, "No se encontró información asociada a tu cuenta.")
+        return redirect('home')  
+
+    docentes = Usuario.objects.filter(
+        fk_rol__rol='D',
+        activo=True,
+        programa=usuario_actual.programa
+    )
+
+    
+    paginator = Paginator(docentes, 7) 
+    page = request.GET.get('page')
+
+    try:
+        docentes_paginados = paginator.page(page)
+    except PageNotAnInteger:
+        docentes_paginados = paginator.page(1)
+    except EmptyPage:
+        docentes_paginados = paginator.page(paginator.num_pages)
+
+    return render(request, 'core/listado_docentes.html', {'docentes': docentes_paginados})
 
 @login_required
 def evaluar_docente(request, docente_id):
