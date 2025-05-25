@@ -67,92 +67,394 @@ numero de horas * valor a pagar por el ultimo nivel de estudio del año
 
 Si es TC - MT:
 
+<!-- Detalles del usuario -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const detalleModal = document.getElementById('detalleUsuarioModal');
+                detalleModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute('data-id');
+                    const modalContent = document.getElementById('detalleUsuarioContent');
 
+                    // Mostrar el spinner mientras se carga la información
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-color-terciario" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    `;
 
-const nuevaCarga = {
-                periodo_id: parseInt(periodo),
-                semestre_id: semestreId,
-                semestre_nombre: semestreText,
-                materia_id: parseInt(materiaId),
-                materia_nombre: materiaText,
-                docente_id: parseInt(docenteId),
-                docente_nombre: docenteNombre,
-                horas_semanales: horasSemanales,
-                materia_compartida: materiaCompartida,
-                total: totalHoras,
-                programas: programasSeleccionados
-            };
+                    // Hacer una solicitud AJAX para obtener los detalles
+                    fetch(`/siuc/dashboard/detalle_usuario/${userId}/`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        modalContent.innerHTML = html;
+                    })
+                    .catch(error => {
+                        showAlert("Error en el servidor, intenta de nuevo.", "error");
+                        console.error("Error:", error);
+                    });
+                });
+            });
+        </script>
 
+        <!-- Editar información del usuario -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const editarModal = document.getElementById("editarUsuarioModal");
 
-const guardarTodoBtn = document.getElementById("guardarTodo");
+                editarModal.addEventListener("show.bs.modal", function (event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute("data-id");
+                    const userType = button.getAttribute("data-tipo");
+                    const modalContent = document.getElementById("editarUsuarioContent");
 
-// Función para guardar todo
-        guardarTodoBtn?.addEventListener("click", async function () {
-            if (!cargasAcademicas.length) {
-                alert("No hay cargas académicas para guardar.");
-                return;
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-color-terciario" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`, {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        modalContent.innerHTML = html;
+                    })
+                    .catch(error => {
+                        showAlert("Error en el servidor, intenta de nuevo.", "error");
+                        console.error("Error:", error);
+                    });
+                });
+            });
+        </script>
+
+        <!-- Definir contrato del usuario -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const contratoModal = document.getElementById("definirContratoModal");
+
+                contratoModal.addEventListener("show.bs.modal", function (event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute("data-id");
+                    const modalContent = document.getElementById("definirContratoContent");
+
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-color-terciario" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    `;
+
+                    fetch(`/siuc/dashboard/definir_contrato/${userId}/`, {
+                        method: "GET",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        modalContent.innerHTML = html;
+
+                        // Aquí inicializamos la función para el select y input recién cargados
+                        inicializarToggleValorMensual();
+                    })
+                    .catch(error => {
+                        showAlert("Error en el servidor, intenta de nuevo.", "error");
+                        console.error("Error:", error);
+                    });
+                });
+            });
+
+            // Función que habilita o deshabilita el input "valor_mensual_contrato" según selección en "fk_dedicacion"
+            function inicializarToggleValorMensual() {
+                const dedicacionSelect = document.getElementById("fk_dedicacion");
+                const valorContratoInput = document.getElementById("valor_mensual_contrato");
+
+                // Protección en caso de que el formulario no esté cargado aún
+                if (!dedicacionSelect || !valorContratoInput) return;
+
+                const valorContratoDiv = valorContratoInput.closest('.col-md-12');
+
+                function toggleValorMensual() {
+                    const selectedOption = dedicacionSelect.options[dedicacionSelect.selectedIndex];
+                    const nombreCorto = selectedOption ? selectedOption.getAttribute('data-nombre-corto') : null;
+                    const esHoraCatedra = nombreCorto === "HC";
+
+                    valorContratoInput.disabled = esHoraCatedra;
+                    valorContratoDiv.classList.toggle('opacity-50', esHoraCatedra);
+                    if (esHoraCatedra) valorContratoInput.value = "";
+                }
+
+                // Limpiar posibles listeners previos para evitar acumulación
+                dedicacionSelect.removeEventListener("change", toggleValorMensual);
+                dedicacionSelect.addEventListener("change", toggleValorMensual);
+
+                // Ejecutar inmediatamente para reflejar estado inicial
+                toggleValorMensual();
             }
+        </script>
 
-            try {
-                const response = await fetch("/siuc/dashboard/matriz/guardar_matriz/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken")
-                    },
-                    body: JSON.stringify({ cargas: cargasAcademicas })
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Editar usuario
+                const editarModalBody = document.getElementById("editarUsuarioContent");
+                editarModalBody.addEventListener("submit", function(e) {
+                    if (e.target && e.target.id === "formEditarUsuario") {
+                    e.preventDefault();
+                    handleFormSubmission(e.target, function(data) {
+                        showAlert(data.message, data.status === "success" ? "success" : "error");
+                        if (data.status === "success") {
+                        cerrarModalFormulario("editarUsuarioModal");
+                        // Actualizar la página
+                        const currentPath = document.location.pathname;
+                            setTimeout(() => {
+                                if (currentPath.includes("empleados")) {
+                                    window.location.href = "{% url 'gestion_empleados' %}";
+                                } else if (currentPath.includes("aspirantes")) {
+                                    window.location.href = "{% url 'gestion_aspirantes' %}";
+                                } else {
+                                    window.location.reload();
+                                }
+                            }, 1500);
+                        }
+                    });
+                    }
                 });
 
-                const result = await response.json();
+                // Definir contrato
+                const definirContratoBody = document.getElementById("definirContratoContent");
+                definirContratoBody.addEventListener("submit", function(e) {
+                    if (e.target && e.target.id === "formDetalleContrato") {
+                    e.preventDefault();
+                    handleFormSubmission(e.target, function(data) {
+                        showAlert(data.message, data.status === "success" ? "success" : "error");
+                        if (data.status === "success") {
+                        cerrarModalFormulario("definirContratoModal");
+                        }
+                    });
+                    }
+                });
+            });
 
-                if (response.ok) {
-                    alert(result.message);
-                    // Limpiar tabla y estado
-                    cargasAcademicas = [];
-                    tablaBody.innerHTML = "";
-                    toggleMensajeVacio();
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Manejo de formularios con atributo `data-ajax-submit="true"`
+                document.querySelectorAll("form[data-ajax-submit='true']").forEach(form => {
+                    form.addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        handleFormSubmission(this, function (data) {
+                            if ( form.id === "formInfoPersonal" || form.id === "formInfoPersonal_emp" ) {
+                                window.usuarioIdCreado = data.usuario_id;
+                                openNextModal();
+                            } else if ( form.id === "formDetalleAcademico" || form.id === "formDetalleAcademico_emp" ) {
+                                agregarFilaATabla("tablaAcademica", data.detalle, ["institucion", "titulo_obtenido", "nivel_academico", "fecha_graduacion"]);
+                                cerrarModalFormulario("formDetalleAcademicoModal");
+                                cerrarModalFormulario("formDetalleAcademicoModal_emp");
+                                redirigirAModal();
+                            } else if ( form.id === "formExpLaboral" ) {
+                                agregarFilaATabla("tablaExperiencia", data.detalle, ["empresa", "cargo", "fecha_inicio", "fecha_fin"]);
+                                cerrarModalFormulario("formExpLaboralModal");
+                                cerrarModalFormulario("formExpLaboralModal_emp");
+                                redirigirAModal();
+
+                                // Redirigir a la vista correspondiente
+                                const currentPath = document.location.pathname;
+                                setTimeout(() => {
+                                    if (currentPath.includes("empleados")) {
+                                        window.location.href = "{% url 'gestion_empleados' %}";
+                                    } else if (currentPath.includes("aspirantes")) {
+                                        window.location.href = "{% url 'gestion_aspirantes' %}";
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                }, 1500);
+
+                            }
+                        });
+                    });
+                });
+
+                // Botones "Finalizar" para ambos modales
+                const btnFinalizarAspirantes = document.getElementById("btnFinalizar");
+                const btnFinalizarEmpleados = document.getElementById("btnFinalizarEmp");
+
+                // Evento para el botón "Finalizar" de aspirantes
+                if (btnFinalizarAspirantes) {
+                    btnFinalizarAspirantes.addEventListener("click", function () {
+                        cerrarModalFormulario("infoAdicionalModal");
+                        window.location.href = "{% url 'gestion_aspirantes' %}";
+                    });
+                }
+
+                // Evento para el botón "Finalizar" de empleados
+                if (btnFinalizarEmpleados) {
+                    btnFinalizarEmpleados.addEventListener("click", function () {
+                        cerrarModalFormulario("infoAdicionalModal_emp");
+                        window.location.href = "{% url 'gestion_empleados' %}";
+                    });
+                }
+            });
+
+
+            // Función para manejar el envío de formularios vía AJAX
+            function handleFormSubmission(form, onSuccess = null) {
+                let formData = new FormData(form);
+                let actionUrl = form.getAttribute("action");
+
+                // Si el formulario está relacionado con el usuario, añade el usuarioId
+                if (window.usuarioIdCreado && formData.has("usuario_id")) {
+                    formData.set("usuario_id", window.usuarioIdCreado);
+                }
+
+                fetch(actionUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': form.querySelector("[name=csrfmiddlewaretoken]").value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    showAlert(data.message, data.status === "success" ? "success" : "error");
+
+                    // Ejecutar función de éxito si la respuesta es correcta
+                    if (data.status === "success" && typeof onSuccess === "function") {
+                        onSuccess(data);
+                    }
+                })
+                .catch(error => {
+                    showAlert("Error en el servidor, intenta de nuevo.", "error");
+                    console.error("Error:", error);
+                });
+            }
+
+            // Función para mostrar alertas sin duplicarlas
+            function showAlert(message, type) {
+                let alertClass = type === "success" ? "alert-success" : "alert-danger";
+                let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+
+                let alertContainer = document.getElementById("dynamic-alerts");
+
+                // Limpiar alertas anteriores antes de agregar una nueva
+                alertContainer.replaceChildren();
+
+                let alertHtml = `
+                    <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
+                        <i class="bi ${icon}"></i> ${message}
+                    </div>
+                `;
+
+                alertContainer.insertAdjacentHTML("beforeend", alertHtml);
+
+                // Ocultar la alerta automáticamente después de 3 segundos
+                setTimeout(() => {
+                    alertContainer.firstElementChild?.remove();
+                }, 3000);
+            }
+
+            // Función para cerrar un modal por ID
+            function cerrarModalFormulario(modalId) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                modal?.hide();
+            }
+
+            // Función para abrir el modal de información adicional
+            function redirigirAModal() {
+                // Determinar qué modal abrir según la página actual
+                let modalId;
+                if (document.location.pathname.includes("empleados")) {
+                    modalId = "infoAdicionalModal_emp";
+                } else if (document.location.pathname.includes("aspirantes")) {
+                    modalId = "infoAdicionalModal";
+                }
+
+                if (modalId) {
+                    const modalElement = document.getElementById(modalId);
+                    if (modalElement) {
+                        const infoAdicionalModal = new bootstrap.Modal(modalElement);
+                        infoAdicionalModal.show();
+                    } else {
+                        console.error(`Modal con ID ${modalId} no encontrado.`);
+                    }
                 } else {
-                    alert(`Error: ${result.message}`);
-                }
-            } catch (error) {
-                console.error("Error al guardar:", error);
-                alert("Ocurrió un error inesperado.");
-            }
-        });
-
-// Función para obtener el valor de una cookie
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";");
-
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-
-                // ¿Este cookie coincide con el nombre buscado?
-                if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+                    console.error("No se pudo determinar el modal a abrir.");
                 }
             }
-        }
-        return cookieValue;
-    }
 
+            // Función para abrir el siguiente modal después de crear un usuario
+            function openNextModal() {
+                // Determinar qué modal cerrar según la página actual
+                let modalIdToClose;
+                if (document.location.pathname.includes("empleados")) {
+                    modalIdToClose = "infoPersonalModal_emp";
+                } else if (document.location.pathname.includes("aspirantes")) {
+                    modalIdToClose = "infoPersonalModal";
+                }
 
-// Si no hay filas, mostrar el mensaje de vacío
-        function toggleMensajeVacio() {
-            const mensajeVacio = document.getElementById("mensajeVacio");
-            const filasActivas = Array.from(tablaBody.querySelectorAll("tr"))
-                .filter(tr => tr.id !== "mensajeVacio");
-
-            // Mostrar u ocultar el mensaje de vacío
-            mensajeVacio.classList.toggle("d-none", filasActivas.length > 0);
-
-            // Deshabilitar el botón de guardar si no hay filas activas
-            if (filasActivas.length === 0) {
-                guardarTodoBtn.disabled = true;
-            } else {
-                guardarTodoBtn.disabled = false;
+                if (modalIdToClose) {
+                    cerrarModalFormulario(modalIdToClose);
+                    redirigirAModal();
+                } else {
+                    console.error("No se pudo determinar el modal a cerrar.");
+                }
             }
-        }
+
+            // Función para agregar una nueva fila a una tabla
+            function agregarFilaATabla(tablaId, data, columnas) {
+                const tabla = document.getElementById(tablaId);
+                let nuevaFila = "<tr>";
+
+                columnas.forEach(columna => {
+                    nuevaFila += `<td>${data[columna]}</td>`;
+                });
+
+                nuevaFila += "<td><!-- Acciones futuras --></td></tr>";
+                tabla.insertAdjacentHTML("beforeend", nuevaFila);
+            }
+        </script>
+
+        <script>
+            // Función para verificar el ancho de la pantalla
+            function checkScreenWidth() {
+                const mobileAlert = document.getElementById('alertaDashboard');
+                const mainContent = document.getElementById('contenidoDashboard');
+
+                if (window.innerWidth <= 768) {
+                    // Pantalla pequeña (móvil)
+                    mobileAlert.style.display = 'flex';
+                    mainContent.style.display = 'none';
+                } else if (window.innerWidth > 768 && window.innerWidth <= 1024) {
+                    // Pantalla mediana (tablet)
+                    mobileAlert.style.display = 'flex';
+                    mainContent.style.display = 'none';
+                } else {
+                    // Pantalla grande (computadora)
+                    mobileAlert.style.display = 'none';
+                    mainContent.style.display = 'block';
+                }
+            }
+
+            // Ejecutar la función al cargar la página
+            window.addEventListener('load', checkScreenWidth);
+
+            // Ejecutar la función al redimensionar la ventana
+            window.addEventListener('resize', checkScreenWidth);
+        </script>

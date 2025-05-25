@@ -1,14 +1,17 @@
 # Importar Librerías
+import traceback
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db import models
+from django.db import IntegrityError, models
 from django.shortcuts import render
+from django.http import JsonResponse
+
 
 # Importar Vistas
 from .utilidades import obtener_db_info
 
 # Importar Módelos
-from home.models import Empleado
+from home.models import Empleado, NivelAcademico, Departamento, Sede, EstadoRevision, AFP
 
 
 @login_required
@@ -69,3 +72,81 @@ def gestion_aspirantes(request):
     })
 
     return render(request, 'aspirantes.html', contexto)
+
+
+@login_required
+def agregar_aspirante(request):
+    print(request.POST)
+    if request.method == 'POST':
+        data = request.POST
+        try:
+            if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe un aspirante con el número de documento ingresado.'
+                }, status=400)
+
+            if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe un aspirante con el correo personal ingresado.'
+                }, status=400)
+
+            # Instanciar ForeignKeys
+            fk_ultimo_nivel_estudio_ins = NivelAcademico.objects.get(id=data.get('fk_ultimo_nivel_estudio'))
+            fk_afp_ins = AFP.objects.get(id=data.get('fk_afp'))
+            fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia'))
+            fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora'))
+            fk_estado_revision_ins = EstadoRevision.objects.get(id=data.get('fk_estado_revision'))
+
+            nuevo_usuario = Empleado.objects.create(
+                # Campos obligatorios
+                fk_rol_id= data.get('fk_rol'),
+                fk_tipo_documento_id=data.get('fk_tipo_documento'),
+                cargo=data.get('cargo'),
+                primer_nombre=data.get('primer_nombre'),
+                primer_apellido=data.get('primer_apellido'),
+                numero_documento=data.get('numero_documento'),
+                correo_personal=data.get('correo_personal'),
+                fk_estado_revision=fk_estado_revision_ins,
+                # Campos opcionales
+                segundo_nombre=data.get('segundo_nombre'),
+                segundo_apellido=data.get('segundo_apellido'),
+                fecha_nacimiento=data.get('fecha_nacimiento'),
+                lugar_nacimiento=data.get('lugar_nacimiento'),
+                fecha_expedicion_documento=data.get('fecha_expedicion_documento'),
+                lugar_expedicion_documento=data.get('lugar_expedicion_documento'),
+                sexo=data.get('sexo'),
+                telefono_fijo=data.get('telefono_fijo'),
+                celular=data.get('celular'),
+                estado_civil=data.get('estado_civil'),
+                fk_ultimo_nivel_estudio=fk_ultimo_nivel_estudio_ins,
+                fk_eps_id=data.get('fk_eps'),
+                fk_afp=fk_afp_ins,
+                direccion_residencia=data.get('direccion_residencia'),
+                fk_departamento_residencia=fk_departamento_residencia_ins,
+                ciudad_residencia=data.get('ciudad_residencia'),
+                barrio_residencia=data.get('barrio_residencia'),
+                fk_sede_donde_labora=fk_sede_donde_labora_ins,
+                url_hoja_de_vida=data.get('url_hoja_de_vida'),
+                fk_creado_por=request.user,
+                activo=False
+            )
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Aspirante agregado correctamente.',
+                'usuario_id': nuevo_usuario.id
+            })
+
+        except IntegrityError:
+            print(traceback.format_exc())
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de integridad al agregar el aspirante. Revise los datos ingresados.'
+            }, status=400)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
+            }, status=500)

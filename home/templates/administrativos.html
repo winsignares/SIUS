@@ -36,26 +36,17 @@
                     <tr class="text-center">
                         <td>{{ administrativo.primer_nombre }} {{ administrativo.primer_apellido }}</td>
                         <td>{{ administrativo.cargo }}</td>
-                        <td>{{ administrativo.fk_tipo_documento.descripcion }} - {{ administrativo.numero_documento }}</td>
+                        <td>{{ administrativo.fk_tipo_documento.tipo_documento }} - {{ administrativo.numero_documento }}</td>
                         <td>{{ administrativo.estado_revision }}</td>
                         <td>{{ administrativo.contrato.valor_hora|default:"N/A" }}</td>
                         <td>{{ administrativo.contrato.valor_contrato|default:"N/A" }}</td>
                         <td>
-                            <div style="overflow-x: auto; width: 630px;"> <!-- Contenedor con scroll -->
+                            <div class="overflow-x-auto">
                                 <table>
                                     <tr>
-                                        <td class="px-3">Enero</td> <!-- Espaciado horizontal -->
-                                        <td class="px-3">Febrero</td>
-                                        <td class="px-3">Marzo</td>
-                                        <td class="px-3">Abril</td>
-                                        <td class="px-3">Mayo</td>
-                                        <td class="px-3">Junio</td>
-                                        <td class="px-3">Julio</td>
-                                        <td class="px-3">Agosto</td>
-                                        <td class="px-3">Septiembre</td>
-                                        <td class="px-3">Octubre</td>
-                                        <td class="px-3">Noviembre</td>
-                                        <td class="px-3">Diciembre</td>
+                                        <td class="px-3">Primer Mes</td>
+                                        <td class="px-3">Meses Completos</td>
+                                        <td class="px-3">Último Mes</td>
                                     </tr>
                                 </table>
                             </div>

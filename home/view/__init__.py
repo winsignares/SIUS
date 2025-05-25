@@ -5,3 +5,6 @@ from .dashboard import *
 from .aspirantes import *
 from .empleados import *
 from .reportes import *
+from .informacion_adicional import *
+from .contrato import *
+from .usuarios import *

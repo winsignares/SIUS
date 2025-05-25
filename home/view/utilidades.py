@@ -1,3 +1,4 @@
+# Importar Librerías
 from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Exists, OuterRef

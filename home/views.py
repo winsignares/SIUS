@@ -725,7 +725,7 @@ def gestion_empleados(request):
 
 
 @login_required
-def detalle_usuario(request, tipo, usuario_id):
+def detalle_usuario(request, usuario_id):
     """
     Muestra los detalles de un aspirante o empleado según el tipo y el estado del usuario.
     """

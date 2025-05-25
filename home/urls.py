@@ -20,25 +20,25 @@ urlpatterns = [
 
     # # MÓDULO DE ASPIRANTES (VISTA Y FORMULARIO DE AGREGAR ASPIRANTE)
     path("dashboard/aspirantes/", view.gestion_aspirantes, name="gestion_aspirantes"),
-    path("dashboard/aspirantes/agregar_aspirante/", views.agregar_aspirante, name="agregar_aspirante"), # Falta Corregir
+    path("dashboard/aspirantes/agregar_aspirante/", view.agregar_aspirante, name="agregar_aspirante"),
 
     # # MÓDULO DE EMPLEADOS (VISTA Y FORMULARIO DE AGREGAR EMPLEADO)
     path("dashboard/empleados/", view.gestion_empleados, name="gestion_empleados"),
-    path("dashboard/aspirantes/agregar_empleado/", views.agregar_empleado, name="agregar_empleado"), # Falta Corregir
+    path("dashboard/aspirantes/agregar_empleado/", view.agregar_empleado, name="agregar_empleado"),
 
     # # FORMULARIOS PARA AGREGAR INFORMACIÓN ACADÉMICA A LOS USUARIOS AGREGADOS (EMPLEADOS Y ASPIRTANTES)
-    path("dashboard/aspirantes/agregar_exp_laboral/", views.agregar_exp_laboral, name="agregar_exp_laboral"), # Falta Corregir
-    path("dashboard/aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"), # Falta Corregir
+    path("dashboard/aspirantes/agregar_exp_laboral/", view.agregar_exp_laboral, name="agregar_exp_laboral"),
+    path("dashboard/aspirantes/agregar_detalle_academico/", view.agregar_detalle_academico, name="agregar_detalle_academico"),
 
     # # MÓDULO DE CONTRATOS (CONTABILIDAD)
-    path("dashboard/contratos/docentes/", views.gestion_contratos_docentes, name="gestion_contratos_docentes"), # Falta Corregir
-    path("dashboard/contratos/administrativos/", views.gestion_contratos_administrativos, name="gestion_contratos_administrativos"), # Falta Corregir
+    path("dashboard/contratos/docentes/", view.gestion_contratos_docentes, name="gestion_contratos_docentes"),
+    path("dashboard/contratos/administrativos/", view.gestion_contratos_administrativos, name="gestion_contratos_administrativos"),
 
     # # MÓDULO DE REPORTES
     path("dashboard/reportes/", view.reportes, name="reportes"),
 
     # # OPERACIONES DE LOS GRUPOS "SECRETARIA TALENTO HUMANO" Y "DIRECTOR TALENTO HUMANO"
-    path('dashboard/detalle_usuario/<str:tipo>/<int:usuario_id>/', views.detalle_usuario, name='detalle_usuario'), # Falta Corregir
+    path('dashboard/detalle_usuario/<int:usuario_id>/', views.detalle_usuario, name='detalle_usuario'), # Falta Corregir
     path("dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", views.editar_usuario, name="editar_usuario"), # Falta Corregir
     path("dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.actualizar_usuario, name="actualizar_usuario"), # Falta Corregir
     path("dashboard/definir_contrato/<int:usuario_id>/", views.definir_contrato, name="definir_contrato"),
