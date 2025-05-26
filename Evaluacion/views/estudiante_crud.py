@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 @login_required
-def gestion_estudiante(request):
+def gestion_estudiantes(request):
     from ..models import CategoriaEstudiante, PreguntaEstudiante
 
     if request.method == 'POST':
@@ -62,7 +62,7 @@ def gestion_estudiante(request):
                 pregunta.delete()
                 messages.success(request, "Pregunta eliminada correctamente.")
 
-        return redirect('evaluacion:gestion_estudiante')  # Ajusta el nombre de tu URL aquí
+        return redirect('evaluacion:gestion_estudiantes')  # Ajusta el nombre de tu URL aquí
 
     categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
 

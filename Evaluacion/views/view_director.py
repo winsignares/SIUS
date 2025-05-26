@@ -11,18 +11,28 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def listado_docentes(request):
     usuario_actual = Usuario.objects.filter(auth_user=request.user).first()
 
+   
     if not usuario_actual:
-        messages.error(request, "No se encontró información asociada a tu cuenta.")
-        return redirect('home')  
+        mensaje_error = "No se encontró información asociada a tu cuenta. Contacta al administrador."
+        return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
 
+    if not usuario_actual.programa:
+        mensaje_error = "No tienes un programa asignado. Por favor, contacta a la administración."
+        return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
+
+   
     docentes = Usuario.objects.filter(
         fk_rol__rol='D',
         activo=True,
         programa=usuario_actual.programa
     )
 
+    if not docentes.exists():
+        mensaje_advertencia = "No hay docentes disponibles en tu programa para evaluar."
+        return render(request, 'core/listado_docentes.html', {'mensaje_advertencia': mensaje_advertencia})
+
     
-    paginator = Paginator(docentes, 7) 
+    paginator = Paginator(docentes, 7)
     page = request.GET.get('page')
 
     try:
@@ -45,7 +55,7 @@ def evaluar_docente(request, docente_id):
         for categoria in categorias
     }
 
-    # Comprobar si ya existe evaluación previa de este evaluador para este docente
+    
     evaluacion_existente = EvaluacionDirectivo.objects.filter(
         evaluador=evaluador,
         docente_evaluado=docente_evaluado
