@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
+from .info_db import obtener_db_info
 from ..models import CategoriaDirectivo, PreguntaDirectivo
 from django.http import HttpResponse
 
@@ -65,5 +66,11 @@ def gestion_directivo(request):
             messages.success(request, "Preguntas creadas correctamente.")
 
         return redirect(reverse('evaluacion:gestion_directivo'))
+    
+    contexto = obtener_db_info(request)
 
-    return render(request, 'core/crud_directivo.html', {'categorias': categorias})
+    contexto.update({
+        'categorias': categorias,
+    })
+
+    return render(request, 'core/crud_directivo.html', contexto)

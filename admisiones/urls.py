@@ -3,8 +3,6 @@ from .views import views_periodo, views_programa, views_pensum, views_semestre, 
 
 urlpatterns = [
 
-   path('home/', views_home.home, name='home_admision'),
-
     # Vistas de Periodo
     path('periodo/', views_periodo.gestion_periodo, name='gestion_periodo'),
     path('periodo/<int:periodo_id>/', views_periodo.gestion_periodo, name='editar_periodo'),

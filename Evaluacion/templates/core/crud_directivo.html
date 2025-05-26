@@ -1,11 +1,7 @@
+{% extends 'dashboard.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gestión de Categorías y Preguntas - Directivos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+{% block content %}
     <link rel="stylesheet" href="{% static 'styles/estilos.css' %}" />
     <style>
         body {
@@ -31,15 +27,14 @@
             font-weight: 500;
         }
     </style>
-</head>
-<body>
+
+<div class="container mt-5">
     {% if messages %}
       {% for message in messages %}
         <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
       {% endfor %}
     {% endif %}
 
-    <div class="container mt-5">
         <h1 class="text-center text-color-primario">Gestión de Categorías y Preguntas - Directivos</h1>
 
         <!-- Crear nueva categoría -->
@@ -58,40 +53,42 @@
         {% for categoria in categorias %}
         <div class="card mb-4 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                <form method="post" class="d-flex mb-2 mb-md-0">
+                <form method="post" class="d-flex mb-2 mb-md-0 w-50">
                     {% csrf_token %}
                     <input type="hidden" name="accion" value="editar_categoria" />
                     <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
                     <input type="text" class="form-control me-2" name="nuevo_nombre" value="{{ categoria.nombre }}" required />
-                    <button type="submit" class="btn btn-alterno-dark me-2">Editar</button>
+                    <button type="submit" class="btn btn-secondary me-2">Editar</button>
                 </form>
-                <form method="post" class="mb-2 mb-md-0">
+                <!-- Botón para abrir modal crear preguntas -->
+                <button type="button" class="btn btn-alterno-dark btn-sm h-100" data-bs-toggle="modal" data-bs-target="#crearPreguntasModal{{ categoria.id }}">
+                    Crear Preguntas
+                </button>
+                <form method="post" class="mb-2 mb-md-0 h-100">
                     {% csrf_token %}
                     <input type="hidden" name="accion" value="eliminar_categoria" />
                     <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
-                    <button type="submit" class="btn btn-danger btn-sm">Eliminar Categoría</button>
+                    <button type="submit" class="btn btn-alterno-red btn-sm h-100">Eliminar Categoría</button>
                 </form>
-                <!-- Botón para abrir modal crear preguntas -->
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#crearPreguntasModal{{ categoria.id }}">
-                    Crear Preguntas
-                </button>
             </div>
             <div class="card-body">
                 <h5 class="text-color-primario">Preguntas</h5>
                 {% for pregunta in categoria.preguntas.all %}
-                <form method="post" class="d-flex mb-2">
-                    {% csrf_token %}
-                    <input type="hidden" name="accion" value="editar_pregunta" />
-                    <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}" />
-                    <input type="text" name="nuevo_texto" class="form-control me-2" value="{{ pregunta.texto }}" required />
-                    <button type="submit" class="btn btn-alterno-dark me-2">Editar</button>
-                </form>
-                <form method="post" class="mb-2">
-                    {% csrf_token %}
-                    <input type="hidden" name="accion" value="eliminar_pregunta" />
-                    <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}" />
-                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                </form>
+                <div class="d-flex mb-3">
+                    <form method="post" class="d-flex w-100">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="editar_pregunta" />
+                        <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}" />
+                        <input type="text" name="nuevo_texto" class="form-control me-2" value="{{ pregunta.texto }}" required />
+                        <button type="submit" class="btn btn-alterno-dark btn-sm me-2">Editar</button>
+                    </form>
+                    <form method="post" class="">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="eliminar_pregunta" />
+                        <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}" />
+                        <button type="submit" class="btn btn-alterno-red btn-sm h-100">Eliminar</button>
+                    </form>
+                </div>
                 {% empty %}
                 <p class="text-muted">No hay preguntas aún.</p>
                 {% endfor %}
@@ -137,5 +134,4 @@
         container.appendChild(input);
     }
     </script>
-</body>
-</html>
+{% endblock %}

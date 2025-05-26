@@ -19,21 +19,11 @@
         <!-- Opción visible para todos los grupos -->
 
 
-
-        {% if "Admisiones" in user_groups %}
-             <li class="nav-item mb-2">
-                <a href="{% url 'home_admision' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-house-door-fill"></i>Inicio 
-                </a>
-            </li>
-        {% else %}
-
-            <li class="nav-item mb-2">
-                <a href="{% url 'dashboard' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-house-door-fill"></i>Inicio 
-                </a>
-            </li>
-        {% endif %}
+        <li class="nav-item mb-2">
+            <a href="{% url 'dashboard' %}" class="d-flex gap-2 nav-link">
+                <i class="bi bi-house-door-fill"></i>Inicio 
+            </a>
+        </li>
 
         <!-- Opciones específicas según el grupo -->
 
@@ -145,7 +135,48 @@
                     <i class="bi bi-pencil-square"></i></i></i>Aprobar Materias
                 </a>
             </li>
-        
+
+        {% elif "Vicerrectores" in user_groups  %}
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:gestion_estudiantes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion de estudiante
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:gestion_directivo' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion de Directivo
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:gestion_docente' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Autoevaluacion Docente
+                </a>
+            </li>
+            
+        {% elif "Docentes" in user_groups %}
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:autoevaluacion_docente' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Autoevaluacion
+                </a>
+            </li>
+
+        {% elif "Directivos" in user_groups %}
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:listado_docentes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion Docente
+                </a>
+            </li>
+
+        {% elif "Estudiantes" in user_groups %}
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:materias_estudiante' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion Docente
+                </a>
+            </li>
 
 
         {% endif %}

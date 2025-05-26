@@ -1,14 +1,8 @@
+{% extends 'dashboard.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autoevaluación Docente</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
-</head>
-<body>
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
 <div class="container mt-4">
     <!-- Título principal -->
     <h2 class="text-center mb-4 text-color-primario">Autoevaluación Docente</h2>
@@ -38,12 +32,13 @@
         <form method="POST" class="shadow p-4 bg-white rounded" style="border-radius: var(--borde-redondo);">
             {% csrf_token %}
             {% for categoria, preguntas in preguntas_por_categoria.items %}
-                <div class="mb-5">
+                <div class="mb-5 fle">
                     <h4 class="fw-bold text-color-primario">{{ categoria.nombre }}</h4>
                     {% for pregunta in preguntas %}
-                        <div class="mb-3">
-                            <label class="form-label text-color-primario" for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
-                            <select id="respuesta_{{ pregunta.id }}" name="respuesta_{{ pregunta.id }}" class="form-select" required>
+                        <div class="mb-3 d-flex w-100 justify-content-between align-items-center">
+                            <label class="form-label text-color-primario " for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
+                            <select id="respuesta_{{ pregunta.id }}" name="respuesta_{{ pregunta.id }}" class="form-select w-25" required>
+                                <option value="0" disabled selected> Elige una opcion</option>
                                 <option value="1">Totalmente en desacuerdo</option>
                                 <option value="2">Medianamente en desacuerdo</option>
                                 <option value="3">Medianamente de acuerdo</option>
@@ -62,5 +57,4 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}

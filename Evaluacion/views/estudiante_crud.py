@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
+
+from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaEstudiante, PreguntaEstudiante
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -66,7 +68,9 @@ def gestion_estudiantes(request):
 
     categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
 
-    context = {
+    contexto = obtener_db_info(request)
+
+    contexto.update({
         'categorias': categorias,
-    }
-    return render(request, 'core/crud_estudiante.html', context)
+    })
+    return render(request, 'core/crud_estudiante.html', contexto)

@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
+
+from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDocente, PreguntaDocente
 from django.http import HttpResponse
 
@@ -65,5 +67,11 @@ def gestion_docente(request):
             messages.success(request, "Preguntas creadas correctamente.")
 
         return redirect('evaluacion:gestion_docente')
+    
+    contexto = obtener_db_info(request)
 
-    return render(request, 'core/crud_docente.html', {'categorias': categorias})
+    contexto.update({
+        'categorias': categorias,
+    })
+
+    return render(request, 'core/crud_docente.html', contexto)

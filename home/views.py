@@ -181,14 +181,8 @@ def signin(request):
             return render(request, 'login.html', {'email': postEmail})
 
         login(request, user)
-
         
-        if user.groups.filter(name='Administrador').exists():
-            return redirect('dashboard')
-        elif user.groups.filter(name='Admisiones').exists():
-            return redirect('home_admision')
-        else:
-            return redirect('dashboard')
+        return redirect('dashboard')
         
 
 
