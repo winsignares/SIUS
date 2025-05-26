@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .views_home import obtener_db_info
-from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
+from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia, Periodo
 from django.contrib.auth.models import User
 from ..models import Estudiantes, Matricula, Prerrequisito, MateriaAprobada
 from django.http import JsonResponse
+from django.utils import timezone
 
 
 def seleccionar_programa_semestre(request):
@@ -86,10 +87,12 @@ def filtrar_estudiantes(request):
     except Exception as e:
         return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
 
+
 def validar_codigo(request):
     codigo = request.GET.get('numero_documento')
     valido = Estudiantes.objects.filter(numero_documento=codigo).exists()
     return JsonResponse({'valido': valido})
+
 
 def matricular_estudiante(request):
     if request.method == 'POST':
@@ -110,16 +113,28 @@ def matricular_estudiante(request):
             messages.error(request, 'El estudiante no tiene asignado un programa o semestre.')
             return redirect('seleccionar_programa_semestre')
 
+        periodo_activo = Periodo.objects.filter(
+            fecha_apertura__lte=timezone.now(),
+            fecha_cierre__gte=timezone.now()
+        ).first()
+
+        if not periodo_activo:
+            messages.error(request, 'No hay un periodo activo para matricular.')
+            return redirect('seleccionar_programa_semestre')
+
         materias_a_matricular = []
         errores = []
-        materias_matriculadas = Matricula.objects.filter(estudiante=estudiante).values_list('materia_id', flat=True)
+        materias_matriculadas = Matricula.objects.filter(
+            estudiante=estudiante,
+            periodo=periodo_activo
+        ).values_list('materia_id', flat=True)
 
         for materia_id in materias_ids:
             try:
                 materia = Materia.objects.get(id=materia_id)
 
                 if materia.id in materias_matriculadas:
-                    errores.append(f'Ya está matriculado en {materia.materia}.')
+                    errores.append(f'Ya está matriculado en {materia.materia} para el periodo activo.')
                     continue
 
                 prerrequisitos = Prerrequisito.objects.filter(materia=materia)
@@ -150,7 +165,11 @@ def matricular_estudiante(request):
 
         if materias_a_matricular:
             for materia in materias_a_matricular:
-                Matricula.objects.create(estudiante=estudiante, materia=materia)
+                Matricula.objects.create(
+                    estudiante=estudiante,
+                    materia=materia,
+                    periodo=periodo_activo
+                )
             messages.success(request, f'Matrícula completada con éxito para {len(materias_a_matricular)} materias.')
         elif not materias_a_matricular:
             messages.error(request, 'No se pudo completar la matrícula. Verifique las materias seleccionadas.')
@@ -160,6 +179,7 @@ def matricular_estudiante(request):
     messages.error(request, 'Método no permitido.')
     return redirect('seleccionar_programa_semestre')
 
+
 def validar_materias(request):
     codigo = request.GET.get('codigo')
     try:
@@ -167,18 +187,39 @@ def validar_materias(request):
     except Estudiantes.DoesNotExist:
         return JsonResponse({'error': 'Estudiante no encontrado.'}, status=400)
 
-    materias_inscritas = list(Matricula.objects.filter(estudiante=estudiante).values_list('materia_id', flat=True))
+    periodo_activo = Periodo.objects.filter(
+        fecha_apertura__lte=timezone.now(),
+        fecha_cierre__gte=timezone.now()
+    ).first()
+
+    if not periodo_activo:
+        return JsonResponse({'error': 'No hay periodo activo.'}, status=400)
+
+    materias_inscritas = list(Matricula.objects.filter(
+        estudiante=estudiante,
+        periodo=periodo_activo
+    ).values_list('materia_id', flat=True))
     return JsonResponse({'materias_inscritas': materias_inscritas}, status=200)
+
 
 def estudiantes_inscritos(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
-    matriculas = Matricula.objects.filter(materia=materia).select_related('estudiante')
+
+    periodo_activo = Periodo.objects.filter(
+        fecha_apertura__lte=timezone.now(),
+        fecha_cierre__gte=timezone.now()
+    ).first()
+
+    matriculas = Matricula.objects.filter(
+        materia=materia,
+        periodo=periodo_activo
+    ).select_related('estudiante')
+
     estudiantes = [matricula.estudiante for matricula in matriculas]
 
     for estudiante in estudiantes:
         estudiante.nombre_completo = User.objects.get(username=estudiante.estudiante).get_full_name() 
         estudiante.correo_personal = User.objects.get(username=estudiante.estudiante).email 
-
 
     context = {
         'materia': materia,
@@ -186,19 +227,26 @@ def estudiantes_inscritos(request, materia_id):
     }
     return render(request, 'core/listado_estudiantes_inscritos.html', context)
 
+
 def eliminar_estudiante(request, materia_id, estudiante_id):
-    
     if request.method == 'POST':
         estudiante = get_object_or_404(Estudiantes, id=estudiante_id)
         materia = get_object_or_404(Materia, id=materia_id)
         
-       
-        matricula = get_object_or_404(Matricula, estudiante=estudiante, materia=materia)
+        periodo_activo = Periodo.objects.filter(
+            fecha_apertura__lte=timezone.now(),
+            fecha_cierre__gte=timezone.now()
+        ).first()
 
-    
+        matricula = get_object_or_404(
+            Matricula,
+            estudiante=estudiante,
+            materia=materia,
+            periodo=periodo_activo
+        )
         matricula.delete()
         
-        messages.success(request, f"El estudiante con una identificación: {estudiante.numero_documento},fue eliminado de la materia {materia.materia}.")
+        messages.success(request, f"El estudiante con identificación: {estudiante.numero_documento}, fue eliminado de la materia {materia.materia}.")
         return redirect('estudiantes_inscritos', materia_id=materia.id)
     
     return redirect('estudiantes_inscritos', materia_id=materia_id)

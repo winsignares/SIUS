@@ -1,17 +1,16 @@
-# views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from ..models import CategoriaDirectivo, PreguntaDirectivo, EvaluacionDirectivo
+from ..models import CategoriaDirectivo, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Usuario
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from home.models.carga_academica.datos_adicionales import Periodo
+from django.utils.timezone import now
 
 @login_required
 def listado_docentes(request):
     usuario_actual = Usuario.objects.filter(auth_user=request.user).first()
 
-   
     if not usuario_actual:
         mensaje_error = "No se encontró información asociada a tu cuenta. Contacta al administrador."
         return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
@@ -20,7 +19,16 @@ def listado_docentes(request):
         mensaje_error = "No tienes un programa asignado. Por favor, contacta a la administración."
         return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
 
-   
+    
+    periodo_activo = Periodo.objects.filter(
+        fecha_apertura__lte=now(),
+        fecha_cierre__gte=now()
+    ).first()
+
+    if not periodo_activo:
+        mensaje_error = "No hay un periodo activo configurado. Contacta al administrador."
+        return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
+
     docentes = Usuario.objects.filter(
         fk_rol__rol='D',
         activo=True,
@@ -31,7 +39,6 @@ def listado_docentes(request):
         mensaje_advertencia = "No hay docentes disponibles en tu programa para evaluar."
         return render(request, 'core/listado_docentes.html', {'mensaje_advertencia': mensaje_advertencia})
 
-    
     paginator = Paginator(docentes, 7)
     page = request.GET.get('page')
 
@@ -42,12 +49,25 @@ def listado_docentes(request):
     except EmptyPage:
         docentes_paginados = paginator.page(paginator.num_pages)
 
-    return render(request, 'core/listado_docentes.html', {'docentes': docentes_paginados})
+    return render(request, 'core/listado_docentes.html', {
+        'docentes': docentes_paginados,
+        'periodo': periodo_activo
+    })
 
 @login_required
 def evaluar_docente(request, docente_id):
     docente_evaluado = get_object_or_404(Usuario, id=docente_id)
     evaluador = request.user
+
+    
+    periodo_activo = Periodo.objects.filter(
+        fecha_apertura__lte=now(),
+        fecha_cierre__gte=now()
+    ).first()
+
+    if not periodo_activo:
+        messages.error(request, "No hay un periodo activo configurado. Contacta al administrador.")
+        return redirect('evaluacion:listado_docentes')
 
     categorias = CategoriaDirectivo.objects.prefetch_related('preguntas').all()
     preguntas_por_categoria = {
@@ -55,15 +75,15 @@ def evaluar_docente(request, docente_id):
         for categoria in categorias
     }
 
-    
     evaluacion_existente = EvaluacionDirectivo.objects.filter(
         evaluador=evaluador,
-        docente_evaluado=docente_evaluado
+        docente_evaluado=docente_evaluado,
+        periodo=periodo_activo
     ).first()
 
     if request.method == 'POST':
         if evaluacion_existente:
-            messages.warning(request, "Ya realizaste esta evaluación anteriormente.")
+            messages.warning(request, "Ya realizaste esta evaluación para el periodo activo.")
             return redirect('evaluacion:listado_docentes')
 
         respuestas = {}
@@ -80,6 +100,7 @@ def evaluar_docente(request, docente_id):
         EvaluacionDirectivo.objects.create(
             evaluador=evaluador,
             docente_evaluado=docente_evaluado,
+            periodo=periodo_activo,
             respuestas=respuestas
         )
         messages.success(request, "Evaluación registrada correctamente.")
@@ -89,5 +110,6 @@ def evaluar_docente(request, docente_id):
         'docente': docente_evaluado,
         'preguntas_por_categoria': preguntas_por_categoria,
         'evaluacion_existente': evaluacion_existente,
+        'periodo': periodo_activo
     }
     return render(request, 'core/evaluar_docente.html', context)

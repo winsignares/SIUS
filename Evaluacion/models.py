@@ -4,6 +4,8 @@ from home.models.talento_humano import Usuario
 from admisiones.models import Estudiantes
 from django.contrib.auth.models import User
 from home.models.talento_humano.usuarios import Usuario
+from home.models.carga_academica.datos_adicionales import Periodo
+
 class CategoriaEstudiante(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     
@@ -65,9 +67,6 @@ class PreguntaDirectivo(models.Model):
         return self.texto
     
 
-from django.db import models
-from admisiones.models import Estudiantes
-from home.models.carga_academica.datos_adicionales import Materia
 
 class EvaluacionEstudiante(models.Model):
     estudiante = models.ForeignKey(
@@ -80,50 +79,53 @@ class EvaluacionEstudiante(models.Model):
         on_delete=models.CASCADE,
         related_name='evaluaciones'
     )
-    respuestas = models.JSONField(
-        help_text="Diccionario con claves de pregunta_id y valores con respuesta"
+    periodo = models.ForeignKey(
+        Periodo,
+        on_delete=models.CASCADE,
+        related_name='evaluaciones_estudiantes'
     )
+    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Evaluación de {self.estudiante} en {self.materia} ({self.fecha_respuesta.date()})"
+        return f"Evaluación de {self.estudiante} en {self.materia} durante {self.periodo}"
 
     class Meta:
         db_table = 'evaluacion_estudiante'
         verbose_name = 'Evaluación Estudiante'
         verbose_name_plural = 'Evaluaciones Estudiantes'
-        unique_together = ('estudiante', 'materia')
-
-from django.db import models
-from django.contrib.auth.models import User
+        unique_together = ('estudiante', 'materia', 'periodo')
 
 
 class EvaluacionDocente(models.Model):
     docente = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='evaluaciones_docente'
     )
-    respuestas = models.JSONField()
+    periodo = models.ForeignKey(
+        Periodo,
+        on_delete=models.CASCADE,
+        related_name='evaluaciones_docentes'
+    )
+    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Autoevaluación de {self.docente}"
-
-    @property
-    def usuario(self):
-        from home.models.talento_humano.usuarios import Usuario
-        return Usuario.objects.filter(auth_user=self.docente).first()
+        return f"Autoevaluación de {self.docente} en {self.periodo}"
 
     class Meta:
         db_table = 'evaluacion_docente'
         verbose_name = 'Evaluación Docente'
         verbose_name_plural = 'Evaluaciones Docentes'
+        unique_together = ('docente', 'periodo')
 
 
 class EvaluacionDirectivo(models.Model):
     evaluador = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='evaluaciones_directivo'
     )
     docente_evaluado = models.ForeignKey(
         Usuario,
@@ -131,13 +133,19 @@ class EvaluacionDirectivo(models.Model):
         related_name='evaluaciones_directivos',
         limit_choices_to={'fk_rol__rol': 'D'}
     )
-    respuestas = models.JSONField()  
+    periodo = models.ForeignKey(
+        Periodo,
+        on_delete=models.CASCADE,
+        related_name='evaluaciones_directivos'
+    )
+    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Evaluación de {self.docente_evaluado} por {self.evaluador}"
+        return f"Evaluación de {self.docente_evaluado} por {self.evaluador} en {self.periodo}"
 
     class Meta:
         db_table = 'evaluacion_directivo'
         verbose_name = 'Evaluación Directivo'
         verbose_name_plural = 'Evaluaciones Directivos'
+        unique_together = ('evaluador', 'docente_evaluado', 'periodo')

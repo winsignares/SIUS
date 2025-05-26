@@ -1,5 +1,5 @@
 from django.db import models
-from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
+from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia, Periodo
 from home.models.talento_humano.tipo_documentos import TipoDocumento
 from django.utils import timezone
 
@@ -21,23 +21,17 @@ class Estudiantes(models.Model):
         return f"{self.id} - {self.estudiante.username} - {self.programa.programa} - {self.semestre.descripcion}"
     
 class Matricula(models.Model):
-    estudiante = models.ForeignKey(
-        Estudiantes,
-        on_delete=models.CASCADE,
-        
-    )
+    estudiante = models.ForeignKey(Estudiantes, on_delete=models.CASCADE)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE)  # Campo nuevo
     fecha_matricula = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.estudiante} matriculado en {self.materia}"
-
     class Meta:
+        unique_together = ('estudiante', 'materia', 'periodo')
         db_table = 'Matricula'
-        unique_together = ('estudiante', 'materia')
         verbose_name = "Matrícula"
         verbose_name_plural = "Matrículas"
-        
+
 
 
 class Prerrequisito(models.Model):
