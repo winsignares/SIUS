@@ -103,17 +103,14 @@
         </div>
 
         <!-- Modal Sesión Expirada -->
-        <div class="modal fade" id="modalSesionExpirada" tabindex="-1" aria-labelledby="modalSesionExpiradaLabel" aria-hidden="true">
+        <div class="modal fade" id="modalSesionExpirada" tabindex="-2" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="definirContratoLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="modalSesionExpiradaLabel">Sesión Expirada</h5>
-                    </div>
                     <div class="modal-body">
                         Tu sesión ha expirado. Por favor, inicia sesión nuevamente.
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="btnSesionExpirada" class="btn btn-primary">Ir al inicio de sesión</button>
+                        <button type="button" id="btnSesionExpirada" class="btn btn-sm btn-alterno-red">Iniciar Sesión</button>
                     </div>
                 </div>
             </div>
@@ -127,6 +124,8 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
+                // Inicializa instancias para todos los modales para evitar getInstance null
+                document.querySelectorAll('.modal').forEach(el => bootstrap.Modal.getOrCreateInstance(el));
 
                 // --- MODALES ---
 
@@ -477,35 +476,6 @@
 
                 window.addEventListener('load', checkScreenWidth);
                 window.addEventListener('resize', checkScreenWidth);
-
-                // --- DETECCIÓN DE SESIÓN EXPIRADA EN FETCH ---
-                const originalFetch = window.fetch;
-                window.fetch = async function(...args) {
-                    const response = await originalFetch(...args);
-
-                    // Si la respuesta es un redirect al login (Django lo hace con status 302 o 401)
-                    if ((response.redirected && response.url.includes("login")) || response.status === 401) {
-                        mostrarModalSesionExpirada();
-                        // Lanza un error especial para que los catch de tus fetch lo puedan identificar
-                        throw new Error("SESION_EXPIRADA");
-                    }
-                    return response;
-                };
-
-                function mostrarModalSesionExpirada() {
-                    // Cierra cualquier modal de Bootstrap abierto
-                    document.querySelectorAll('.modal.show').forEach(modalEl => {
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                        if (modalInstance) modalInstance.hide();
-                    });
-
-                    // Muestra solo el modal de sesión expirada
-                    const modal = new bootstrap.Modal(document.getElementById('modalSesionExpirada'));
-                    modal.show();
-                    document.getElementById('btnSesionExpirada').onclick = function() {
-                        window.location.reload();
-                    };
-                }
             });
         </script>
     </body>
