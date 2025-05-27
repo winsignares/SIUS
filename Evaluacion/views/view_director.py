@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
+from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDirectivo, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Usuario
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -10,6 +12,8 @@ from django.utils.timezone import now
 @login_required
 def listado_docentes(request):
     usuario_actual = Usuario.objects.filter(auth_user=request.user).first()
+
+    contexto = obtener_db_info(request)
 
     if not usuario_actual:
         mensaje_error = "No se encontró información asociada a tu cuenta. Contacta al administrador."
@@ -27,7 +31,8 @@ def listado_docentes(request):
 
     if not periodo_activo:
         mensaje_error = "No hay un periodo activo configurado. Contacta al administrador."
-        return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
+        contexto.update({'mensaje_error': mensaje_error})
+        return render(request, 'core/listado_docentes.html', contexto)
 
     docentes = Usuario.objects.filter(
         fk_rol__rol='D',
@@ -37,7 +42,8 @@ def listado_docentes(request):
 
     if not docentes.exists():
         mensaje_advertencia = "No hay docentes disponibles en tu programa para evaluar."
-        return render(request, 'core/listado_docentes.html', {'mensaje_advertencia': mensaje_advertencia})
+        contexto.update({'mensaje_advertencia': mensaje_advertencia})
+        return render(request, 'core/listado_docentes.html', contexto)
 
     paginator = Paginator(docentes, 7)
     page = request.GET.get('page')
@@ -49,10 +55,14 @@ def listado_docentes(request):
     except EmptyPage:
         docentes_paginados = paginator.page(paginator.num_pages)
 
-    return render(request, 'core/listado_docentes.html', {
+    
+
+    contexto.update({
         'docentes': docentes_paginados,
         'periodo': periodo_activo
     })
+
+    return render(request, 'core/listado_docentes.html', contexto)
 
 @login_required
 def evaluar_docente(request, docente_id):

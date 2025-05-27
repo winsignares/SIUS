@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
+from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDocente, EvaluacionDocente
 from django.utils.timezone import now
 from home.models.carga_academica.datos_adicionales import Periodo
@@ -53,10 +55,12 @@ def autoevaluacion_docente(request):
         messages.success(request, "Autoevaluación registrada correctamente.")
         return redirect('evaluacion:autoevaluacion_docente')
 
-    context = {
+    contexto = obtener_db_info(request)
+
+    contexto.update({
         'docente': usuario,
         'preguntas_por_categoria': preguntas_por_categoria,
         'ya_evaluado': ya_evaluado,
         'periodo': periodo_activo,
-    }
-    return render(request, 'core/autoevaluacion_docente.html', context)
+    })
+    return render(request, 'core/autoevaluacion_docente.html', contexto)

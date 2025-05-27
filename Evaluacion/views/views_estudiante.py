@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from Evaluacion.views.info_db import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Materia, Periodo
 from ..models import EvaluacionEstudiante, CategoriaEstudiante
 from admisiones.models import Estudiantes, Matricula
@@ -40,11 +41,15 @@ def materias_estudiante_view(request):
    
     materias_no_evaluadas = materias.exclude(id__in=materias_evaluadas_ids)
 
-    return render(request, 'core/materias_estudiante.html', {
+    contexto = obtener_db_info(request)
+
+    contexto.update({
         'materias': materias_no_evaluadas,
         'estudiante': estudiante_model,
         'periodo': periodo_activo,
     })
+
+    return render(request, 'core/materias_estudiante.html', contexto)
 
 
 @login_required
