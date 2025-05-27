@@ -123,6 +123,27 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
         <script>
+                // Función para mostrar alertas dinámicas
+                function showAlert(message, type) {
+                    let alertClass = type === "success" ? "alert-success" : "alert-danger";
+                    let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
+
+                    let alertContainer = document.getElementById("dynamic-alerts");
+                    alertContainer.replaceChildren();
+
+                    let alertHtml = `
+                        <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
+                            <i class="bi ${icon}"></i> ${message}
+                        </div>
+                    `;
+
+                    alertContainer.insertAdjacentHTML("beforeend", alertHtml);
+
+                    setTimeout(() => {
+                        alertContainer.firstElementChild?.remove();
+                    }, 3000);
+                }
+
             document.addEventListener("DOMContentLoaded", function () {
 
                 // --- MODALES ---
@@ -381,26 +402,6 @@
                         showAlert("Error en el servidor, intenta de nuevo.", "error");
                         console.error("Error:", error);
                     });
-                }
-
-                function showAlert(message, type) {
-                    let alertClass = type === "success" ? "alert-success" : "alert-danger";
-                    let icon = type === "success" ? "bi-check-circle" : "bi-exclamation-circle";
-
-                    let alertContainer = document.getElementById("dynamic-alerts");
-                    alertContainer.replaceChildren();
-
-                    let alertHtml = `
-                        <div class="alert ${alertClass} d-flex align-items-center gap-2 fade show" role="alert">
-                            <i class="bi ${icon}"></i> ${message}
-                        </div>
-                    `;
-
-                    alertContainer.insertAdjacentHTML("beforeend", alertHtml);
-
-                    setTimeout(() => {
-                        alertContainer.firstElementChild?.remove();
-                    }, 3000);
                 }
 
                 function cerrarModalFormulario(modalId) {
