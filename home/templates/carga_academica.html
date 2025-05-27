@@ -103,14 +103,20 @@
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        <div class="d-flex justify-content-center gap-3">
-                                                            <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
-                                                                <i class="bi bi-pencil-square"></i>
-                                                            </a>
-                                                            <a href="#" class="btn btn-sm btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
-                                                                <i class="bi bi-trash"></i>
-                                                            </a>
-                                                        </div>
+                                                        {% if carga_academica.aprobado_vicerrectoria == True %}
+                                                            <span class="alert alert-success d-inline-block py-1 px-2 mb-0">
+                                                                Aprobado
+                                                            </span>
+                                                        {% else %}
+                                                            <div class="d-flex justify-content-center gap-3">
+                                                                <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#editarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                                    <i class="bi bi-pencil-square"></i>
+                                                                </a>
+                                                                <a href="#" class="btn btn-sm btn-alterno-dark d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#eliminarCargaAcademicaModal" data-id="{{ carga_academica.id }}" data-tipo="carga_academica">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </a>
+                                                            </div>
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endif %}

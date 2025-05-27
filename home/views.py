@@ -1266,7 +1266,10 @@ def agregar_matriz_academica(request):
                     total_horas = carga["total_horas"],
                     materia_compartida = carga["materia_compartida"],
                     fk_creado_por = request.user,
-                    valor_a_pagar = valor_a_pagar
+                    valor_a_pagar = valor_a_pagar,
+                    aprobado_vicerrectoria = False,
+                    aprobado_contabilidad = False,
+                    aprobado_rectoria = False
                 )
 
                 # Almacenar Materias Compartidas:

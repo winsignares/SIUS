@@ -2,7 +2,6 @@
 from datetime import datetime
 from django.shortcuts import render
 
-
 # Importar Vistas
 from .utilidades import obtener_db_info
 
