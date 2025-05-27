@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.contrib import messages
 from .info_db import obtener_db_info
 from ..models import CategoriaDirectivo, PreguntaDirectivo
-from django.http import HttpResponse
 
 def gestion_directivo(request):
     categorias = CategoriaDirectivo.objects.prefetch_related('preguntas').all()
@@ -12,7 +11,6 @@ def gestion_directivo(request):
         accion = request.POST.get("accion")
 
         if accion == "editar_categoria":
-            
             categoria_id = request.POST.get("categoria_id")
             nuevo_nombre = request.POST.get("nuevo_nombre", "").strip()
             preguntas = request.POST.getlist("preguntas[]")
@@ -24,7 +22,6 @@ def gestion_directivo(request):
                 categoria.nombre = nuevo_nombre
                 categoria.save()
 
-                
                 categoria.preguntas.all().delete()
                 for texto in preguntas:
                     texto = texto.strip()
@@ -34,8 +31,7 @@ def gestion_directivo(request):
                 messages.success(request, "Categoría y preguntas actualizadas correctamente.")
 
         elif accion == "crear_categoria":
-           
-            nombre = request.POST.get("nombre_categoria", "").strip()
+            nombre = request.POST.get("categoria", "").strip()  # Ajuste aquí
             preguntas = request.POST.getlist("preguntas[]")
 
             if not nombre:

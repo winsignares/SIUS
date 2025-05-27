@@ -10,12 +10,33 @@ from ..models import CategoriaEstudiante, PreguntaEstudiante
 def gestion_estudiantes(request):
     categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
 
-    if request.method == 'POST':
-        accion = request.POST.get('accion')
+    if request.method == "POST":
+        accion = request.POST.get("accion")
 
-        if accion == 'crear_categoria':
-            nombre = request.POST.get('categoria', '').strip()
-            preguntas = request.POST.getlist('preguntas[]')
+        if accion == "editar_categoria":
+            categoria_id = request.POST.get("categoria_id")
+            nuevo_nombre = request.POST.get("nuevo_nombre", "").strip()
+            preguntas = request.POST.getlist("preguntas[]")
+
+            if not nuevo_nombre:
+                messages.error(request, "El nombre de la categoría no puede estar vacío.")
+            else:
+                categoria = get_object_or_404(CategoriaEstudiante, id=categoria_id)
+                categoria.nombre = nuevo_nombre
+                categoria.save()
+
+                # Eliminar preguntas existentes y agregar las nuevas
+                categoria.preguntas.all().delete()
+                for texto in preguntas:
+                    texto = texto.strip()
+                    if texto:
+                        PreguntaEstudiante.objects.create(categoria=categoria, texto=texto)
+
+                messages.success(request, "Categoría y preguntas actualizadas correctamente.")
+
+        elif accion == "crear_categoria":
+            nombre = request.POST.get("categoria", "").strip()
+            preguntas = request.POST.getlist("preguntas[]")
 
             if not nombre:
                 messages.error(request, "El nombre de la categoría no puede estar vacío.")
@@ -27,31 +48,11 @@ def gestion_estudiantes(request):
                     texto = texto.strip()
                     if texto:
                         PreguntaEstudiante.objects.create(categoria=categoria, texto=texto)
+
                 messages.success(request, "Categoría y preguntas creadas correctamente.")
 
-        elif accion == 'editar_categoria':
-            categoria_id = request.POST.get('categoria_id')
-            nuevo_nombre = request.POST.get('nuevo_nombre', '').strip()
-            preguntas = request.POST.getlist('preguntas[]')
-
-            if not nuevo_nombre:
-                messages.error(request, "El nombre de la categoría no puede estar vacío.")
-            else:
-                categoria = get_object_or_404(CategoriaEstudiante, id=categoria_id)
-                categoria.nombre = nuevo_nombre
-                categoria.save()
-
-                
-                categoria.preguntas.all().delete()
-                for texto in preguntas:
-                    texto = texto.strip()
-                    if texto:
-                        PreguntaEstudiante.objects.create(categoria=categoria, texto=texto)
-
-                messages.success(request, "Categoría y preguntas actualizadas correctamente.")
-
-        elif accion == 'eliminar_categoria':
-            categoria_id = request.POST.get('categoria_id')
+        elif accion == "eliminar_categoria":
+            categoria_id = request.POST.get("categoria_id")
             categoria = get_object_or_404(CategoriaEstudiante, id=categoria_id)
             categoria.delete()
             messages.success(request, "Categoría eliminada correctamente.")

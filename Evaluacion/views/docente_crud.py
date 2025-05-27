@@ -23,7 +23,7 @@ def gestion_docente(request):
                 categoria.nombre = nuevo_nombre
                 categoria.save()
 
-                
+                # Eliminar preguntas existentes y agregar las nuevas
                 categoria.preguntas.all().delete()
                 for texto in preguntas:
                     texto = texto.strip()
@@ -33,7 +33,6 @@ def gestion_docente(request):
                 messages.success(request, "Categoría y preguntas actualizadas correctamente.")
 
         elif accion == "crear_categoria":
-            
             nombre = request.POST.get("categoria", "").strip()
             preguntas = request.POST.getlist("preguntas[]")
 
@@ -64,3 +63,4 @@ def gestion_docente(request):
     })
 
     return render(request, 'core/crud_docente.html', contexto)
+
