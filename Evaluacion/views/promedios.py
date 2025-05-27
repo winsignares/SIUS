@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
+from django.http import HttpResponse
 from home.models.carga_academica.datos_adicionales import Programa
 from Evaluacion.models import EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Usuario
+import openpyxl
 
 PONDERACIONES = {
     "estudiantes": 0.4,
@@ -38,7 +39,7 @@ def obtener_calificaciones_directivo(programa_id=None):
     resultados = []
 
     for evaluacion in evaluaciones:
-        if programa_id and evaluacion.docente_evaluado.fk_programa_id != int(programa_id):
+        if programa_id and evaluacion.docente_evaluado.programa_id != int(programa_id):
             continue  # filtro por programa
 
         respuestas = evaluacion.respuestas
@@ -68,7 +69,7 @@ def obtener_calificaciones_autoevaluacion_docente(programa_id=None):
     resultados = []
     for evaluacion in evaluaciones:
         usuario = Usuario.objects.filter(auth_user=evaluacion.docente).first()
-        if programa_id and usuario and usuario.fk_programa_id != int(programa_id):
+        if programa_id and usuario and usuario.programa_id != int(programa_id):
             continue  # filtro por programa
 
         respuestas = evaluacion.respuestas
@@ -200,3 +201,106 @@ def desempeno_por_programa(request):
         'programa_seleccionado': programa_seleccionado,
     }
     return render(request, 'core/promedios_docentes.html', context)
+
+
+def exportar_informe_excel(request):
+    programa_seleccionado = request.GET.get('programa', None)
+    tipo_informe = request.GET.get('tipo', None)
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Informe"
+
+    # Selección de encabezados y datos según el tipo de informe
+    if tipo_informe == "general":
+        encabezados = ["Docente", "Promedio", "Desempeño"]
+        data = calcular_desempeno_docentes_categorizado(programa_seleccionado)
+        data = agregar_nombre_docente(data, "docente_id")
+
+    elif tipo_informe == "docente_individual":
+        encabezados = ["Docente", "Asignatura", "Promedio Estudiantes", "Promedio Directivos", "Promedio Autoevaluación"]
+        autoevaluacion = obtener_calificaciones_autoevaluacion_docente(programa_seleccionado)
+        estudiantes = obtener_calificaciones_estudiantes_por_docente(programa_seleccionado)
+        directivos = obtener_calificaciones_directivo(programa_seleccionado)
+        data = merge_informe_docente(autoevaluacion, estudiantes, directivos)
+
+    elif tipo_informe == "ranking":
+        encabezados = ["Docente", "Promedio", "Desempeño"]
+        data = calcular_desempeno_docentes_categorizado(programa_seleccionado)
+        data = agregar_nombre_docente(data, "docente_id")
+        data = sorted(data, key=lambda x: x["promedio"], reverse=True)[:10]
+
+    elif tipo_informe == "programa_formacion":
+        encabezados = ["Docente", "Promedio General", "Áreas Críticas"]
+        data = generar_informe_programa_formacion(programa_seleccionado)
+
+    else:
+        # Tipo de informe no válido
+        response = HttpResponse("Tipo de informe no válido", status=400)
+        return response
+
+    # Escribir encabezados en el Excel
+    sheet.append(encabezados)
+
+    # Añadir datos al archivo Excel
+    for item in data:
+        row = []
+        for encabezado in encabezados:
+            clave = encabezado.lower().replace(" ", "_").replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u").replace("ñ", "n")
+            if clave == "docente":  # Manejar clave especial para docente
+                valor = item.get("docente_nombre", "Desconocido")
+            else:
+                valor = item.get(clave, "Desconocido")
+            row.append(valor)
+        sheet.append(row)
+
+    # Configuración de la respuesta
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f'attachment; filename="{tipo_informe}_informe.xlsx"'
+    workbook.save(response)
+    return response
+
+
+
+def merge_informe_docente(autoevaluacion, estudiantes, directivos):
+    docentes = {}
+
+    for item in autoevaluacion:
+        docente_id = item["docente_id"]
+        docentes[docente_id] = {
+            "docente": item.get("docente_nombre", "Desconocido"),
+            "autoevaluacion": item.get("promedio_calificacion", "-"),
+        }
+
+    for item in estudiantes:
+        docente_id = item["docente"]
+        if docente_id not in docentes:
+            docentes[docente_id] = {"docente": item.get("docente_nombre", "Desconocido")}
+        docentes[docente_id]["estudiantes"] = item.get("promedio_calificacion", "-")
+
+    for item in directivos:
+        docente_id = item["docente_evaluado"]
+        if docente_id not in docentes:
+            docentes[docente_id] = {"docente": item.get("docente_nombre", "Desconocido")}
+        docentes[docente_id]["directivos"] = item.get("promedio_calificacion", "-")
+
+    # Preparar lista para exportar
+    resultado = []
+    for docente_id, datos in docentes.items():
+        resultado.append({
+            "docente": datos.get("docente", "Desconocido"),
+            "asignatura": "-",  # Podrías añadir si hay datos
+            "promedio_estudiantes": datos.get("estudiantes", "-"),
+            "promedio_directivos": datos.get("directivos", "-"),
+            "promedio_autoevaluacion": datos.get("autoevaluacion", "-"),
+        })
+    return resultado
+
+
+def generar_informe_programa_formacion(programa_id):
+    # Aquí deberías implementar el cálculo para el informe por programa de formación,
+    # según tus datos específicos y necesidades.
+    # Por ahora dejo un ejemplo vacío.
+    return []

@@ -17,7 +17,7 @@ urlpatterns = [
     path('evaluar/<int:docente_id>/', view_director.evaluar_docente, name='evaluar_docente'),
 
     path("promedios_docente/", promedios.desempeno_por_programa, name="promedios_docente"),
-
+    path('exportar_informe_excel/', promedios.exportar_informe_excel, name='exportar_informe_excel'),
 
 
 ]
