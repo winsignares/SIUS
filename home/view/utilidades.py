@@ -1,10 +1,11 @@
 # Importar Librerías
-from django.shortcuts import render
+from datetime import datetime
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
 
 # Importar Modelos
 from home.models import Empleado, EmpleadoUser, EstadoRevision, TipoDocumento, NivelAcademico, EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede, Rol, Contrato, Dedicacion, CargaAcademica, Materia, Periodo, Programa, ProgramaUser, Semestre
+
 
 def obtener_db_info(request, incluir_datos_adicionales=False):
     """
@@ -130,9 +131,55 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     return contexto
 
 
-def error_404_view(request, exception):
+def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
     """
-    Vista para manejar errores 404.
+    Calcula los días laborados durante todo el contrato, considerando meses de 30 días.
     """
+    fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
+    fecha_final = datetime.strptime(str(fecha_final), "%Y-%m-%d")
 
-    return render(request, '404.html', status=404)
+    # Calcular meses completos y días restantes
+    meses = (fecha_final.year - fecha_inicio.year) * 12 + (fecha_final.month - fecha_inicio.month)
+    dias = fecha_final.day - fecha_inicio.day + 1
+
+    if dias < 0:
+        meses -= 1
+        dias += 30  # Siempre sumamos 30 días, no los reales del mes
+
+    dias_laborados = meses * 30 + dias
+    return dias_laborados if dias_laborados > 0 else 0
+
+
+def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
+    """
+    Calcula los días laborados en cada mes del contrato, con un máximo de 30 días por mes.
+    """
+    dias_laborados_por_mes = {}
+    fecha_actual = fecha_inicio
+
+    while fecha_actual <= fecha_final:
+        year = fecha_actual.year
+        month = fecha_actual.month
+        clave_mes = f"{year}-{month:02d}"
+
+        # Calcular el primer y último día a considerar en este mes
+        if fecha_actual.year == fecha_inicio.year and fecha_actual.month == fecha_inicio.month:
+            dia_inicio = fecha_actual.day
+        else:
+            dia_inicio = 1
+
+        if fecha_actual.year == fecha_final.year and fecha_actual.month == fecha_final.month:
+            dia_fin = fecha_final.day
+        else:
+            dia_fin = 30  # Siempre 30 días por mes
+
+        dias_trabajados = dia_fin - dia_inicio + 1
+        dias_laborados_por_mes[clave_mes] = dias_trabajados
+
+        # Avanzar al siguiente mes
+        if month == 12:
+            fecha_actual = fecha_actual.replace(year=year + 1, month=1, day=1)
+        else:
+            fecha_actual = fecha_actual.replace(month=month + 1, day=1)
+
+    return dias_laborados_por_mes

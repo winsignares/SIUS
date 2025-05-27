@@ -38,11 +38,11 @@ urlpatterns = [
     path("dashboard/reportes/", view.reportes, name="reportes"),
 
     # # OPERACIONES DE LOS GRUPOS "SECRETARIA TALENTO HUMANO" Y "DIRECTOR TALENTO HUMANO"
-    path('dashboard/detalle_usuario/<int:usuario_id>/', views.detalle_usuario, name='detalle_usuario'), # Falta Corregir
-    path("dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", views.editar_usuario, name="editar_usuario"), # Falta Corregir
+    path('dashboard/detalle_usuario/<int:usuario_id>/', view.detalle_usuario, name='detalle_usuario'),
+    path("dashboard/editar_usuario/<str:tipo>/<int:usuario_id>/", view.editar_usuario, name="editar_usuario"),
     path("dashboard/guardar_usuario/<str:tipo>/<int:usuario_id>/", views.actualizar_usuario, name="actualizar_usuario"), # Falta Corregir
-    path("dashboard/definir_contrato/<int:usuario_id>/", views.definir_contrato, name="definir_contrato"),
-    path("dashboard/definir_contrato_usuario/<int:usuario_id>/", views.definir_contrato_usuario, name="definir_contrato_usuario"), # Falta Corregir
+    path("dashboard/definir_contrato/<int:usuario_id>/", view.definir_contrato, name="definir_contrato"),
+    path("dashboard/definir_contrato_usuario/<int:usuario_id>/", view.definir_contrato_usuario, name="definir_contrato_usuario"),
 
     # # MÓDULO DE CARGA ACADÉMICA
     path("dashboard/carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"), # Falta Corregir

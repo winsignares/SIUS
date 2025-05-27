@@ -311,7 +311,7 @@ def agregar_empleado(request):
 
 
 @login_required
-def detalle_usuario(request, tipo, usuario_id):
+def detalle_usuario(request, usuario_id):
     """
     Muestra los detalles de un aspirante o empleado
     """

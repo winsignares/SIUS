@@ -19,6 +19,22 @@
             </a>
         </li>
 
+        <!-- Opciones para el rol Vicerrector -->
+        {% if "Vicerrector" in user_groups %}
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_carga_academica' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-file-earmark-medical-fill"></i>Cargas Acádemicas
+                </a>
+            </li>
+
+            <li class="nav-item mb-2 ">
+                <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
+                </a>
+            </li>
+        {% endif %}
+
         <!-- Opciones para el rol Director de Programa -->
         {% if "Director de Programa" in user_groups %}
             <li class="nav-item mb-2">

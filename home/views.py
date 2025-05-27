@@ -45,6 +45,7 @@ from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, 
 #
 
 
+# Revisado ✅
 def error_404_view(request, exception):
     """
     Vista para manejar errores 404.
@@ -53,6 +54,7 @@ def error_404_view(request, exception):
     return render(request, '404.html', status=404)
 
 
+# Revisado ✅
 def obtener_db_info(request, incluir_datos_adicionales=False):
     """
         Función auxiliar para obtener información especifica del usuario autenticado.
@@ -182,6 +184,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
 #
 
 
+# Revisado ✅
 def iniciar_sesion_form(request):
     '''
         Función para mostrar el formulario de inicio de sesión.
@@ -190,6 +193,7 @@ def iniciar_sesion_form(request):
     return render(request, 'login.html')
 
 
+# Revisado ✅
 def signin(request):
     '''
         Función para manejar los datos enviados en el formulario de inicio de sesión.
@@ -232,6 +236,7 @@ def signin(request):
 #
 
 
+# Revisado ✅
 def restablecer_contraseña_form(request):
     '''
         Función para mostrar el formulario de restablecer contraseña.
@@ -240,6 +245,7 @@ def restablecer_contraseña_form(request):
     return render(request, 'restablecer_contraseña.html')
 
 
+# Revisado ✅
 def actualizar_contraseña(request):
     '''
         Función para manejar los datos enviados en el formulario de restablcer contraseña.
@@ -284,6 +290,7 @@ def actualizar_contraseña(request):
 #
 
 
+# Revisado ✅
 @login_required
 def dashboard(request):
     '''
@@ -294,6 +301,7 @@ def dashboard(request):
     return render(request, 'dashboard.html', contexto)
 
 
+# Revisado ✅
 @login_required
 def cerrar_sesion(request):
     '''
@@ -308,7 +316,7 @@ def cerrar_sesion(request):
 # ---------------------------- VISTA ASPIRANTES ---------------------------------
 #
 
-
+# Revisado ✅
 @login_required
 def gestion_aspirantes(request):
     '''
@@ -446,6 +454,7 @@ def agregar_aspirante(request):
                 'message': 'Error inesperado. Por favor, intente nuevamente.'
             }, status=500)
 
+# Revisado ✅
 @login_required
 def agregar_empleado(request):
     print(request.POST)
@@ -530,6 +539,7 @@ def agregar_empleado(request):
             }, status=500)
 
 
+# Revisado ✅
 @login_required
 def agregar_detalle_academico(request):
     if request.method == "POST":
@@ -604,6 +614,7 @@ def agregar_detalle_academico(request):
             }, status=500)
 
 
+# Revisado ✅
 @login_required
 def agregar_exp_laboral(request):
     if request.method == "POST":
@@ -661,6 +672,7 @@ def agregar_exp_laboral(request):
 #
 
 
+# Revisado ✅
 @login_required
 def gestion_empleados(request):
     '''
@@ -724,6 +736,7 @@ def gestion_empleados(request):
 #
 
 
+# Revisado ✅
 @login_required
 def detalle_usuario(request, usuario_id):
     """
@@ -744,6 +757,7 @@ def detalle_usuario(request, usuario_id):
     })
 
 
+# Revisado ✅
 @login_required
 def editar_usuario(request, tipo, usuario_id):
     '''
@@ -765,6 +779,7 @@ def editar_usuario(request, tipo, usuario_id):
     )
 
 
+# Revisado ✅
 @login_required
 def definir_contrato(request, usuario_id):
     """
@@ -795,185 +810,189 @@ def definir_contrato(request, usuario_id):
     )
 
 
-def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
-    """
-    Calcula los días laborados durante todo el contrato, considerando meses de 30 días.
-    """
-    fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
-    fecha_final = datetime.strptime(str(fecha_final), "%Y-%m-%d")
+# Revisado ✅
+# def calcular_dias_laborados_por_contrato(fecha_inicio, fecha_final):
+#     """
+#     Calcula los días laborados durante todo el contrato, considerando meses de 30 días.
+#     """
+#     fecha_inicio = datetime.strptime(str(fecha_inicio), "%Y-%m-%d")
+#     fecha_final = datetime.strptime(str(fecha_final), "%Y-%m-%d")
 
-    # Calcular meses completos y días restantes
-    meses = (fecha_final.year - fecha_inicio.year) * 12 + (fecha_final.month - fecha_inicio.month)
-    dias = fecha_final.day - fecha_inicio.day + 1
+#     # Calcular meses completos y días restantes
+#     meses = (fecha_final.year - fecha_inicio.year) * 12 + (fecha_final.month - fecha_inicio.month)
+#     dias = fecha_final.day - fecha_inicio.day + 1
 
-    if dias < 0:
-        meses -= 1
-        dias += 30  # Siempre sumamos 30 días, no los reales del mes
+#     if dias < 0:
+#         meses -= 1
+#         dias += 30  # Siempre sumamos 30 días, no los reales del mes
 
-    dias_laborados = meses * 30 + dias
-    return dias_laborados if dias_laborados > 0 else 0
-
-
-def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
-    """
-    Calcula los días laborados en cada mes del contrato, con un máximo de 30 días por mes.
-    """
-    dias_laborados_por_mes = {}
-    fecha_actual = fecha_inicio
-
-    while fecha_actual <= fecha_final:
-        year = fecha_actual.year
-        month = fecha_actual.month
-        clave_mes = f"{year}-{month:02d}"
-
-        # Calcular el primer y último día a considerar en este mes
-        if fecha_actual.year == fecha_inicio.year and fecha_actual.month == fecha_inicio.month:
-            dia_inicio = fecha_actual.day
-        else:
-            dia_inicio = 1
-
-        if fecha_actual.year == fecha_final.year and fecha_actual.month == fecha_final.month:
-            dia_fin = fecha_final.day
-        else:
-            dia_fin = 30  # Siempre 30 días por mes
-
-        dias_trabajados = dia_fin - dia_inicio + 1
-        dias_laborados_por_mes[clave_mes] = dias_trabajados
-
-        # Avanzar al siguiente mes
-        if month == 12:
-            fecha_actual = fecha_actual.replace(year=year + 1, month=1, day=1)
-        else:
-            fecha_actual = fecha_actual.replace(month=month + 1, day=1)
-
-    return dias_laborados_por_mes
+#     dias_laborados = meses * 30 + dias
+#     return dias_laborados if dias_laborados > 0 else 0
 
 
-# Falta configurar 🚫
-@login_required
-def generar_detalles_contrato(request, contrato):
-    """
-    Genera registros de detalles del contrato con días laborados y valores a pagar por mes:
-    - Primer mes: días laborados y valor proporcional
-    - Meses intermedios: 30 días y valor completo del valor mensual a pagar
-    - Último mes: días laborados y valor proporcional
-    """
+# Revisado ✅
+# def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
+#     """
+#     Calcula los días laborados en cada mes del contrato, con un máximo de 30 días por mes.
+#     """
+#     dias_laborados_por_mes = {}
+#     fecha_actual = fecha_inicio
 
-    fecha_inicio = contrato.fecha_inicio
-    fecha_fin = contrato.fecha_fin
-    valor_mensual = contrato.valor_mensual_contrato
+#     while fecha_actual <= fecha_final:
+#         year = fecha_actual.year
+#         month = fecha_actual.month
+#         clave_mes = f"{year}-{month:02d}"
 
-    if not fecha_inicio or not fecha_fin or valor_mensual is None:
-        raise ValueError("El contrato debe tener fecha de inicio, fecha de fin y un valor mensual válido.")
+#         # Calcular el primer y último día a considerar en este mes
+#         if fecha_actual.year == fecha_inicio.year and fecha_actual.month == fecha_inicio.month:
+#             dia_inicio = fecha_actual.day
+#         else:
+#             dia_inicio = 1
 
-    valor_mensual = Decimal(valor_mensual)
-    # DetalleContratro.objects.filter(fk_contrato=contrato).delete()
+#         if fecha_actual.year == fecha_final.year and fecha_actual.month == fecha_final.month:
+#             dia_fin = fecha_final.day
+#         else:
+#             dia_fin = 30  # Siempre 30 días por mes
 
-    # Calcular días laborados por mes
-    dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
-    meses_ordenados = sorted(dias_laborados_por_mes.keys())
-    valor_dia = valor_mensual / 30
+#         dias_trabajados = dia_fin - dia_inicio + 1
+#         dias_laborados_por_mes[clave_mes] = dias_trabajados
 
-    detalles = []
+#         # Avanzar al siguiente mes
+#         if month == 12:
+#             fecha_actual = fecha_actual.replace(year=year + 1, month=1, day=1)
+#         else:
+#             fecha_actual = fecha_actual.replace(month=month + 1, day=1)
 
-    for idx, mes in enumerate(meses_ordenados):
-        dias = dias_laborados_por_mes[mes]
-        # Primer mes
-        if idx == 0:
-            if dias == 30:
-                valor_mes = valor_mensual
-            else:
-                valor_mes = round(dias * valor_dia, 2)
-        # Último mes
-        elif idx == len(meses_ordenados) - 1:
-            if dias == 30:
-                valor_mes = valor_mensual
-            else:
-                valor_mes = round(dias * valor_dia, 2)
-        # Meses intermedios
-        else:
-            dias = 30
-            valor_mes = valor_mensual
-
-        detalles.append(
-            DetalleContratro(
-                fk_contrato=contrato,
-                mes_a_pagar=mes,
-                dias_laborados=dias,
-                valor_a_pagar=valor_mes,
-            )
-        )
-
-    DetalleContratro.objects.bulk_create(detalles)
-    return detalles
+#     return dias_laborados_por_mes
 
 
-@login_required
-def definir_contrato_usuario(request, usuario_id):
-    """
-    Muestra el formulario para definir el contrato de un empleado.
-    """
-    if request.method == "POST":
-        usuario = get_object_or_404(Empleado, id=usuario_id)
-        data = request.POST
-        try:
-            # Instanciar valores recibidos
-            fk_usuario = Empleado.objects.get(id=usuario.id)
-            if fk_periodo := data.get("fk_periodo"):
-                    fk_periodo = Periodo.objects.get(id=fk_periodo)
-            tipo_contrato = data.get("tipo_contrato")
-            if fk_dedicacion := data.get("fk_dedicacion"):
-                fk_dedicacion = Dedicacion.objects.get(id=fk_dedicacion)
-            inicio_contrato = data.get("fecha_inicio_contrato")
-            fin_contrato = data.get("fecha_fin_contrato")
-            estado_contrato = data.get("estado_contrato")
-            fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
-            if valor_mensual_contrato := data.get("valor_mensual_contrato"):
-                valor_mensual_contrato = Decimal(valor_mensual_contrato.replace(",", ""))
-            total_dias_laborados_por_contrato = calcular_dias_laborados_por_contrato(inicio_contrato, fin_contrato)
 
-            # Convertir fechas a datetime
-            fecha_inicio_contrato = datetime.strptime(inicio_contrato, "%Y-%m-%d")
-            fecha_fin_contrato = datetime.strptime(fin_contrato, "%Y-%m-%d")
+# Revisado ✅
+# @login_required
+# def generar_detalles_contrato(request, contrato):
+#     """
+#     Genera registros de detalles del contrato con días laborados y valores a pagar por mes:
+#     - Primer mes: días laborados y valor proporcional
+#     - Meses intermedios: 30 días y valor completo del valor mensual a pagar
+#     - Último mes: días laborados y valor proporcional
+#     """
 
-            # Lógica segun el tipo de contrato
-            if estado_contrato == "1":
-                # Agregar nuevo contrato
-                contrato = Contrato.objects.create(
-                    fk_periodo=fk_periodo,
-                    fk_usuario=fk_usuario,
-                    fecha_inicio=fecha_inicio_contrato,
-                    fecha_fin=fecha_fin_contrato,
-                    fk_tipo_contrato=fk_tipo_contrato,
-                    fk_dedicacion=fk_dedicacion,
-                    vigencia_contrato=True,
-                    valor_mensual_contrato=valor_mensual_contrato,
-                    total_dias_laborados=total_dias_laborados_por_contrato
-                )
+#     fecha_inicio = contrato.fecha_inicio
+#     fecha_fin = contrato.fecha_fin
+#     valor_mensual = contrato.valor_mensual_contrato
 
-                if valor_mensual_contrato is not None:
-                    generar_detalles_contrato(request, contrato)
+#     if not fecha_inicio or not fecha_fin or valor_mensual is None:
+#         raise ValueError("El contrato debe tener fecha de inicio, fecha de fin y un valor mensual válido.")
 
-            if estado_contrato == "2":
-                # Editar contrato existente
-                print(data)
-                pass
+#     valor_mensual = Decimal(valor_mensual)
+#     # DetalleContratro.objects.filter(fk_contrato=contrato).delete()
 
-            if estado_contrato == "3":
-                # Anexar contrato
-                print(data)
-                pass
+#     # Calcular días laborados por mes
+#     dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
+#     meses_ordenados = sorted(dias_laborados_por_mes.keys())
+#     valor_dia = valor_mensual / 30
 
-            return JsonResponse({
-                "status": "success",
-                "message": "Contrato asignado correctamente."
-            })
-        except Exception as e:
-            print(traceback.format_exc())
-            return JsonResponse({
-                "status": "error",
-                "message": 'Error inesperado. Por favor, intente nuevamente.'
-            }, status=500)
+#     detalles = []
+
+#     for idx, mes in enumerate(meses_ordenados):
+#         dias = dias_laborados_por_mes[mes]
+#         # Primer mes
+#         if idx == 0:
+#             if dias == 30:
+#                 valor_mes = valor_mensual
+#             else:
+#                 valor_mes = round(dias * valor_dia, 2)
+#         # Último mes
+#         elif idx == len(meses_ordenados) - 1:
+#             if dias == 30:
+#                 valor_mes = valor_mensual
+#             else:
+#                 valor_mes = round(dias * valor_dia, 2)
+#         # Meses intermedios
+#         else:
+#             dias = 30
+#             valor_mes = valor_mensual
+
+#         detalles.append(
+#             DetalleContratro(
+#                 fk_contrato=contrato,
+#                 mes_a_pagar=mes,
+#                 dias_laborados=dias,
+#                 valor_a_pagar=valor_mes,
+#             )
+#         )
+
+#     DetalleContratro.objects.bulk_create(detalles)
+#     return detalles
+
+
+# Revisado ✅
+# @login_required
+# def definir_contrato_usuario(request, usuario_id):
+#     """
+#     Muestra el formulario para definir el contrato de un empleado.
+#     """
+#     if request.method == "POST":
+#         usuario = get_object_or_404(Empleado, id=usuario_id)
+#         data = request.POST
+#         try:
+#             # Instanciar valores recibidos
+#             fk_usuario = Empleado.objects.get(id=usuario.id)
+#             if fk_periodo := data.get("fk_periodo"):
+#                     fk_periodo = Periodo.objects.get(id=fk_periodo)
+#             tipo_contrato = data.get("tipo_contrato")
+#             if fk_dedicacion := data.get("fk_dedicacion"):
+#                 fk_dedicacion = Dedicacion.objects.get(id=fk_dedicacion)
+#             inicio_contrato = data.get("fecha_inicio_contrato")
+#             fin_contrato = data.get("fecha_fin_contrato")
+#             estado_contrato = data.get("estado_contrato")
+#             fk_tipo_contrato = TipoContrato.objects.get(id=tipo_contrato)
+#             if valor_mensual_contrato := data.get("valor_mensual_contrato"):
+#                 valor_mensual_contrato = Decimal(valor_mensual_contrato.replace(",", ""))
+#             total_dias_laborados_por_contrato = calcular_dias_laborados_por_contrato(inicio_contrato, fin_contrato)
+
+#             # Convertir fechas a datetime
+#             fecha_inicio_contrato = datetime.strptime(inicio_contrato, "%Y-%m-%d")
+#             fecha_fin_contrato = datetime.strptime(fin_contrato, "%Y-%m-%d")
+
+#             # Lógica segun el tipo de contrato
+#             if estado_contrato == "1":
+#                 # Agregar nuevo contrato
+#                 contrato = Contrato.objects.create(
+#                     fk_periodo=fk_periodo,
+#                     fk_usuario=fk_usuario,
+#                     fecha_inicio=fecha_inicio_contrato,
+#                     fecha_fin=fecha_fin_contrato,
+#                     fk_tipo_contrato=fk_tipo_contrato,
+#                     fk_dedicacion=fk_dedicacion,
+#                     vigencia_contrato=True,
+#                     valor_mensual_contrato=valor_mensual_contrato,
+#                     total_dias_laborados=total_dias_laborados_por_contrato
+#                 )
+
+#                 if valor_mensual_contrato is not None:
+#                     generar_detalles_contrato(request, contrato)
+
+#             if estado_contrato == "2":
+#                 # Editar contrato existente
+#                 print(data)
+#                 pass
+
+#             if estado_contrato == "3":
+#                 # Anexar contrato
+#                 print(data)
+#                 pass
+
+#             return JsonResponse({
+#                 "status": "success",
+#                 "message": "Contrato asignado correctamente."
+#             })
+#         except Exception as e:
+#             print(traceback.format_exc())
+#             return JsonResponse({
+#                 "status": "error",
+#                 "message": 'Error inesperado. Por favor, intente nuevamente.'
+#             }, status=500)
 
 
 @login_required

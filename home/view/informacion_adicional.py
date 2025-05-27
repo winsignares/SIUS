@@ -1,14 +1,8 @@
 # Importar Librerías
 import traceback
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.db import IntegrityError, models
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-
-
-# Importar Vistas
-from .utilidades import obtener_db_info
 
 # Importar Módelos
 from home.models import Empleado, DetalleAcademico, DetalleExperienciaLaboral

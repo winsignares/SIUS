@@ -2,9 +2,8 @@ from .logout import *
 from .utilidades import *
 from .login import *
 from .dashboard import *
-from .aspirantes import *
-from .empleados import *
 from .reportes import *
 from .informacion_adicional import *
 from .contrato import *
 from .usuarios import *
+from .error_404 import *
