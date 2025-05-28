@@ -3,8 +3,9 @@ from home.models.carga_academica.datos_adicionales import Pensum, Programa
 from django.contrib import messages
 from .views_home import obtener_db_info
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def gestion_pensum(request, pensum_id=None):
     pensum = None  
 
@@ -50,7 +51,7 @@ def gestion_pensum(request, pensum_id=None):
 
     return render(request, 'core/pensum.html', contexto)
 
-
+@login_required
 def eliminar_pensum(request, pensum_id):
     pensum = get_object_or_404(Pensum, id=pensum_id)
     pensum.delete()

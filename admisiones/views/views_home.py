@@ -3,13 +3,16 @@ from home.models.carga_academica.datos_adicionales  import Programa, Semestre, M
 from ..models import Matricula
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def home(request):
 
     contexto = obtener_db_info(request)
 
     return render(request, 'home.html', contexto)
 
+@login_required
 def obtener_db_info(request, incluir_datos_adicionales=False):
     """
         Función auxiliar para obtener información especifica del usuario autenticado.

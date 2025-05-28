@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 from ..models import Estudiantes, Matricula, Prerrequisito, MateriaAprobada
 from django.http import JsonResponse
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def seleccionar_programa_semestre(request):
     programas = Programa.objects.all()
     semestres = Semestre.objects.all()
@@ -50,7 +51,7 @@ def seleccionar_programa_semestre(request):
 
     return render(request, 'core/matricular_estudiantes.html', contexto)
 
-
+@login_required
 def filtrar_estudiantes(request):
     programa_id = request.GET.get('programa')
     semestre_id = request.GET.get('semestre')
@@ -87,13 +88,13 @@ def filtrar_estudiantes(request):
     except Exception as e:
         return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
 
-
+@login_required
 def validar_codigo(request):
     codigo = request.GET.get('numero_documento')
     valido = Estudiantes.objects.filter(numero_documento=codigo).exists()
     return JsonResponse({'valido': valido})
 
-
+@login_required
 def matricular_estudiante(request):
     if request.method == 'POST':
         identificacion = request.POST.get('numero_documento')
@@ -179,7 +180,7 @@ def matricular_estudiante(request):
     messages.error(request, 'Método no permitido.')
     return redirect('seleccionar_programa_semestre')
 
-
+@login_required
 def validar_materias(request):
     codigo = request.GET.get('codigo')
     try:
@@ -201,7 +202,7 @@ def validar_materias(request):
     ).values_list('materia_id', flat=True))
     return JsonResponse({'materias_inscritas': materias_inscritas}, status=200)
 
-
+@login_required
 def estudiantes_inscritos(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
 
@@ -227,7 +228,7 @@ def estudiantes_inscritos(request, materia_id):
     }
     return render(request, 'core/listado_estudiantes_inscritos.html', context)
 
-
+@login_required
 def eliminar_estudiante(request, materia_id, estudiante_id):
     if request.method == 'POST':
         estudiante = get_object_or_404(Estudiantes, id=estudiante_id)

@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models.carga_academica.datos_adicionales import Periodo
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def gestion_periodo(request, periodo_id=None):
     if periodo_id:
         periodo_editar = get_object_or_404(Periodo, id=periodo_id)
@@ -52,7 +54,7 @@ def gestion_periodo(request, periodo_id=None):
         'periodo_editar': periodo_editar
     })
 
-
+@login_required
 def eliminar_periodo(request, periodo_id):
     periodo = get_object_or_404(Periodo, id=periodo_id)
     periodo.delete()

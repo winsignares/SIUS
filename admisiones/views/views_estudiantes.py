@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User, Group
-
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-
 from .views_home import obtener_db_info
 from ..models import Estudiantes
 from home.models.talento_humano.tipo_documentos import TipoDocumento
 from home.models.carga_academica.datos_adicionales import Programa, Semestre
 
+@login_required
 def gestion_estudiante(request, estudiante_id=None):
     estudiante = None
 
@@ -89,7 +89,7 @@ def gestion_estudiante(request, estudiante_id=None):
 
     return render(request, 'core/estudiantes.html', contexto)
 
-
+@login_required
 def eliminar_estudiante(request, estudiante_id):
     estudiante = get_object_or_404(Estudiantes, id=estudiante_id)
     if estudiante.estudiante:

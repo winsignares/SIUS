@@ -3,9 +3,10 @@ from home.models.carga_academica.datos_adicionales import Programa, Semestre, Ma
 from django.contrib.auth.models import User
 from ..models import Matricula, Estudiantes, MateriaAprobada
 from django.contrib import messages
-from .views_home import obtener_db_info  # Importar la función para obtener la información del usuario
+from .views_home import obtener_db_info  
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def materias_por_programa_semestre(request):
     programas = Programa.objects.all()
     semestres = Semestre.objects.all()
@@ -26,7 +27,7 @@ def materias_por_programa_semestre(request):
 
     return render(request, 'core/materias_por_programa_semestre.html', contexto)
 
-
+@login_required
 def gestionar_estudiantes(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
     matriculas = Matricula.objects.filter(materia=materia)
@@ -68,7 +69,7 @@ def gestionar_estudiantes(request, materia_id):
 
     return render(request, 'core/gestionar_estudiantes.html', contexto)
 
-
+@login_required
 def estados_estudiantes(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
     registros = MateriaAprobada.objects.filter(materia=materia)

@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from home.models.carga_academica.datos_adicionales import Materia, Pensum, Semestre, Programa
 from django.contrib import messages
 from .views_home import obtener_db_info
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def gestion_materia(request):
     programas = Programa.objects.all()
     semestres = Semestre.objects.all()
@@ -53,7 +55,7 @@ def gestion_materia(request):
     
     return render(request, 'core/materia.html', contexto)
 
-
+@login_required
 def actualizar_materia(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
     programas = Programa.objects.all()
@@ -95,7 +97,7 @@ def actualizar_materia(request, materia_id):
         'semestres': semestres
     })
 
-
+@login_required
 def eliminar_materia(request, materia_id):
     materia = get_object_or_404(Materia, id=materia_id)
     materia.delete()

@@ -3,7 +3,9 @@ from .views_home import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Semestre
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def gestion_semestre(request):
     semestres_list = Semestre.objects.all().order_by('id')  
     paginator = Paginator(semestres_list, 5)  
@@ -24,6 +26,7 @@ def gestion_semestre(request):
     
     return render(request, 'core/semestre.html', contexto)
 
+@login_required
 def actualizar_semestre(request, semestre_id):
     semestre = get_object_or_404(Semestre, id=semestre_id)
     if request.method == 'POST':
@@ -39,6 +42,7 @@ def actualizar_semestre(request, semestre_id):
         'semestres': semestres
     })
 
+@login_required
 def eliminar_semestre(request, semestre_id):
     semestre = get_object_or_404(Semestre, id=semestre_id)
     semestre.delete()

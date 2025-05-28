@@ -3,8 +3,9 @@ from home.models.carga_academica.datos_adicionales import Programa
 from .views_home import obtener_db_info
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def gestion_programa(request, programa_id=None):
     programa = None  
     
@@ -52,7 +53,7 @@ def gestion_programa(request, programa_id=None):
     
     return render(request, 'core/programa.html', contexto)
 
-
+@login_required
 def eliminar_programa(request, programa_id):
     programa = get_object_or_404(Programa, id=programa_id)
     programa.delete()

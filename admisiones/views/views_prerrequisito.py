@@ -4,9 +4,9 @@ from home.models.carga_academica.datos_adicionales import Materia, Programa, Sem
 from ..models import Prerrequisito
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
-
-
+@login_required
 def gestion_prerrequisito(request):
     programas = Programa.objects.all()
     semestres = Semestre.objects.all()
@@ -57,6 +57,7 @@ def gestion_prerrequisito(request):
 
     return render(request, 'core/prerrequisito.html', contexto)
 
+@login_required
 @require_POST
 def editar_prerrequisito(request, pk):
     prerrequisito = get_object_or_404(Prerrequisito, pk=pk)
@@ -71,6 +72,7 @@ def editar_prerrequisito(request, pk):
 
     return redirect('gestion_prerrequisito')
 
+@login_required
 def eliminar_prerrequisito(request, pk):
     prerrequisito = get_object_or_404(Prerrequisito, pk=pk)
     prerrequisito.delete()
