@@ -506,7 +506,7 @@
         // Enviar las cargas al backend para guardar en la BD
         guardarTodoBtn?.addEventListener("click", async function () {
             try {
-                const response = await fetch("/siuc/dashboard/matriz/agregar_matriz_academica/", {
+                const response = await fetch("/siuc/dashboard/matriz/guardar_matriz/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

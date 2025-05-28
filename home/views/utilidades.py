@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.db.models import Exists, OuterRef
 
 # Importar Modelos
-from home.models import Empleado, EmpleadoUser, EstadoRevision, TipoDocumento, NivelAcademico, EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede, Rol, Contrato, Dedicacion, CargaAcademica, Materia, Periodo, Programa, ProgramaUser, Semestre
+from home.models import Empleado, EmpleadoUser, EstadoRevision, TipoDocumento, NivelAcademico, EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede, Rol, Contrato, Dedicacion, CargaAcademica, Materia, Periodo, Programa, ProgramaUser, Semestre, NivelAcademicoHistorico
 
 
 def obtener_db_info(request, incluir_datos_adicionales=False):
@@ -183,3 +183,15 @@ def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
             fecha_actual = fecha_actual.replace(month=month + 1, day=1)
 
     return dias_laborados_por_mes
+
+
+def calcular_valor_a_pagar(total_horas, id_docente):
+    """
+    Calcula el valor a pagar según las horas semanales y el total de horas, además de la dedicación del docente.
+    """
+    fk_ultimo_nivel_estudio = Empleado.objects.get(id=id_docente).fk_ultimo_nivel_estudio
+    tarifa_base = NivelAcademicoHistorico.objects.filter(fk_nivel_academico=fk_ultimo_nivel_estudio).order_by('-año_vigencia').first()
+    if not tarifa_base:
+        raise Exception("No existe tarifa base para el nivel académico del docente.")
+    valor_a_pagar = total_horas * tarifa_base.tarifa_base_por_hora
+    return valor_a_pagar

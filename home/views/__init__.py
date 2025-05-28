@@ -7,3 +7,4 @@ from .informacion_adicional import *
 from .contrato import *
 from .usuarios import *
 from .error_404 import *
+from .cargas_academicias import *

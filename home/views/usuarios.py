@@ -12,7 +12,7 @@ from .utilidades import obtener_db_info
 
 
 # Importar Módelos
-from home.models import Empleado, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, CajaCompensacion
+from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, EPS, CajaCompensacion
 
 
 #
@@ -20,6 +20,7 @@ from home.models import Empleado, DetalleAcademico, DetalleExperienciaLaboral, N
 #
 
 
+# Revisado ✅
 @login_required
 def gestion_aspirantes(request):
     '''
@@ -80,6 +81,7 @@ def gestion_aspirantes(request):
     return render(request, 'aspirantes.html', contexto)
 
 
+# Revisado ✅
 @login_required
 def agregar_aspirante(request):
     print(request.POST)
@@ -163,6 +165,7 @@ def agregar_aspirante(request):
 #
 
 
+# Revisado ✅
 @login_required
 def gestion_empleados(request):
     '''
@@ -221,6 +224,7 @@ def gestion_empleados(request):
     return render(request, 'empleados.html', contexto)
 
 
+# Revisado ✅
 @login_required
 def agregar_empleado(request):
     print(request.POST)
@@ -310,6 +314,7 @@ def agregar_empleado(request):
 #
 
 
+# Revisado ✅
 @login_required
 def detalle_usuario(request, usuario_id):
     """
@@ -333,6 +338,7 @@ def detalle_usuario(request, usuario_id):
     )
 
 
+# Revisado ✅
 @login_required
 def editar_usuario(request, tipo, usuario_id):
     '''
@@ -352,3 +358,96 @@ def editar_usuario(request, tipo, usuario_id):
         "partials/editar_usuario_form.html",
         contexto,
     )
+
+
+@login_required
+def actualizar_usuario(request, usuario_id):
+    print(request.POST)
+    usuario = get_object_or_404(Empleado, id=usuario_id)
+    if request.method == "POST":
+        # Extraer todos los datos del formulario
+        data = request.POST
+        try:
+            # Verificar si ya existe otro usuario con el mismo número de documento
+            if Empleado.objects.filter(numero_documento=data.get('numero_documento')).exclude(id=usuario_id).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe otro usuario con el número de documento ingresado.'
+                }, status=400)
+
+            # Verificar si ya existe otro usuario con el mismo correo personal
+            if Empleado.objects.filter(correo_personal=data.get('correo_personal')).exclude(id=usuario_id).exists():
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya existe otro usuario con el correo personal ingresado.'
+                }, status=400)
+
+            # Actualización de campos obligatorios
+            if rol_id := request.POST.get("fk_rol"):
+                usuario.fk_rol = Rol.objects.get(id=rol_id)
+            if tipo_documento_id := request.POST.get("fk_tipo_documento"):
+                usuario.fk_tipo_documento = TipoDocumento.objects.get(id=tipo_documento_id)
+            usuario.cargo = request.POST.get("cargo", usuario.cargo)
+            usuario.primer_nombre = request.POST.get("primer_nombre", usuario.primer_nombre)
+            usuario.primer_apellido = request.POST.get("primer_apellido", usuario.primer_apellido)
+            usuario.numero_documento = request.POST.get("numero_documento", usuario.numero_documento)
+            usuario.correo_personal = request.POST.get("correo_personal", usuario.correo_personal)
+            if fk_estado_revision := request.POST.get('fk_estado_revision'):
+                usuario.fk_estado_revision = EstadoRevision.objects.get(id=fk_estado_revision)
+
+            # Campos opcionales
+            usuario.segundo_nombre = request.POST.get("segundo_nombre", usuario.segundo_nombre)
+            usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
+            usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
+            usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
+            usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
+            usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
+            usuario.sexo = request.POST.get("sexo", usuario.sexo)
+            usuario.telefono_fijo = request.POST.get("telefono_fijo", usuario.telefono_fijo)
+            usuario.celular = request.POST.get("celular", usuario.celular)
+            usuario.estado_civil = request.POST.get("estado_civil", usuario.estado_civil)
+            if ultimo_nivel_estudio_id := request.POST.get("fk_ultimo_nivel_estudio"):
+                usuario.fk_ultimo_nivel_estudio = NivelAcademico.objects.get(id=ultimo_nivel_estudio_id)
+            if eps_id := request.POST.get("fk_eps"):
+                usuario.fk_eps = EPS.objects.get(id=eps_id)
+            if arl_id := request.POST.get("fk_arl"):
+                usuario.fk_arl = ARL.objects.get(id=arl_id)
+            if afp_id := request.POST.get("fk_afp"):
+                usuario.fk_afp = AFP.objects.get(id=afp_id)
+            if caja_compensacion_id := request.POST.get("fk_caja_compensacion"):
+                usuario.fk_caja_compensacion = CajaCompensacion.objects.get(id=caja_compensacion_id)
+            usuario.direccion_residencia = request.POST.get("direccion_residencia", usuario.direccion_residencia)
+            if departamento_residencia_id := request.POST.get("fk_departamento_residencia"):
+                usuario.fk_departamento_residencia = Departamento.objects.get(id=departamento_residencia_id)
+            usuario.ciudad_residencia = request.POST.get("ciudad_residencia", usuario.ciudad_residencia)
+            usuario.barrio_residencia = request.POST.get("barrio_residencia", usuario.barrio_residencia)
+            if sede_donde_labora_id := request.POST.get("fk_sede_donde_labora"):
+                usuario.fk_sede_donde_labora = Sede.objects.get(id=sede_donde_labora_id)
+            usuario.url_hoja_de_vida = request.POST.get("url_hoja_de_vida", usuario.url_hoja_de_vida)
+
+            # Cambiar el estado de activo según el estado de revisión
+            if usuario.fk_estado_revision.id == 1:
+                usuario.activo = True
+            else:
+                usuario.activo = False
+
+            # Actualizar el usuario modificado por
+            usuario.fk_modificado_por = request.user
+
+            usuario.save()
+
+            return JsonResponse({
+                "status": "success",
+                "message": "Usuario actualizado correctamente."
+            })
+        except IntegrityError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error de integridad al agregar el usuario. Revise los datos ingresados.'
+            }, status=400)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Error inesperado. Por favor, intente nuevamente.'
+            }, status=500)

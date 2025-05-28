@@ -163,7 +163,7 @@
                             </div>
                         `;
 
-                        fetch(`/siuc/dashboard/detalle_usuario/${userId}/`, {
+                        fetch(`/siuc/dashboard/usuario/detalle_usuario/${userId}/`, {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json"
@@ -198,7 +198,7 @@
                             </div>
                         `;
 
-                        fetch(`/siuc/dashboard/editar_usuario/${userType}/${userId}/`, {
+                        fetch(`/siuc/dashboard/usuario/editar_usuario/${userType}/${userId}/`, {
                             method: "GET",
                             headers: {
                                 "X-Requested-With": "XMLHttpRequest"
@@ -232,7 +232,7 @@
                             </div>
                         `;
 
-                        fetch(`/siuc/dashboard/definir_contrato/${userId}/`, {
+                        fetch(`/siuc/dashboard/usuario/definir_contrato/${userId}/`, {
                             method: "GET",
                             headers: {
                                 "X-Requested-With": "XMLHttpRequest"

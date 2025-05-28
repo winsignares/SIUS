@@ -177,6 +177,7 @@ def definir_contrato_usuario(request, usuario_id):
 # ---------------------------- CONTABILIDAD ---------------------------------
 #
 
+@login_required
 def gestion_contratos_docentes(request):
     """
     Muestra el módulo de contratos (Dpto Contablilidad)
@@ -197,6 +198,7 @@ def gestion_contratos_docentes(request):
     )
 
 
+@login_required
 def gestion_contratos_administrativos(request):
     """
     Muestra el módulo de administrativos (Dpto Contablilidad)

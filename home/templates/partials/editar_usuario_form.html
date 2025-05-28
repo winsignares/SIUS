@@ -1,4 +1,4 @@
-<form id="formEditarUsuario" method="POST" action="{% url 'actualizar_usuario' tipo=tipo usuario_id=usuario.id %}" data-ajax-submit="true">
+<form id="formEditarUsuario" method="POST" action="{% url 'actualizar_usuario' usuario_id=usuario.id %}" data-ajax-submit="true">
     {% csrf_token %}
     <div class="container">
         <div class="container mb-3">
