@@ -52,9 +52,8 @@
                     <div class="col-sm-10">
                         <select name="sede" id="sede" class="form-control" required>
                             <option value="">Seleccione una sede</option>
-                            <option value="SEDE ACADÉMICA CARRERA 53 BARRANQUILLA" {% if programa.sede == "SEDE ACADÉMICA CARRERA 53 BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA CARRERA 53 BARRANQUILLA</option>
-                            <option value="SEDE ACADÉMICA CALLE 64 BARRANQUILLA" {% if programa.sede == "SEDE ACADÉMICA CALLE 64 BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA CALLE 64 BARRANQUILLA</option>
-                            <option value="SEDE ACADÉMICA CALLE 30 MONTERIA" {% if programa.sede == "SEDE ACADÉMICA CALLE 30 MONTERIA" %}selected{% endif %}>SEDE ACADÉMICA CALLE 30 MONTERIA</option>
+                            <option value="BARRANQUILLA" {% if programa.sede == "BARRANQUILLA" %}selected{% endif %}>SEDE ACADÉMICA BARRANQUILLA</option>
+                            <option value="MONTERÍA" {% if programa.sede == "MONTERÍA" %}selected{% endif %}>SEDE ACADÉMICA MONTERÍA</option>
                         </select>
                     </div>
                 </div>
@@ -62,7 +61,7 @@
                     <label for="numero_semestres" class="col-sm-2 col-form-label text-color-primario">Número de Semestres:</label>
                     <div class="col-sm-10">
                         <input type="text" name="numero_semestres" id="numero_semestres" class="form-control"
-                               value="{{ programa.numero_semestres|default:'' }}">
+                                value="{{ programa.numero_semestres|default:'' }}">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-alterno-dark">
