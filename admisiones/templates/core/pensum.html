@@ -94,17 +94,19 @@
 
                 <!-- Paginación personalizada -->
                 <div class="d-flex justify-content-center align-items-center mt-3">
-                    <span>Página {{ pensums.number }} de {{ pensums.paginator.num_pages }}</span>
+
                     {% if pensums.has_previous %}
-                        <a class="btn btn-link ms-2" href="?page={{ pensums.previous_page_number }}">◀</a>
+                    <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ pensums.previous_page_number }}">◀</a>
                     {% else %}
-                        <span class="btn btn-link ms-2 disabled">◀</span>
+                    <span class="btn btn-link ms-2 disabled text-decoration-none">◀</span>
                     {% endif %}
 
+                    <span>Página {{ pensums.number }} de {{ pensums.paginator.num_pages }}</span>
+
                     {% if pensums.has_next %}
-                        <a class="btn btn-link ms-2" href="?page={{ pensums.next_page_number }}">▶</a>
+                        <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ pensums.next_page_number }}">▶</a>
                     {% else %}
-                        <span class="btn btn-link ms-2 disabled">▶</span>
+                        <span class="btn btn-link ms-2 disabled text-decoration-none">▶</span>
                     {% endif %}
                 </div>
             </div>

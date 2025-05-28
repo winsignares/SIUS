@@ -14,7 +14,9 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         usuario_log = User.objects.get(username=usuario_autenticado)
         usuario_log.primer_nombre = usuario_log.first_name.capitalize()
         usuario_log.primer_apellido = usuario_log.last_name.capitalize()
+        print(usuario_log.groups.first())
         usuario_log.cargo = usuario_log.groups.first().name.upper()
+        
     except User.DoesNotExist:
         usuario_log = None
 

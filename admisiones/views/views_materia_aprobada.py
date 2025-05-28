@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from home.models.carga_academica.datos_adicionales import Programa, Semestre, Materia
-from home.models.talento_humano import Usuario
+from django.contrib.auth.models import User
 from ..models import Matricula, Estudiantes, MateriaAprobada
 from django.contrib import messages
 from .views_home import obtener_db_info  # Importar la función para obtener la información del usuario
@@ -51,6 +51,16 @@ def gestionar_estudiantes(request, materia_id):
 
     # Obtener información adicional para el contexto
     contexto = obtener_db_info(request)
+
+    for estudiante in estudiantes:
+        try:
+            user = User.objects.get(username=estudiante.estudiante)
+            estudiante.nombre_completo = user.get_full_name()  
+            estudiante.correo_personal = user.email  
+        except User.DoesNotExist:
+            estudiante.nombre_completo = "Usuario no encontrado"
+            estudiante.correo_personal = "Correo no disponible"
+
     contexto.update({
         'materia': materia,
         'estudiantes': estudiantes

@@ -7,7 +7,7 @@
                  <p class="fst-italic text-center" id="email-usuario">{{ usuario_log.cargo }}</p>
             {% elif user %}
                 <p class="mb-0" id="nombre-usuario">{{ user.first_name }} {{ user.last_name }}</p>
-                 <p class="fst-italic text-center" id="email-usuario">{{ user_groups|first }}</p>
+                 <p class="fst-italic text-center" id="email-usuario">{{ user_groups|first|upper }}</p>
             {% else %}
                 <p class="mb-0" id="nombre-usuario">Usuario desconocido</p>
             {% endif %}
@@ -92,7 +92,7 @@
         </li>
         {% endif %}
 
-        {% if "Admisiones" in user_groups %}
+        {% if "Director de Admisiones" in user_groups %}
 
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_programa' %}" class="d-flex gap-2 nav-link">
@@ -136,7 +136,7 @@
                 </a>
             </li>
 
-        {% elif "Vicerrectores" in user_groups  %}
+        {% elif "Vicerrector" in user_groups  %}
 
             <li class="nav-item mb-2">
                 <a href="{% url 'evaluacion:gestion_estudiantes' %}" class="d-flex gap-2 nav-link">
@@ -153,8 +153,14 @@
                     <i class="bi bi-pencil-square"></i></i></i>Autoevaluacion Docente
                 </a>
             </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:vista_reportes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Reportes
+                </a>
+            </li>
             
-        {% elif "Docentes" in user_groups %}
+            
+        {% elif "Docente" in user_groups %}
 
             <li class="nav-item mb-2">
                 <a href="{% url 'evaluacion:autoevaluacion_docente' %}" class="d-flex gap-2 nav-link">
@@ -162,7 +168,7 @@
                 </a>
             </li>
 
-        {% elif "Directivos" in user_groups %}
+        {% elif "Directivo" in user_groups %}
 
             <li class="nav-item mb-2">
                 <a href="{% url 'evaluacion:listado_docentes' %}" class="d-flex gap-2 nav-link">

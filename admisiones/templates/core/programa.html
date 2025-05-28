@@ -116,17 +116,18 @@
 
             <!-- Paginación -->
             <div class="d-flex justify-content-center align-items-center mt-3">
-                <span>Página {{ programas.number }} de {{ programas.paginator.num_pages }}</span>
                 {% if programas.has_previous %}
-                    <a class="btn btn-link ms-2" href="?page={{ programas.previous_page_number }}">◀</a>
+                <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ programas.previous_page_number }}">◀</a>
                 {% else %}
-                    <span class="btn btn-link ms-2 disabled">◀</span>
+                <span class="btn btn-link ms-2 disabled text-decoration-none">◀</span>
                 {% endif %}
 
+                <span>Página {{ programas.number }} de {{ programas.paginator.num_pages }}</span>
+
                 {% if programas.has_next %}
-                    <a class="btn btn-link ms-2" href="?page={{ programas.next_page_number }}">▶</a>
+                    <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ programas.next_page_number }}">▶</a>
                 {% else %}
-                    <span class="btn btn-link ms-2 disabled">▶</span>
+                    <span class="btn btn-link ms-2 disabled text-decoration-none">▶</span>
                 {% endif %}
             </div>
         </div>

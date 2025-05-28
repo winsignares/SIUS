@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import director_crud, estudiante_crud, docente_crud, promedios, views_estudiante, views_docente, view_director
+from .views import director_crud, estudiante_crud, docente_crud, promedios, views_estudiante, views_docente, view_director, views_reportes
 app_name = 'evaluacion'
 urlpatterns = [
     path('crud/estudiante/', estudiante_crud.gestion_estudiantes, name='gestion_estudiantes'),
@@ -19,5 +19,9 @@ urlpatterns = [
     path("promedios_docente/", promedios.desempeno_por_programa, name="promedios_docente"),
     path('exportar_informe_excel/', promedios.exportar_informe_excel, name='exportar_informe_excel'),
 
+    path('reportes/', views_reportes.vista_reportes_evaluaciones, name='vista_reportes'),
+    path('reporte/evaluaciones/estudiantes/', views_reportes.exportar_evaluaciones_estudiantes_excel, name='reporte_evaluaciones_estudiantes'),
+    path('reporte/evaluaciones/docentes/', views_reportes.exportar_evaluaciones_docentes_excel, name='reporte_evaluaciones_docentes'),
+    path('reporte/evaluaciones/directivos/', views_reportes.exportar_evaluaciones_directivos_excel, name='reporte_evaluaciones_directivos'),
 
 ]
