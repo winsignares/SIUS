@@ -43,10 +43,20 @@ def materias_estudiante_view(request):
    
     materias_no_evaluadas = materias.exclude(id__in=materias_evaluadas_ids)
 
+    for materia in materias:
+        carga = CargaAcademica.objects.filter(fk_materia=materia).first()
+        if carga and carga.fk_docente_asignado:
+            materia.docente = str(carga.fk_docente_asignado)
+        else:
+            materia.docente = "No asignado" 
+
     contexto = obtener_db_info(request)
 
+    print(materias_evaluadas_ids)
+
     contexto.update({
-        'materias': materias_no_evaluadas,
+        'materias': materias,
+        'materias_no_evaluadas': materias_no_evaluadas,
         'estudiante': estudiante_model,
         'periodo': periodo_activo,
     })
@@ -85,18 +95,10 @@ def evaluar_materia(request, materia_id):
         return redirect('evaluacion:materias_estudiante')
 
     
-    docentes_relacionados_ids = CargaAcademica.objects.filter(
-        fk_programa=estudiante.programa,
-        fk_materia=materia
-    ).values_list('fk_docente_asignado', flat=True)
-
-    if not docentes_relacionados_ids.exists():
-        messages.error(request, "No hay docentes asignados a esta materia.")
-        return redirect('evaluacion:materias_estudiante')
-
     
-    try:
-        docente_evaluado = Empleado.objects.get(id=docentes_relacionados_ids.first())
+    try:        
+        carga = CargaAcademica.objects.filter(fk_materia=materia).first()        
+        docente_evaluado = carga.fk_docente_asignado
     except Empleado.DoesNotExist:
         messages.error(request, "No se encontró el docente asignado para esta materia.")
         return redirect('evaluacion:materias_estudiante')
@@ -138,5 +140,6 @@ def evaluar_materia(request, materia_id):
         'materia': materia,
         'preguntas_por_categoria': preguntas_por_categoria,
         'periodo': periodo_activo,
+        'docente': docente_evaluado,
     }
     return render(request, 'core/evaluacion_materia.html', context)

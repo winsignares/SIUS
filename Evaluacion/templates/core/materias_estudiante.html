@@ -4,6 +4,15 @@
 {% block content %}
 
 <div class="container m-4 p-0" style="min-height: 90vh;">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-color-primario">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <link rel="stylesheet" href="{% static 'styles/estilos.css' %}" />
     <h1 class="mb-4">Listado de Materias Matriculadas</h1>
 
@@ -18,12 +27,17 @@
     {% if materias %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             {% for materia in materias %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                            <h5 class="card-title">{{ materia.materia }}</h5>
-                            <p class="card-text">Código: {{ materia.codigo }}</p>
-                            <a href="{% url 'evaluacion:evaluacion_materia' materia_id=materia.id %}" class="btn btn-primary mt-auto">Evaluar</a>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <h5 class="card-title text-center mb-0">{{ materia.materia }}</h5>
+                            <p class="card-text mb-3" style="font-size: 12px;">Código: {{ materia.codigo }}</p>
+                            <p class="">Docente: {{ materia.docente }}</p>
+                            {% if materia in materias_no_evaluadas %}
+                                <a href="{% url 'evaluacion:evaluacion_materia' materia_id=materia.id %}" class="btn btn-primary">Evaluar</a>
+                            {% else %}
+                                <p class="alert alert-success m-0 p-3">Evaluación completada</p>
+                            {% endif %}                
                         </div>
                     </div>
                 </div>

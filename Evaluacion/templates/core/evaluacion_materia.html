@@ -17,8 +17,12 @@
             </div>
         {% endfor %}
     {% endif %}
+    <div class="text-center mb-4 ">
+        <h2 class="text-center text-color-primario">Evaluación para {{ materia.materia |title }}</h2>
+        <p class="text-color-primario"><strong>Docente:</strong> {{ docente.primer_nombre|title }} {{ docente.primer_apellido|title }}</p>
+
+    </div>
     
-    <h2 class="text-center mb-4 text-color-primario">Evaluación para {{ materia.materia |lower }}</h2>
 
     
     <div class="mb-4">

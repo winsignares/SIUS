@@ -54,6 +54,8 @@ def gestion_estudiante(request, estudiante_id=None):
             username = f"{first_name.lower()}.{last_name.lower()}{numero_documento[-3:]}"
             password = f"{numero_documento}{last_name[0].lower()}{first_name[0].lower()}"
 
+            print(password)
+
             user = User.objects.create_user(
                 username=username,
                 email=email,
