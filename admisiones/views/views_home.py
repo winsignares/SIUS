@@ -65,7 +65,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'id',
             'materia',
             'codigo',
-            'horas',
+            'horas_semanales',
             'fk_semestre_id'
         )
 

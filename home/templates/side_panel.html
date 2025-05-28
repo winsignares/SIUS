@@ -59,6 +59,12 @@
                     <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
                 </a>
             </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:listado_docentes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion Docente
+                </a>
+            </li>
+
         {% endif %}
 
         <!-- Opciones para el rol Director Talento Humano -->
@@ -182,14 +188,7 @@
                 </a>
             </li>
 
-        {% elif "Directivo" in user_groups %}
-
-            <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:listado_docentes' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion Docente
-                </a>
-            </li>
-
+            
         {% elif "Estudiante" in user_groups %}
 
             <li class="nav-item mb-2">
