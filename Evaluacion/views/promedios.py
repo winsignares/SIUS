@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
+from Evaluacion.views.info_db import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Programa
 from Evaluacion.models import EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Usuario
@@ -194,15 +195,18 @@ def desempeno_por_programa(request):
             ]
             desempeno = agregar_nombre_docente(desempeno, 'docente_id')
 
-    context = {
+
+    contexto = obtener_db_info(request)
+
+    contexto.update({
         'programas': programas,
         'estudiantes': estudiantes,
         'directivos': directivos,
         'autoevaluacion': autoevaluacion,
         'desempeno': desempeno,
         'programa_seleccionado': programa_seleccionado,
-    }
-    return render(request, 'core/promedios_docentes.html', context)
+    })
+    return render(request, 'core/promedios_docentes.html', contexto)
 
 @login_required
 def exportar_informe_excel(request):
