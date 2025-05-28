@@ -5,12 +5,13 @@ from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDirectivo, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Empleado
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from home.models.carga_academica.datos_adicionales import Periodo
+from home.models.carga_academica.datos_adicionales import Periodo, ProgramaUser
 from django.utils.timezone import now
+
 
 @login_required
 def listado_docentes(request):
-    usuario_actual = Empleado.objects.filter(auth_user=request.user).first()
+    usuario_actual = ProgramaUser.objects.filter(fk_user=request.user).first()
 
     contexto = obtener_db_info(request)
 
@@ -18,7 +19,7 @@ def listado_docentes(request):
         mensaje_error = "No se encontró información asociada a tu cuenta. Contacta al administrador."
         return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
 
-    if not usuario_actual.programa:
+    if not usuario_actual.fk_programa:
         mensaje_error = "No tienes un programa asignado. Por favor, contacta a la administración."
         return render(request, 'core/listado_docentes.html', {'mensaje_error': mensaje_error})
 
@@ -36,7 +37,7 @@ def listado_docentes(request):
     docentes = Empleado.objects.filter(
         fk_rol__rol='D',
         activo=True,
-        programa=usuario_actual.programa
+        programa=usuario_actual.fk_programa
     )
 
     if not docentes.exists():

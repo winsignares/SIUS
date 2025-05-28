@@ -14,7 +14,7 @@ class EstadoRevision(models.Model):
         verbose_name_plural = 'Estados de Revisión'
 
     def __str__(self):
-        return f"{self.primer_nombre} {self.primer_apellido}"
+        return f"{self.estado}"
 
 class Empleado(models.Model):
     # Campos obligatorios

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models.talento_humano import NivelAcademico, Rol, Tarifa, TipoDocumento, Sede, Contrato, NivelAcademicoHistorico, EmpleadoUser
+from .models.talento_humano import NivelAcademico, Rol, Tarifa, TipoDocumento, Sede, Contrato, NivelAcademicoHistorico, EmpleadoUser, Empleado
 from .models.talento_humano.datos_adicionales import Departamento, EPS, ARL, AFP, CajaCompensacion
 from .models.carga_academica import CargaAcademica, Materia, Periodo, Programa, Semestre, ProgramaUser, Pensum
 # Register your models here.
@@ -23,3 +23,4 @@ admin.site.register(EPS)
 admin.site.register(ARL)
 admin.site.register(AFP)
 admin.site.register(CajaCompensacion)
+admin.site.register(Empleado)

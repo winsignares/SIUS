@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from Evaluacion.views.info_db import obtener_db_info
 from home.models.carga_academica.datos_adicionales import Programa
 from Evaluacion.models import EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
-from home.models.talento_humano.usuarios import Empleado
+from home.models.talento_humano.usuarios import Empleado, EmpleadoUser
 import openpyxl
 from django.contrib.auth.decorators import login_required
 
@@ -68,7 +68,7 @@ def obtener_calificaciones_autoevaluacion_docente(programa_id=None):
 
     resultados = []
     for evaluacion in evaluaciones:
-        usuario = Empleado.objects.filter(auth_user=evaluacion.docente).first()
+        usuario = EmpleadoUser.objects.filter(fk_user=evaluacion.docente).first()
         if programa_id and usuario and usuario.programa_id != int(programa_id):
             continue  # filtro por programa
 

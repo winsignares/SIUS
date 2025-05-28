@@ -83,6 +83,13 @@ class EvaluacionEstudiante(models.Model):
         on_delete=models.CASCADE,
         related_name='evaluaciones_estudiantes'
     )
+    docente_evaluado = models.ForeignKey(
+        Empleado,
+        on_delete=models.CASCADE,
+        related_name='evaluaciones_estudiantes_docentes',
+        limit_choices_to={'fk_rol__rol': 'D'}
+    )
+    
     respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 

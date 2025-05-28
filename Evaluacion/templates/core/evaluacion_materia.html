@@ -8,14 +8,15 @@
     <link rel="stylesheet" href="{% static 'styles/independientes.css' %}">
 </head>
 <body>
-    {% if messages %}
+   
+<div class="container mt-4">
+     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} text-color-primario">
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
-<div class="container mt-4">
     
     <h2 class="text-center mb-4 text-color-primario">Evaluación para {{ materia.materia |lower }}</h2>
 
