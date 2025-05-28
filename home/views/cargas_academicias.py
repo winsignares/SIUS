@@ -204,3 +204,47 @@ def guardar_matriz(request):
                 'status': 'error',
                 'message': "Error inesperado. Por favor, intente nuevamente."
             }, status=500)
+
+
+#
+# ---------------------------- APROBACIÓN DE CARGA ACADEMICA ---------------------------------
+#
+
+
+@login_required
+def gestion_cargas_aprobaciones(request):
+    """
+    Muestra la gestión
+    """
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
+
+    dia_actual = datetime.now().date()
+
+    contexto.update({
+            "dia_actual": dia_actual,
+        })
+
+    return render(request, 'carga_aprobaciones.html', contexto)
+
+
+@login_required
+def cargas_filtradas(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        programa_id = request.GET.get("programa")
+        semestre_id = request.GET.get("semestre")
+        cargas = CargaAcademica.objects.all()
+        if programa_id:
+            cargas = cargas.filter(fk_programa_id=programa_id)
+        if semestre_id:
+            cargas = cargas.filter(fk_semestre_id=semestre_id)
+        data = []
+        for carga in cargas:
+            data.append({
+                "programa": str(carga.fk_programa),
+                "semestre": str(carga.fk_semestre),
+                "materia": str(carga.fk_materia),
+                "docente": str(carga.fk_docente_asignado),
+                "horas": carga.horas_semanales,
+            })
+        return JsonResponse({"cargas": data})
+    return JsonResponse({"cargas": []})

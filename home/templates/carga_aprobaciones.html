@@ -1,0 +1,161 @@
+{% extends "dashboard.html" %}
+
+
+{% block title %}Carga Acádemica - SIUC{% endblock %}
+{% block container_class %}justify-content-start align-items-start{% endblock %}
+
+{% block content %}
+{% load format_extras %}
+
+<div class="container-fluid m-4">
+    <!-- Título de la página -->
+    <div class="row mb-3">
+        <div class=" d-flex col justify-content-center align-items-center">
+            <h3 class="fw-bold m-0">Aprobación de Carga Acádemica</h3>
+        </div>
+    </div>
+    <div class="row mb-4 d-flex justify-content-center align-items-center">
+        <div class="col-md-4">
+            <label for="filtroPrograma" class="form-label">Programa</label>
+            <select id="filtroPrograma" class="form-select">
+                <option value="">Todos</option>
+                {% for programa in programas_list %}
+                    <option value="{{ programa.id }}" data-num-semestres="{{ programa.numero_semestres }}">{{ programa.programa }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="filtroSemestre" class="form-label">Semestre</label>
+            <select id="filtroSemestre" class="form-select">
+                <option value="">Todos</option>
+                <!-- Opciones se llenan por JS -->
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-3 align-middle">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Programa</th>
+                            <th>Semestre</th>
+                            <th>Materia</th>
+                            <th>Docente</th>
+                            <th>Horas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCargasBody">
+                        <tr>
+                            <td colspan="6" class="text-center">Seleccione filtros para ver las cargas académicas.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const filtroPrograma = document.getElementById("filtroPrograma");
+        const filtroSemestre = document.getElementById("filtroSemestre");
+        const tablaBody = document.getElementById("tablaCargasBody");
+
+        function actualizarSemestres() {
+            filtroSemestre.innerHTML = '<option value="">Todos</option>';
+            const selectedOption = filtroPrograma.options[filtroPrograma.selectedIndex];
+            const numSemestres = selectedOption ? selectedOption.getAttribute('data-num-semestres') : null;
+            if (numSemestres) {
+                for (let i = 1; i <= parseInt(numSemestres); i++) {
+                    filtroSemestre.innerHTML += `<option value="${i}">${i} Semestre</option>`;
+                }
+            }
+        }
+
+        filtroPrograma.addEventListener("change", function() {
+            actualizarSemestres();
+            cargarCargas();
+        });
+
+        filtroSemestre.addEventListener("change", cargarCargas);
+
+        function cargarCargas() {
+            const programaId = filtroPrograma.value;
+            const semestreId = filtroSemestre.value;
+            fetch(`/siuc/dashboard/carga_academica/aprobaciones/cargas_filtradas/?programa=${programaId}&semestre=${semestreId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                tablaBody.innerHTML = "";
+                if (!data.cargas || data.cargas.length === 0) {
+                    tablaBody.innerHTML = `<tr><td colspan="6" class="text-center">No hay cargas académicas para los filtros seleccionados.</td></tr>`;
+                } else {
+                    data.cargas.forEach(carga => {
+                        tablaBody.innerHTML += `
+                            <tr class="text-center">
+                                <td>${carga.programa}</td>
+                                <td>${carga.semestre}</td>
+                                <td>${carga.materia}</td>
+                                <td>${carga.docente}</td>
+                                <td>${carga.horas}</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input aprobar-carga" data-carga-id="${carga.id}" ${carga.aprobada ? 'checked' : ''}>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+        }
+
+        // Manejar aprobación individual
+        tablaBody.addEventListener("change", function(e) {
+            if (e.target.classList.contains("aprobar-carga")) {
+                const cargaId = e.target.getAttribute("data-carga-id");
+                const aprobada = e.target.checked;
+                fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_carga/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ carga_id: cargaId, aprobada: aprobada })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showAlert(data.message, data.status === "success" ? "success" : "error");
+                });
+            }
+        });
+
+        // Manejar aprobación masiva
+        document.getElementById("aprobarTodasBtn").addEventListener("click", function() {
+            const programaId = filtroPrograma.value;
+            const semestreId = filtroSemestre.value;
+            fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_todas/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: JSON.stringify({ programa_id: programaId, semestre_id: semestreId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.message, data.status === "success" ? "success" : "error");
+                cargarCargas(); // Refresca la tabla
+            });
+        });
+
+        // Inicializar semestres si hay un programa seleccionado por defecto
+        actualizarSemestres();
+    });
+</script>
+{% endblock %}

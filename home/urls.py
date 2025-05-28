@@ -45,10 +45,12 @@ urlpatterns = [
 
     # # MÓDULO DE CARGA ACADÉMICA
     path("dashboard/carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"),
+    path("dashboard/carga_academica/aprobaciones/", views.gestion_cargas_aprobaciones, name="gestion_cargas_aprobaciones"),
+    path("dashboard/carga_academica/aprobaciones/cargas_filtradas/", views.cargas_filtradas, name="cargas_filtradas"),
 
     # # MÓDULO DE MATRIZ DE CARGA ACADÉMICA
     path("dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),
-    path("dashboard/matriz/guardar_matriz/", views.guardar_matriz, name="guardar_matriz"), # Falta Corregir
+    path("dashboard/matriz/guardar_matriz/", views.guardar_matriz, name="guardar_matriz"),
 
     # # MÓDULO DE FUNCIONES SUSTANTIVAS
     path("dashboard/funciones_sustantivas/", views.gestion_func_sustantivas, name="gestion_func_sustantivas"),
