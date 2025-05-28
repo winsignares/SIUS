@@ -14,7 +14,7 @@ def vista_reportes_evaluaciones(request):
     contexto = obtener_db_info(request)
     return render(request, 'core/reportes.html', contexto)
 
-@login_required
+
 def exportar_evaluaciones_estudiantes_excel(request):
     wb = Workbook()
     ws = wb.active
@@ -49,7 +49,7 @@ def exportar_evaluaciones_estudiantes_excel(request):
     response['Content-Disposition'] = 'attachment; filename=evaluaciones_estudiantes.xlsx'
     return response
 
-@login_required
+
 def exportar_evaluaciones_docentes_excel(request):
     wb = Workbook()
     ws = wb.active
@@ -83,7 +83,7 @@ def exportar_evaluaciones_docentes_excel(request):
     response['Content-Disposition'] = 'attachment; filename=evaluaciones_docentes.xlsx'
     return response
 
-@login_required
+
 def exportar_evaluaciones_directivos_excel(request):
     wb = Workbook()
     ws = wb.active

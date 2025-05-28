@@ -13,14 +13,13 @@ PONDERACIONES = {
     "directivos": 0.4,
     "autoevaluacion": 0.2,
 }
-@login_required
 def obtener_calificaciones_estudiantes_por_docente(programa_id=None):
     evaluaciones = EvaluacionEstudiante.objects.select_related('materia')
     resultados = []
 
     for evaluacion in evaluaciones:
         if programa_id and evaluacion.materia.fk_programa_id != int(programa_id):
-            continue  # filtro por programa
+            continue  
 
         respuestas = evaluacion.respuestas
         if respuestas:
@@ -36,7 +35,6 @@ def obtener_calificaciones_estudiantes_por_docente(programa_id=None):
 
     return resultados
 
-@login_required
 def obtener_calificaciones_directivo(programa_id=None):
     evaluaciones = EvaluacionDirectivo.objects.all()
     resultados = []
@@ -65,7 +63,6 @@ def obtener_calificaciones_directivo(programa_id=None):
 
     return resultados
 
-@login_required
 def obtener_calificaciones_autoevaluacion_docente(programa_id=None):
     evaluaciones = EvaluacionDocente.objects.select_related('docente')
 
@@ -87,7 +84,6 @@ def obtener_calificaciones_autoevaluacion_docente(programa_id=None):
 
     return resultados
 
-@login_required
 def categorizar_desempeno(promedio):
     if promedio >= 4.5:
         return "Excelente"
@@ -98,7 +94,6 @@ def categorizar_desempeno(promedio):
     else:
         return "Bajo"
 
-@login_required
 def calcular_desempeno_docentes_categorizado(programa_id=None):
     estudiantes = obtener_calificaciones_estudiantes_por_docente(programa_id)
     directivos = obtener_calificaciones_directivo(programa_id)
@@ -142,7 +137,6 @@ def calcular_desempeno_docentes_categorizado(programa_id=None):
 
     return desempeno
 
-@login_required
 def agregar_nombre_docente(lista, key_id):
     for item in lista:
         docente_id = item.get(key_id)
@@ -207,7 +201,6 @@ def desempeno_por_programa(request):
     })
     return render(request, 'core/promedios_docentes.html', contexto)
 
-@login_required
 def exportar_informe_excel(request):
     programa_seleccionado = request.GET.get('programa', None)
     tipo_informe = request.GET.get('tipo', None)
@@ -268,7 +261,6 @@ def exportar_informe_excel(request):
     return response
 
 
-@login_required
 def merge_informe_docente(autoevaluacion, estudiantes, directivos):
     docentes = {}
 
@@ -303,7 +295,6 @@ def merge_informe_docente(autoevaluacion, estudiantes, directivos):
         })
     return resultado
 
-@login_required
 def generar_informe_programa_formacion(programa_id):
     # Aquí deberías implementar el cálculo para el informe por programa de formación,
     # según tus datos específicos y necesidades.
