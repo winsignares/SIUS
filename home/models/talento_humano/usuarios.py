@@ -5,7 +5,7 @@ from .datos_adicionales import EPS
 from django.conf import settings
 
 
-class Usuario(models.Model):
+class Empleado(models.Model):
 
     # Campos obligatorios
     id = models.AutoField(primary_key=True)

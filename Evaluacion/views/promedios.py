@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from home.models.carga_academica.datos_adicionales import Programa
 from Evaluacion.models import EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo
-from home.models.talento_humano.usuarios import Usuario
+from home.models.talento_humano.usuarios import Empleado
 import openpyxl
 from django.contrib.auth.decorators import login_required
 
@@ -70,7 +70,7 @@ def obtener_calificaciones_autoevaluacion_docente(programa_id=None):
 
     resultados = []
     for evaluacion in evaluaciones:
-        usuario = Usuario.objects.filter(auth_user=evaluacion.docente).first()
+        usuario = Empleado.objects.filter(auth_user=evaluacion.docente).first()
         if programa_id and usuario and usuario.programa_id != int(programa_id):
             continue  # filtro por programa
 
@@ -146,7 +146,7 @@ def agregar_nombre_docente(lista, key_id):
     for item in lista:
         docente_id = item.get(key_id)
         if docente_id:
-            usuario = Usuario.objects.filter(id=docente_id).first()
+            usuario = Empleado.objects.filter(id=docente_id).first()
             item['docente_nombre'] = usuario.__str__() if usuario else "Desconocido"
         else:
             item['docente_nombre'] = "Desconocido"
@@ -164,7 +164,7 @@ def desempeno_por_programa(request):
     desempeno = []
 
     if programa_seleccionado:
-        docentes_relacionados = Usuario.objects.filter(programa__id=programa_seleccionado)
+        docentes_relacionados = Empleado.objects.filter(programa__id=programa_seleccionado)
 
         if funcion == 'estudiantes':
             estudiantes = obtener_calificaciones_estudiantes_por_docente()

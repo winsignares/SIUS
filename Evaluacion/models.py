@@ -1,9 +1,8 @@
 from django.db import models
 from home.models.carga_academica.datos_adicionales import  Materia
-from home.models.talento_humano import Usuario
+from home.models.talento_humano import Empleado
 from admisiones.models import Estudiantes
 from django.contrib.auth.models import User
-from home.models.talento_humano.usuarios import Usuario
 from home.models.carga_academica.datos_adicionales import Periodo
 
 class CategoriaEstudiante(models.Model):
@@ -128,7 +127,7 @@ class EvaluacionDirectivo(models.Model):
         related_name='evaluaciones_directivo'
     )
     docente_evaluado = models.ForeignKey(
-        Usuario,
+        Empleado,
         on_delete=models.CASCADE,
         related_name='evaluaciones_directivos',
         limit_choices_to={'fk_rol__rol': 'D'}

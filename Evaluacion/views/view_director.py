@@ -3,14 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDirectivo, EvaluacionDirectivo
-from home.models.talento_humano.usuarios import Usuario
+from home.models.talento_humano.usuarios import Empleado
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from home.models.carga_academica.datos_adicionales import Periodo
 from django.utils.timezone import now
 
 @login_required
 def listado_docentes(request):
-    usuario_actual = Usuario.objects.filter(auth_user=request.user).first()
+    usuario_actual = Empleado.objects.filter(auth_user=request.user).first()
 
     contexto = obtener_db_info(request)
 
@@ -33,7 +33,7 @@ def listado_docentes(request):
         contexto.update({'mensaje_error': mensaje_error})
         return render(request, 'core/listado_docentes.html', contexto)
 
-    docentes = Usuario.objects.filter(
+    docentes = Empleado.objects.filter(
         fk_rol__rol='D',
         activo=True,
         programa=usuario_actual.programa
@@ -65,7 +65,7 @@ def listado_docentes(request):
 
 @login_required
 def evaluar_docente(request, docente_id):
-    docente_evaluado = get_object_or_404(Usuario, id=docente_id)
+    docente_evaluado = get_object_or_404(Empleado, id=docente_id)
     evaluador = request.user
 
     

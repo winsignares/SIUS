@@ -1,12 +1,12 @@
 from django.db import models
-from .usuarios import Usuario
+from .usuarios import Empleado
 
 # Create your models here.
 
 
 class Contrato(models.Model):
     id = models.AutoField(primary_key=True)
-    fk_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="contrato", verbose_name=("Usuario"))
+    fk_usuario = models.ForeignKey(Empleado, on_delete=models.CASCADE, related_name="contrato", verbose_name=("Usuario"))
     fecha_inicio = models.DateField(verbose_name=('Fecha Inicio Contrato'), null=True, blank=True)
     fecha_fin = models.DateField(verbose_name=('Fecha Fin Contrato'), null=True, blank=True)
     tipo_contrato = models.CharField(verbose_name=('Tipo Contrato'), max_length=255, null=True, blank=True)

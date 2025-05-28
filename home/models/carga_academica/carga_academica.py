@@ -1,5 +1,5 @@
 from django.db import models
-from home.models.talento_humano.usuarios import Usuario
+from home.models.talento_humano.usuarios import Empleado
 from .datos_adicionales import Periodo, Programa, Semestre, Materia
 from django.conf import settings
 
@@ -10,7 +10,7 @@ class CargaAcademica(models.Model):
     fk_programa = models.ForeignKey(Programa, on_delete=models.CASCADE, verbose_name="Programa")
     fk_semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE, verbose_name="Semestre")
     fk_materia = models.ForeignKey(Materia, on_delete=models.CASCADE, verbose_name="Materia")
-    fk_docente_asignado = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name="Docente Asignado")
+    fk_docente_asignado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Docente Asignado")
     horas_semanales = models.CharField("Horas Semanales", max_length=255, null=True, blank=True)
     total_horas = models.CharField("Total Horas", max_length=255, null=True, blank=True)
     valor_a_pagar = models.IntegerField("Valor a Pagar", null=True, blank=True)
