@@ -1,0 +1,152 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<body class="bg-light text-color-primario">
+    <div class="container mt-5 p-4 bg-white shadow rounded">
+        <h1 class="text-center text-color-terciario mb-4">Desempeño por Programa</h1>
+        <form class="mb-4" method="get" action="">
+            <div class="mb-3">
+                <label for="programa" class="form-label">Selecciona un Programa:</label>
+                <select name="programa" id="programa" class="form-select" required>
+                    <option value="">-- Seleccionar Programa --</option>
+                    {% for programa in programas %}
+                        <option value="{{ programa.id }}" {% if programa_seleccionado == programa.id|stringformat:"s" %}selected{% endif %}>{{ programa.programa }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button type="submit" name="funcion" value="estudiantes" class="btn btn-primary">Calificaciones Estudiantes</button>
+                <button type="submit" name="funcion" value="directivos" class="btn btn-primary">Calificaciones Directivos</button>
+                <button type="submit" name="funcion" value="autoevaluacion" class="btn btn-primary">Autoevaluación Docentes</button>
+                <button type="submit" name="funcion" value="desempeno" class="btn btn-primary">Desempeño General</button>
+            </div>
+        </form>
+
+        {% if estudiantes %}
+            <h2 class="text-color-terciario">Calificaciones por Estudiantes</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Docente</th>
+                            <th>Promedio Calificación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in estudiantes %}
+                            <tr>
+                                <td>{{ item.docente }}</td>
+                                <td>{{ item.docente_nombre }} </td>
+                                <td>{{ item.promedio_calificacion|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if directivos %}
+            <h2 class="text-color-terciario">Calificaciones por Directivos</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Docente</th>
+                            <th>Promedio Calificación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in directivos %}
+                            <tr>
+                                <td>{{ item.docente_evaluado }}</td>
+                                <td>{{ item.docente_nombre }}</td>
+                                <td>{{ item.promedio_calificacion|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if autoevaluacion %}
+            <h2 class="text-color-terciario">Autoevaluación Docentes</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Docente</th>
+                            <th>Promedio Calificación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in autoevaluacion %}
+                            <tr>
+                                <td>{{ item.docente_id }}</td>
+                                <td>{{ item.docente_nombre }} ({{ item.docente_id }})</td>
+                                <td>{{ item.promedio_calificacion|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if desempeno %}
+            <h2 class="text-color-terciario">Desempeño General de Docentes</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Docente</th>
+                            <th>Promedio Ponderado</th>
+                            <th>Desempeño</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in desempeno %}
+                            <tr>
+                                <td>{{ item.docente_id }}</td>
+                                <td>{{ item.docente_nombre }}</td>
+                                <td>{{ item.promedio|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if item.desempeño == 'Excelente' %}bg-success
+                                        {% elif item.desempeño == 'Bueno' %}bg-primary
+                                        {% elif item.desempeño == 'Aceptable' %}bg-warning text-dark
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ item.desempeño }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        <!-- Botón exportar al final, solo si hay resultados -->
+        {% if estudiantes or directivos or autoevaluacion or desempeno %}
+            <form method="get" action="{% url 'evaluacion:exportar_informe_excel' %}">
+                <input type="hidden" name="programa" value="{{ programa_seleccionado }}" />
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Selecciona el Tipo de Informe para Exportar:</label>
+                    <select name="tipo" id="tipo" class="form-select" required>
+                        <option value="">-- Seleccionar Informe --</option>
+                        <option value="general" {% if funcion == 'desempeno' %}selected{% endif %}>Informe General</option>
+                        <option value="docente_individual" {% if funcion == 'autoevaluacion' %}selected{% endif %}>Informe Individual del Docente</option>
+                        <option value="ranking">Informe de Ranking</option>
+                        <option value="programa_formacion">Informe por Programa de Formación</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Exportar Informe a Excel</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

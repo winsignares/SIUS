@@ -1,0 +1,8 @@
+thead.bg-dark th {
+            background-color: #1e1e1e !important;
+            color: white !important;
+        }
+        table.table-bordered th,
+        table.table-bordered td {
+            border: 1px solid #dee2e6 !important;
+        }

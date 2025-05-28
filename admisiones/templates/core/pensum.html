@@ -1,0 +1,115 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/estilos_personalizados.css' %}">
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-color-primario mb-4">Gestión de Pensum</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header text-white" style="background-color: var(--color-primario);">
+                {% if pensum %}Editar Pensum{% else %}Registrar Nuevo Pensum{% endif %}
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% if pensum %}
+                        <input type="hidden" name="id_pensum" value="{{ pensum.id }}">
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="pensum" class="form-label text-color-primario">Número de Pensum:</label>
+                        <input type="number" name="codigo_pensum" id="pensum" class="form-control" required value="{{ pensum.codigo_pensum|default:'' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="programa" class="form-label text-color-primario">Programa Asociado:</label>
+                        <select name="programa" id="programa" class="form-select" required>
+                            <option value="" disabled {% if not pensum %}selected{% endif %}>Seleccione un programa</option>
+                            {% for prog in programas %}
+                                <option value="{{ prog.id }}" {% if pensum and pensum.fk_programa.id == prog.id %}selected{% endif %}>{{ prog.programa }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" name="vigente" id="vigente" class="form-check-input" {% if pensum and pensum.vigente %}checked{% endif %}>
+                        <label for="vigente" class="form-check-label text-color-primario">Vigente</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-alterno-dark">
+                        {% if pensum %}Actualizar{% else %}Guardar{% endif %}
+                    </button>
+                    {% if pensum %}
+                        <a href="{% url 'gestion_pensum' %}" class="btn btn-alterno-red">Cancelar</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header text-white" style="background-color: var(--color-primario);">
+                Listado de Pensum
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Código Pensum</th>
+                            <th>Programa</th>
+                            <th>Vigente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pensums %}
+                            <tr>
+                                <td class="text-center">{{ p.id }}</td>
+                                <td class="text-center">{{ p.codigo_pensum }}</td>
+                                <td class="text-center">{{ p.fk_programa.programa }}</td>
+                                <td class="text-center">{{ p.vigente|yesno:"Sí,No" }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'gestion_pensum' p.id %}" class="btn btn-alterno-dark btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="{% url 'eliminar_pensum' p.id %}" class="btn btn-alterno-red btn-sm" onclick="return confirm('¿Deseas eliminar este pensum?');">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No hay registros de pensum.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Paginación personalizada -->
+                <div class="d-flex justify-content-center align-items-center mt-3">
+
+                    {% if pensums.has_previous %}
+                    <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ pensums.previous_page_number }}">◀</a>
+                    {% else %}
+                    <span class="btn btn-link ms-2 disabled text-decoration-none">◀</span>
+                    {% endif %}
+
+                    <span>Página {{ pensums.number }} de {{ pensums.paginator.num_pages }}</span>
+
+                    {% if pensums.has_next %}
+                        <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ pensums.next_page_number }}">▶</a>
+                    {% else %}
+                        <span class="btn btn-link ms-2 disabled text-decoration-none">▶</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

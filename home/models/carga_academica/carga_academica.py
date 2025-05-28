@@ -11,8 +11,8 @@ class CargaAcademica(models.Model):
     fk_semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE, verbose_name="Semestre")
     fk_materia = models.ForeignKey(Materia, on_delete=models.CASCADE, verbose_name="Materia")
     fk_docente_asignado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Docente Asignado")
-    horas_semanales = models.IntegerField("Horas Semanales", null=True, blank=True)
-    total_horas = models.IntegerField("Total Horas", null=True, blank=True)
+    horas_semanales = models.CharField("Horas Semanales", max_length=255, null=True, blank=True)
+    total_horas = models.CharField("Total Horas", max_length=255, null=True, blank=True)
     valor_a_pagar = models.IntegerField("Valor a Pagar", null=True, blank=True)
     materia_compartida = models.BooleanField("Materia Compartida", default=False, null=True, blank=True)
 

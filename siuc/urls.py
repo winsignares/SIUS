@@ -23,5 +23,7 @@ urlpatterns = [
     path('root/', admin.site.urls),
 
     # SIUC
-    path('siuc/', include('home.urls'))
+    path('siuc/', include('home.urls')),
+    path('siuc/admisiones/', include('admisiones.urls')),
+    path('siuc/evaluacion/', include('Evaluacion.urls')),
 ]
