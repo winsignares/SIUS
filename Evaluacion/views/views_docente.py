@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
 from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDocente, EvaluacionDocente
 from django.utils.timezone import now

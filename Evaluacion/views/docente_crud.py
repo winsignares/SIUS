@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
-
+from django.contrib.auth.decorators import login_required
 from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDocente, PreguntaDocente
 
+@login_required
 def gestion_docente(request):
     categorias = CategoriaDocente.objects.prefetch_related('preguntas').all()
 

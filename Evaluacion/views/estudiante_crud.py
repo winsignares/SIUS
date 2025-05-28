@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
 from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaEstudiante, PreguntaEstudiante
 

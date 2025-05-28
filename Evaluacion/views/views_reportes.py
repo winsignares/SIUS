@@ -1,7 +1,7 @@
 
 from openpyxl.utils import get_column_letter
 from django.http import HttpResponse
-
+from django.contrib.auth.decorators import login_required
 from Evaluacion.views.info_db import obtener_db_info
 from ..models import EvaluacionEstudiante, EvaluacionDirectivo, EvaluacionDocente
 from django.shortcuts import render
@@ -9,11 +9,12 @@ from io import BytesIO
 from django.http import HttpResponse
 from openpyxl import Workbook
 
+@login_required
 def vista_reportes_evaluaciones(request):
     contexto = obtener_db_info(request)
     return render(request, 'core/reportes.html', contexto)
 
-
+@login_required
 def exportar_evaluaciones_estudiantes_excel(request):
     wb = Workbook()
     ws = wb.active
@@ -48,6 +49,7 @@ def exportar_evaluaciones_estudiantes_excel(request):
     response['Content-Disposition'] = 'attachment; filename=evaluaciones_estudiantes.xlsx'
     return response
 
+@login_required
 def exportar_evaluaciones_docentes_excel(request):
     wb = Workbook()
     ws = wb.active
@@ -81,6 +83,7 @@ def exportar_evaluaciones_docentes_excel(request):
     response['Content-Disposition'] = 'attachment; filename=evaluaciones_docentes.xlsx'
     return response
 
+@login_required
 def exportar_evaluaciones_directivos_excel(request):
     wb = Workbook()
     ws = wb.active

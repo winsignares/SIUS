@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
 from Evaluacion.views.info_db import obtener_db_info
 from ..models import CategoriaDirectivo, EvaluacionDirectivo
 from home.models.talento_humano.usuarios import Usuario

@@ -3,7 +3,9 @@ from django.urls import reverse
 from django.contrib import messages
 from .info_db import obtener_db_info
 from ..models import CategoriaDirectivo, PreguntaDirectivo
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def gestion_directivo(request):
     categorias = CategoriaDirectivo.objects.prefetch_related('preguntas').all()
 
