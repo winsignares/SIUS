@@ -38,8 +38,6 @@ class CargaAcademica(models.Model):
     aprobado_rectoria = models.BooleanField("Aprobado", default=False)
     fk_aprobado_rectoria = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_rectoria', verbose_name="Aprobación Rectoría", on_delete=models.SET_NULL, null=True, blank=True)
     fecha_aprobacion_rectoria = models.DateTimeField("Fecha Aprobación Rectoría", null=True, blank=True, default= None)
-
-    campo_prueba = models.CharField(max_length=50)
     class Meta:
         db_table = 'cargas_academicas'
         verbose_name = 'Carga Acádemica'
