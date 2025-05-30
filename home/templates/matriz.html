@@ -48,6 +48,11 @@
                         <div class"container">
                             <div class="container mb-3">
                                 <div class="row px-3">
+                                    <!-- Campos ocultos -->
+                                    <input type="hidden" id="periodoActualId" value="{{ periodo_actual.id }}">
+                                    <input type="hidden" id="programaId" value="{{ programa_usuario.id }}">
+
+                                    <!-- Campos requeridos al coordinador de programa -->
                                     <div class="col-md-5 mb-2">
                                         <label for="semestre" class="form-label">Semestre <span class="fw-bold fs-4">*</span></label>
                                         <select class="form-select" id="semestre" required>
@@ -241,6 +246,9 @@
         });
 
         // Filtro de selects con input (docente)
+        let docenteId = ""; // Aquí se almacena el id del docente seleccionado en el dropdown
+        let dedicacion = ""; // Aquí se almacena la dedicación del docente seleccionado en el dropdown
+
         function setupDropdownFilter(inputId, dropdownId) {
             const inputElement = document.getElementById(inputId);
             const dropdownElement = document.getElementById(dropdownId);
@@ -265,6 +273,10 @@
             dropdownElement.addEventListener("click", function (event) {
                 if (event.target.matches(".dropdown-item")) {
                     const selectedText = event.target.textContent.trim();
+                    docenteId = event.target.getAttribute("data-value");
+                    dedicacion = event.target.getAttribute("data-dedicacion");
+                    console.log("Docente ID:", docenteId);
+                    console.log("Dedicación:", dedicacion);
                     inputElement.value = selectedText;
                     dropdownElement.style.display = "none";
                 }
@@ -435,13 +447,13 @@
             const fila = document.createElement("tr");
             fila.classList.add("text-center", "fs-small");
             fila.innerHTML = `
-                <td>${nuevaCarga.semestre_nombre}</td>
-                <td>${nuevaCarga.materia_nombre}</td>
-                <td>${nuevaCarga.docente_nombre}</td>
-                <td>Tiempo Completo</td>
-                <td>${nuevaCarga.horas_semanales}</td>
-                <td>${nuevaCarga.semanas}</td>
-                <td>${nuevaCarga.total}</td>
+                <td>${ semestreText }</td>
+                <td>${ materiaText }</td>
+                <td>${ docenteNombre }</td>
+                <td>${ dedicacion }</td>
+                <td>${ horasSemanales }</td>
+                <td>${ semanas }</td>
+                <td>${ totalHoras }</td>
                 <td>
                     ${materiaCompartida && programasSeleccionados.length
                     ? programasSeleccionados.map(p => `<div>${p}</div>`).join("")
@@ -490,6 +502,36 @@
 
         // Inicializar el mensaje de vacío
         toggleMensajeVacio();
+
+        // Enviar las cargas al backend para guardar en la BD
+        guardarTodoBtn?.addEventListener("click", async function () {
+            try {
+                const response = await fetch("/siuc/dashboard/matriz/guardar_matriz/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ cargas: cargasAcademicas })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert(result.message, "success");
+                    cargasAcademicas = [];
+                    Array.from(tablaBody.querySelectorAll("tr"))
+                        .forEach(tr => { if (tr.id !== "mensajeVacio") tr.remove(); });
+                    toggleMensajeVacio();
+                } else {
+                    // Mostrar el mensaje de error del backend si existe, si no, mensaje genérico
+                    showAlert(result.message, "error");
+                }
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                showAlert("Ocurrió un error inesperado.", "error");
+            }
+        });
     });
 </script>
 {% endblock %}

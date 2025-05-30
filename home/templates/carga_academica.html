@@ -65,11 +65,11 @@
                                                     <td>
                                                         {% with programas=materias_compartidas_dict|get_item:carga_academica.id %}
                                                             {% if programas and programas|length > 0 %}
-                                                                {# Mostrar el programa madre solo si el usuario está en los programas compartidos #}
+                                                                <!-- Mostrar el programa madre solo si el usuario está en los programas compartidos -->
                                                                 {% if programa_usuario.programa in programas %}
                                                                     <span class="badge bg-programa-madre">{{ carga_academica.fk_programa.programa }}</span>
                                                                 {% endif %}
-                                                                {# Mostrar los demás programas compartidos, excepto el del usuario logueado #}
+                                                                <!-- Mostrar los demás programas compartidos, excepto el del usuario logueado  -->
                                                                 {% for programa in programas %}
                                                                     {% if programa != programa_usuario.programa %}
                                                                         <span class="badge bg-programa">{{ programa }}</span>

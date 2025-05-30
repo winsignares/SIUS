@@ -13,106 +13,122 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Separador -->
     <hr class="w-100 m-1">
+
+    <!-- Opciones -->
     <ul class="nav flex-column">
         <!-- Opción visible para todos los grupos -->
-
-
         <li class="nav-item mb-2">
             <a href="{% url 'dashboard' %}" class="d-flex gap-2 nav-link">
                 <i class="bi bi-house-door-fill"></i></i>Inicio
             </a>
         </li>
 
-        <!-- Opciones para el rol Vicerrector -->
-        {% if "Vicerrector" in user_groups %}
-
+        {% if "Rector" in user_groups %}
+            <!-- Opciones para el rol Rector -->
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_cargas_aprobaciones' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-file-earmark-medical-fill"></i>Cargas Acádemicas
                 </a>
             </li>
-
             <li class="nav-item mb-2 ">
                 <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
                 </a>
             </li>
-        {% endif %}
 
-        <!-- Opciones para el rol Director de Programa -->
-        {% if "Director de Programa" in user_groups %}
+        {% elif "Vicerrector" in user_groups  %}
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_cargas_aprobaciones' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-file-earmark-medical-fill"></i>Cargas Acádemicas
+                </a>
+            </li>
+            <li class="nav-item mb-2 ">
+                <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
+                </a>
+            </li>
+
+            <!-- Separador -->
+            <hr class="w-100 m-1">
+
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:gestion_estudiantes' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion de estudiante
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:gestion_directivo' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion de Directivo
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:gestion_docente' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Autoevaluacion Docente
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:promedios_docente' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-pencil-square"></i></i></i>Reportes
+                </a>
+            </li>
+
+        {% elif "Director Talento Humano" in user_groups or "Secretaria Talento Humano" in user_groups %}
+            <!-- Opciones para el rol Director Talento Humano y Secretaria Talento Humano -->
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i></i>Empleados
+                </a>
+            </li>
+
+        {% elif "Contabilidad" in user_groups %}
+            <!-- Opciones para el rol Contabilidad -->
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-video3"></i> Contratos Docentes
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_administrativos' %}" class="d-flex gap-2 nav-link">
+                    <i class="bi bi-briefcase-fill"></i> Administrativos
+                </a>
+            </li>
+
+        {% elif "Director de Programa" in user_groups %}
+            <!-- Opciones para el rol Director de Programa -->
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_matriz' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-file-earmark-fill"></i></i>Matriz
                 </a>
             </li>
-
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_carga_academica' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-file-earmark-medical-fill"></i>Carga Acádemica
                 </a>
             </li>
-
             <li class="nav-item mb-2 ">
                 <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-people-fill"></i></i>Funciones Sustantivas
                 </a>
             </li>
+
+            <!-- Separador -->
+            <hr class="w-100 m-1">
+
             <li class="nav-item mb-2">
                 <a href="{% url 'evaluacion:listado_docentes' %}" class="d-flex gap-2 nav-link">
                     <i class="bi bi-pencil-square"></i></i></i>Evaluacion Docente
                 </a>
             </li>
 
-        {% endif %}
-
-        <!-- Opciones para el rol Director Talento Humano -->
-        {% if "Director Talento Humano" in user_groups %}
-            <li class="nav-item mb-2">
-                <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
-                </a>
-            </li>
-
-            <li class="nav-item mb-2">
-                <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-people-fill"></i></i>Empleados
-                </a>
-            </li>
-        {% endif %}
-
-        <!-- Opciones para el rol Contabilidad -->
-        {% if "Contabilidad" in user_groups %}
-            <li class="nav-item mb-2">
-                <a href="{% url 'gestion_contratos_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-person-video3"></i> Contratos Docentes
-                </a>
-            </li>
-
-        <li class="nav-item mb-2">
-            <a href="{% url 'gestion_contratos_administrativos' %}" class="d-flex gap-2 nav-link">
-                <i class="bi bi-briefcase-fill"></i> Administrativos
-            </a>
-        </li>
-        {% endif %}
-
-        <!-- Opciones para el rol Secretaria Talento Humano -->
-        {% if "Secretaria Talento Humano" in user_groups %}
-            <li class="nav-item mb-2">
-                <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-person-fill-add"></i></i></i>Aspirantes
-                </a>
-            </li>
-
-            <li class="nav-item mb-2">
-                <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-people-fill"></i></i>Empleados
-                </a>
-            </li>
-        {% endif %}
-
-        {% if "Director de Admisiones" in user_groups %}
+        {% elif "Director de Admisiones" in user_groups %}
 
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_programa' %}" class="d-flex gap-2 nav-link">
@@ -149,55 +165,25 @@
                     <i class="bi bi-person-add"></i></i></i>Estudiantes
                 </a>
             </li>
-            
             <li class="nav-item mb-2">
                 <a href="{% url 'materias_por_programa_semestre' %}" class="d-flex gap-2 nav-link">
                     <i class="bi bi-pencil-square"></i></i></i>Aprobar Materias
                 </a>
             </li>
 
-        {% elif "Vicerrector" in user_groups  %}
-
-            <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:gestion_estudiantes' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion de estudiante
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:gestion_directivo' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-pencil-square"></i></i></i>Evaluacion de Directivo
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:gestion_docente' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-pencil-square"></i></i></i>Autoevaluacion Docente
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:promedios_docente' %}" class="d-flex gap-2 nav-link">
-                    <i class="bi bi-pencil-square"></i></i></i>Reportes
-                </a>
-            </li>
-            
-            
         {% elif "Docente" in user_groups %}
-
             <li class="nav-item mb-2">
                 <a href="{% url 'evaluacion:autoevaluacion_docente' %}" class="d-flex gap-2 nav-link">
                     <i class="bi bi-pencil-square"></i></i></i>Autoevaluacion
                 </a>
             </li>
 
-            
         {% elif "Estudiante" in user_groups %}
-
             <li class="nav-item mb-2">
                 <a href="{% url 'evaluacion:materias_estudiante' %}" class="d-flex gap-2 nav-link">
                     <i class="bi bi-pencil-square"></i></i></i>Evaluacion Docente
                 </a>
             </li>
-
-
         {% endif %}
 
         <!-- Opción visible para todos los grupos (quitar el d-none) -->
