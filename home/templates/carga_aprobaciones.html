@@ -47,7 +47,7 @@
                             <th class="col-1" scope="col">Horas Totales</th>
                             <th class="col-1" scope="col">Valor a Pagar</th>
                             <th class="col-1" scope="col">
-                                <label for="aprobarTodosCheck" class="form-check-label aprobar-todos fs-small">Aprobar todos</label>
+                                <label for="aprobarTodosCheck" class="form-check-label fs-small">Aprobar todos</label>
                                 <input type="checkbox" id="aprobarTodosCheck" class="form-check-input fs-small">
                             </th>
                         </tr>
@@ -102,9 +102,11 @@
             const semestreId = filtroSemestre.value;
             if (!programaId || !semestreId) {
                 mostrarMensajePorDefecto();
+                document.getElementById("aprobarTodosCheck").disabled = true;
+                document.getElementById("aprobarTodosCheck").checked = false;
                 return;
             }
-            fetch(`/siuc/dashboard/carga_academica/aprobaciones/cargas_filtradas/?programa=${programaId}&semestre=${semestreId}`, {
+            fetch(`/siuc/dashboard/carga_academica/aprobaciones/filtrar_cargas_academicas/?programa=${programaId}&semestre=${semestreId}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -114,8 +116,12 @@
                 tablaBody.innerHTML = "";
                 if (!data.cargas || data.cargas.length === 0) {
                     tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay cargas académicas para los filtros seleccionados.</td></tr>`;
+                    document.getElementById("aprobarTodosCheck").disabled = true;
+                    document.getElementById("aprobarTodosCheck").checked = false;
                 } else {
+                    let desaprobadas = 0;
                     data.cargas.forEach(carga => {
+                        if (!carga.aprobada) desaprobadas++;
                         let compartidaHtml = "";
                         if (carga.compartida_con && carga.compartida_con.length > 0) {
                             carga.compartida_con.forEach(programa => {
@@ -126,7 +132,7 @@
                             }
                         });
                         } else {
-                            compartidaHtml = `<span class="fst-italic text-muted">No aplica</span>`;
+                            compartidaHtml = `<span class="fst-italic">No aplica</span>`;
                         }
 
                         tablaBody.innerHTML += `
@@ -145,6 +151,12 @@
                             </tr>
                         `;
                     });
+                    // Habilita solo si hay desaprobadas
+                    document.getElementById("aprobarTodosCheck").disabled = desaprobadas === 0;
+                    // Desmarca el checkbox si se deshabilita
+                    if (desaprobadas === 0) {
+                        document.getElementById("aprobarTodosCheck").checked = false;
+                    }
                 }
             });
         }
@@ -154,7 +166,7 @@
             if (e.target.classList.contains("aprobar-carga")) {
                 const cargaId = e.target.getAttribute("data-carga-id");
                 const aprobada = e.target.checked;
-                fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_carga/`, {
+                fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_carga_academica/`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -166,12 +178,26 @@
                 .then(response => response.json())
                 .then(data => {
                     showAlert(data.message, data.status === "success" ? "success" : "error");
+                    cargarCargas(); // Refresca la tabla para actualizar el estado del checkbox "Aprobar todos"
                 });
             }
         });
 
-        // Manejar aprobación masiva
-        document.getElementById("aprobarTodasBtn").addEventListener("click", function() {
+        // Mostrar el modal al marcar el checkbox
+        document.getElementById("aprobarTodosCheck").addEventListener("change", function(e) {
+            if (e.target.checked) {
+                let modal = new bootstrap.Modal(document.getElementById('modalConfirmarAprobarTodos'));
+                modal.show();
+
+                // Si cancela, desmarcar el checkbox
+                document.getElementById('modalConfirmarAprobarTodos').addEventListener('hidden.bs.modal', function () {
+                    document.getElementById("aprobarTodosCheck").checked = false;
+                }, { once: true });
+            }
+        });
+
+        // Al confirmar en el modal, ejecutar la aprobación masiva
+        document.getElementById("confirmarAprobarTodosBtn").addEventListener("click", function() {
             const programaId = filtroPrograma.value;
             const semestreId = filtroSemestre.value;
             fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_todas/`, {
@@ -187,6 +213,10 @@
             .then(data => {
                 showAlert(data.message, data.status === "success" ? "success" : "error");
                 cargarCargas(); // Refresca la tabla
+                // Cierra el modal y desmarca el checkbox
+                let modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarAprobarTodos'));
+                modal.hide();
+                document.getElementById("aprobarTodosCheck").checked = false;
             });
         });
 

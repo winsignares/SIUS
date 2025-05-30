@@ -1,12 +1,13 @@
 # Importar Librerías
 from collections import defaultdict
-from datetime import datetime
 from itertools import chain
+from datetime import datetime
 import traceback
 import json
+from django.utils import timezone
+from django.db import IntegrityError
 from django.db.models import Sum, Value, Q
 from django.db.models.functions import Coalesce
-from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -229,7 +230,7 @@ def gestion_cargas_aprobaciones(request):
 
 
 @login_required
-def cargas_filtradas(request):
+def filtrar_cargas_academicas(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         programa_id = request.GET.get("programa")
         semestre_id = request.GET.get("semestre")
@@ -283,3 +284,30 @@ def cargas_filtradas(request):
             })
         return JsonResponse({"cargas": data})
     return JsonResponse({"cargas": []})
+
+@login_required
+def aprobar_carga_academica(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        carga_id = data.get("carga_id")
+        aprobada = data.get("aprobada")
+        try:
+            carga = CargaAcademica.objects.get(id=carga_id)
+            carga.aprobado_vicerrectoria = aprobada
+            carga.fk_aprobado_vicerrectoria = request.user if aprobada else None
+            carga.fecha_aprobacion_vicerrectoria = timezone.now() if aprobada else None
+            carga.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Carga académica aprobada correctamente." if aprobada else "Aprobación retirada correctamente."
+            }, status=200)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo actualizar la aprobación."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
