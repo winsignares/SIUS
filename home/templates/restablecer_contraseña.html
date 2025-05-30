@@ -15,14 +15,14 @@
     <body>
         <!-- Icono de información  -->
         <div class="position-absolute top-0 end-0 m-3">
-                <i class="bi bi-info-circle-fill info-icon fs-3"
+            <i class="bi bi-info-circle-fill info-icon fs-3"
                 id="infoIcon"
                 data-bs-toggle="tooltip"
                 data-bs-placement="left"
                 data-bs-html="true"
-                title="<b>Sistema de Información SIUC</b><br><b>Creado por:</b><br>Ramón Montesino<br>Camilo Mercado<br><b>Versión:</b> 1.0<br><b>">
-                </i>
-            </div>
+                data-bs-title="<b>Sistema de Información SIUC</b><br><b>Versión:</b> 1.0<br><b>Derechos reservados &copy; <span id='copyrightYear'></span></b>">
+            </i>
+        </div>
         <section class="vh-100" id="contenidoRestablecerContraseña">
             <div class="container-fluid h-custom">
                 <div class="row d-flex align-items-center h-100">
@@ -41,7 +41,7 @@
                         <form method="POST" action="{% url 'actualizar_contraseña' %}">
                             {% csrf_token %}
                             <div class="form-outline mb-3">
-                                <input type="text" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su correo institucional" value="{{ reset_email|default:'' }}" required>
+                                <input type="text" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su usuario" value="{{ reset_email|default:'' }}" required>
                             </div>
                             <div class="form-outline mb-3 position-relative">
                                 <div class="d-flex gap-3 mb-3 position-relative">
@@ -89,7 +89,6 @@
             </div>
         </section>
 
-        <!-- Importar Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
         <script>
@@ -98,23 +97,31 @@
             const confirmPassword = document.getElementById("confirmPassword");
 
             togglePasswords.addEventListener("click", function () {
-                // Cambia el tipo de input entre "password" y "text"
                 const type = newPassword.type === "password" ? "text" : "password";
                 newPassword.type = type;
                 confirmPassword.type = type;
 
-                // Cambia el icono entre ojo abierto y ojo tachado
+                // Cambia el icono entre ojo
                 this.classList.toggle("bi-eye");
                 this.classList.toggle("bi-eye-slash");
             });
         </script>
+
+        <!-- ICONO DE INFORMACIÓN -->
         <script>
-            // Inicializar tooltips de Bootstrap
             document.addEventListener('DOMContentLoaded', function() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+                const year = new Date().getFullYear();
+                const infoIcon = document.getElementById('infoIcon');
+                if (infoIcon) {
+                    let bsTitle = infoIcon.getAttribute('data-bs-title');
+                    bsTitle = bsTitle.replace("<span id='copyrightYear'></span>", year);
+                    infoIcon.setAttribute('data-bs-title', bsTitle);
+                }
+            
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
             });
         </script>
     </body>
