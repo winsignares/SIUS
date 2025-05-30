@@ -235,6 +235,13 @@ def filtrar_cargas_academicas(request):
         programa_id = request.GET.get("programa")
         semestre_id = request.GET.get("semestre")
         cargas = CargaAcademica.objects.all()
+
+        # Filtrar por periodo actual
+        hoy = timezone.now().date()
+        periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+        if periodo_actual:
+            cargas = cargas.filter(fk_periodo=periodo_actual)
+
         if programa_id:
             cargas = cargas.filter(
                 Q(fk_programa_id=programa_id) |
@@ -242,6 +249,9 @@ def filtrar_cargas_academicas(request):
             ).distinct()
         if semestre_id:
             cargas = cargas.filter(fk_semestre_id=semestre_id)
+
+        # Ordenar por nombre de materia
+        cargas = cargas.order_by('fk_materia__materia')
 
         # Prepara el diccionario de materias compartidas
         materias_compartidas_dict = {}
@@ -306,6 +316,55 @@ def aprobar_carga_academica(request):
             return JsonResponse({
                 "status": "error",
                 "message": "No se pudo actualizar la aprobación."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_todas_cargas_academicas(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        programa_id = data.get("programa_id")
+        semestre_id = data.get("semestre_id")
+        if not programa_id or not semestre_id:
+            return JsonResponse({
+                "status": "error",
+                "message": "Por favor, llene los campos de filtrado de programa y semestre"
+            }, status=400)
+        try:
+            # Obtener el periodo actual por fechas
+            hoy = timezone.now().date()
+            periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+            if not periodo_actual:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No hay un periodo activo."
+                }, status=400)
+
+            cargas = CargaAcademica.objects.filter(
+                fk_periodo=periodo_actual,
+                fk_semestre_id=semestre_id
+            ).filter(
+                Q(fk_programa_id=programa_id) | Q(materiacompartida__fk_programa_id=programa_id)
+            ).distinct()
+            now = timezone.now()
+            for carga in cargas:
+                carga.aprobado_vicerrectoria = True
+                carga.fk_aprobado_vicerrectoria = request.user
+                carga.fecha_aprobacion_vicerrectoria = now
+                carga.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Cargas académicas aprobadas correctamente."
+            })
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo aprobar todas las cargas académicas."
             }, status=400)
     return JsonResponse({
         "status": "error",

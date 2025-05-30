@@ -163,6 +163,25 @@
                     }, 3000);
                 }
 
+                // Función para obtener el valor de una cookie
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== "") {
+                        const cookies = document.cookie.split(";");
+
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+
+                            // ¿Este cookie coincide con el nombre buscado?
+                            if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
             document.addEventListener("DOMContentLoaded", function () {
                 // --- MODALES ---
 

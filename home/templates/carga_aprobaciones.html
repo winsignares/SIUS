@@ -200,7 +200,7 @@
         document.getElementById("confirmarAprobarTodosBtn").addEventListener("click", function() {
             const programaId = filtroPrograma.value;
             const semestreId = filtroSemestre.value;
-            fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_todas/`, {
+            fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
