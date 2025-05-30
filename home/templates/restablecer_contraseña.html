@@ -43,6 +43,9 @@
                             <div class="form-outline mb-3">
                                 <input type="text" id="resetEmail" name="resetEmail" class="form-control" placeholder="Ingrese su usuario" value="{{ reset_email|default:'' }}" required>
                             </div>
+                            <div class="form-outline mb-3">
+                                <input type="password" id="oldPassword" name="oldPassword" class="form-control" placeholder="Ingrese su contraseña anterior" required>
+                            </div>
                             <div class="form-outline mb-3 position-relative">
                                 <div class="d-flex gap-3 mb-3 position-relative">
                                     <!-- Nueva contraseña -->
@@ -93,6 +96,7 @@
 
         <script>
             const togglePasswords = document.getElementById("togglePasswords");
+            const oldPassword = document.getElementById("oldPassword");
             const newPassword = document.getElementById("newPassword");
             const confirmPassword = document.getElementById("confirmPassword");
 
@@ -100,6 +104,7 @@
                 const type = newPassword.type === "password" ? "text" : "password";
                 newPassword.type = type;
                 confirmPassword.type = type;
+                oldPassword.type = type;
 
                 // Cambia el icono entre ojo
                 this.classList.toggle("bi-eye");

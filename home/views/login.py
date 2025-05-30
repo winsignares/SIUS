@@ -71,6 +71,7 @@ def actualizar_contraseña(request):
     elif request.method == 'POST':
 
         reset_email = request.POST.get('resetEmail')
+        old_password = request.POST.get('oldPassword')
         new_password = request.POST.get('newPassword')
         confirm_password = request.POST.get('confirmPassword')
 
@@ -82,6 +83,13 @@ def actualizar_contraseña(request):
                 request,
                 "El usuario ingresado no tiene una cuenta asociada.")
             return redirect('restablecer_contraseña_form')
+
+        # Validar la contraseña anterior
+        if not user.check_password(old_password):
+            messages.error(
+                request,
+                "La contraseña anterior es incorrecta.")
+            return render(request, 'restablecer_contraseña.html', {'reset_email': reset_email})
 
         # Validar si las contraseñas coinciden
         if new_password != confirm_password:
