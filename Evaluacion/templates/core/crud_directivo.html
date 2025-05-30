@@ -16,11 +16,11 @@
 <div class="container mt-5">
     {% if messages %}
       {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} mensaje">{{ message }}</div>
       {% endfor %}
     {% endif %}
 
-    <h1 class="text-center">Gestión de Categorías y Preguntas</h1>
+    <h1 class="text-center">Gestión de Categorías y Preguntas - Directivo</h1>
 
     <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#crearCategoriaModal">
         Crear Categoría

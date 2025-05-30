@@ -2,6 +2,8 @@ from home.models.carga_academica.datos_adicionales  import Programa, Semestre, M
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from home.models.talento_humano.usuarios import EmpleadoUser
+
 def obtener_db_info(request, incluir_datos_adicionales=False):
     """
         Función auxiliar para obtener información especifica del usuario autenticado.
@@ -14,9 +16,17 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         usuario_log = User.objects.get(username=usuario_autenticado)
         usuario_log.primer_nombre = usuario_log.first_name.capitalize()
         usuario_log.primer_apellido = usuario_log.last_name.capitalize()
-        print(usuario_log.groups.first())
         usuario_log.cargo = usuario_log.groups.first().name.upper()
-        
+
+        if usuario_log.cargo != 'ESTUDIANTE':
+            empleado_user = EmpleadoUser.objects.select_related('fk_empleado').filter(fk_user=usuario_autenticado).first()
+            if empleado_user:
+                usuario_log = empleado_user.fk_empleado
+                usuario_log.primer_nombre = usuario_log.primer_nombre.capitalize()
+                usuario_log.primer_apellido = usuario_log.primer_apellido.capitalize()
+                usuario_log.cargo = usuario_log.cargo.upper()
+                print(usuario_log)
+                
     except User.DoesNotExist:
         usuario_log = None
 

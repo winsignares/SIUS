@@ -6,8 +6,29 @@
 .form-select {
     text-transform: uppercase;
     font-size: 12px;
-}
+}   
 
 h4, h5 {
     margin-bottom: 1.3rem;
+}
+
+.mensaje {
+  animation: ocultar 0.5s ease forwards;
+  animation-delay: 3s;
+}
+
+@keyframes ocultar {
+  0% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 0;
+    margin: 1rem 0;
+  }
+  100% {
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
 }
