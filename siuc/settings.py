@@ -35,6 +35,8 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'home',
+    'Evaluacion',
+    'admisiones',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,14 +82,13 @@ WSGI_APPLICATION = 'siuc.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db_siuc",
+        "NAME": "siuc_prueba",
         "USER": "postgres",
         "PASSWORD": "qwerty78963",
         "HOST": "190.242.60.212",
         "PORT": "5436",
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 

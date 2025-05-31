@@ -88,7 +88,7 @@ def agregar_exp_laboral(request):
         print(request.POST)
         usuario_id = request.POST.get("usuario_id")
         empresa = request.POST.get("empresa")
-        cargo = request.POST.get("cargo")
+        cargo = request.POST.get("cargo_laborado")
         fecha_inicio = request.POST.get("fecha_inicio")
         fecha_fin = request.POST.get("fecha_fin")
         laborando_actualmente = request.POST.get("laborando_actualmente") == "on"

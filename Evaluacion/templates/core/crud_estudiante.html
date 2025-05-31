@@ -1,0 +1,128 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/estilos.css' %}" />
+<style>
+    body {
+        background-color: #fef5f6;
+        font-family: 'Poppins', sans-serif;
+    }
+    .btn-dark {
+        font-weight: 500;
+    }
+</style>
+
+<div class="container mt-5">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} mensaje">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <h1 class="text-center">Gestión de Categorías y Preguntas - Estudiantes</h1>
+
+    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#crearCategoriaModal">
+        Crear Categoría
+    </button>
+
+    <hr />
+
+    {% for categoria in categorias %}
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h3>{{ categoria.nombre }}</h3>
+            <div>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editarCategoriaModal{{ categoria.id }}">
+                    Editar
+                </button>
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="eliminar_categoria" />
+                    <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body">
+            <h5>Preguntas</h5>
+            {% for pregunta in categoria.preguntas.all %}
+            <p>{{ pregunta.texto }}</p>
+            {% empty %}
+            <p>No hay preguntas aún.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="modal fade" id="editarCategoriaModal{{ categoria.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="post" class="modal-content">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="editar_categoria" />
+                <input type="hidden" name="categoria_id" value="{{ categoria.id }}" />
+                <div class="modal-header">
+                    <h5>Editar Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" name="nuevo_nombre" value="{{ categoria.nombre }}" required class="form-control mb-3" />
+                    <div id="preguntasEditar{{ categoria.id }}">
+                        {% for pregunta in categoria.preguntas.all %}
+                        <div class="d-flex mb-2">
+                            <input type="text" name="preguntas[]" value="{{ pregunta.texto }}" required class="form-control" />
+                            <button type="button" class="btn btn-danger ms-2" onclick="this.parentElement.remove()">-</button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="agregarPregunta('preguntasEditar{{ categoria.id }}')">Agregar Pregunta</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="modal fade" id="crearCategoriaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="post" class="modal-content">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear_categoria" />
+                <div class="modal-header">
+                    <h5>Crear Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" name="categoria" required class="form-control mb-3" placeholder="Nombre de la categoría" />
+                    <div id="preguntasCrear">
+                        <div class="d-flex mb-2">
+                            <input type="text" name="preguntas[]" required class="form-control" placeholder="Pregunta" />
+                            <button type="button" class="btn btn-danger ms-2" onclick="this.parentElement.remove()">-</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="agregarPregunta('preguntasCrear')">Agregar Pregunta</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Crear Categoría</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function agregarPregunta(containerId) {
+    const container = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.classList.add('d-flex', 'mb-2');
+    div.innerHTML = `
+        <input type="text" name="preguntas[]" required class="form-control" placeholder="Pregunta" />
+        <button type="button" class="btn btn-danger ms-2" onclick="this.parentElement.remove()">-</button>
+    `;
+    container.appendChild(div);
+}
+</script>
+{% endblock %}

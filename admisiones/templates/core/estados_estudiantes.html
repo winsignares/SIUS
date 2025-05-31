@@ -1,0 +1,63 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Estados de Estudiantes en {{ materia.materia }}</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Aprobados</h3>
+            {% if aprobados %}
+                <table class="table table-bordered table-success">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in aprobados %}
+                            <tr>
+                                <td>{{ registro.estudiante.numero_documento}}</td>
+                                <td>{{ registro.estudiante.nombre_completo }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay estudiantes aprobados.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h3>Reprobados</h3>
+            {% if reprobados %}
+                <table class="table table-bordered table-danger">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in reprobados %}
+                            <tr>
+                                <td>{{ registro.estudiante.numero_documento }}</td>
+                                <td>{{ registro.estudiante.nombre_completo }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay estudiantes reprobados.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{% url 'materias_por_programa_semestre' %}" class="btn btn-secondary mt-4">Volver</a>
+</div>
+{% endblock %}

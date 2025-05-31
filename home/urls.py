@@ -46,7 +46,9 @@ urlpatterns = [
     # # MÓDULO DE CARGA ACADÉMICA
     path("dashboard/carga_academica/", views.gestion_carga_academica, name="gestion_carga_academica"),
     path("dashboard/carga_academica/aprobaciones/", views.gestion_cargas_aprobaciones, name="gestion_cargas_aprobaciones"),
-    path("dashboard/carga_academica/aprobaciones/cargas_filtradas/", views.cargas_filtradas, name="cargas_filtradas"),
+    path("dashboard/carga_academica/aprobaciones/filtrar_cargas_academicas/", views.filtrar_cargas_academicas, name="filtrar_cargas_academicas"),
+    path('dashboard/carga_academica/aprobaciones/aprobar_carga_academica/', views.aprobar_carga_academica, name='aprobar_carga_academica'),
+    path("dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas/", views.aprobar_todas_cargas_academicas, name="aprobar_todas_cargas_academicas"),
 
     # # MÓDULO DE MATRIZ DE CARGA ACADÉMICA
     path("dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),

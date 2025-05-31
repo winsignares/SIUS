@@ -1,0 +1,58 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">Seleccionar Programa y Semestre</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col">
+                <label for="programa" class="form-label">Programa:</label>
+                <select name="programa" id="programa" class="form-control" required>
+                    <option value="">Seleccione un programa</option>
+                    {% for programa in programas %}
+                        <option value="{{ programa.id }}">{{ programa.programa }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <label for="semestre" class="form-label">Semestre:</label>
+                <select name="semestre" id="semestre" class="form-control" required>
+                    <option value="">Seleccione un semestre</option>
+                    {% for semestre in semestres %}
+                        <option value="{{ semestre.id }}">{{ semestre.semestre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-dark">Buscar Materias</button>
+    </form>
+
+    {% if materias %}
+        <h2 class="mt-4 text-center">Materias Encontradas</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for materia in materias %}
+                    <tr>
+                        <td>{{ materia.codigo }}</td>
+                        <td>{{ materia.materia }}</td>
+                        <td>
+                            <a href="{% url 'gestionar_estudiantes' materia.id %}" class="btn btn-success btn-sm">Aprobar/Reprobar</a>
+                            <a href="{% url 'estados_estudiantes' materia.id %}" class="btn btn-info btn-sm">Estados</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

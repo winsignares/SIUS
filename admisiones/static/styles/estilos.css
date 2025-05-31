@@ -1,0 +1,382 @@
+/* Colores del proyecto */
+:root {
+    --color-primario: #383837;
+    --color-secundario: #fef5f6;
+    --color-terciario: #ec5464;
+    --color-cuaternario: #9c9c94;
+    --bg-color-select: #e3e6ea;
+    --borde-redondo: 10px;
+    --bg-white: #ffffff;
+}
+
+/* Estilo general */
+body {
+    background-color: var(--color-secundario);
+    font-family: Arial, sans-serif;
+    color: var(--color-primario);
+}
+
+/* Color de texto */
+.text-color-primario {color: var(--color-primario);}
+.text-color-secundario {color: var(--color-secundario);}
+.text-color-terciario {color: var(--color-terciario);}
+.text-color-cuaternario {color: var(--color-cuaternario);}
+
+/*
+--------------------------------------- DASHBOARD BASE ---------------------------------------
+*/
+
+.side-panel {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+    position: sticky;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.bi-person-circle {
+    font-size: 3rem;
+}
+
+.side-panel #nombre-usuario, .side-panel #email-usuario {
+    color: var(--color-secundario);
+}
+
+.side-panel #nombre-usuario {
+    font-size: 1.5rem;
+}
+
+.side-panel #email-usuario {
+    font-size: 0.6rem;
+}
+
+.side-panel .nav-link, .side-panel .logout {
+    color: var(--color-secundario);
+    transition: color 0.3s ease-in-out, transform 0.1s ease-in-out;
+    font-size: 1.3rem;
+}
+
+.side-panel .nav-link:hover, .side-panel .logout:hover {
+    color: var(--color-secundario);
+}
+
+.side-panel .nav-link:active, .side-panel .logout:active {
+    transform: scale(0.95);
+}
+
+.side-panel .logout {
+    margin-top: auto;
+}
+
+.main-container {
+    overflow-y: auto;
+}
+
+/* Estilo del input de filtro */
+.filtro-input {
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    color: var(--color-primario);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.filtro-input:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 8px var(--color-terciario);
+    outline: none;
+}
+
+/* Estilo para los botones de paginación */
+.pagination .page-link {
+    color: var(--color-primario);
+    border: none;
+    box-shadow: none;
+    font-size: 1.3rem;
+    transition: all 0.1s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+}
+
+.pagination .page-link:active {
+    transform: scale(0.98);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table-responsive .custom-header {
+    background-color: var(--color-primario) !important;
+    color: var(--color-secundario) !important;
+}
+
+/* Estilo de enlaces */
+#revisarHojaDeVida, #descargarCVInstitucional {
+    color: var(--color-primario);
+    transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#descargarCVInstitucional {
+    font-size: 0.7rem;
+}
+#revisarHojaDeVida:hover, #descargarCVInstitucional:hover {
+    color: var(--color-terciario);
+    text-decoration: underline;
+}
+
+#revisarHojaDeVida:active, #descargarCVInstitucional:active {
+    transform: scale(0.95);
+}
+
+/* Botones */
+.btn:active {
+    background-color: var(--color-terciario) !important;
+}
+
+.btn-sm {
+    border-radius: 5px;
+}
+
+.btn-primary, .btn-alterno-red {
+    background-color: var(--color-terciario);
+    color: var(--color-secundario) !important;
+    border: none;
+    font-size: 1.3rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-alterno-dark {
+    background-color: var(--color-primario);
+    color: var(--color-secundario) !important;
+    border: none;
+    font-size: 1.3rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.btn-primary:hover, .btn-alterno-red:hover {
+    background-color: var(--color-terciario);
+}
+
+.btn-alterno-dark:hover {
+    background-color: var(--color-primario) !important;
+}
+
+.btn-primary:active, .btn-acciones:active , .btn-alterno-red:active, .btn-alterno-dark:active{
+    color: var(--color-secundario);
+    transform: scale(0.98);
+}
+
+.btn-carga-por-semestre {
+    color: var(--color-terciario) !important;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.3rem;
+    transition: transform 0.1s ease-in-out;
+}
+
+.btn-cargas {
+    background-color: var(--bg-white) !important;
+}
+
+.btn-carga-por-semestre:active {
+    transform: scale(0.998);
+}
+
+.fs-small {
+    font-size: 0.79rem;
+}
+
+/*
+--------------------------------------- GESTIÓN ASPIRTANTES Y EMPLEADOS ---------------------------------------
+*/
+
+.cancelar-filtro {
+    cursor: pointer;
+    display: none;
+}
+
+.custom-tooltip {
+    --bs-tooltip-bg: var(--color-primario) !important;
+    --bs-tooltip-color: var(--color-secundario) !important;
+}
+
+/*
+--------------------------------------- MODAL FORMULARIOS ---------------------------------------
+*/
+
+span {
+    color: var(--color-primario);
+}
+
+.modal-forms .modal-header {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+}
+
+.modal-forms .modal-header .btn-close:focus {
+    box-shadow: none !important;
+}
+
+.modal-forms .modal-body .container {
+    color: var(--color-primario);
+}
+
+.modal-forms .modal-footer {
+    color: var(--color-primario);
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--color-primario);
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 0.5rem;
+    text-transform: uppercase;
+}
+
+.form-check-input:checked {
+    background-color: var(--color-terciario);
+    border-color: var(--color-terciario);
+}
+.form-check-input:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
+#clearFilter i, #clearRechazadosFilter i {
+    color: var(--color-cuaternario);
+    transition: color 0.3s ease-in-out;
+}
+
+#clearFilter i:hover, #clearRechazadosFilter i:hover {
+    color: var(--color-primario);
+}
+
+.modal .link-modal {
+    color: var(--color-terciario);
+}
+
+
+/*
+--------------------------------------- ALERTAS ---------------------------------------
+*/
+
+#dynamic-alerts, #alert-container {
+    z-index: 1055;
+}
+
+.fs-color-li {
+    color: var(--color-terciario);
+    }
+
+/*
+--------------------------------------- ESTILOS DE TABLAS ---------------------------------------
+*/
+
+table.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--color-cuaternario);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+}
+
+/* Header styling */
+table.table thead th {
+    background-color: var(--color-primario);
+    color: var(--color-secundario);
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* Row content styling */
+table.table tbody td {
+    vertical-align: middle;
+    color: var(--color-primario);
+    border: none;
+}
+
+/* Estilo de Estado */
+.alert {
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+
+/*
+--------------------------------------- ESTILOS PARA SELECTS ---------------------------------------
+*/
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ced4da;
+    z-index: 1000;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 5px 10px;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.dropdown-menu .dropdown-item:hover, select option:hover {
+    background-color: var(--bg-color-select);
+}
+
+
+/*
+--------------------------------------- VISTA DETALLES ---------------------------------------
+*/
+
+/* Estilos para las tarjetas */
+.card {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+} */
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Estilo para mostrar texto en mayúsculas */
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.card-body .fs-small {
+    font-size: 0.79rem;
+}
+

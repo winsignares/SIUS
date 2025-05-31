@@ -1,12 +1,13 @@
 # Importar Librerías
 from collections import defaultdict
-from datetime import datetime
 from itertools import chain
+from datetime import datetime
 import traceback
 import json
-from django.db.models import Sum, Value
-from django.db.models.functions import Coalesce
+from django.utils import timezone
 from django.db import IntegrityError
+from django.db.models import Sum, Value, Q
+from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -14,6 +15,7 @@ from django.shortcuts import render
 
 # Importar Vistas
 from .utilidades import obtener_db_info, calcular_valor_a_pagar
+from home.templatetags.format_extras import contabilidad_co, miles_co
 
 
 # Importar Módelos
@@ -228,23 +230,143 @@ def gestion_cargas_aprobaciones(request):
 
 
 @login_required
-def cargas_filtradas(request):
+def filtrar_cargas_academicas(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         programa_id = request.GET.get("programa")
         semestre_id = request.GET.get("semestre")
         cargas = CargaAcademica.objects.all()
+
+        # Filtrar por periodo actual
+        hoy = timezone.now().date()
+        periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+        if periodo_actual:
+            cargas = cargas.filter(fk_periodo=periodo_actual)
+
         if programa_id:
-            cargas = cargas.filter(fk_programa_id=programa_id)
+            cargas = cargas.filter(
+                Q(fk_programa_id=programa_id) |
+                Q(materiacompartida__fk_programa_id=programa_id)
+            ).distinct()
         if semestre_id:
             cargas = cargas.filter(fk_semestre_id=semestre_id)
+
+        # Ordenar por nombre de materia
+        cargas = cargas.order_by('fk_materia__materia')
+
+        # Prepara el diccionario de materias compartidas
+        materias_compartidas_dict = {}
+        for carga in cargas:
+            programas = MateriaCompartida.objects.filter(
+                fk_carga_academica=carga
+            ).values_list('fk_programa__programa', flat=True)
+            materias_compartidas_dict[carga.id] = list(programas)
+
         data = []
         for carga in cargas:
+            # Programas compartidos (nombres)
+            programas = materias_compartidas_dict.get(carga.id, [])
+            # Programa madre
+            programa_madre = carga.fk_programa.programa
+            # Docente
+            docente = f"{carga.fk_docente_asignado.primer_nombre} {carga.fk_docente_asignado.primer_apellido}"
+            if carga.fk_docente_asignado.segundo_apellido:
+                docente += f" {carga.fk_docente_asignado.segundo_apellido}"
+            # Documento
+            documento = f"{carga.fk_docente_asignado.fk_tipo_documento.tipo_documento} - {miles_co(carga.fk_docente_asignado.numero_documento)}"
+            # Dedicación
+            contrato = Contrato.objects.filter(fk_usuario=carga.fk_docente_asignado, vigencia_contrato=True).first()
+            dedicacion = contrato.fk_dedicacion.nombre_corto if contrato and contrato.fk_dedicacion else "Sin dedicación"
+            # Valor a pagar
+            valor_a_pagar = contabilidad_co(carga.valor_a_pagar) if carga.valor_a_pagar else "No aplica"
+
             data.append({
-                "programa": str(carga.fk_programa),
-                "semestre": str(carga.fk_semestre),
-                "materia": str(carga.fk_materia),
-                "docente": str(carga.fk_docente_asignado),
-                "horas": carga.horas_semanales,
+                "materia": carga.fk_materia.materia,
+                "compartida_con": [programa_madre] + [p for p in programas if p != programa_madre],
+                "programa_madre": programa_madre,
+                "docente": docente,
+                "documento": documento,
+                "dedicacion": dedicacion,
+                "creditos": carga.fk_materia.creditos,
+                "horas_totales": carga.total_horas,
+                "valor_a_pagar": valor_a_pagar,
+                "id": carga.id,
+                "aprobada": carga.aprobado_vicerrectoria,
             })
         return JsonResponse({"cargas": data})
     return JsonResponse({"cargas": []})
+
+@login_required
+def aprobar_carga_academica(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        carga_id = data.get("carga_id")
+        aprobada = data.get("aprobada")
+        try:
+            carga = CargaAcademica.objects.get(id=carga_id)
+            carga.aprobado_vicerrectoria = aprobada
+            carga.fk_aprobado_vicerrectoria = request.user if aprobada else None
+            carga.fecha_aprobacion_vicerrectoria = timezone.now() if aprobada else None
+            carga.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Carga académica aprobada correctamente." if aprobada else "Aprobación retirada correctamente."
+            }, status=200)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo actualizar la aprobación."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_todas_cargas_academicas(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        programa_id = data.get("programa_id")
+        semestre_id = data.get("semestre_id")
+        if not programa_id or not semestre_id:
+            return JsonResponse({
+                "status": "error",
+                "message": "Por favor, llene los campos de filtrado de programa y semestre"
+            }, status=400)
+        try:
+            # Obtener el periodo actual por fechas
+            hoy = timezone.now().date()
+            periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+            if not periodo_actual:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No hay un periodo activo."
+                }, status=400)
+
+            cargas = CargaAcademica.objects.filter(
+                fk_periodo=periodo_actual,
+                fk_semestre_id=semestre_id
+            ).filter(
+                Q(fk_programa_id=programa_id) | Q(materiacompartida__fk_programa_id=programa_id)
+            ).distinct()
+            now = timezone.now()
+            for carga in cargas:
+                carga.aprobado_vicerrectoria = True
+                carga.fk_aprobado_vicerrectoria = request.user
+                carga.fecha_aprobacion_vicerrectoria = now
+                carga.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Cargas académicas aprobadas correctamente."
+            })
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo aprobar todas las cargas académicas."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)

@@ -1,0 +1,157 @@
+
+{% extends 'dashboard.html' %}
+{% load static %}
+
+
+
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/estudiantes.css' %}">
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center">Gestión de Estudiantes</h2>
+
+    <!-- Mensajes de éxito -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Formulario -->
+    <div class="card mb-4">
+        <div class="card-header text-white" style="background-color: var(--color-primario);" >{{ estudiante|default:"Nuevo Estudiante" }}</div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Nombre</label>
+                        <input type="text" class="form-control" name="first_name" required
+                               value="{{ estudiante.estudiante.first_name|default_if_none:'' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Apellido</label>
+                        <input type="text" class="form-control" name="last_name" required
+                               value="{{ estudiante.estudiante.last_name|default_if_none:'' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Correo electrónico</label>
+                        <input type="email" class="form-control" name="email"
+                               value="{{ estudiante.estudiante.email|default_if_none:'' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Tipo de documento</label>
+                        <select name="fk_tipo_documento" class="form-select" required>
+                            <option value="">Seleccione</option>
+                            {% for tipo in tipos_documento %}
+                                <option value="{{ tipo.id }}"
+                                    {% if estudiante.fk_tipo_documento.id == tipo.id %}selected{% endif %}>
+                                    {{ tipo.descripcion }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Número de documento</label>
+                        <input type="number" class="form-control" name="numero_documento" required
+                               value="{{ estudiante.numero_documento|default_if_none:'' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Fecha de nacimiento</label>
+                        <input type="date" class="form-control" name="fecha_nacimiento"
+                               value="{{ estudiante.fecha_nacimiento|date:'Y-m-d' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Programa</label>
+                        <select name="programa" class="form-select" required>
+                            <option value="">Seleccione</option>
+                            {% for prog in programas %}
+                                <option value="{{ prog.id }}"
+                                    {% if estudiante.programa.id == prog.id %}selected{% endif %}>
+                                    {{ prog.programa }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Semestre</label>
+                        <select name="semestre" class="form-select" required>
+                            <option value="">Seleccione</option>
+                            {% for sem in semestres %}
+                                <option value="{{ sem.id }}"
+                                    {% if estudiante.semestre.id == sem.id %}selected{% endif %}>
+                                    {{ sem.descripcion }} Semestre
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-alterno-red">Guardar</button>
+                {% if estudiante %}
+                    <a href="{% url 'gestion_estudiante' %}" class="btn btn-alterno-red">Cancelar</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de estudiantes -->
+    <div class="card">
+        <div class="card-header text-white" style="background-color: var(--color-primario);">Listado de Estudiantes</div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Programa</th>
+                        <th>Semestre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for est in estudiantes %}
+                        <tr>
+                            <td class="text-center">{{ est.id }}</td>
+                            <td class="text-center">{{ est.estudiante.username }}</td>
+                            <td class="text-center">{{ est.programa.programa }}</td>
+                            <td class="text-center">{{ est.semestre.semestre }}</td>
+                            <td class="text-center">
+                                <a 
+                                 href="{% url 'editar_estudiante' est.id %}" 
+                                 class="btn btn-sm btn-alterno-dark" >
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="{% url 'eliminar_estudiante' est.id %}"
+                                   class="btn btn-sm btn-alterno-red"
+                                   onclick="return confirm('¿Estás seguro de eliminar este estudiante?');">
+                                   <i class="bi bi-trash3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="text-center">No hay estudiantes registrados.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+             <div class="d-flex justify-content-center align-items-center mt-3">
+                 {% if estudiantes.has_previous %}
+                 <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ estudiantes.previous_page_number }}">◀</a>
+                 {% else %}
+                 <span class="btn btn-link ms-2 disabled text-decoration-none">◀</span>
+                 {% endif %}
+                 <span>Página {{ estudiantes.number }} de {{ estudiantes.paginator.num_pages }}</span>
+                {% if estudiantes.has_next %}
+                    <a class="btn btn-link ms-2 text-decoration-none" href="?page={{ estudiantes.next_page_number }}">▶</a>
+                {% else %}
+                    <span class="btn btn-link ms-2 disabled text-decoration-none">▶</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

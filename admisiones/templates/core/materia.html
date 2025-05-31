@@ -1,0 +1,164 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/estilos_personalizados.css' %}">
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-color-primario mb-4">Gestión de Materias</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header text-white" style="background-color: var(--color-primario);">
+            {% if editar %}Editar Materia{% else %}Registrar Nueva Materia{% endif %}
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="materia" class="form-label text-color-primario">Nombre de la Materia:</label>
+                    <input type="text" name="materia" id="materia" class="form-control" value="{{ materia_obj.materia|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="codigo" class="form-label text-color-primario">Código:</label>
+                    <input type="text" name="codigo" id="codigo" class="form-control" value="{{ materia_obj.codigo|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="creditos" class="form-label text-color-primario">Créditos:</label>
+                    <input type="text" name="creditos" id="creditos" class="form-control" value="{{ materia_obj.creditos|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="metodologia" class="form-label text-color-primario">Metodología:</label>
+                    <input type="text" name="metodologia" id="metodologia" class="form-control" value="{{ materia_obj.metodologia|default:'' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="horas" class="form-label text-color-primario">Total de Horas:</label>
+                    <input type="text" name="horas" id="horas" class="form-control" value="{{ materia_obj.horas|default:'' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="programa" class="form-label text-color-primario">Programa:</label>
+                    <select name="programa" id="programa" class="form-select" required>
+                        <option value="" disabled {% if not materia_obj.fk_programa %}selected{% endif %}>Seleccione un programa</option>
+                        {% for programa in programas %}
+                            <option value="{{ programa.id }}" {% if materia_obj.fk_programa.id == programa.id %}selected{% endif %}>{{ programa.programa }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="semestre" class="form-label text-color-primario">Semestre:</label>
+                    <select name="semestre" id="semestre" class="form-select" required>
+                        <option value="" disabled {% if not materia_obj.fk_semestre %}selected{% endif %}>Seleccione un semestre</option>
+                        {% for semestre in semestres %}
+                            <option value="{{ semestre.id }}" {% if materia_obj.fk_semestre.id == semestre.id %}selected{% endif %}>{{ semestre.semestre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="pensum" class="form-label text-color-primario">Pensum:</label>
+                    <select name="pensum" id="pensum" class="form-select" required>
+                        <option value="" disabled {% if not materia_obj.fk_pensum %}selected{% endif %}>Seleccione un pensum</option>
+                        {% for pensum in pensums %}
+                            {% if pensum.vigente %}
+                                <option value="{{ pensum.id }}" {% if materia_obj.fk_pensum.id == pensum.id %}selected{% endif %}>
+                                    ({{ pensum.codigo_pensum }}) {{ pensum.fk_programa.programa }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-alterno-dark">
+                    {% if editar %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+                {% if editar %}
+                    <a href="{% url 'gestion_materia' %}" class="btn btn-alterno-red">Cancelar</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header text-white" style="background-color: var(--color-primario);">
+            Filtrar Materias
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label text-color-primario">Programa:</label>
+                    <select name="programa" class="form-select">
+                        <option value="">Todos</option>
+                        {% for programa in programas %}
+                            <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>{{ programa.programa }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-color-primario">Semestre:</label>
+                    <select name="semestre" class="form-select">
+                        <option value="">Todos</option>
+                        {% for semestre in semestres %}
+                            <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>{{ semestre.semestre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-alterno-dark w-100">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if request.GET.programa or request.GET.semestre %}
+        <div class="card">
+            <div class="card-header text-white" style="background-color: var(--color-primario);">
+                Listado de Materias
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Créditos</th>
+                            <th>Metodología</th>
+                            <th>Horas</th>
+                            <th>Programa</th>
+                            <th>Semestre</th>
+                            <th>Pensum</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for materia in materias %}
+                            <tr>
+                                <td class="text-center">{{ materia.id }}</td>
+                                <td class="text-center">{{ materia.materia }}</td>
+                                <td class="text-center">{{ materia.codigo }}</td>
+                                <td class="text-center">{{ materia.creditos }}</td>
+                                <td class="text-center">{{ materia.metodologia }}</td>
+                                <td class="text-center">{{ materia.horas }}</td>
+                                <td class="text-center">{{ materia.fk_programa.programa }}</td>
+                                <td class="text-center">{{ materia.fk_semestre.semestre }}</td>
+                                <td class="text-center">{{ materia.fk_pensum.codigo_pensum }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'editar_materia' materia.id %}" class="btn btn-alterno-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="{% url 'eliminar_materia' materia.id %}" class="btn btn-alterno-red btn-sm" onclick="return confirm('¿Deseas eliminar esta materia?');"><i class="bi bi-trash3"></i></a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center">No hay registros de materias para los filtros seleccionados.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

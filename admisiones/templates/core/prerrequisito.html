@@ -1,0 +1,120 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='gray' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.08 5.221 2.388 4.5 2.951 4.5h10.098c.563 0 .87.72.5 1.158l-4.796 5.482a.513.513 0 0 1-.758 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1em;
+        padding-right: 2rem;
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="text-center mb-4">Gestión de Prerrequisitos</h1>
+
+    <!-- Filtro -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-6">
+            <label for="programa" class="form-label">Programa:</label>
+            <select name="programa" id="programa" class="form-control" required>
+                <option disabled {% if not request.GET.programa %}selected{% endif %}>Programa</option>
+                {% for programa in programas %}
+                    <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>
+                        {{ programa.programa }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="semestre" class="form-label">Semestre:</label>
+            <select name="semestre" id="semestre" class="form-control" required>
+                <option disabled {% if not request.GET.semestre %}selected{% endif %}>Semestre</option>
+                {% for semestre in semestres %}
+                    <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>
+                        {{ semestre.semestre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 text-center">
+            <button type="submit" class="btn btn-dark mt-2">Filtrar</button>
+        </div>
+    </form>
+
+    {% if materias_filtradas %}
+    <!-- Formulario para asignar prerrequisito -->
+    <form method="post" class="row g-3 mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="programa" value="{{ request.GET.programa }}">
+        <input type="hidden" name="semestre" value="{{ request.GET.semestre }}">
+        
+        <div class="col-md-6">
+            <label for="materia" class="form-label">Materia:</label>
+            <select name="materia" id="materia" class="form-control" required>
+                <option disabled selected>Materia</option>
+                {% for materia in materias_filtradas %}
+                    <option value="{{ materia.id }}">{{ materia.materia }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="prerrequisito" class="form-label">Prerrequisito:</label>
+            <select name="prerrequisito" id="prerrequisito" class="form-control" required>
+                <option disabled selected>Prerrequisito</option>
+                {% for materia in materias_prerrequisito %}
+                    <option value="{{ materia.id }}">{{ materia.materia }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 text-center">
+            <button type="submit" class="btn btn-dark mt-2">Asignar Prerrequisito</button>
+        </div>
+    </form>
+
+    <h2 class="mt-5 mb-3 text-center">Listado de Prerrequisitos</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Materia</th>
+                    <th>Prerrequisito</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for relacion in prerrequisitos %}
+                    <tr>
+                        <td>{{ relacion.materia.materia }}</td>
+                        <td>{{ relacion.prerequisito.materia }}</td>
+                        <td class="text-center">
+                            <form method="post" action="{% url 'eliminar_prerrequisito' relacion.id %}" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este prerrequisito?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No hay prerrequisitos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-4 text-center">{{ message }}</div>
+    {% endfor %}
+</div>
+
+{% endblock %}

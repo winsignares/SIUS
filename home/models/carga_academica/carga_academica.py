@@ -11,8 +11,8 @@ class CargaAcademica(models.Model):
     fk_semestre = models.ForeignKey(Semestre, on_delete=models.CASCADE, verbose_name="Semestre")
     fk_materia = models.ForeignKey(Materia, on_delete=models.CASCADE, verbose_name="Materia")
     fk_docente_asignado = models.ForeignKey(Empleado, on_delete=models.CASCADE, verbose_name="Docente Asignado")
-    horas_semanales = models.IntegerField("Horas Semanales", null=True, blank=True)
-    total_horas = models.IntegerField("Total Horas", null=True, blank=True)
+    horas_semanales = models.CharField("Horas Semanales", max_length=255, null=True, blank=True)
+    total_horas = models.CharField("Total Horas", max_length=255, null=True, blank=True)
     valor_a_pagar = models.IntegerField("Valor a Pagar", null=True, blank=True)
     materia_compartida = models.BooleanField("Materia Compartida", default=False, null=True, blank=True)
 
@@ -27,18 +27,17 @@ class CargaAcademica(models.Model):
     # Aprobación vicerectoria
     aprobado_vicerrectoria = models.BooleanField("Aprobado", default=False)
     fk_aprobado_vicerrectoria = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_vicerrectoria',verbose_name="Aprobación Vicerrectoria", on_delete=models.SET_NULL, null=True, blank=True)
-    fecha_aprobacion_vicerrectoria = models.DateTimeField("Fecha Aprobación Vicerrectoria", auto_now_add=True, null=True, blank=True)
+    fecha_aprobacion_vicerrectoria = models.DateTimeField("Fecha Aprobación Vicerrectoria", null=True, blank=True, default= None)
 
     # Aprobación Contabilidad
     aprobado_contabilidad = models.BooleanField("Aprobado", default=False)
     fk_aprobado_contabilidad = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_contabilidad', verbose_name="Aprobación Contabilidad", on_delete=models.SET_NULL, null=True, blank=True)
-    fecha_aprobacion_contabilidad = models.DateTimeField("Fecha Aprobación Contabilidad", auto_now_add=True, null=True, blank=True)
+    fecha_aprobacion_contabilidad = models.DateTimeField("Fecha Aprobación Contabilidad", null=True, blank=True, default= None)
 
     # Aprobación Rectoría
     aprobado_rectoria = models.BooleanField("Aprobado", default=False)
     fk_aprobado_rectoria = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_rectoria', verbose_name="Aprobación Rectoría", on_delete=models.SET_NULL, null=True, blank=True)
-    fecha_aprobacion_rectoria = models.DateTimeField("Fecha Aprobación Rectoría", auto_now_add=True, null=True, blank=True)
-
+    fecha_aprobacion_rectoria = models.DateTimeField("Fecha Aprobación Rectoría", null=True, blank=True, default= None)
     class Meta:
         db_table = 'cargas_academicas'
         verbose_name = 'Carga Acádemica'

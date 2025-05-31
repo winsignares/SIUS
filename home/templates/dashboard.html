@@ -102,8 +102,27 @@
             </div>
         </div>
 
+        <!-- Modal de confirmación para aprobar todos -->
+        <div class="modal fade" id="modalConfirmarAprobarTodos" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalConfirmarAprobarTodosLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modalConfirmarAprobarTodosLabel">Confirmar Aprobar Todos</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Está seguro que desea aprobar todas las cargas académicas mostradas?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-alterno-dark" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="confirmarAprobarTodosBtn">Si</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal Sesión Expirada -->
-        <div class="modal fade" id="modalSesionExpirada" tabindex="-2" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="definirContratoLabel" aria-hidden="true">
+        <div class="modal fade" id="modalSesionExpirada" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="definirContratoLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -142,6 +161,25 @@
                     setTimeout(() => {
                         alertContainer.firstElementChild?.remove();
                     }, 3000);
+                }
+
+                // Función para obtener el valor de una cookie
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== "") {
+                        const cookies = document.cookie.split(";");
+
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+
+                            // ¿Este cookie coincide con el nombre buscado?
+                            if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
                 }
 
             document.addEventListener("DOMContentLoaded", function () {

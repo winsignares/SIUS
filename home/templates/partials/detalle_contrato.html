@@ -8,7 +8,7 @@
 
             <div class="row px-3 mb-3">
                 <!-- Periodo del Contrato -->
-                {% if usuario.fk_rol.id == 4 %}
+                {% if usuario.fk_rol.id == 4 or usuario.fk_rol.id == 2 %}
                 <input type="hidden" name="fk_periodo" value="{{ periodo_actual.id }}">
                 {% endif %}
 

@@ -1,0 +1,93 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-color-primario">Gestión de Semestres</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-header text-white" style="background-color: var(--color-primario);">
+            {% if editar %}Editar semestre{% else %}Agregar nuevo semestre{% endif %}
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <label for="semestre" class="col-sm-2 col-form-label text-color-primario">Nombre del Semestre:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="semestre" id="semestre" class="form-control" placeholder="Ej: 1" value="{{ semestre.semestre|default:'' }}" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="descripcion" class="col-sm-2 col-form-label text-color-primario">Descripción:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="descripcion" id="descripcion" class="form-control" placeholder="Descripción opcional" value="{{ semestre.descripcion|default:'' }}">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-alterno-dark">{% if editar %}Actualizar{% else %}Guardar{% endif %}</button>
+                {% if editar %}
+                    <a href="{% url 'gestion_semestre' %}" class="btn btn-alterno-red">Cancelar</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header text-white" style="background-color: var(--color-primario);">
+            Listado de Semestres
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for semestre in semestres %}
+                        <tr>
+                            <td class="text-center">{{ semestre.id }}</td>
+                            <td class="text-center">{{ semestre.semestre }}</td>
+                            <td class="text-center">{{ semestre.descripcion }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_semestre' semestre.id %}" class="btn btn-alterno-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                <a href="{% url 'eliminar_semestre' semestre.id %}" class="btn btn-alterno-red btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este semestre?');"><i class="bi bi-trash3"></i></a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No hay semestres registrados aún.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Paginación personalizada -->
+            <div class="d-flex justify-content-center align-items-center mt-3">
+                {% if semestres.has_previous %}
+                <a class="btn btn-link ms-2 text-decoration-none text-danger" href="?page={{ semestres.previous_page_number }}">◀</a>
+                {% else %}
+                <span class="btn btn-link ms-2 disabled text-decoration-none">◀</span>
+                {% endif %}
+                <span>Página {{ semestres.number }} de {{ semestres.paginator.num_pages }}</span>
+                {% if semestres.has_next %}
+                    <a class="btn btn-link ms-2 text-decoration-none text-danger" href="?page={{ semestres.next_page_number }}">▶</a>
+                {% else %}
+                    <span class="btn btn-link ms-2 disabled text-decoration-none">▶</span>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
