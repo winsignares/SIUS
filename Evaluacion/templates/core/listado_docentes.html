@@ -3,64 +3,215 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles/estilos.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .grafico-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .grafico-container-inner {
+        position: absolute;
+        inset: 0;
+        padding: 1rem;
+    }
+
+    .grafico-container-inner canvas {
+        width: 100% !important;
+        height: 90% !important;
+        margin-top: 30px;
+    }
+</style>
+
 <div class="container mt-4">
     <h2 class="text-center mb-4">Listado de Docentes</h2>
 
-  
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Estudiantes Evaluadores</h6>
+                            <h2 class="mb-0">{{ evaluaciones_estudiantes }}</h2>
+                        </div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Docentes Autoevaluados</h6>
+                            <h2 class="mb-0">{{ evaluaciones_docentes }}</h2>
+                        </div>
+                        <i class="fas fa-chalkboard-teacher fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body grafico-container">
+                    <h6 class="card-title">Evaluaciones por Semestre</h6>
+                    <div class="grafico-container-inner">
+                        <canvas id="semestresChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body grafico-container">
+                    <h6 class="card-title">Top Docentes Mejor Evaluados</h6>
+                    <div class="grafico-container-inner">
+                        <canvas id="ponderadosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% if mensaje_error %}
-        <div class="alert alert-danger text-center mensaje">
-            {{ mensaje_error }}
-        </div>
+    <div class="alert alert-danger text-center mensaje">
+        {{ mensaje_error }}
+    </div>
     {% elif mensaje_advertencia %}
-        <div class="alert alert-warning text-center mensaje">
-            {{ mensaje_advertencia }}
-        </div>
+    <div class="alert alert-warning text-center mensaje">
+        {{ mensaje_advertencia }}
+    </div>
     {% endif %}
 
-   
     {% if docentes %}
-        <table class="table table-striped">
-            <thead>
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Cargo</th>
-                <th>Correo</th>
-                <th>Acciones</th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Cargo</th>
+                <th class="text-center">Correo</th>
+                <th class="text-center">Acciones</th>
             </tr>
-            </thead>
-            <tbody>
+        </thead>
+        <tbody>
             {% for docente in docentes %}
-                <tr>
-                    <td class="text-center">{{ docente.primer_nombre }} {{ docente.primer_apellido }}</td>
-                    <td class="text-center">{{ docente.cargo }}</td>
-                    <td class="text-center">{{ docente.correo_personal }}</td>
-                    <td class="text-center">
-                        <a href="{% url 'evaluacion:evaluar_docente' docente.id %}" class="btn btn-alterno-red btn-sm">Evaluar</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+            <tr>
+                <td class="text-center">{{ docente.primer_nombre }} {{ docente.primer_apellido }}</td>
+                <td class="text-center">{{ docente.cargo }}</td>
+                <td class="text-center">{{ docente.correo_personal }}</td>
+                <td class="text-center">
+                    {% if docente.id in docentes_evaluados_ids %}
+                    <p class="alert alert-success m-0 p-1" style="font-size: 0.92rem; max-width: 220px; width: fit-content; margin-left: 25px;">Evaluación completada</p>
 
-       
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                Página {{ docentes.number }} de {{ docentes.paginator.num_pages }}
-            </div>
-            <div>
-                {% if docentes.has_previous %}
-                    <a href="?page={{ docentes.previous_page_number }}" class="btn btn-secondary btn-sm">◀ Anterior</a>
-                {% endif %}
-                {% if docentes.has_next %}
-                    <a href="?page={{ docentes.next_page_number }}" class="btn btn-secondary btn-sm">Siguiente ▶</a>
-                {% endif %}
-            </div>
+                    {% else %}
+                    <a href="{% url 'evaluacion:evaluar_docente' docente.id %}" class="btn btn-alterno-red btn-sm">Evaluar</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <div>Página {{ docentes.number }} de {{ docentes.paginator.num_pages }}</div>
+        <div>
+            {% if docentes.has_previous %}
+            <a href="?page={{ docentes.previous_page_number }}" class="btn btn-secondary btn-sm">◀ Anterior</a>
+            {% endif %}
+            {% if docentes.has_next %}
+            <a href="?page={{ docentes.next_page_number }}" class="btn btn-secondary btn-sm">Siguiente ▶</a>
+            {% endif %}
         </div>
+    </div>
     {% else %}
-        
-        <div class="alert alert-info text-center mt-4">
-            No hay docentes disponibles para evaluar.
-        </div>
+    <div class="alert alert-info text-center mt-4">
+        No hay docentes disponibles para evaluar.
+    </div>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const semestresData = JSON.parse(`{{ semestres_data|escapejs }}`);
+    const semestresCtx = document.getElementById('semestresChart').getContext('2d');
+    new Chart(semestresCtx, {
+        type: 'doughnut',
+        data: {
+            labels: semestresData.labels,
+            datasets: [{
+                data: semestresData.data,
+                backgroundColor: semestresData.colors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    const ponderadosData = JSON.parse(`{{ ponderados_data|escapejs }}`);
+    const ponderadosCtx = document.getElementById('ponderadosChart').getContext('2d');
+    new Chart(ponderadosCtx, {
+        type: 'bar',
+        data: {
+            labels: ponderadosData.labels,
+            datasets: [{
+                label: 'Puntuación promedio',
+                data: ponderadosData.data,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 5,
+                    title: {
+                        display: true,
+                        text: 'Puntuación (1-5)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Docentes'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let value = context.parsed.y;
+                            return value.toFixed(2) + ' / 5';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
 {% endblock %}
