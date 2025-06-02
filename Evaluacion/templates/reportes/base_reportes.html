@@ -1,0 +1,93 @@
+{% load custom_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluación Estudiante - Docente</title>
+    <style>
+        body { font-family: Arial, sans-serif;}
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; border: .5px solid #000; }
+        th, td { 
+            text-align: center; 
+            padding: 4px;
+            font-size: 10px;
+            line-height: 1;
+            font-weight: normal;
+        }
+        h1 { background-color: #eaeaea; margin-bottom: 0; padding: 8px; border: 1px solid #000;line-height: 0;}
+        h2, h3 { margin-bottom: 0; text-align: center;}
+        @page {
+            size: A4 landscape;
+            margin: 1.5cm;
+        }
+    </style>
+</head>
+<body>
+    {% for carga in cargas %}
+    <div {% if not forloop.first %}style="page-break-before: always;"{% endif %}>
+        <div>
+            <!-- <img src="{% static 'images/unicorsalud.png' %}" alt="Logo Universidad" style="width: 100px; height: auto; float: right;"> -->
+            <h2>CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD</h2>
+        </div>
+        <h3>{{ tipo_evaluacion }} - DOCENTE<br>ESCALA DE VALORACIÓN DE DOCENTES POR PROGRAMA<br>{{ carga.fk_programa }}<br>PERIODO ACADÉMICO: {{ periodo.year }}-{{ periodo.periodo }}</h3>
+
+        <p><strong>ASIGNATURA:</strong> {{ carga.fk_materia.materia }}</p>
+        <p><strong>Docente:</strong> {{ carga.fk_docente_asignado }}</p>
+        <p><strong>Población Esperada:</strong> 100 &nbsp;
+        <strong>Población Encuestada:</strong> 20 &nbsp;
+        <strong>Población Faltante:</strong> 80</p>
+
+        {% for categoria in categorias_estudiante %}
+        <table>
+            <h1>{{ categoria.nombre }}</h1>
+            <thead>
+                <tr>
+                    <th>Indicadores</th>
+                    <th>1 - Totalmente en desacuerdo</th>
+                    <th>2 - Medianamente en desacuerdo</th>
+                    <th>3 - Medianamente de acuerdo</th>
+                    <th>4 - De acuerdo</th>
+                    <th>5 - Totalmente de acuerdo</th>
+                    <th>VALOR PROMEDIO</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for pregunta in categoria.preguntas.all %}
+                <tr>
+                    <td style="text-align: left; width: 40%;">{{ pregunta.texto }}</td>
+                    {% for valor in valores_escala %}
+                        <td>
+                            {{ frecuencias_relativas|dict_get:carga.fk_materia.id|dict_get:pregunta.id|dict_get:valor|default:"0" }}
+                        </td>
+                    {% endfor %}
+                    <td>
+                        {{ promedios_preguntas_por_materia|get_item:carga.fk_materia.id|get_item:pregunta.id|default:"-" }}
+                    </td>
+                </tr>
+            {% endfor %}
+                <tr>
+                    <td colspan="6" style="text-align: right; "><strong>Promedio por Factor :</strong></td>
+                    <td><strong>{{ promedio_planeacion }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+    <footer>
+                
+        <p><strong>Asignatura:</strong> {{ carga.fk_materia }}  &nbsp; &nbsp;
+            <strong>Docente:</strong> {{ carga.fk_docente_asignado }}  &nbsp; &nbsp;
+            <strong>Emisión Reporte:</strong> {% now "d/m/Y H:i" %}    &nbsp; &nbsp;
+        </p>         
+        <h1>PROMEDIO GENERAL: {{ materia_promedios|get_item:carga.fk_materia.materia }} </h1>
+        
+        
+    </footer>
+    {% endfor %}
+
+    
+
+    
+</body>
+</html>

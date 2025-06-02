@@ -19,9 +19,9 @@ urlpatterns = [
     path("promedios_docente/", promedios.desempeno_por_programa, name="promedios_docente"),
     path('exportar_informe_excel/', promedios.exportar_informe_excel, name='exportar_informe_excel'),
 
-    path('reportes/', views_reportes.vista_reportes_evaluaciones, name='vista_reportes'),
-    path('reporte/evaluaciones/estudiantes/', views_reportes.exportar_evaluaciones_estudiantes_excel, name='reporte_evaluaciones_estudiantes'),
-    path('reporte/evaluaciones/docentes/', views_reportes.exportar_evaluaciones_docentes_excel, name='reporte_evaluaciones_docentes'),
-    path('reporte/evaluaciones/directivos/', views_reportes.exportar_evaluaciones_directivos_excel, name='reporte_evaluaciones_directivos'),
+    path('reportes/', views_reportes.reporte_selector, name='vista_reportes'),
+    path('reportes/estudiantes-docente/', views_reportes.reporte_estudiantes_docente, name='reporte_estudiantes_docente'),
+    path('reportes/directivos-programa/', views_reportes.reporte_directivo_programa, name='reporte_directivo_programa'),
+    path('reportes/autoevaluaciones/', views_reportes.reporte_autoevaluaciones, name='reporte_autoevaluaciones'),
 
 ]

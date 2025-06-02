@@ -1,0 +1,87 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">📄 Generar Reportes de Evaluación</h2>
+
+  <div class="card shadow-sm rounded-3 mb-4 border-0">
+    <div class="card-body">
+      <h5 class="card-title mb-3">1. Evaluación de Estudiantes a Docentes</h5>
+      <form method="get" action="{% url 'evaluacion:reporte_estudiantes_docente' %}">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <select class="form-select" name="docente_id" required>
+              <option value="">Selecciona un docente</option>
+              {% for docente in docentes %}
+                <option value="{{ docente.id }}">{{ docente }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select class="form-select" name="periodo_id" required>
+              <option value="">Selecciona un período</option>
+              {% for periodo in periodos %}
+                <option value="{{ periodo.id }}">{{ periodo.year }} {{ periodo.periodo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <button type="submit" class="btn btn-alterno-red w-100">📥 Descargar PDF</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm rounded-3 mb-4 border-0">
+    <div class="card-body">
+      <h5 class="card-title mb-3">2. Evaluación de Directivos por Programa</h5>
+      <form method="get" action="{% url 'evaluacion:reporte_directivo_programa' %}">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <select class="form-select" name="programa_id" required>
+              <option value="">Selecciona un programa</option>
+              {% for programa in programas %}
+                <option value="{{ programa.id }}">{{ programa.programa }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select class="form-select" name="periodo_id" required>
+              <option value="">Selecciona un período</option>
+              {% for periodo in periodos %}
+                <option value="{{ periodo.id }}">{{ periodo.year }} {{ periodo.periodo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <button type="submit" class="btn btn-success w-100">📥 Descargar PDF</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm rounded-3 mb-4 border-0">
+    <div class="card-body">
+      <h5 class="card-title mb-3">3. Autoevaluaciones de Docentes</h5>
+      <form method="get" action="{% url 'evaluacion:reporte_autoevaluaciones' %}">
+        <div class="row g-2">
+          <div class="col-md-8">
+            <select class="form-select" name="periodo_id" required>
+              <option value="">Selecciona un período</option>
+              {% for periodo in periodos %}
+                <option value="{{ periodo.id }}">{{ periodo.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <button type="submit" class="btn btn-warning w-100">📥 Descargar PDF</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

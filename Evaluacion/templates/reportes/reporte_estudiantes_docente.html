@@ -1,0 +1,52 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Evaluaciones Estudiantes - {{ docente.nombre }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        h1, h3 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        @page {
+            size: A4 landscape;
+            margin: 1.5cm;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Evaluaciones Estudiantiles</h1>
+    <p><strong>Docente:</strong> {{ docente.primer_nombre|upper }} {{ docente.primer_apellido|upper }}</p>
+    <p><strong>Periodo:</strong> {{ periodo.year }} {{ periodo.periodo }}</p>
+
+    {% for carga in cargas %}
+        <div {% if not forloop.first %}style="page-break-before: always;"{% endif %}>
+            <h3>Materia: {{ carga.fk_materia.materia }}</h3>
+
+            {% for categoria in categorias_estudiante %}
+            <h4>{{ categoria.nombre }}</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>Pregunta</th>
+                    <th>Promedio</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pregunta in categoria.preguntas.all %}
+                    <tr>
+                    <td>{{ pregunta.texto }}</td>
+                    <td>
+                        {{ promedios_preguntas_por_materia|get_item:carga.fk_materia.id|get_item:pregunta.id|default:"-" }}
+                    </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</body>
+</html>
