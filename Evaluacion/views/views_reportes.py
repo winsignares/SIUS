@@ -7,7 +7,7 @@ from io import BytesIO
 from collections import defaultdict
 from Evaluacion.views.info_db import obtener_db_info
 
-from ..models import CategoriaEstudiante, EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo, PreguntaEstudiante
+from ..models import CategoriaEstudiante, EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo, CategoriaDirectivo
 from home.models.carga_academica import CargaAcademica
 from home.models.talento_humano import Empleado
 from home.models.carga_academica.datos_adicionales import Periodo, Programa, Materia
@@ -75,6 +75,24 @@ def reporte_estudiantes_docente(request):
                 promedios_preguntas_por_materia[materia_id][pregunta_id] = promedio
 
     categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
+    
+    # Calcular promedio por categoría (por materia)
+    promedios_categoria_por_materia = defaultdict(dict)
+
+    for carga in cargas:
+        materia_id = carga.fk_materia.id
+        for categoria in categorias:
+            promedios_categoria = []
+            for pregunta in categoria.preguntas.all():                
+                promedio = promedios_preguntas_por_materia.get(carga.fk_materia.id, {}).get(pregunta.id)
+                if promedio is not None:
+                    promedios_categoria.append(promedio)
+            if promedios_categoria:
+                promedio_categoria = round(sum(promedios_categoria) / len(promedios_categoria), 2)
+                promedios_categoria_por_materia[materia_id][categoria.id] = promedio_categoria
+
+
+    
 
     # 4. (Opcional) Promedio general por materia
     materia_promedios = {}
@@ -83,7 +101,6 @@ def reporte_estudiantes_docente(request):
         
         lista = []
         for r in respuestas:
-            print(carga.fk_materia)
             lista.extend([int(v) for v in r.values()])
         if lista:
             materia_promedios[carga.fk_materia.materia] = round(sum(lista) / len(lista), 2)
@@ -126,8 +143,10 @@ def reporte_estudiantes_docente(request):
         'materia_promedios': materia_promedios,
         'categorias_estudiante': categorias,
         'promedios_preguntas_por_materia': promedios_preguntas_por_materia,
-        'tipo_evaluacion': 'EVALUACION ESTUDIANTES',
+        'promedios_categoria_por_materia': promedios_categoria_por_materia,
+        'tipo_evaluacion': 'EVALUACIÓN ESTUDIANTES',
         'frecuencias_relativas': frecuencias_relativas,
+        'valores_escala': [1, 2, 3, 4, 5],
     })
 
 @login_required
@@ -137,8 +156,12 @@ def reporte_directivo_programa(request):
     programa = get_object_or_404(Programa, id=programa_id)
     periodo = get_object_or_404(Periodo, id=periodo_id)
 
-    cargas = CargaAcademica.objects.filter(fk_programa=programa, fk_periodo=periodo)
-    docentes = [c.fk_docente_asignado for c in cargas]
+    docentes = Empleado.objects.filter(
+        id__in=CargaAcademica.objects.filter(
+            fk_programa=programa, 
+            fk_periodo=periodo
+        ).values_list('fk_docente_asignado', flat=True).distinct()
+)
     evaluaciones = EvaluacionDirectivo.objects.filter(docente_evaluado__in=docentes, periodo=periodo)
 
     respuestas_agrupadas = defaultdict(lambda: defaultdict(list))
@@ -161,19 +184,33 @@ def reporte_directivo_programa(request):
                 promedio = round(sum(respuestas) / len(respuestas), 2)
                 promedios_preguntas_por_docente[docente_id][pregunta_id] = promedio
 
-    categorias = CategoriaEstudiante.objects.prefetch_related('preguntas').all()
+    categorias = CategoriaDirectivo.objects.prefetch_related('preguntas').all()
+    
+    # Calcular promedio por categoría (por docente)
+    promedios_categoria_por_docente = defaultdict(dict)
 
-    # 4. (Opcional) Promedio general por materia
+    for docente in docentes:
+        docente_id = docente.id
+        for categoria in categorias:
+            promedios_categoria = []
+            for pregunta in categoria.preguntas.all():                
+                promedio = promedios_preguntas_por_docente.get(docente, {}).get(pregunta.id)
+                if promedio is not None:
+                    promedios_categoria.append(promedio)
+            if promedios_categoria:
+                promedio_categoria = round(sum(promedios_categoria) / len(promedios_categoria), 2)
+                promedios_categoria_por_docente[docente_id][categoria.id] = promedio_categoria
+
+    # 4. (Opcional) Promedio general por docente
     docente_promedios = {}
-    for carga in cargas:
-        respuestas = evaluaciones.filter(docente_evaluado=carga.fk_docente_asignado).values_list('respuestas', flat=True)
+    for docente in docentes:
+        respuestas = evaluaciones.filter(docente_evaluado=docente).values_list('respuestas', flat=True)
         
         lista = []
         for r in respuestas:
-            print(carga.fk_docente_asignado)
             lista.extend([int(v) for v in r.values()])
         if lista:
-            docente_promedios[carga.fk_docente_asignado.numero_documento] = round(sum(lista) / len(lista), 2)
+            docente_promedios[docente.numero_documento] = round(sum(lista) / len(lista), 2)
 
     frecuencias_relativas = defaultdict(lambda: defaultdict(dict))
     for docente_id, preguntas_dict in respuestas_agrupadas.items():
@@ -199,18 +236,20 @@ def reporte_directivo_programa(request):
 
             # Guardamos las frecuencias en el diccionario final
             frecuencias_relativas[docente_id][pregunta_id] = frecuencias
-
+        
 
     return render_pdf('reportes/base_reportes.html', {
-        'docente': docentes,
+        'docentes': docentes,
         'periodo': periodo,
-        'cargas': cargas,
+        'programa': programa,
         'evaluaciones': evaluaciones,
         'materia_promedios': docente_promedios,
-        'categorias_estudiante': categorias,
-        'promedios_preguntas_por_materia': promedios_preguntas_por_docente,
-        'tipo_evaluacion': 'EVALUACION DIRECTIVO',
+        'categorias_directivo': categorias,
+        'promedios_preguntas_por_docente': promedios_preguntas_por_docente,
+        'promedios_categoria_por_docente': promedios_categoria_por_docente,
+        'tipo_evaluacion': 'EVALUACIÓN DIRECTIVO',
         'frecuencias_relativas': frecuencias_relativas,
+        'valores_escala': [1, 2, 3, 4, 5],
     })
 
 
