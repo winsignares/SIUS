@@ -279,6 +279,8 @@ def filtrar_cargas_academicas(request):
             # Valor a pagar
             valor_a_pagar = contabilidad_co(carga.valor_a_pagar) if carga.valor_a_pagar else "No aplica"
 
+            valor_total = cargas.aggregate(total=Sum('valor_a_pagar'))['total'] or 0
+
             data.append({
                 "materia": carga.fk_materia.materia,
                 "compartida_con": [programa_madre] + [p for p in programas if p != programa_madre],
@@ -292,8 +294,16 @@ def filtrar_cargas_academicas(request):
                 "id": carga.id,
                 "aprobada": carga.aprobado_vicerrectoria,
             })
-        return JsonResponse({"cargas": data})
-    return JsonResponse({"cargas": []})
+
+        valor_total = cargas.aggregate(total=Sum('valor_a_pagar'))['total'] or 0
+
+        return JsonResponse({
+            "cargas": data,
+            "valor_total": contabilidad_co(valor_total)
+        })
+    return JsonResponse({
+        "cargas": []
+    })
 
 @login_required
 def aprobar_carga_academica(request):
@@ -309,7 +319,7 @@ def aprobar_carga_academica(request):
             carga.save()
             return JsonResponse({
                 "status": "success",
-                "message": "Carga académica aprobada correctamente." if aprobada else "Aprobación retirada correctamente."
+                "message": "Carga académica aprobada." if aprobada else "Aprobación retirada."
             }, status=200)
         except Exception as e:
             print(traceback.format_exc())
