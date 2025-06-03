@@ -60,13 +60,9 @@ def listado_docentes(request):
         materia__fk_programa=usuario_actual.fk_programa
     ).values('estudiante').distinct().count()
 
-    usuarios_docentes = EmpleadoUser.objects.filter(
-        fk_empleado__in=docentes_programa
-    ).values_list('fk_user', flat=True)
-
     evaluaciones_docentes_count = EvaluacionDocente.objects.filter(
         periodo=periodo_activo,
-        docente_id__in=usuarios_docentes
+        docente__in=docentes_programa
     ).count()
 
     evaluaciones_por_semestre = EvaluacionEstudiante.objects.filter(
@@ -89,10 +85,6 @@ def listado_docentes(request):
     ponderados_data = {'labels': [], 'data': []}
 
     for docente in docentes_programa:
-       
-        if not docente:
-            continue
-
         eval_estudiantes = EvaluacionEstudiante.objects.filter(
             periodo=periodo_activo,
             docente_evaluado=docente,
@@ -148,7 +140,6 @@ def listado_docentes(request):
         ponderados_data['labels'] = [x[0] for x in sorted_data]
         ponderados_data['data'] = [x[1] for x in sorted_data]
 
-    # CORRECCIÓN: Aquí se usa EvaluacionDirectivo para validar docentes evaluados
     docentes_evaluados_ids = set(EvaluacionDirectivo.objects.filter(
         periodo=periodo_activo,
         docente_evaluado__in=docentes_programa
@@ -176,8 +167,6 @@ def listado_docentes(request):
     })
 
     return render(request, 'core/listado_docentes.html', contexto)
-
-
 
 
 @login_required
