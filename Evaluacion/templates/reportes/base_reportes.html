@@ -97,7 +97,7 @@
     </footer>
     {% endfor %}
 
-    <!-- Reporte evaluacion de directivos a docentes por docentes -->
+    <!-- Reporte evaluacion de directivos a docentes por docentes y autoevaluacion -->
 
     {% for docente in docentes %}
     <div {% if not forloop.first %}style="page-break-before: always;"{% endif %}>
@@ -112,7 +112,7 @@
                         <h2>CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD</h2>
                         <h3>{{ tipo_evaluacion }} - DOCENTE<br><br>{{ programa }}<br><br>PERIODO ACADÉMICO: {{ periodo.year }} - {{ periodo.periodo }}</h3>
                 
-                        <p><strong>Docente:</strong> {{ docente }}</p>
+                        <p><strong>Docente:</strong> {{ docente|upper }}</p>
                         <!-- <p><strong>Población Esperada:</strong> 100 &nbsp;
                         <strong>Población Encuestada:</strong> 20 &nbsp;
                         <strong>Población Faltante:</strong> 80</p>
@@ -164,16 +164,16 @@
     <footer>
                 
         <p>
-            <strong>Docente:</strong> {{ docente }}  &nbsp; &nbsp;
+            <strong>Docente:</strong> {{ docente|upper }}  &nbsp; &nbsp;
             <strong>Emisión Reporte:</strong> {% now "d/m/Y H:i" %}    &nbsp; &nbsp;
         </p>         
-        <h1>PROMEDIO GENERAL: {{ materia_promedios|get_item:docente.numero_documento|default:"-"}} </h1>
+        <h1>PROMEDIO GENERAL: {{ docentes_promedios|get_item:docente.numero_documento|default:"-"}} </h1>
         
         
     </footer>
     {% endfor %}
 
-    
+   
 
     
 </body>

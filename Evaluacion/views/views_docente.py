@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from Evaluacion.views.info_db import obtener_db_info
+from home.models.talento_humano.usuarios import EmpleadoUser
 from ..models import CategoriaDocente, EvaluacionDocente
 from django.utils.timezone import now
 from home.models.carga_academica.datos_adicionales import Periodo
@@ -25,8 +26,10 @@ def autoevaluacion_docente(request):
         for categoria in categorias
     }
 
+    empleado = EmpleadoUser.objects.get(fk_user=usuario).fk_empleado
+
     ya_evaluado = EvaluacionDocente.objects.filter(
-        docente=usuario,
+        docente=empleado,
         periodo=periodo_activo
     ).exists()
 
@@ -46,7 +49,7 @@ def autoevaluacion_docente(request):
             return redirect('evaluacion:autoevaluacion_docente')
 
         EvaluacionDocente.objects.create(
-            docente=usuario,
+            docente=empleado,
             periodo=periodo_activo,
             respuestas=respuestas
         )
@@ -57,7 +60,7 @@ def autoevaluacion_docente(request):
     contexto = obtener_db_info(request)
 
     contexto.update({
-        'docente': usuario,
+        'docente': empleado,
         'preguntas_por_categoria': preguntas_por_categoria,
         'ya_evaluado': ya_evaluado,
         'periodo': periodo_activo,

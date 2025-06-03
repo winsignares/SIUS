@@ -7,7 +7,7 @@ from io import BytesIO
 from collections import defaultdict
 from Evaluacion.views.info_db import obtener_db_info
 
-from ..models import CategoriaEstudiante, EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo, CategoriaDirectivo
+from ..models import CategoriaDocente, CategoriaEstudiante, EvaluacionEstudiante, EvaluacionDocente, EvaluacionDirectivo, CategoriaDirectivo
 from home.models.carga_academica import CargaAcademica
 from home.models.talento_humano import Empleado
 from home.models.carga_academica.datos_adicionales import Periodo, Programa, Materia
@@ -161,7 +161,7 @@ def reporte_directivo_programa(request):
             fk_programa=programa, 
             fk_periodo=periodo
         ).values_list('fk_docente_asignado', flat=True).distinct()
-)
+    )
     evaluaciones = EvaluacionDirectivo.objects.filter(docente_evaluado__in=docentes, periodo=periodo)
 
     respuestas_agrupadas = defaultdict(lambda: defaultdict(list))
@@ -243,7 +243,7 @@ def reporte_directivo_programa(request):
         'periodo': periodo,
         'programa': programa,
         'evaluaciones': evaluaciones,
-        'materia_promedios': docente_promedios,
+        'docentes_promedios': docente_promedios,
         'categorias_directivo': categorias,
         'promedios_preguntas_por_docente': promedios_preguntas_por_docente,
         'promedios_categoria_por_docente': promedios_categoria_por_docente,
@@ -257,22 +257,97 @@ def reporte_directivo_programa(request):
 def reporte_autoevaluaciones(request):
     periodo_id = request.GET.get('periodo_id')
     periodo = get_object_or_404(Periodo, id=periodo_id)
-    evaluaciones = EvaluacionDocente.objects.filter(periodo=periodo)
 
-    # Promedio por docente
-    docente_promedios = {}
+    docentes = Empleado.objects.filter(
+        id__in=CargaAcademica.objects.filter(
+            fk_periodo=periodo
+        ).values_list('fk_docente_asignado', flat=True).distinct()
+    )
+    evaluaciones = EvaluacionDocente.objects.filter(docente__in=docentes, periodo=periodo)
+
+    respuestas_agrupadas = defaultdict(lambda: defaultdict(list))
+
     for evaluacion in evaluaciones:
-        docente = evaluacion.fk_docente
-        if docente not in docente_promedios:
-            docente_promedios[docente.get_nombre_completo()] = []
-        docente_promedios[docente.get_nombre_completo()].append(evaluacion.respuesta)
+        docente_id = evaluacion.docente
+        for pregunta_id_str, valor in evaluacion.respuestas.items():
+            try:
+                pregunta_id = int(pregunta_id_str)
+                respuestas_agrupadas[docente_id][pregunta_id].append(int(valor))
+            except (ValueError, TypeError):
+                continue
 
-    for docente in docente_promedios:
-        respuestas = docente_promedios[docente]
-        docente_promedios[docente] = sum(respuestas) / len(respuestas)
+    # Calcular promedios
+    promedios_preguntas_por_docente = defaultdict(dict)
 
-    return render_pdf('reportes/pdf/reporte_autoevaluaciones.html', {
+    for docente_id, preguntas_dict in respuestas_agrupadas.items():
+        for pregunta_id, respuestas in preguntas_dict.items():
+            if respuestas:
+                promedio = round(sum(respuestas) / len(respuestas), 2)
+                promedios_preguntas_por_docente[docente_id][pregunta_id] = promedio
+
+    categorias = CategoriaDocente.objects.prefetch_related('preguntas').all()
+    
+    # Calcular promedio por categoría (por docente)
+    promedios_categoria_por_docente = defaultdict(dict)
+
+    for docente in docentes:
+        docente_id = docente.id
+        for categoria in categorias:
+            promedios_categoria = []
+            for pregunta in categoria.preguntas.all():                
+                promedio = promedios_preguntas_por_docente.get(docente, {}).get(pregunta.id)
+                if promedio is not None:
+                    promedios_categoria.append(promedio)
+            if promedios_categoria:
+                promedio_categoria = round(sum(promedios_categoria) / len(promedios_categoria), 2)
+                promedios_categoria_por_docente[docente_id][categoria.id] = promedio_categoria
+
+    # 4. (Opcional) Promedio general por docente
+    docente_promedios = {}
+    for docente in docentes:
+        respuestas = evaluaciones.filter(docente=docente).values_list('respuestas', flat=True)
+        
+        lista = []
+        for r in respuestas:
+            lista.extend([int(v) for v in r.values()])
+        if lista:
+            docente_promedios[docente.numero_documento] = round(sum(lista) / len(lista), 2)
+
+    frecuencias_relativas = defaultdict(lambda: defaultdict(dict))
+    for docente_id, preguntas_dict in respuestas_agrupadas.items():
+        for pregunta_id, respuestas in preguntas_dict.items():
+
+            total = len(respuestas)
+
+            # Inicializamos un contador para cada valor posible (1 a 5) de la escala
+            conteos = {valor: 0 for valor in range(1, 6)}
+
+            # Contamos cuántas veces aparece cada valor en las respuestas
+            for r in respuestas:
+                if r in conteos:
+                    conteos[r] += 1
+
+            # Calculamos la frecuencia relativa: frecuencia = conteo / total * valor de la respuesta
+            # Solo si hay al menos una respuesta (evitamos división por cero)
+            frecuencias = {
+                valor: round(conteos[valor] / total * valor, 2)
+                for valor in conteos
+                if total > 0
+            }
+
+            # Guardamos las frecuencias en el diccionario final
+            frecuencias_relativas[docente_id][pregunta_id] = frecuencias
+        
+
+    return render_pdf('reportes/base_reportes.html', {
+        'docentes': docentes,
         'periodo': periodo,
         'evaluaciones': evaluaciones,
-        'docente_promedios': docente_promedios
+        'docentes_promedios': docente_promedios,
+        'categorias_directivo': categorias,
+        'promedios_preguntas_por_docente': promedios_preguntas_por_docente,
+        'promedios_categoria_por_docente': promedios_categoria_por_docente,
+        'tipo_evaluacion': 'AUTOEVALUACIÓN DOCENTE',
+        'frecuencias_relativas': frecuencias_relativas,
+        'valores_escala': [1, 2, 3, 4, 5],
     })

@@ -89,8 +89,8 @@ def listado_docentes(request):
     ponderados_data = {'labels': [], 'data': []}
 
     for docente in docentes_programa:
-        usuario_docente = docente.usuarios.first()
-        if not usuario_docente:
+       
+        if not docente:
             continue
 
         eval_estudiantes = EvaluacionEstudiante.objects.filter(
@@ -101,7 +101,7 @@ def listado_docentes(request):
 
         eval_autoevaluaciones = EvaluacionDocente.objects.filter(
             periodo=periodo_activo,
-            docente=usuario_docente.fk_user
+            docente=docente
         )
 
         eval_director = EvaluacionDirectivo.objects.filter(

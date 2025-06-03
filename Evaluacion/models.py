@@ -105,7 +105,7 @@ class EvaluacionEstudiante(models.Model):
 
 class EvaluacionDocente(models.Model):
     docente = models.ForeignKey(
-        User,
+        Empleado,
         on_delete=models.CASCADE,
         related_name='evaluaciones_docente'
     )
