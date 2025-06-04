@@ -7,11 +7,17 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
 # Importar Vistas
-from .utilidades import obtener_db_info, calcular_dias_laborados_por_mes, calcular_dias_laborados_por_contrato
+from .utilidades import obtener_db_info, calcular_dias_laborados_por_mes, calcular_dias_laborados_por_contrato, nombre_mes
+from home.templatetags.format_extras import contabilidad_co, miles_co
 
 # Importar Módelos
-from home.models import Empleado, Programa, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro
+from home.models import Empleado, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro, NivelAcademicoHistorico
 
+# Variables globales
+MESES_ORDEN = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+]
 
 #
 # ---------------------------- TALENTO HUMANO ---------------------------------
@@ -65,7 +71,6 @@ def generar_detalles_contrato(request, contrato):
             raise ValueError("El contrato debe tener fecha de inicio, fecha de fin y un valor mensual válido.")
 
         valor_mensual = Decimal(valor_mensual)
-        # DetalleContratro.objects.filter(fk_contrato=contrato).delete()
 
         # Calcular días laborados por mes
         dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
@@ -96,7 +101,7 @@ def generar_detalles_contrato(request, contrato):
             detalles.append(
                 DetalleContratro(
                     fk_contrato=contrato,
-                    mes_a_pagar=mes,
+                    mes_a_pagar=nombre_mes(mes),
                     dias_laborados=dias,
                     valor_a_pagar=valor_mes,
                 )
@@ -174,7 +179,7 @@ def definir_contrato_usuario(request, usuario_id):
             }, status=500)
 
 #
-# ---------------------------- CONTABILIDAD ---------------------------------
+# ---------------------------- CONTRATOS DOCENTES ---------------------------------
 #
 
 @login_required
@@ -187,15 +192,80 @@ def gestion_contratos_docentes(request):
         incluir_datos_adicionales=True
     )
 
-    contexto.update({
-        'programa_list': Programa.objects.all(),
-    })
-
     return render(
         request,
         'docentes.html',
         contexto
     )
+
+
+@login_required
+def contratos_docentes(request):
+    contexto = obtener_db_info(
+        request,
+        incluir_datos_adicionales=True
+    )
+
+    if request.method == "GET" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Filtrar docentes activos con los roles requeridos
+        docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4], fk_estado_revision=1, activo=True)
+        periodo_actual = contexto['periodo_actual']
+
+        # Si no hay docentes o periodo, retorna vacío
+        if not docentes or not periodo_actual:
+            return JsonResponse({"contratos": []})
+
+        # Filtrar contratos por los docentes y el periodo actual
+        contratos = Contrato.objects.filter(
+            fk_usuario__in=docentes,
+            fk_periodo=periodo_actual,
+            vigencia_contrato=True
+        ).select_related('fk_usuario', 'fk_tipo_contrato', 'fk_dedicacion')
+
+        data = []
+        for c in contratos:
+            tarifa = None
+            valor_hora = None
+            if c.fk_usuario and c.fk_usuario.fk_ultimo_nivel_estudio:
+                nivel = c.fk_usuario.fk_ultimo_nivel_estudio
+                año = c.fk_periodo.year if hasattr(c.fk_periodo, "year") else datetime.now().year
+                tarifa = NivelAcademicoHistorico.objects.filter(fk_nivel_academico=nivel, año_vigencia=año).first()
+                # Solo si la dedicación es HC (id=1), se envía el valor de la hora
+                if c.fk_dedicacion_id == 1 and tarifa:
+                    valor_hora = contabilidad_co(tarifa.tarifa_base_por_hora)
+                else:
+                    valor_hora = ""
+
+            detalle_contrato = DetalleContratro.objects.filter(fk_contrato=c)
+            detalle_list = [
+                {
+                    "mes": d.mes_a_pagar,
+                    "dias": d.dias_laborados,
+                    "valor": contabilidad_co(d.valor_a_pagar)
+                }
+                for d in detalle_contrato
+            ]
+            # Ordenar detalle_list por el índice del mes en MESES_ORDEN
+            detalle_list.sort(key=lambda x: MESES_ORDEN.index(x["mes"].split()[0]))
+
+            data.append({
+                "docente": f"{c.fk_usuario.primer_nombre} {c.fk_usuario.primer_apellido} {c.fk_usuario.segundo_apellido}" if c.fk_usuario else "",
+                "documento": f"{c.fk_usuario.fk_tipo_documento.tipo_documento} - {miles_co(c.fk_usuario.numero_documento)}",
+                "ultimo_nivel_estudio": c.fk_usuario.fk_ultimo_nivel_estudio.nombre,
+                "tarifa_base_por_hora": valor_hora,
+                "dedicacion": c.fk_dedicacion.nombre_corto if c.fk_dedicacion else "",
+                "fecha_inicio": c.fecha_inicio,
+                "fecha_fin": c.fecha_fin,
+                "valor_mensual_contrato": contabilidad_co(c.valor_mensual_contrato) or contabilidad_co(0),
+                "pago_por_mes": detalle_list,
+            })
+        return JsonResponse({"contratos": data})
+    return JsonResponse({"contratos": []})
+
+
+#
+# ---------------------------- CONTRATOS DOCENTES ---------------------------------
+#
 
 
 @login_required

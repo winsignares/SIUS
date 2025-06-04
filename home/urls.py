@@ -30,8 +30,9 @@ urlpatterns = [
     path("dashboard/aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"),
 
     # # MÓDULO DE CONTRATOS (CONTABILIDAD)
-    path("dashboard/contratos/docentes/", views.gestion_contratos_docentes, name="gestion_contratos_docentes"),
-    path("dashboard/contratos/administrativos/", views.gestion_contratos_administrativos, name="gestion_contratos_administrativos"),
+    path("dashboard/docentes/", views.gestion_contratos_docentes, name="gestion_contratos_docentes"),
+    path("dashboard/docentes/contratos/", views.contratos_docentes, name="contratos_docentes"),
+    path("dashboard/administrativos/", views.gestion_contratos_administrativos, name="gestion_contratos_administrativos"),
 
     # # MÓDULO DE REPORTES
     path("dashboard/reportes/", views.reportes, name="reportes"),
