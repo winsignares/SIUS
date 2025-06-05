@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'siuc.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "siuc_prueba",
+        "NAME": "db_siuc",
         "USER": "postgres",
         "PASSWORD": "qwerty78963",
         "HOST": "190.242.60.212",
