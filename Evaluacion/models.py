@@ -66,6 +66,26 @@ class PreguntaDirectivo(models.Model):
         return self.texto
     
 
+class CategoriaDocentePostgrado(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    
+
+    def __str__(self):
+        return self.nombre
+
+
+class PreguntaDocentePostgrado(models.Model):
+    categoria = models.ForeignKey(
+        CategoriaDocentePostgrado,
+        on_delete=models.CASCADE,
+        related_name="preguntas"
+    )
+    texto = models.TextField()
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.texto
+
 
 class EvaluacionEstudiante(models.Model):
     estudiante = models.ForeignKey(
@@ -124,6 +144,29 @@ class EvaluacionDocente(models.Model):
         db_table = 'evaluacion_docente'
         verbose_name = 'Evaluación Docente'
         verbose_name_plural = 'Evaluaciones Docentes'
+        unique_together = ('docente', 'periodo')
+
+class EvaluacionDocentePostgrado(models.Model):
+    docente = models.ForeignKey(
+        Empleado,
+        on_delete=models.CASCADE,
+        related_name='evaluaciones_docente_postgrado'
+    )
+    periodo = models.ForeignKey(
+        Periodo,
+        on_delete=models.CASCADE,
+        related_name='evaluaciones_docentes_postgrado'
+    )
+    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
+    fecha_respuesta = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Autoevaluación de {self.docente} en {self.periodo}"
+
+    class Meta:
+        db_table = 'evaluacion_docente_postgrado'
+        verbose_name = 'Evaluación Docente Postgrado'
+        verbose_name_plural = 'Evaluaciones Docentes De Postgrado'
         unique_together = ('docente', 'periodo')
 
 
