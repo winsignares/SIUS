@@ -4,15 +4,15 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
 <div class="container mt-4">
-    
-    <h2 class="text-center mb-4 text-color-primario">Autoevaluación Docente</h2>
+    <!-- Título principal -->
+    <h2 class="text-center mb-4 text-color-primario">Autoevaluación Docente Postgrado</h2>
 
-    
+    <!-- Información del docente -->
     <div class="mb-4">
         <p class="text-color-primario"><strong>Docente:</strong> {{ docente|title }}</p>
     </div>
 
-  
+    <!-- Mensajes de estado -->
     {% if messages %}
         <div class="mb-4">
             {% for message in messages %}
@@ -37,7 +37,7 @@
                         <div class="mb-3 d-flex w-100 justify-content-between align-items-center gap-2">
                             <label class="form-label text-color-primario mb-0 w-75" for="respuesta_{{ pregunta.id }}">{{ pregunta.texto }}</label>
                             <select id="respuesta_{{ pregunta.id }}" name="respuesta_{{ pregunta.id }}" class="form-select w-25" required>
-                                <option value="0" disabled selected> Elige una opcion</option>
+                                <option value="0" disabled selected> Elige una opción</option>
                                 <option value="1">Totalmente en desacuerdo</option>
                                 <option value="2">Medianamente en desacuerdo</option>
                                 <option value="3">Medianamente de acuerdo</option>
@@ -54,7 +54,7 @@
         </form>
     {% endif %}
 
-    
+    <!-- Footer con botón Volver -->
     <footer class="mt-5 text-center">
         <a href="{% url 'evaluacion:seleccion_autoevaluacion_docente' %}" class="btn btn-alterno-dark">Volver</a>
     </footer>

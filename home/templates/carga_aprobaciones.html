@@ -57,6 +57,12 @@
                             <td colspan="9" class="text-center">Seleccione filtros para ver las cargas académicas</td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr class="fs-small">
+                            <td colspan="8" class="text-end fw-bold">Total Semestre:</td>
+                            <td class="text-end" id="totalSemestreCell">$ 0</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -82,6 +88,7 @@
 
         function mostrarMensajePorDefecto() {
             tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">Seleccione filtros para ver las cargas académicas</td></tr>`;
+            document.getElementById("totalSemestreCell").textContent = "$ 0";
         }
 
         filtroPrograma.addEventListener("change", function() {
@@ -118,6 +125,7 @@
                     tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay cargas académicas para los filtros seleccionados.</td></tr>`;
                     document.getElementById("aprobarTodosCheck").disabled = true;
                     document.getElementById("aprobarTodosCheck").checked = false;
+                    document.getElementById("totalSemestreCell").textContent = "0";
                 } else {
                     let desaprobadas = 0;
                     data.cargas.forEach(carga => {
@@ -150,6 +158,8 @@
                                 </td>
                             </tr>
                         `;
+
+                        document.getElementById("totalSemestreCell").textContent = data.valor_total ? data.valor_total.toLocaleString('es-CO') : "0";
                     });
                     // Habilita solo si hay desaprobadas
                     document.getElementById("aprobarTodosCheck").disabled = desaprobadas === 0;

@@ -1,5 +1,6 @@
 # Importar Librerías
 from datetime import datetime
+from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
 
@@ -195,3 +196,16 @@ def calcular_valor_a_pagar(total_horas, id_docente):
         raise Exception("No existe tarifa base para el nivel académico del docente.")
     valor_a_pagar = total_horas * tarifa_base.tarifa_base_por_hora
     return valor_a_pagar
+
+
+def nombre_mes(mes_str):
+    mes_num = int(mes_str.split('-')[1])
+    meses = [
+        '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ]
+    return meses[mes_num]
+
+
+def no_autorizado(request):
+    return render(request, "no_autorizado.html")

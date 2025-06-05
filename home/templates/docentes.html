@@ -5,69 +5,89 @@
 
 {% block content %}
 <div class="container-fluid m-4">
-    <h3 class="mb-3 d-flex justify-content-center align-items-center fw-bold">Consulta Contabilidad</h3>
-
-    <!-- Periodo en curso -->
     <div class="row mb-3">
-        <div class="d-flex justify-content-center align-items-center">
-            <div class="d-flex col-12 justify-content-between align-items-center gap-5">
-                {% if periodo_actual %}
-                    <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
-                {% else %}
-                    <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
-                {% endif %}
-                <div class="d-flex col-md-auto mb-2 gap-3">
-                    <label for="fk_programa_cont" class="form-label col-auto mb-0">Seleccione un programa <span class='fw-bold fs-4'>*</span></label>
-                    <select class="form-select" id="fk_programa_cont" name="fk_programa_cont" required>
-                        <option>Seleccione</option>
-                        {% for programa in programa_list %}
-                            <option value="{{ programa.id }}">
-                                {{ programa.codigo_snies }} - {{ programa.programa }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+        <div class="d-flex col justify-content-between align-items-center">
+            <h3 class="fw-bold m-0">Contratos de Docentes</h3>
+            {% if periodo_actual %}
+                <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
+            {% else %}
+                <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
+            {% endif %}
         </div>
     </div>
 
     <div class="col-md-12">
         <div class="table-responsive overflow-x-auto">
             <table class="table table-striped table-hover mb-0 align-middle">
-                <thead>
+                <thead class="align-middle text-warp">
                     <tr>
-                        <th colspan="4" class="col-5" scope="col">Información del Docente</th>
-                        <th class="col-1" scope="col">Valor Hora</th>
-                        <th class="col-1" scope="col">Valor Contrato</th>
-                        <th colspan="4">Pago por Mes</th>
+                        <th colspan="4" class="col-4" scope="col">Información del Docente</th>
+                        <th colspan="1" class="col-1" scope="col">Duración Contrato</th>
+                        <th colspan="1" class="col-1" scope="col">Valor Hora</th>
+                        <th colspan="1" class="col-1" scope="col">Valor Contrato</th>
+                        <th colspan="3">Pago por Mes</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr class="text-center">
-                        <td>Willian Ricardo Insignares Conde</td>
-                        <td>Profesional</td>
-                        <td>CC  - 1045680563</td>
-                        <td>HC</td>
-                        <td>40000</td>
-                        <td>2000000</td>
-                        <td>
-                            <div class="overflow-x-auto">
-                                <table>
-                                    <tr>
-                                        <td class="px-3">Primer Mes</td>
-                                        <td class="px-3">Meses Completos</td>
-                                        <td class="px-3">Último Mes</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
+                    <tbody id="tablaContratosDocentesBody">
+                    </tbody>
             </table>
         </div>
     </div>
 </div>
 
-
-</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/siuc/dashboard/docentes/contratos/", {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById("tablaContratosDocentesBody");
+            tbody.innerHTML = "";
+            if (!data.contratos || data.contratos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center">No hay contratos de docentes.</td></tr>`;
+            } else {
+                data.contratos.forEach(c => {
+                    let valorHoraHtml = c.tarifa_base_por_hora && c.tarifa_base_por_hora !== "" ? c.tarifa_base_por_hora : `<span class="fst-italic">No aplica</span>`;
+                    let pagoPorMesHtml = "";
+                    if (c.pago_por_mes && c.pago_por_mes.length > 0) {
+                        pagoPorMesHtml = `
+                            <table class="table table-sm mb-0 w-100">
+                                <thead>
+                                    <tr>
+                                        ${c.pago_por_mes.map(det => `<td class="text-center"><span class="fw-bold">${det.mes}</span> - <span class="fst-italic fs-small">${det.dias} días</span></td>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        ${c.pago_por_mes.map(det => `<td class="text-center">${det.valor}`).join('')}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `;
+                    } else {
+                        pagoPorMesHtml = `<span class="fst-italic">Sin detalle</span>`;
+                    }
+                    tbody.innerHTML += `
+                        <tr class="text-center fs-small">
+                            <td colspan="1">${c.docente}</td>
+                            <td colspan="1">${c.documento}</td>
+                            <td colspan="1">${c.ultimo_nivel_estudio}</td>
+                            <td colspan="1">${c.dedicacion}</td>
+                            <td colspan="1" class="d-flex flex-column">
+                                <span class="fw-bold">Inicio</span>${c.fecha_inicio}
+                                <span class="fw-bold">Fin</span>${c.fecha_fin}
+                            </td>
+                            <td colspan="1">${valorHoraHtml}</td>
+                            <td colspan="1">${c.valor_mensual_contrato}</td>
+                            <td colspan="3">${pagoPorMesHtml}</td>
+                        </tr>
+                    `;
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

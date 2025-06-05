@@ -1,0 +1,145 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'styles/estilos.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .grafico-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    .grafico-container-inner {
+        position: absolute;
+        inset: 0;
+        padding: 1rem;
+    }
+    .grafico-container-inner canvas {
+        width: 100% !important;
+        height: 90% !important;
+        margin-top: 30px;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Visualización de Evaluaciones por Programa</h2>
+
+    <form method="get" class="mb-4 text-center">
+        <select name="programa_id" class="form-select w-auto d-inline-block me-2" required>
+            <option value="">Selecciona un programa</option>
+            {% for prog in programas %}
+                <option value="{{ prog.id }}" {% if prog.id|stringformat:"s" == request.GET.programa_id %}selected{% endif %}>
+                    {{ prog }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Ver gráficos</button>
+    </form>
+
+    {% if programa_seleccionado %}
+        <div class="row mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body">
+                        <h6>Estudiantes Evaluadores</h6>
+                        <h2>{{ evaluaciones_estudiantes }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body">
+                        <h6>Docentes Autoevaluados</h6>
+                        <h2>{{ evaluaciones_docentes }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body grafico-container">
+                        <h6>Evaluaciones por Semestre</h6>
+                        <div class="grafico-container-inner">
+                            <canvas id="semestresChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body grafico-container">
+                        <h6>Top Docentes Mejor Evaluados</h6>
+                        <div class="grafico-container-inner">
+                            <canvas id="ponderadosChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif mensaje_error %}
+        <div class="alert alert-danger text-center">{{ mensaje_error }}</div>
+    {% elif mensaje_advertencia %}
+        <div class="alert alert-warning text-center">{{ mensaje_advertencia }}</div>
+    {% endif %}
+</div>
+
+{% if programa_seleccionado %}
+<script>
+    const semestresData = JSON.parse(`{{ semestres_data|escapejs }}`);
+    new Chart(document.getElementById('semestresChart'), {
+        type: 'doughnut',
+        data: {
+            labels: semestresData.labels,
+            datasets: [{
+                data: semestresData.data,
+                backgroundColor: semestresData.colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    const ponderadosData = JSON.parse(`{{ ponderados_data|escapejs }}`);
+    new Chart(document.getElementById('ponderadosChart'), {
+        type: 'bar',
+        data: {
+            labels: ponderadosData.labels,
+            datasets: [{
+                label: 'Puntuación promedio',
+                data: ponderadosData.data,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 5,
+                    title: { display: true, text: 'Puntuación (1-5)' }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y.toFixed(2) + ' / 5';
+                        }
+                    }
+                },
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

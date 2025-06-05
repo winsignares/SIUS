@@ -1,0 +1,43 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Selecciona el tipo de autoevaluación</h2>
+    <div class="row justify-content-center">
+
+        {% if tiene_pregrado %}
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Autoevaluación Pregrado</h5>
+                    <p class="card-text">Realiza la autoevaluación para tus programas de Pregrado.</p>
+                    {% if ya_evaluo_pregrado %}
+                        <button class="btn btn-secondary" disabled>Evaluación Completada</button>
+                    {% else %}
+                        <a href="{% url 'evaluacion:autoevaluacion_docente' %}" class="btn btn-primary">Ir a Pregrado</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if tiene_postgrado %}
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Autoevaluación Postgrado</h5>
+                    <p class="card-text">Realiza la autoevaluación para tus programas de Postgrado.</p>
+                    {% if ya_evaluo_postgrado %}
+                        <button class="btn btn-secondary" disabled>Evaluación Completada</button>
+                    {% else %}
+                        <a href="{% url 'evaluacion:autoevaluacion_docente_postgrado' %}" class="btn btn-primary">Ir a Postgrado</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -3,12 +3,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from Evaluacion.views.info_db import obtener_db_info
 from home.models.talento_humano.usuarios import EmpleadoUser
-from ..models import CategoriaDocente, EvaluacionDocente
+from ..models import CategoriaDocentePostgrado, EvaluacionDocentePostgrado
 from django.utils.timezone import now
 from home.models.carga_academica.datos_adicionales import Periodo
 
 @login_required
-def autoevaluacion_docente(request):
+def autoevaluacion_docente_postgrado(request):
     usuario = request.user
 
     periodo_activo = Periodo.objects.filter(
@@ -20,7 +20,7 @@ def autoevaluacion_docente(request):
         messages.error(request, "No hay un período activo configurado.")
         return redirect('core:inicio')
 
-    categorias = CategoriaDocente.objects.prefetch_related('preguntas').all()
+    categorias = CategoriaDocentePostgrado.objects.prefetch_related('preguntas').all()
     preguntas_por_categoria = {
         categoria: categoria.preguntas.filter(activo=True)
         for categoria in categorias
@@ -28,7 +28,7 @@ def autoevaluacion_docente(request):
 
     empleado = EmpleadoUser.objects.get(fk_user=usuario).fk_empleado
 
-    ya_evaluado = EvaluacionDocente.objects.filter(
+    ya_evaluado = EvaluacionDocentePostgrado.objects.filter(
         docente=empleado,
         periodo=periodo_activo
     ).exists()
@@ -36,7 +36,7 @@ def autoevaluacion_docente(request):
     if request.method == 'POST':
         if ya_evaluado:
             messages.warning(request, "Ya realizaste esta autoevaluación para el período activo.")
-            return redirect('evaluacion:autoevaluacion_docente')
+            return redirect('evaluacion:autoevaluacion_docente_postgrado')
 
         respuestas = {}
         for key, value in request.POST.items():
@@ -46,16 +46,16 @@ def autoevaluacion_docente(request):
 
         if not respuestas:
             messages.error(request, "No se registraron evaluaciones.")
-            return redirect('evaluacion:autoevaluacion_docente')
+            return redirect('evaluacion:autoevaluacion_docente_postgrado')
 
-        EvaluacionDocente.objects.create(
+        EvaluacionDocentePostgrado.objects.create(
             docente=empleado,
             periodo=periodo_activo,
             respuestas=respuestas
         )
 
         messages.success(request, "Autoevaluación registrada correctamente.")
-        return redirect('evaluacion:autoevaluacion_docente')
+        return redirect('evaluacion:autoevaluacion_docente_postgrado')
 
     contexto = obtener_db_info(request)
 
@@ -65,4 +65,4 @@ def autoevaluacion_docente(request):
         'ya_evaluado': ya_evaluado,
         'periodo': periodo_activo,
     })
-    return render(request, 'core/autoevaluacion_docente.html', contexto)
+    return render(request, 'core/autoevaluacion_docente_postgrado.html', contexto)

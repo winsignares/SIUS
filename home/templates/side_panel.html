@@ -33,11 +33,6 @@
                     <i class="bi bi-file-earmark-medical-fill"></i>Cargas Acádemicas
                 </a>
             </li>
-            <li class="nav-item mb-2 ">
-                <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-people-fill"></i>Funciones Sustantivas
-                </a>
-            </li>
 
         {% elif "Vicerrector" in user_groups  %}
             <li class="nav-item mb-2">
@@ -70,8 +65,18 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:promedios_docente' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                <a href="{% url 'evaluacion:gestion_docente_postgrado' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-pencil-square"></i> Autoevaluación de Docentes Postgrado
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:vista_reportes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-pencil-square"></i> Reportes de Evaluación
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'evaluacion:graficos_por_programa' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-bar-chart"></i> Gráficas Ilustrativas
                 </a>
             </li>
 
@@ -96,7 +101,7 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{% url 'gestion_contratos_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                <a href="{% url 'gestion_contratos_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center d-none">
                     <i class="bi bi-briefcase-fill"></i>Contratos de Administrativos
                 </a>
             </li>
@@ -173,7 +178,7 @@
 
         {% elif "Docente" in user_groups %}
             <li class="nav-item mb-2">
-                <a href="{% url 'evaluacion:autoevaluacion_docente' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                <a href="{% url 'evaluacion:seleccion_autoevaluacion_docente' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-pencil-square"></i>Autoevaluación
                 </a>
             </li>
