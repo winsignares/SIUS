@@ -39,17 +39,26 @@
                     <thead class="align-middle text-warp">
                         <tr>
                             <th class="col-2" scope="col">Materia</th>
-                            <th class="col-1" scope="col">Compartida con</th>
+                            <th class="col-1" scope="col">Compartida con <i class="bi bi-info-circle fs-small" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="El programa resaltado hace referencia al programa que crea la carga académica"></i></th>
                             <th class="col-2" scope="col">Docente</th>
                             <th scope="col">Documento</th>
                             <th class="col-1" scope="col">Dedicación</th>
                             <th class="col-1" scope="col">Créditos</th>
                             <th class="col-1" scope="col">Horas Totales</th>
                             <th class="col-1" scope="col">Valor a Pagar</th>
-                            <th class="col-1" scope="col">
-                                <label for="aprobarTodosCheck" class="form-check-label fs-small">Aprobar todos</label>
-                                <input type="checkbox" id="aprobarTodosCheck" class="form-check-input fs-small">
-                            </th>
+                            {% if 'Vicerector' in user_groups %}
+                                <th class="col-1" scope="col">
+                                    <label for="aprobarTodosVicerrectoria" class="form-check-label fs-small">Aprobar todos</label>
+                                    <input type="checkbox" id="aprobarTodosVicerrectoria" class="form-check-input fs-small">
+                                </th>
+                            {% endif %}
+                            {% if 'Rector' in user_groups %}
+                                <th class="col-1" scope="col">
+                                    <label for="aprobarTodosRector" class="form-check-label fs-small">Aprobar todos</label>
+                                    <input type="checkbox" id="aprobarTodosRector" class="form-check-input fs-small">
+                                </th>
+                            {% endif %}
+
                         </tr>
                     </thead>
                     <tbody id="tablaCargasBody">
@@ -109,8 +118,8 @@
             const semestreId = filtroSemestre.value;
             if (!programaId || !semestreId) {
                 mostrarMensajePorDefecto();
-                document.getElementById("aprobarTodosCheck").disabled = true;
-                document.getElementById("aprobarTodosCheck").checked = false;
+                document.getElementById("aprobarTodosVicerrectoria").disabled = true;
+                document.getElementById("aprobarTodosVicerrectoria").checked = false;
                 return;
             }
             fetch(`/siuc/dashboard/carga_academica/aprobaciones/filtrar_cargas_academicas/?programa=${programaId}&semestre=${semestreId}`, {
@@ -123,13 +132,13 @@
                 tablaBody.innerHTML = "";
                 if (!data.cargas || data.cargas.length === 0) {
                     tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay cargas académicas para los filtros seleccionados.</td></tr>`;
-                    document.getElementById("aprobarTodosCheck").disabled = true;
-                    document.getElementById("aprobarTodosCheck").checked = false;
+                    document.getElementById("aprobarTodosVicerrectoria").disabled = true;
+                    document.getElementById("aprobarTodosVicerrectoria").checked = false;
                     document.getElementById("totalSemestreCell").textContent = "0";
                 } else {
                     let desaprobadas = 0;
                     data.cargas.forEach(carga => {
-                        if (!carga.aprobada) desaprobadas++;
+                        if (!carga.aprobada_vicerrectoria) desaprobadas++;
                         let compartidaHtml = "";
                         if (carga.compartida_con && carga.compartida_con.length > 0) {
                             carga.compartida_con.forEach(programa => {
@@ -143,6 +152,18 @@
                             compartidaHtml = `<span class="fst-italic">No aplica</span>`;
                         }
 
+                        let checksHtml = "";
+                        {% if 'Vicerector' in user_groups %}
+                            checksHtml += `<td>
+                                <input type="checkbox" class="form-check-input aprobar-carga" data-carga-id="${carga.id}" ${carga.aprobada_vicerrectoria ? 'checked' : ''}>
+                            </td>`;
+                        {% endif %}
+                        {% if 'Rector' in user_groups %}
+                            checksHtml += `<td>
+                                <input type="checkbox" class="form-check-input aprobar-carga-rector" data-carga-id="${carga.id}" ${carga.aprobada_rectoria ? 'checked' : ''}>
+                            </td>`;
+                        {% endif %}
+
                         tablaBody.innerHTML += `
                             <tr class="text-center fs-small">
                                 <td>${carga.materia}</td>
@@ -153,19 +174,17 @@
                                 <td>${carga.creditos}</td>
                                 <td>${carga.horas_totales}</td>
                                 <td>${carga.valor_a_pagar}</td>
-                                <td>
-                                    <input type="checkbox" class="form-check-input aprobar-carga" data-carga-id="${carga.id}" ${carga.aprobada ? 'checked' : ''}>
-                                </td>
+                                ${checksHtml}
                             </tr>
                         `;
 
                         document.getElementById("totalSemestreCell").textContent = data.valor_total ? data.valor_total.toLocaleString('es-CO') : "0";
                     });
                     // Habilita solo si hay desaprobadas
-                    document.getElementById("aprobarTodosCheck").disabled = desaprobadas === 0;
+                    document.getElementById("aprobarTodosVicerrectoria").disabled = desaprobadas === 0;
                     // Desmarca el checkbox si se deshabilita
                     if (desaprobadas === 0) {
-                        document.getElementById("aprobarTodosCheck").checked = false;
+                        document.getElementById("aprobarTodosVicerrectoria").checked = false;
                     }
                 }
             });
@@ -194,14 +213,14 @@
         });
 
         // Mostrar el modal al marcar el checkbox
-        document.getElementById("aprobarTodosCheck").addEventListener("change", function(e) {
+        document.getElementById("aprobarTodosVicerrectoria").addEventListener("change", function(e) {
             if (e.target.checked) {
                 let modal = new bootstrap.Modal(document.getElementById('modalConfirmarAprobarTodos'));
                 modal.show();
 
                 // Si cancela, desmarcar el checkbox
                 document.getElementById('modalConfirmarAprobarTodos').addEventListener('hidden.bs.modal', function () {
-                    document.getElementById("aprobarTodosCheck").checked = false;
+                    document.getElementById("aprobarTodosVicerrectoria").checked = false;
                 }, { once: true });
             }
         });
@@ -226,7 +245,7 @@
                 // Cierra el modal y desmarca el checkbox
                 let modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarAprobarTodos'));
                 modal.hide();
-                document.getElementById("aprobarTodosCheck").checked = false;
+                document.getElementById("aprobarTodosVicerrectoria").checked = false;
             });
         });
 

@@ -292,7 +292,8 @@ def filtrar_cargas_academicas(request):
                 "horas_totales": carga.total_horas,
                 "valor_a_pagar": valor_a_pagar,
                 "id": carga.id,
-                "aprobada": carga.aprobado_vicerrectoria,
+                "aprobada_vicerrectoria": carga.aprobado_vicerrectoria,
+                "aprobada_rectoria": carga.aprobado_rectoria,
             })
 
         valor_total = cargas.aggregate(total=Sum('valor_a_pagar'))['total'] or 0
