@@ -1,6 +1,6 @@
 # Importar Librerías
 from datetime import datetime
-import calendar
+from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
 
@@ -205,3 +205,7 @@ def nombre_mes(mes_str):
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ]
     return meses[mes_num]
+
+
+def no_autorizado(request):
+    return render(request, "no_autorizado.html")

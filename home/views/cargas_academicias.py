@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.db import IntegrityError
 from django.db.models import Sum, Value, Q
 from django.db.models.functions import Coalesce
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -16,6 +15,7 @@ from django.shortcuts import render
 # Importar Vistas
 from .utilidades import obtener_db_info, calcular_valor_a_pagar
 from home.templatetags.format_extras import contabilidad_co, miles_co
+from home.decorators import group_required
 
 
 # Importar Módelos
@@ -27,7 +27,7 @@ from home.models import Empleado, CargaAcademica, MateriaCompartida, Contrato, P
 #
 
 
-@login_required
+@group_required('Vicerrector','Director de Programa')
 def gestion_func_sustantivas(request):
     """
     Muestra la gestión de funciones sustantivas
@@ -48,7 +48,7 @@ def gestion_func_sustantivas(request):
 #
 
 
-@login_required
+@group_required('Director de Programa')
 def gestion_carga_academica(request):
     """
     Muestra la gestión de carga académica, filtrando los semestres según el programa del usuario.
@@ -110,7 +110,7 @@ def gestion_carga_academica(request):
 #
 
 
-@login_required
+@group_required('Director de Programa')
 def gestion_matriz(request):
     """
     Muestra la gestión
@@ -126,7 +126,7 @@ def gestion_matriz(request):
     return render(request, 'matriz.html', contexto)
 
 
-@login_required
+@group_required('Director de Programa')
 def guardar_matriz(request):
     """
     Guarda la carga académica del usuario.
@@ -213,7 +213,7 @@ def guardar_matriz(request):
 #
 
 
-@login_required
+@group_required('Rector', 'Vicerrector')
 def gestion_cargas_aprobaciones(request):
     """
     Muestra la gestión
@@ -229,7 +229,7 @@ def gestion_cargas_aprobaciones(request):
     return render(request, 'carga_aprobaciones.html', contexto)
 
 
-@login_required
+@group_required('Rector', 'Vicerrector')
 def filtrar_cargas_academicas(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         programa_id = request.GET.get("programa")
@@ -305,7 +305,7 @@ def filtrar_cargas_academicas(request):
         "cargas": []
     })
 
-@login_required
+@group_required('Rector', 'Vicerrector')
 def aprobar_carga_academica(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
@@ -333,7 +333,7 @@ def aprobar_carga_academica(request):
     }, status=400)
 
 
-@login_required
+@group_required('Rector', 'Vicerrector')
 def aprobar_todas_cargas_academicas(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
