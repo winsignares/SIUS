@@ -104,11 +104,16 @@ def generar_detalles_contrato(request, contrato):
                     mes_a_pagar=nombre_mes(mes),
                     dias_laborados=dias,
                     valor_a_pagar=valor_mes,
+                    activo=True
                 )
             )
 
-        DetalleContratro.objects.bulk_create(detalles)
         return detalles
+
+
+@login_required
+def actualizar_detalles_contrato(request, contrato):
+    pass
 
 
 @login_required
@@ -155,8 +160,9 @@ def definir_contrato_usuario(request, usuario_id):
                 )
 
                 if valor_mensual_contrato is not None:
-                    generar_detalles_contrato(request, contrato)
+                    detalles = generar_detalles_contrato(request, contrato)
 
+                    DetalleContratro.objects.bulk_create(detalles)
             if estado_contrato == "2":
                 # Editar contrato existente
                 print(data)

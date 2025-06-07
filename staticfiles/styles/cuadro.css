@@ -1,0 +1,68 @@
+:root {
+            --color-primario: #383837;
+            --color-secundario: #fef5f6;
+            --color-terciario: #ec5464;
+            --color-cuaternario: #9c9c94;
+            --borde-redondo: 10px;
+            --bg-white: #ffffff;
+        }
+        body {
+            background-color: var(--color-secundario);
+            font-family: Arial, sans-serif;
+            color: var(--color-primario);
+        }
+        .card {
+            border-radius: var(--borde-redondo);
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card-header {
+            background-color: var(--color-primario);
+            color: var(--color-secundario);
+            border-radius: var(--borde-redondo) var(--borde-redondo) 0 0;
+        }
+        table.table thead th {
+            background-color: var(--color-primario);
+            color: var(--color-secundario);
+            text-transform: uppercase;
+            text-align: center;
+        }
+        table.table tbody td {
+            color: var(--color-primario);
+            vertical-align: middle;
+        }
+        .btn {
+            font-size: 1rem !important;
+            padding: 6px 12px !important;
+            border-radius: 7px !important;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-sm {
+            font-size: 0.85rem !important;
+            padding: 4px 10px !important;
+        }
+        .btn-outline-dark {
+            color: var(--color-primario);
+            border-color: var(--color-primario);
+        }
+        .btn-outline-dark:hover {
+            background-color: var(--color-terciario);
+            color: var(--color-secundario);
+            border-color: var(--color-terciario);
+        }
+        .btn-danger {
+            background-color: var(--color-terciario);
+            border-color: var(--color-terciario);
+            color: var(--color-secundario);
+        }
+        .btn-danger:hover {
+            background-color: #c34151;
+            border-color: #c34151;
+        }
+        .alert-info {
+            background-color: var(--color-secundario);
+            color: var(--color-primario);
+            border-radius: var(--borde-redondo);
+            border: 1px solid var(--color-cuaternario);
+        }

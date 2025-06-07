@@ -27,3 +27,6 @@ urlpatterns = [
     path('siuc/admisiones/', include('admisiones.urls')),
     path('siuc/evaluacion/', include('Evaluacion.urls')),
 ]
+
+# Errores de servidor
+handler404 = 'home.views.error_404_view'

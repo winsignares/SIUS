@@ -51,7 +51,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         'nivel_formacion',
         'sede',
         'numero_semestres'
-    )
+    ).order_by('programa')
 
     # Todas las materias
     materias_list_all = Materia.objects.all().values(
@@ -70,7 +70,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'codigo',
             'horas_semanales',
             'fk_semestre_id'
-        )
+        ).order_by('codigo')
 
     # Obtener los docentes con contrato vigente en el periodo actual
     docentes = Empleado.objects.annotate(tiene_contrato=Exists(Contrato.objects.filter(fk_usuario=OuterRef('id'),fk_periodo_id=periodo_actual.id,vigencia_contrato=True))).filter(fk_rol_id__in=[2, 4],fk_estado_revision=1,activo=True,tiene_contrato=True).order_by('primer_nombre')

@@ -6,10 +6,9 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 
-
 # Importar Vistas
 from .utilidades import obtener_db_info
-
+from home.decorators import group_required
 
 # Importar Módelos
 from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, EPS, CajaCompensacion
@@ -21,7 +20,7 @@ from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleE
 
 
 # Revisado ✅
-@login_required
+@group_required('Secretaria Talento Humano', 'Director Talento Humano')
 def gestion_aspirantes(request):
     '''
         Función que maneja la vista de Aspirantes.
@@ -166,7 +165,7 @@ def agregar_aspirante(request):
 
 
 # Revisado ✅
-@login_required
+@group_required('Secretaria Talento Humano', 'Director Talento Humano')
 def gestion_empleados(request):
     '''
         Función que maneja la vista de Empleados
@@ -315,7 +314,7 @@ def agregar_empleado(request):
 
 
 # Revisado ✅
-@login_required
+@group_required('Secretaria Talento Humano', 'Director Talento Humano')
 def detalle_usuario(request, usuario_id):
     """
     Muestra los detalles de un aspirante o empleado
@@ -339,7 +338,7 @@ def detalle_usuario(request, usuario_id):
 
 
 # Revisado ✅
-@login_required
+@group_required('Secretaria Talento Humano', 'Director Talento Humano')
 def editar_usuario(request, tipo, usuario_id):
     '''
         Función para mostrar el formulario de edición de información de empleados.

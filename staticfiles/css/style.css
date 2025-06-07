@@ -1,0 +1,315 @@
+/* Colores del proyecto */
+:root {
+    --color-primario: #383837;
+    --color-secundario: #fef5f6;
+    --color-terciario: #ec5464;
+    --borde-redondo: 15px;
+}
+
+/* Estilo general */
+body {
+    background-color: var(--color-secundario);
+    font-family: Arial, sans-serif;
+}
+
+.h-custom {
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-primario);
+}
+
+p {
+    font-size: 1.3rem;
+    color: var(--color-primario);
+}
+
+/* 
+--------------------------------------- LOGIN ---------------------------------------
+*/
+
+/* Estilo para la imagen */
+.img-fluid {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: var(--borde-redondo);
+}
+
+/* Estilo general para formularios */
+.form-outline {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border: 1px solid var(--color-primario);
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 0.5rem;
+}
+
+.form-control:focus {
+    border-color: var(--color-terciario);
+    box-shadow: 0 0 5px var(--color-terciario);
+}
+
+.form-control::placeholder {
+    font-size: 14px;
+    color: #9c9c94;
+}
+
+/* Estilo de enlaces */
+#forgotPasswordLink, #backToLoginLink {
+    color: var(--color-primario);
+    font-size: 0.9rem;
+    transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#forgotPasswordLink:hover, #backToLoginLink:hover {
+    color: var(--color-terciario);
+    text-decoration: underline;
+}
+
+#forgotPasswordLink:active ,#backToLoginLink:active {
+    transform: scale(0.95);
+}
+
+.error {
+    font-size: 1rem;
+}
+
+/* Botones */
+.btn:active {
+    background-color: var(--color-terciario) !important;
+}
+
+.btn-primary {
+    background-color: var(--color-terciario);
+    border: none;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    transition: transform 0.1s ease-in-out;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-terciario);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+
+/*
+--------------------------------------- Error 404 ---------------------------------------
+*/
+
+.error-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.error-container h1 {
+    color: var(--color-terciario);
+    font-size: 4rem;
+}
+
+.error-container h2 {
+    color: var(--color-primario);
+    font-size: 3rem;
+}
+
+.error-container p {
+    color: var(--color-primario);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+
+/*
+--------------------------------------- SPINNER DE CARGA ---------------------------------------
+*/
+
+#loadingOverlay {
+    z-index: 1050;
+    background-color: var(--color-secundario) !important;
+}
+
+#loadingOverlay .spinner-border {
+    color: var(--color-terciario) !important;
+    font-weight: bold;
+}
+
+/*
+--------------------------------------- INFORMACIÓN ICONO ---------------------------------------
+*/
+
+.info-icon {
+    color: var(--color-terciario) !important;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+}
+
+.info-icon:hover {
+    transform: scale(1.1);
+    color: var(--color-primario) !important;
+    filter: drop-shadow(0 0 2px rgba(236, 84, 100, 0.5));
+}
+
+
+.tooltip-inner {
+    background-color: var(--color-primario) !important;
+    color: var(--color-secundario) !important;
+    border-radius: var(--borde-redondo) !important;
+    padding: 10px 15px !important;
+    max-width: 300px !important;
+    text-align: left !important;
+}
+
+.bs-tooltip-auto[data-popper-placement^=left] .tooltip-arrow::before, 
+.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: var(--color-primario) !important;
+}
+
+
+
+
+
+/*
+--------------------------------------- MENSAJE PARA DISPOSITIVOS MÓVILES Y TABLETS ---------------------------------------
+*/
+/* .mobile-alert {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-secundario);
+    z-index: 1000;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    visibility: hidden;
+} */
+
+/* .mobile-alert h1 {
+    font-size: 2.5rem;
+    color: var(--color-terciario);
+    margin-bottom: 1rem;
+
+}
+
+.mobile-alert p {
+    font-size: 1.8rem;
+    color: var(--color-primario);
+} */
+/* 
+@media (max-width: 1024px) { */
+
+    /* Ocultar todo el contenido principal */
+    /* body>section {
+        display: none;
+    } */
+
+    /* Mostrar el mensaje para dispositivos móviles */
+    /* .mobile-alert {
+        visibility: visible;
+        display: flex;
+    }
+} */
+
+
+/*
+--------------------------------------- VISTA RESPONSIVE ---------------------------------------
+*/
+
+@media (max-width: 1024px) {
+    .img-login-col {
+        display: none !important;
+    }
+    .form-col {
+        margin: 0 auto !important;
+        float: none !important;
+    }
+    .row.d-flex.align-items-center.h-100 {
+        justify-content: center !important;
+        align-items: center !important;
+        min-height: 100vh;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+
+.img-top-mobile {
+    width: 95%;
+    max-width: 420px;
+    height: auto;
+    margin: 1.2rem auto 0.5rem auto;
+    border-radius: var(--borde-redondo);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    object-fit: contain;
+    display: block;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .img-top-mobile {
+        width: 80%;
+        max-width: 520px;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .h-custom {
+        min-height: 100vh;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 1.5rem;
+    }
+    .form-col {
+        width: 100% !important;
+        max-width: 500px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .h-custom {
+        min-height: 100vh;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 1.5rem;
+    }
+    .form-col {
+        margin-top: 0 !important;
+    }
+}
+
+.logo-top-container {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .logo-top-container {
+        display: block !important;
+    }
+}

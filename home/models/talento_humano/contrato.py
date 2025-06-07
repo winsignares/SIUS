@@ -50,6 +50,7 @@ class DetalleContratro(models.Model):
     mes_a_pagar = models.CharField(verbose_name=('Mes a Pagar'), max_length=255, null=True, blank=True)
     dias_laborados = models.IntegerField(verbose_name=('Dias Laborados'), null=True, blank=True)
     valor_a_pagar = models.IntegerField(verbose_name=('Valor a Pagar'), null=True, blank=True)
+    vigente =  models.BooleanField(verbose_name=('Vigente'), default=False)
 
     class Meta:
         db_table = 'detalles_contrato'
