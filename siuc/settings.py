@@ -54,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'home.middleware.custom_login_redirect.CustomLoginRedirectMiddleware',
-    
 ]
 
 ROOT_URLCONF = 'siuc.urls'
