@@ -121,6 +121,29 @@
             </div>
         </div>
 
+        <!-- Modal de asignación de funciones sustantivas -->
+        <div class="modal fade" id="asignarFuncionesSustantivas" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="AsignarFuncionesSustantivasLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="asignarFuncionesSustantivasLabel">Asignar Funciones Sustantivas</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="asignarFuncionesSustantivasContent">
+                        <!-- Contenido dinámico cargado por AJAX -->
+                    </div>
+
+                    <!-- Botón para enviar el formulario -->
+                    <div class="modal-footer d-flex justify-content-between align-items-center">
+                        <!-- Nota -->
+                        <p class='mensaje-info fs-5'><span class='fw-bold'>NOTA:</span> Los campos marcados con ' <span class='fw-bold'>*</span> ' son obligatorios.</p>
+
+                        <button type="submit" class="btn btn-primary" form="formAsignarFuncionesSustantivas">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal Sesión Expirada -->
         <div class="modal fade" id="modalSesionExpirada" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="definirContratoLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

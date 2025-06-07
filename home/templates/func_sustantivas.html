@@ -19,47 +19,45 @@
 
     <!-- Periodo en curso -->
     <div class="row mb-3">
-        <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-center align-items-center col-12">
             <div class="d-flex col justify-content-between justify-middle align-items-center">
-                {% if periodo_actual %}
-                    <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
-                {% else %}
-                    <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
-                {% endif %}
-                <h6 id="programaMatriz" class="m-0"><span class="fw-bold m-0">Programa:</span> {{ usuario_log.auth_user.first_name }}</h6>
+                <div class="col-2">
+                    {% if periodo_actual %}
+                        <h5 id="periodoVigente" class="m-0"><span class="fw-bold m-0">Periodo Vigente:</span> {{ periodo_actual.year }}-{{ periodo_actual.periodo }}</h5>
+                    {% else %}
+                        <h5 id="periodoVigente">No hay un periodo vigente en este momento.</h5>
+                    {% endif %}
+                </div>
+                <div class="col-md-8 d-flex gap-3">
+                    <input type="text" class="form-control" id="filtroDocente" placeholder="Filtrar por nombre o número de identidad">
+                    <select id="filtroDedicacionDoc" class="form-select">
+                        <option value="">Seleccione el tipo de dedicación</option>
+                        {% for dedicacion in dedicacion_list %}
+                            {% if dedicacion.id != 1 %}
+                                <option value="{{ dedicacion.id }}">{{ dedicacion.nombre_corto }} - {{ dedicacion.nombre }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-
-    {% comment %} <!-- Periodo en curso -->
-    <div class="row mb-3">
-        <div class="col-12 d-flex justify-content-center align-items-center">
-            <ul class="d-flex gap-lg-5 mb-0 list-unstyled">
-                <li><strong>DO</strong> = Docencia</li>
-                <li><strong>AD</strong> = Administrativa</li>
-                <li><strong>IN</strong> = Investigación</li>
-                <li><strong>PYE</strong> = Proyección y Extensión</li>
-            </ul>
-        </div>
-    </div> {% endcomment %}
 
     <div class="col-md-12">
         <div class="table-responsive">
             <table class="table table-striped table-hover mb-0 align-middle">
                 <thead>
                     <tr>
-                        <th>Nombre Completo</th>
-                        <th>Nivel de Formación</th>
-                        <th>Documento de Identidad</th>
-                        <th>Dedicación</th>
-                        <th colspan="2">DO</th>
-                        <th colspan="2">AD</th>
-                        <th colspan="2">IN</th>
-                        <th colspan="2">PyE</th>
+                        <th class="col-3">Docente</th>
+                        <th class="col-2">Nivel de Formación</th>
+                        <th class="col-2">Documento</th>
+                        <th class="col-1">Dedicación</th>
+                        <th class="col-4" colspan="8">Funciones</th>
+                        <th class="col-1">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="text-center">
+                    <tr class="text-center fs-small">
                         <td>Nombre Completo</td>
                         <td>Nivel de Formación</td>
                         <td>Tipo de Documento</td>
@@ -72,6 +70,13 @@
                         <td>%IN%</td>
                         <td>PyE</td>
                         <td>%PyE%</td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="#" class="btn btn-sm btn-alterno-red d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#asignarFuncionesSustantivas">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

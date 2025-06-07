@@ -59,3 +59,20 @@ class DetalleContratro(models.Model):
 
     def __str__(self):
         return f"{self.fk_contrato.fk_usuario.primer_nombre} {self.fk_contrato.fk_usuario.primer_apellido}. Mes: {self.mes_a_pagar} - Total a Pagar: {self.valor_a_pagar}"
+
+
+class FuncionesSustantivas(models.Model):
+    fk_contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, verbose_name="Contrato")
+    horas_administrativas = models.IntegerField("Horas por Administrativas", null=True, blank=True)
+    horas_docencia = models.IntegerField("Horas por Docencia", null=True, blank=True)
+    horas_investigacion = models.IntegerField("Horas por Investigación", null=True, blank=True)
+    horas_otras_actividades = models.IntegerField("Horas por Otras Actividades", null=True, blank=True)
+    horas_proyeccion_extension = models.IntegerField("Horas por Proyección y Extensión", null=True, blank=True)
+
+    class Meta:
+        db_table = "funciones_sustantivas"
+        verbose_name = "FuncionesSustantivas"
+        verbose_name_plural = "FuncionesSustantivass"
+
+    def __str__(self):
+        return self.name
