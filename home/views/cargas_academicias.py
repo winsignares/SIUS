@@ -165,7 +165,6 @@ def guardar_matriz(request):
 
                     valor_actual_contrato = contrato.valor_mensual_contrato or 0
                     valor_a_pagar_actualizado = valor_actual_contrato + valor_a_pagar
-                    print(valor_a_pagar_actualizado)
 
                     contrato.valor_mensual_contrato = valor_a_pagar_actualizado
                     contrato.save()

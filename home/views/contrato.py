@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 # Importar Vistas
 from .utilidades import obtener_db_info, calcular_dias_laborados_por_mes, calcular_dias_laborados_por_contrato, nombre_mes
 from home.templatetags.format_extras import contabilidad_co, miles_co
+from home.decorators import group_required
 
 # Importar Módelos
 from home.models import Empleado, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro, NivelAcademicoHistorico
@@ -54,6 +55,14 @@ def definir_contrato(request, usuario_id):
 
 
 @login_required
+def actualizar_detalles_contrato_existentes(request, contrato):
+    '''
+        Actualizar los detalles existentes por contrato
+    '''
+    DetalleContratro.objects.filter(fk_contrato=contrato, vigente=True).update(vigente=False)
+
+
+@login_required
 def generar_detalles_contrato(request, contrato):
     """
     Genera registros de detalles del contrato con días laborados y valores a pagar por mes:
@@ -72,7 +81,9 @@ def generar_detalles_contrato(request, contrato):
 
         valor_mensual = Decimal(valor_mensual)
 
-        # Calcular días laborados por mes
+        # 🔁 Aquí llamas a tu función separada
+        actualizar_detalles_contrato_existentes(contrato)
+
         dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
         meses_ordenados = sorted(dias_laborados_por_mes.keys())
         valor_dia = valor_mensual / 30
@@ -81,39 +92,24 @@ def generar_detalles_contrato(request, contrato):
 
         for idx, mes in enumerate(meses_ordenados):
             dias = dias_laborados_por_mes[mes]
-            # Primer mes
-            if idx == 0:
-                if dias == 30:
-                    valor_mes = valor_mensual
-                else:
-                    valor_mes = round(dias * valor_dia, 2)
-            # Último mes
-            elif idx == len(meses_ordenados) - 1:
-                if dias == 30:
-                    valor_mes = valor_mensual
-                else:
-                    valor_mes = round(dias * valor_dia, 2)
-            # Meses intermedios
+
+            if idx == 0 or idx == len(meses_ordenados) - 1:
+                valor_mes = valor_mensual if dias == 30 else round(dias * valor_dia, 2)
             else:
                 dias = 30
                 valor_mes = valor_mensual
 
             detalles.append(
-                DetalleContratro(
+                DetalleContratro.objects.create(
                     fk_contrato=contrato,
                     mes_a_pagar=nombre_mes(mes),
                     dias_laborados=dias,
                     valor_a_pagar=valor_mes,
-                    activo=True
+                    vigente=True
                 )
             )
 
         return detalles
-
-
-@login_required
-def actualizar_detalles_contrato(request, contrato):
-    pass
 
 
 @login_required
