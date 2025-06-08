@@ -1,16 +1,21 @@
 from django.db import models
-from home.models.carga_academica.datos_adicionales import  Materia
+from home.models.carga_academica.datos_adicionales import Materia
 from home.models.talento_humano import Empleado
 from admisiones.models import Estudiantes
 from django.contrib.auth.models import User
 from home.models.carga_academica.datos_adicionales import Periodo
 
+
 class CategoriaEstudiante(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        db_table = 'categorias_estudiantes'
+        verbose_name = 'Categoria Estudiantes'
+        verbose_name_plural = 'Categorias Estudiantes'
 
 
 class PreguntaEstudiante(models.Model):
@@ -25,12 +30,22 @@ class PreguntaEstudiante(models.Model):
     def __str__(self):
         return self.texto
 
+    class Meta:
+        db_table = 'preguntas_estudiantes'
+        verbose_name = 'Pregunta Estudiantes'
+        verbose_name_plural = 'Preguntas Estudiantes'
+
+
 class CategoriaDocente(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        db_table = 'categorias_docentes'
+        verbose_name = 'Categoria Docentes'
+        verbose_name_plural = 'Categorias Docentes'
 
 
 class PreguntaDocente(models.Model):
@@ -45,12 +60,22 @@ class PreguntaDocente(models.Model):
     def __str__(self):
         return self.texto
 
+    class Meta:
+        db_table = 'preguntas_docentes'
+        verbose_name = 'Pregunta Docentes'
+        verbose_name_plural = 'Preguntas Docentes'
+
+
 class CategoriaDirectivo(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        db_table = 'categorias_directivos'
+        verbose_name = 'Categoria Directivos'
+        verbose_name_plural = 'Categorias Directivos'
 
 
 class PreguntaDirectivo(models.Model):
@@ -64,14 +89,23 @@ class PreguntaDirectivo(models.Model):
 
     def __str__(self):
         return self.texto
-    
+
+    class Meta:
+        db_table = 'preguntas_directivos'
+        verbose_name = 'Pregunta Directivos'
+        verbose_name_plural = 'Preguntas Directivos'
+
 
 class CategoriaDocentePostgrado(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
-    
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        db_table = 'categorias_docentes_postgrado'
+        verbose_name = 'Categoria Docente Postgrado'
+        verbose_name_plural = 'Categorias Docentes Postgrado'
 
 
 class PreguntaDocentePostgrado(models.Model):
@@ -85,6 +119,11 @@ class PreguntaDocentePostgrado(models.Model):
 
     def __str__(self):
         return self.texto
+
+    class Meta:
+        db_table = 'preguntas_docentes_postgrado'
+        verbose_name = 'Pregunta Docente Postgrado'
+        verbose_name_plural = 'Preguntas Docentes Postgrado'
 
 
 class EvaluacionEstudiante(models.Model):
@@ -109,8 +148,9 @@ class EvaluacionEstudiante(models.Model):
         related_name='evaluaciones_estudiantes_docentes',
         limit_choices_to={'fk_rol__rol': 'D'}
     )
-    
-    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
+
+    respuestas = models.JSONField(
+        help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -134,7 +174,8 @@ class EvaluacionDocente(models.Model):
         on_delete=models.CASCADE,
         related_name='evaluaciones_docentes'
     )
-    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
+    respuestas = models.JSONField(
+        help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -145,6 +186,7 @@ class EvaluacionDocente(models.Model):
         verbose_name = 'Evaluación Docente'
         verbose_name_plural = 'Evaluaciones Docentes'
         unique_together = ('docente', 'periodo')
+
 
 class EvaluacionDocentePostgrado(models.Model):
     docente = models.ForeignKey(
@@ -157,7 +199,8 @@ class EvaluacionDocentePostgrado(models.Model):
         on_delete=models.CASCADE,
         related_name='evaluaciones_docentes_postgrado'
     )
-    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
+    respuestas = models.JSONField(
+        help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -187,7 +230,8 @@ class EvaluacionDirectivo(models.Model):
         on_delete=models.CASCADE,
         related_name='evaluaciones_directivos'
     )
-    respuestas = models.JSONField(help_text="Diccionario con claves de pregunta_id y valores con respuesta")
+    respuestas = models.JSONField(
+        help_text="Diccionario con claves de pregunta_id y valores con respuesta")
     fecha_respuesta = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
