@@ -50,8 +50,9 @@ class CargaAcademica(models.Model):
 class MateriaCompartida(models.Model):
     id = models.AutoField(primary_key=True)
     fk_carga_academica = models.ForeignKey(CargaAcademica, on_delete=models.CASCADE, verbose_name="Carga Académica")
-    fk_programa = models.ForeignKey(Programa, on_delete=models.CASCADE, verbose_name="Programa")
-    fk_periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE, verbose_name="Periodo")
+    fk_programa = models.ForeignKey(Programa, on_delete=models.CASCADE, verbose_name="Programa con el que se comparte")
+    fk_periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE, verbose_name="Periodo ")
+    fk_materia = models.ForeignKey(Materia, on_delete=models.CASCADE, verbose_name="Materia con la que se comparte", default=None)
 
     class Meta:
         db_table = 'materias_compartidas'
