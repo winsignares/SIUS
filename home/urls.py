@@ -29,9 +29,15 @@ urlpatterns = [
     path("dashboard/aspirantes/agregar_exp_laboral/", views.agregar_exp_laboral, name="agregar_exp_laboral"),
     path("dashboard/aspirantes/agregar_detalle_academico/", views.agregar_detalle_academico, name="agregar_detalle_academico"),
 
-    # MÓDULO DE CONTRATOS (CONTABILIDAD)
+    # MÓDULO DE CONTRATOS
     path("dashboard/docentes/", views.gestion_contratos_docentes, name="gestion_contratos_docentes"),
     path("dashboard/docentes/contratos/", views.contratos_docentes, name="contratos_docentes"),
+    path('dashboard/docentes/aprobaciones/aprobar_contrato_contabilidad/', views.aprobar_contrato_contabilidad, name='aprobar_contrato_contabilidad'),
+    path("dashboard/docentes/aprobaciones/aprobar_contratos_contabilidad/", views.aprobar_contratos_contabilidad, name="aprobar_contratos_contabilidad"),
+    path('dashboard/docentes/aprobaciones/aprobar_contrato_rectoria/', views.aprobar_contrato_rectoria, name='aprobar_contrato_rectoria'),
+    path("dashboard/docentes/aprobaciones/aprobar_contratos_rectoria/", views.aprobar_contratos_rectoria, name="aprobar_contratos_rectoria"),
+    path('dashboard/docentes/aprobaciones/aprobar_contrato_presidencia/', views.aprobar_contrato_presidencia, name='aprobar_contrato_presidencia'),
+    path("dashboard/docentes/aprobaciones/aprobar_contratos_presidencia/", views.aprobar_contratos_presidencia, name="aprobar_contratos_presidencia"),
     path("dashboard/administrativos/", views.gestion_contratos_administrativos, name="gestion_contratos_administrativos"),
 
     # MÓDULO DE REPORTES
@@ -49,9 +55,7 @@ urlpatterns = [
     path("dashboard/carga_academica/aprobaciones/", views.gestion_cargas_aprobaciones, name="gestion_cargas_aprobaciones"),
     path("dashboard/carga_academica/aprobaciones/filtrar_cargas_academicas/", views.filtrar_cargas_academicas, name="filtrar_cargas_academicas"),
     path('dashboard/carga_academica/aprobaciones/aprobar_carga_academica_vicerrectoria/', views.aprobar_carga_academica_vicerrectoria, name='aprobar_carga_academica_vicerrectoria'),
-    # path('dashboard/carga_academica/aprobaciones/aprobar_carga_academica_rectoria/', views.aprobar_carga_academica_rectoria, name='aprobar_carga_academica_rectoria'),
     path("dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas_vicerrectoria/", views.aprobar_cargas_academicas_vicerrectoria, name="aprobar_cargas_academicas_vicerrectoria"),
-    # path("dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas_rectoria/", views.aprobar_cargas_academicas_rectoria, name="aprobar_cargas_academicas_rectoria"),
 
     # MÓDULO DE MATRIZ DE CARGA ACADÉMICA
     path("dashboard/matriz/", views.gestion_matriz, name="gestion_matriz"),

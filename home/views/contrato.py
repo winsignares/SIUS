@@ -2,6 +2,8 @@
 from datetime import datetime
 from decimal import Decimal
 import traceback
+import json
+from django.utils import timezone
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -293,3 +295,207 @@ def gestion_contratos_administrativos(request):
         'administrativos.html',
         contexto
     )
+
+
+@login_required
+def aprobar_contrato_contabilidad(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        contrato_id = data.get("contrato_id")
+        aprobado = data.get("aprobado")
+        try:
+            contrato = Contrato.objects.get(id=contrato_id)
+            contrato.aprobado_contabilidad = aprobado
+            contrato.fk_aprobado_contabilidad = request.user if aprobado else None
+            contrato.fecha_aprobacion_contabilidad = timezone.now() if aprobado else None
+            contrato.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Contrato aprobado." if aprobado else "Aprobación retirada."
+            }, status=200)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo actualizar la aprobación."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_contratos_contabilidad(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        try:
+            # Obtener el periodo actual por fechas
+            hoy = timezone.now().date()
+            periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+            if not periodo_actual:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No hay un periodo activo."
+                }, status=400)
+
+            contratos = Contrato.objects.filter(
+                fk_periodo=periodo_actual,
+                vigencia_contrato = True
+            )
+            now = timezone.now()
+            for contrato in contratos:
+                contrato.aprobado_contabilidad = True
+                contrato.fk_aprobado_contabilidad = request.user
+                contrato.fecha_aprobacion_contabilidad = now
+                contrato.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Contratos aprobados correctamente."
+            })
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo aprobar todos los contratos."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_contrato_rectoria(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        contrato_id = data.get("contrato_id")
+        aprobado = data.get("aprobado")
+        try:
+            contrato = Contrato.objects.get(id=contrato_id)
+            contrato.aprobado_rectoria = aprobado
+            contrato.fk_aprobado_rectoria = request.user if aprobado else None
+            contrato.fecha_aprobacion_rectoria = timezone.now() if aprobado else None
+            contrato.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Contrato aprobado." if aprobado else "Aprobación retirada."
+            }, status=200)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo actualizar la aprobación."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_contratos_rectoria(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        try:
+            # Obtener el periodo actual por fechas
+            hoy = timezone.now().date()
+            periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+            if not periodo_actual:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No hay un periodo activo."
+                }, status=400)
+
+            contratos = Contrato.objects.filter(
+                fk_periodo=periodo_actual,
+                vigencia_contrato = True
+            )
+            now = timezone.now()
+            for contrato in contratos:
+                contrato.aprobado_rectoria = True
+                contrato.fk_aprobado_rectoria = request.user
+                contrato.fecha_aprobacion_rectoria = now
+                contrato.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Contratos aprobados correctamente."
+            })
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo aprobar todos los contratos."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_contrato_presidencia(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        contrato_id = data.get("contrato_id")
+        aprobado = data.get("aprobado")
+        try:
+            contrato = Contrato.objects.get(id=contrato_id)
+            contrato.aprobado_presidencia = aprobado
+            contrato.fk_aprobado_presidencia = request.user if aprobado else None
+            contrato.fecha_aprobacion_presidencia = timezone.now() if aprobado else None
+            contrato.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Contrato aprobado." if aprobado else "Aprobación retirada."
+            }, status=200)
+        except Exception as e:
+            print(traceback.format_exc())
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo actualizar la aprobación."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
+
+
+@login_required
+def aprobar_contratos_presidencia(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        try:
+            # Obtener el periodo actual por fechas
+            hoy = timezone.now().date()
+            periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
+            if not periodo_actual:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No hay un periodo activo."
+                }, status=400)
+
+            contratos = Contrato.objects.filter(
+                fk_periodo=periodo_actual,
+                vigencia_contrato = True
+            )
+            now = timezone.now()
+            for contrato in contratos:
+                contrato.aprobado_presidencia = True
+                contrato.fk_aprobado_presidencia = request.user
+                contrato.fecha_aprobacion_presidencia = now
+                contrato.save()
+            return JsonResponse({
+                "status": "success",
+                "message": "Contratos aprobados correctamente."
+            })
+        except Exception as e:
+            print(e)
+            return JsonResponse({
+                "status": "error",
+                "message": "No se pudo aprobar todos los contratos."
+            }, status=400)
+    return JsonResponse({
+        "status": "error",
+        "message": "Petición inválida."
+    }, status=400)
