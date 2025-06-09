@@ -37,8 +37,9 @@ urlpatterns = [
     path('dashboard/docentes/aprobaciones/aprobar_contrato_rectoria/', views.aprobar_contrato_rectoria, name='aprobar_contrato_rectoria'),
     path("dashboard/docentes/aprobaciones/aprobar_contratos_rectoria/", views.aprobar_contratos_rectoria, name="aprobar_contratos_rectoria"),
     path('dashboard/docentes/aprobaciones/aprobar_contrato_presidencia/', views.aprobar_contrato_presidencia, name='aprobar_contrato_presidencia'),
-    path("dashboard/docentes/aprobaciones/aprobar_contratos_presidencia/", views.aprobar_contratos_presidencia, name="aprobar_contratos_presidencia"),
+    path("dashboard/docentes/generar_contrato_pdf/<int:contrato_id>/", views.ver_contrato_docente_pdf, name="ver_contrato_docente_pdf"),
     path("dashboard/administrativos/", views.gestion_contratos_administrativos, name="gestion_contratos_administrativos"),
+    
 
     # MÓDULO DE REPORTES
     path("dashboard/reportes/", views.reportes, name="reportes"),

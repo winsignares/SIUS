@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -26,7 +28,7 @@ urlpatterns = [
     path('siuc/', include('home.urls')),
     path('siuc/admisiones/', include('admisiones.urls')),
     path('siuc/evaluacion/', include('Evaluacion.urls')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
 
 # Errores de servidor
 handler404 = 'home.views.error_404_view'

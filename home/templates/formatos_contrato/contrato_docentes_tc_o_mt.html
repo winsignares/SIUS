@@ -1,0 +1,74 @@
+{% load static %}
+{% load format_extras %}
+
+<!DOCTYPE HTML>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ docente.primer_nombre }}_{{ docente.segundo_apellido }}_{{ docente.numero_documento|miles_co }}</title>
+        <!-- Solo tu CSS personalizado -->
+        <link rel="stylesheet" href="{% static 'css/style_contratos.css' %}">
+        <link rel="icon" href="{% static 'images/icon.png' %}" type="image/x-icon">
+    </head>
+    <body>
+        <!-- Pie de página para WeasyPrint -->
+        <div id="pdfFooter">
+            <span>Documento generado electrónicamente - Fecha de emisión: {{ contrato.fecha_inicio|date:"d/m/Y" }}</span>
+        </div>
+
+        <!-- Contenido visible -->
+        <header>
+            <img src="{% static 'images/img_home.png' %}" alt="Unicorsalud">
+            <h4>Contrato de trabajo para docentes tiempo completo o medio tiempo a término fijo inferior a un año</h4>
+        </header>
+
+        <div>
+            <table>
+                <tbody class="text-uppercase">
+                    <tr>
+                        <td class="fw-bold">Nombre del Docente</td>
+                        <td>{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Nacionalidad</td>
+                        <td class="fst-italic">No disponible</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Lugar donde desempeña sus Labores</td>
+                        <td>{{ docente.fk_sede_donde_labora.ciudad }} </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Tipo de Contrato</td>
+                        <td>{{ contrato.fk_tipo_contrato.tipo_contrato }} </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Número de Horas</td>
+                        <td>R1C2</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Actividades para Desarrollar</td>
+                        <td>R1C2</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Vigencia del Contrato</td>
+                        <td><span class="fw-bold">Fecha Inicio</span>{{ contrato.fecha_inicio }}</td>
+                        <td><span class="fw-bold">Fecha Fin</span>{{ contrato.fecha_fin }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Asignación Mensual</td>
+                        <td>{{ contrato.valor_mensual_contrato|contabilidad_co }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Total a Pagar</td>
+                        <td>R1C2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <main>
+            <p>Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD - UNICORSALUD - identificada con NIT. No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 de 15 de Julio/93 y Resolución No 3597 de 30 de junio/06 expedida por el Ministerio de Educación Nacional y <strong class="text-uppercase">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</strong>, también mayor de edad con domicilio en Barranquilla, identificado(a) con {{ docente.fk_tipo_documento.descripcion }} No. <strong>{{ docente.numero_documento|miles_co }}</strong>, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:</p>
+        </main>
+    </body>
+</html>

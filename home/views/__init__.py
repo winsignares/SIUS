@@ -8,3 +8,4 @@ from .contrato import *
 from .usuarios import *
 from .error_404 import *
 from .cargas_academicias import *
+from .generar_contratos import *

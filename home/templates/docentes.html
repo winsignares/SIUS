@@ -16,6 +16,16 @@
         </div>
     </div>
 
+    {% if "Director Talento Humano" in user_groups %}
+        <div class="d-flex justify-content-end align-items-md-center">
+            <ul class="d-flex gap-5 my-2 list-unstyled fs-color-li">
+                <li><strong>C</strong> = Contabilidad</li>
+                <li><strong>R</strong> = Rectoría</li>
+                <li><strong>P</strong> = Presidencia</li>
+            </ul>
+        </div>
+    {% endif %}
+
     <div class="col-md-12">
         <div class="table-responsive overflow-x-auto">
             <table class="table table-striped table-hover mb-0 align-middle">
@@ -34,8 +44,9 @@
                                 <label for="aprobarTodosRector" class="form-check-label fs-small">Aprobar todos</label>
                                 <input type="checkbox" id="aprobarTodosRector" class="form-check-input fs-small" data-rol="rectoria">
                             {% elif "Presidente" in user_groups %}
-                                <label for="aprobarTodosPresidencia" class="form-check-label fs-small">Aprobar todos</label>
-                                <input type="checkbox" id="aprobarTodosPresidencia" class="form-check-input fs-small" data-rol="presidencia">
+                                Aprobar Contrato
+                            {% elif "Director Talento Humano" in user_groups %}
+                                Estado Revisión
                             {% endif %}
                         </th>
                         <th colspan="1" class="col-1">Ver Contrato</th>
@@ -60,7 +71,7 @@
 <script>
     const tbody = document.getElementById("tablaContratosDocentesBody");
     const totalPlantaDocente = document.getElementById("totalPlantaDocente");
-    const rolActual = "{% if 'Contabilidad' in user_groups %}contabilidad{% elif 'Rector' in user_groups %}rectoria{% elif 'Presidente' in user_groups %}presidencia{% endif %}";
+    const rolActual = "{% if 'Contabilidad' in user_groups %}contabilidad{% elif 'Rector' in user_groups %}rectoria{% elif 'Presidente' in user_groups %}presidencia{% elif 'Director Talento Humano' in user_groups %}direccion_th{% endif %}";
 
     document.addEventListener("DOMContentLoaded", function() {
 
@@ -84,9 +95,10 @@
 
                 let desaprobadasContabilidad = 0;
                 let desaprobadasRectoria = 0;
-                let desaprobadasPresidencia = 0;
 
                 data.contratos.forEach(contrato => {
+                    if (!contrato.aprobado_contabilidad) desaprobadasContabilidad++;
+                    if (!contrato.aprobado_rectoria) desaprobadasRectoria++;
                     let valorHoraHtml = contrato.tarifa_base_por_hora && contrato.tarifa_base_por_hora !== "" ? contrato.tarifa_base_por_hora : `<span class="fst-italic">No aplica</span>`;
                     // Para ver el modal de detalles de contrato
                     let detallesDelContrato = "";
@@ -112,13 +124,31 @@
                         columnaAprobacion = `
                             <input type="checkbox" class="form-check-input aprobar-carga-presidencia" data-carga-id="${contrato.id}" ${contrato.aprobado_presidencia ? "checked" : ""}>
                         `;
+                    } else if (rolActual === "direccion_th") {
+                        const icono = (estado) => estado
+                            ? '<i class="bi bi-check2-circle alert alert-success rounded-circle p-1 m-0 d-flex justify-content-center align-items-center"></i>'
+                            : '<i class="bi bi-x-circle alert alert-danger rounded-circle p-1 m-0 d-flex justify-content-center align-items-center"></i>';
+
+                        columnaAprobacion = `
+                            <div class="overflow-x-auto">
+                                <table>
+                                    <tr>
+                                        <td class="px-3">C ${icono(contrato.aprobado_contabilidad)}</td>
+                                        <td class="px-3">R ${icono(contrato.aprobado_rectoria)}</td>
+                                        <td class="px-3">P ${icono(contrato.aprobado_presidencia)}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        `;
                     }
 
                     let verContratoHtml = "";
                     if (contrato.aprobado_presidencia) {
-                        verContratoHtml = `
-                            <button type="button" class="btn fs-6 btn-alterno-red"><i class="bi bi-file-earmark-pdf" id="verContratoPdf"></i></button>
-                        `
+                    verContratoHtml = `
+                        <a href="/siuc/dashboard/docentes/generar_contrato_pdf/${contrato.id}/" target="_blank" class="btn fs-6 btn-alterno-red">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                        </a>
+                    `;
                     } else {
                         verContratoHtml = `
                             <span class="fst-italic">No disponible</span>
@@ -145,6 +175,28 @@
                         </tr>
                     `;
                 });
+
+                // Evaluar habilitación del checkbox masivo para Contabilidad
+                if (rolActual === "contabilidad") {
+                    const checkCont = document.getElementById("aprobarTodosContabilidad");
+                    if (checkCont) {
+                        checkCont.disabled = desaprobadasContabilidad === 0;
+                        if (desaprobadasContabilidad === 0) {
+                            checkCont.checked = false;
+                        }
+                    }
+                }
+
+                // Evaluar habilitación del checkbox masivo para Rectoría
+                if (rolActual === "rectoria") {
+                    const checkRect = document.getElementById("aprobarTodosRector");
+                    if (checkRect) {
+                        checkRect.disabled = desaprobadasRectoria === 0;
+                        if (desaprobadasRectoria === 0) {
+                            checkRect.checked = false;
+                        }
+                    }
+                }
             });
         }
 
@@ -182,12 +234,81 @@
                 .then(response => response.json())
                 .then(data => {
                     showAlert(data.message, data.status === "success" ? "success" : "error");
+                    cargarContratos()
                 })
                 .catch(err => {
                     showAlert("Ocurrió un error inesperado.", "error");
-                    cargarContratos()
                 });
             }
+        });
+
+        // Evento para "Aprobar todos" según el rol
+        const checkAprobacionMasivaCont = document.getElementById("aprobarTodosContabilidad");
+        const checkAprobacionMasivaRect = document.getElementById("aprobarTodosRector");
+
+        function mostrarModalConfirmacion(checkElem) {
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmarAprobarTodosContratos'));
+            modal.show();
+
+            // Si el usuario cierra el modal, se desmarca el checkbox
+            document.getElementById('modalConfirmarAprobarTodosContratos').addEventListener('hidden.bs.modal', function () {
+                checkElem.checked = false;
+            }, { once: true });
+        }
+
+        if (checkAprobacionMasivaCont) {
+            checkAprobacionMasivaCont.addEventListener("change", function (e) {
+                if (e.target.checked) {
+                    mostrarModalConfirmacion(e.target);
+                }
+            });
+        }
+        if (checkAprobacionMasivaRect) {
+            checkAprobacionMasivaRect.addEventListener("change", function (e) {
+                if (e.target.checked) {
+                    mostrarModalConfirmacion(e.target);
+                }
+            });
+        }
+
+        // Confirmación del modal para aprobar todos los contratos
+        document.getElementById("confirmarAprobarTodosContratosBtn").addEventListener("click", function () {
+            let endpoint = "";
+
+            if (rolActual === "contabilidad") {
+                endpoint = "/siuc/dashboard/docentes/aprobaciones/aprobar_contratos_contabilidad/";
+            } else if (rolActual === "rectoria") {
+                endpoint = "/siuc/dashboard/docentes/aprobaciones/aprobar_contratos_rectoria/";
+            } else {
+                showAlert("Rol no autorizado para esta acción.", "error");
+                return;
+            }
+
+            fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                showAlert(data.message, data.status === "success" ? "success" : "error");
+                cargarContratos();
+                // Cierra el modal manualmente
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarAprobarTodosContratos'));
+                modal.hide();
+
+                // Desmarca check masivo
+                if (checkAprobacionMasivaCont) checkAprobacionMasivaCont.checked = false;
+                if (checkAprobacionMasivaRect) checkAprobacionMasivaRect.checked = false;
+            })
+            .catch(err => {
+                showAlert("Error al aprobar todos los contratos.", "error");
+                console.error("Error en aprobación masiva:", err);
+            });
         });
 
         cargarContratos();

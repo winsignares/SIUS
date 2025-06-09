@@ -1,0 +1,16 @@
+@page {
+    size: A4;
+
+    @top-center {
+        content: element(header);
+    }
+
+    @bottom-center {
+        content: element(footer);
+    }
+}
+
+/* Define el estilo del pie de página */
+#pdfFooter {
+    position: running(footer);
+}

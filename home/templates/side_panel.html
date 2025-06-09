@@ -59,7 +59,7 @@
                 </a>
             </li>
             <li class="nav-item mb-2 ">
-                <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                <a href="{% url 'gestion_func_sustantivas' %}" class="lh-sm d-flex gap-3 nav-link align-items-center d-none">
                     <i class="bi bi-people-fill"></i>Funciones Sustantivas
                 </a>
             </li>
@@ -98,7 +98,20 @@
                 </a>
             </li>
 
-        {% elif "Director Talento Humano" in user_groups or "Secretaria Talento Humano" in user_groups %}
+        {% elif "Secretaria Talento Humano" in user_groups %}
+            <!-- Opciones para el rol  Secretaria Talento Humano -->
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-fill-add"></i>Aspirantes
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-people-fill"></i>Empleados
+                </a>
+            </li>
+
+        {% elif "Director Talento Humano" in user_groups %}
             <!-- Opciones para el rol Director Talento Humano y Secretaria Talento Humano -->
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_aspirantes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
@@ -108,6 +121,16 @@
             <li class="nav-item mb-2">
                 <a href="{% url 'gestion_empleados' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
                     <i class="bi bi-people-fill"></i>Empleados
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-video3"></i>Contratos de Docentes
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center d-none">
+                    <i class="bi bi-briefcase-fill"></i>Contratos de Administrativos
                 </a>
             </li>
 

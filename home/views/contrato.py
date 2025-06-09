@@ -182,10 +182,10 @@ def definir_contrato_usuario(request, usuario_id):
 # ---------------------------- CONTRATOS DOCENTES ---------------------------------
 #
 
-@group_required("Contabilidad", "Rector", "Presidente")
+@group_required("Contabilidad", "Rector", "Presidente", "Director Talento Humano")
 def gestion_contratos_docentes(request):
     """
-    Muestra el módulo de contratos (Dpto Contablilidad)
+    Muestra el módulo de contratos
     """
     contexto = obtener_db_info(
         request,
@@ -458,46 +458,6 @@ def aprobar_contrato_presidencia(request):
             return JsonResponse({
                 "status": "error",
                 "message": "No se pudo actualizar la aprobación."
-            }, status=400)
-    return JsonResponse({
-        "status": "error",
-        "message": "Petición inválida."
-    }, status=400)
-
-
-@login_required
-def aprobar_contratos_presidencia(request):
-    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        data = json.loads(request.body)
-        try:
-            # Obtener el periodo actual por fechas
-            hoy = timezone.now().date()
-            periodo_actual = Periodo.objects.filter(fecha_apertura__lte=hoy, fecha_cierre__gte=hoy).first()
-            if not periodo_actual:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "No hay un periodo activo."
-                }, status=400)
-
-            contratos = Contrato.objects.filter(
-                fk_periodo=periodo_actual,
-                vigencia_contrato = True
-            )
-            now = timezone.now()
-            for contrato in contratos:
-                contrato.aprobado_presidencia = True
-                contrato.fk_aprobado_presidencia = request.user
-                contrato.fecha_aprobacion_presidencia = now
-                contrato.save()
-            return JsonResponse({
-                "status": "success",
-                "message": "Contratos aprobados correctamente."
-            })
-        except Exception as e:
-            print(e)
-            return JsonResponse({
-                "status": "error",
-                "message": "No se pudo aprobar todos los contratos."
             }, status=400)
     return JsonResponse({
         "status": "error",
