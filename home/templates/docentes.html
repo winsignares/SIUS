@@ -65,7 +65,7 @@
                     let valorHoraHtml = contrato.tarifa_base_por_hora && contrato.tarifa_base_por_hora !== "" ? contrato.tarifa_base_por_hora : `<span class="fst-italic">No aplica</span>`;
                     let detallesDelContrato = "";
                     if (contrato.pago_por_mes && contrato.pago_por_mes.length > 0) {
-                        if ("Contabilidad" in user_groups) {
+                        if (user_groups.includes("Contabilidad")) {
                             detallesDelContrato = `
                                 <table class="table table-sm mb-0 w-100">
                                     <thead>
@@ -80,14 +80,11 @@
                                     </tbody>
                                 </table>
                             `;
-                        } else if ("Presidente" in user_groups) {
-                            detallesDelContrato = `
-                                <a href="#" id="revisarDetallesContrato" target="_blank" class="text-decoration-none">Ver detalles</a>
-                            `;
-                        } else if ("Rector" in user_groups ) {
-                            detallesDelContrato = `
-                                <a href="#" id="revisarDetallesContrato" target="_blank" class="text-decoration-none">Ver detalles</a>
-                            `;
+                            } else if (user_groups.includes("Presidente") || user_groups.includes("Rector")) {
+                                detallesDelContrato = `
+                                    <a href="#" class="text-decoration-none ver-detalles">Ver detalles</a>
+                                `;
+                            }
                         }
                     } else {
                         detallesDelContrato = `<span class="fst-italic">Sin detalle</span>`;
