@@ -200,7 +200,7 @@
                     </select>
                 </div>
 
-                {% if usuario.activo == True and usuario.estado_revision == 'Contratado' %}
+                {% if usuario.activo == True and usuario.fk_estado_revision.id == 1 %}
                     <div class="col-md-6 mb-2">
                         <label for="fk_arl" class="form-label {% if not usuario.fk_arl %}text-color-terciario{% endif %} mb-0">ARL <span class='fw-bold fs-4'>*</span></label>
                         <select type="text" class="form-select" id="fk_arl" name="fk_arl" required>

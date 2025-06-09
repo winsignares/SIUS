@@ -46,19 +46,10 @@
                             <th class="col-1" scope="col">Créditos</th>
                             <th class="col-1" scope="col">Horas Totales</th>
                             <th class="col-1" scope="col">Valor a Pagar</th>
-                            {% if 'Vicerrector' in user_groups %}
-                                <th class="col-1" scope="col">
-                                    <label for="aprobarTodosVicerrectoria" class="form-check-label fs-small">Aprobar todos</label>
-                                    <input type="checkbox" id="aprobarTodosVicerrectoria" class="form-check-input fs-small" data-rol="vicerrectoria">
-                                </th>
-                            {% endif %}
-                            {% if 'Rector' in user_groups %}
-                                <th class="col-1" scope="col">
-                                    <label for="aprobarTodosRectoria" class="form-check-label fs-small">Aprobar todos</label>
-                                    <input type="checkbox" id="aprobarTodosRectoria" class="form-check-input fs-small" data-rol="rectoria">
-                                </th>
-                            {% endif %}
-
+                            <th class="col-1" scope="col">
+                                <label for="aprobarTodosVicerrectoria" class="form-check-label fs-small">Aprobar todos</label>
+                                <input type="checkbox" id="aprobarTodosVicerrectoria" class="form-check-input fs-small" data-rol="vicerrectoria">
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="tablaCargasBody">
@@ -83,7 +74,6 @@
         const filtroPrograma = document.getElementById("filtroPrograma");
         const filtroSemestre = document.getElementById("filtroSemestre");
         const tablaBody = document.getElementById("tablaCargasBody");
-        let rolSeleccionado = null;
 
         function actualizarSemestres() {
             filtroSemestre.innerHTML = '<option value="">Seleccione</option>';
@@ -114,18 +104,20 @@
             }
         });
 
+        function resetCheckbox(id) {
+            const check = document.getElementById(id);
+            if (check) {
+                check.disabled = true;
+                check.checked = false;
+            }
+        }
+
         function cargarCargas() {
             const programaId = filtroPrograma.value;
             const semestreId = filtroSemestre.value;
             if (!programaId || !semestreId) {
                 mostrarMensajePorDefecto();
-                ["aprobarTodosVicerrectoria", "aprobarTodosRectoria"].forEach(id => {
-                    const check = document.getElementById(id);
-                    if (check) {
-                        check.disabled = true;
-                        check.checked = false;
-                    }
-                });
+                resetCheckbox("aprobarTodosVicerrectoria")
                 return;
             }
             fetch(`/siuc/dashboard/carga_academica/aprobaciones/filtrar_cargas_academicas/?programa=${programaId}&semestre=${semestreId}`, {
@@ -136,23 +128,15 @@
                 tablaBody.innerHTML = "";
                 if (!data.cargas || data.cargas.length === 0) {
                     tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay cargas académicas para los filtros seleccionados.</td></tr>`;
-                    ["aprobarTodosVicerrectoria", "aprobarTodosRectoria"].forEach(id => {
-                        const check = document.getElementById(id);
-                        if (check) {
-                            check.disabled = true;
-                            check.checked = false;
-                        }
-                    });
+                    resetCheckbox("aprobarTodosVicerrectoria")
                     document.getElementById("totalSemestreCell").textContent = "0";
                     return;
                 }
 
                 let desaprobadasVicerrectoria = 0;
-                let desaprobadasRectoria = 0;
 
                 data.cargas.forEach(carga => {
                     if (!carga.aprobada_vicerrectoria) desaprobadasVicerrectoria++;
-                    if (!carga.aprobada_rectoria) desaprobadasRectoria++;
 
                     let compartidaHtml = "";
                     if (carga.materia_compartida) {
@@ -164,20 +148,6 @@
                     }
 
                     let checksHtml = "";
-                    {% if 'Vicerrector' in user_groups %}
-                        checksHtml += `
-                            <td>
-                                <input type="checkbox" class="form-check-input aprobar-carga-vicerrector" data-carga-id="${carga.id}" ${carga.aprobada_vicerrectoria ? 'checked' : ''}>
-                            </td>
-                        `;
-                    {% endif %}
-                    {% if 'Rector' in user_groups %}
-                        checksHtml += `
-                            <td>
-                                <input type="checkbox" class="form-check-input aprobar-carga-rector" data-carga-id="${carga.id}" ${carga.aprobada_rectoria ? 'checked' : ''}>
-                            </td>
-                        `;
-                    {% endif %}
 
                     tablaBody.innerHTML += `
                         <tr class="text-center fs-small">
@@ -189,7 +159,9 @@
                             <td>${carga.creditos}</td>
                             <td>${carga.horas_totales}</td>
                             <td>${carga.valor_a_pagar}</td>
-                            ${checksHtml}
+                            <td>
+                                <input type="checkbox" class="form-check-input aprobar-carga-vicerrector" data-carga-id="${carga.id}" ${carga.aprobada_vicerrectoria ? 'checked' : ''}>
+                            </td>
                         </tr>
                     `;
                 });
@@ -201,23 +173,16 @@
                     checkVicer.disabled = desaprobadasVicerrectoria === 0;
                     if (desaprobadasVicerrectoria === 0) checkVicer.checked = false;
                 }
-
-                const checkRector = document.getElementById("aprobarTodosRectoria");
-                if (checkRector) {
-                    checkRector.disabled = desaprobadasRectoria === 0;
-                    if (desaprobadasRectoria === 0) checkRector.checked = false;
-                }
             });
         }
 
         // Aprobaciones individuales
         tablaBody.addEventListener("change", function (e) {
-            if (e.target.classList.contains("aprobar-carga-vicerrector") || e.target.classList.contains("aprobar-carga-rector")) {
+            if (e.target.classList.contains("aprobar-carga-vicerrector")) {
                 const cargaId = e.target.getAttribute("data-carga-id");
                 const aprobada = e.target.checked;
-                const esRector = e.target.classList.contains("aprobar-carga-rector");
 
-                fetch(`/siuc/dashboard/carga_academica/aprobaciones/${esRector ? 'aprobar_carga_academica_rectoria' : 'aprobar_carga_academica_vicerrectoria'}/`, {
+                fetch(`/siuc/dashboard/carga_academica/aprobaciones/aprobar_carga_academica_vicerrectoria/`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -235,39 +200,26 @@
         });
 
         // Evento para "Aprobar todos" con modal compartido
-        ["aprobarTodosVicerrectoria", "aprobarTodosRectoria"].forEach(id => {
-            const checkbox = document.getElementById(id);
-            if (checkbox) {
-                checkbox.addEventListener("change", function (e) {
-                    if (e.target.checked) {
-                        rolSeleccionado = e.target.dataset.rol;
-                        const modal = new bootstrap.Modal(document.getElementById('modalConfirmarAprobarTodos'));
-                        modal.show();
+        const checkAprobacionMasiva = document.getElementById("aprobarTodosVicerrectoria");
+        if (checkAprobacionMasiva) {
+            checkAprobacionMasiva.addEventListener("change", function (e) {
+                if (e.target.checked) {
+                    const modal = new bootstrap.Modal(document.getElementById('modalConfirmarAprobarTodos'));
+                    modal.show();
 
-                        document.getElementById('modalConfirmarAprobarTodos').addEventListener('hidden.bs.modal', function () {
-                            checkbox.checked = false;
-                            rolSeleccionado = null;
-                        }, { once: true });
-                    }
-                });
-            }
-        });
+                    document.getElementById('modalConfirmarAprobarTodos').addEventListener('hidden.bs.modal', function () {
+                        checkAprobacionMasiva.checked = false;
+                    }, { once: true });
+                }
+            });
+        }
 
         // Confirmar aprobación masiva
         document.getElementById("confirmarAprobarTodosBtn").addEventListener("click", function () {
             const programaId = filtroPrograma.value;
             const semestreId = filtroSemestre.value;
 
-            let url = null;
-            if (rolSeleccionado === "vicerrectoria") {
-                url = "/siuc/dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas_vicerrectoria/";
-            } else if (rolSeleccionado === "rectoria") {
-                url = "/siuc/dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas_rectoria/";
-            }
-
-            if (!url) return;
-
-            fetch(url, {
+            fetch('/siuc/dashboard/carga_academica/aprobaciones/aprobar_cargas_academicas_vicerrectoria/', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -283,9 +235,7 @@
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarAprobarTodos'));
                 modal.hide();
 
-                const checkId = rolSeleccionado === "vicerrectoria" ? "aprobarTodosVicerrectoria" : "aprobarTodosRectoria";
-                document.getElementById(checkId).checked = false;
-                rolSeleccionado = null;
+                checkAprobacionMasiva.checked = false;
             });
         });
 

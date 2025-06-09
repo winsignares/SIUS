@@ -8,7 +8,7 @@
 
             <div class="row px-3 mb-3">
                 <!-- Periodo del Contrato -->
-                {% if usuario.fk_rol.id == 4 or usuario.fk_rol.id == 2 %}
+                {% if usuario.fk_rol.id in roles_docentes %}
                 <input type="hidden" name="fk_periodo" value="{{ periodo_actual.id }}">
                 {% endif %}
 
@@ -19,7 +19,7 @@
                         <option value="">Seleccione</option>
                         {% for tipo in tipos_contrato_list %}
                             {% if tipo.id != 1  %}
-                                {% if usuario.fk_rol.id != 4 %}
+                                {% if usuario.fk_rol.id not in roles_docentes %}
                                     <option value="{{ tipo.id }}">{{ tipo.tipo_contrato }}</option>
                                 {% endif %}
                             {% else %}

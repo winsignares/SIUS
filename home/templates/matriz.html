@@ -394,14 +394,17 @@
 
             // Validar si la materia ya está en la tabla
             const programasSeleccionados = [];
-            const programasId = []
-            Array.from(materiasElegidas.selectedOptions).forEach(option => {
-                const materia = materiasAll.find(m => m.id === parseInt(option.value));
+            const materiasSeleccionadasId = [];
+
+            Array.from(materiasElegidas.options).forEach(option => {
+                const materiaId = parseInt(option.value);
+                materiasSeleccionadasId.push(materiaId);
+
+                const materia = materiasAll.find(m => m.id === materiaId);
                 if (materia?.fk_programa_id) {
                     const programa = programas.find(p => p.id === materia.fk_programa_id);
                     if (programa) {
                         programasSeleccionados.push(programa.programa);
-                        programasId.push(programa.id);
                     }
                 }
             });
@@ -416,7 +419,7 @@
                 horas_semanales: parseInt(horasSemanales),
                 total_horas: parseInt(totalHoras),
                 materia_compartida: materiaCompartida,
-                programas_seleccionados_id: programasId
+                materias_seleccionadas_id: materiasSeleccionadasId
             };
 
             console.log("Nueva carga:", nuevaCarga);

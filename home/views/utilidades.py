@@ -73,7 +73,7 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
         ).order_by('codigo')
 
     # Obtener los docentes con contrato vigente en el periodo actual
-    docentes = Empleado.objects.annotate(tiene_contrato=Exists(Contrato.objects.filter(fk_usuario=OuterRef('id'),fk_periodo_id=periodo_actual.id,vigencia_contrato=True))).filter(fk_rol_id__in=[2, 4],fk_estado_revision=1,activo=True,tiene_contrato=True).order_by('primer_nombre')
+    docentes = Empleado.objects.annotate(tiene_contrato=Exists(Contrato.objects.filter(fk_usuario=OuterRef('id'),fk_periodo_id=periodo_actual.id,vigencia_contrato=True))).filter(fk_rol_id__in=[2, 4, 8],fk_estado_revision=1,activo=True,tiene_contrato=True).order_by('primer_nombre')
     docentes_con_dedicacion = []
     for docente in docentes:
         contrato = Contrato.objects.filter(fk_usuario=docente.id, fk_periodo_id=periodo_actual.id, vigencia_contrato=True).first()
@@ -97,6 +97,9 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
     else:
         cargas_academicas = CargaAcademica.objects.none()
 
+    rol_docente = Rol.objects.filter(id__in=[2, 4, 8])
+    roles_docentes = list(rol_docente.values_list('id', flat=True))
+
     # Contexto inicial
     contexto = {
         'usuario_log': usuario_log,
@@ -114,7 +117,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'cajas_compensacion_list': CajaCompensacion.objects.all(),
             'afp_list': AFP.objects.all(),
             'niveles_academicos_list': NivelAcademico.objects.all(),
-            'roles_list': Rol.objects.filter(id__in=[2, 3, 4]),
+            'roles_list': Rol.objects.filter(id__in=[2, 3, 4, 8]),
+            'roles_docentes': roles_docentes,
             'instituciones_list': Institucion.objects.all().order_by('codigo'),
             'sedes_list': Sede.objects.all(),
             'semestres_list': semestres_list,

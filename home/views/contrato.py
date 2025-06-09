@@ -24,7 +24,7 @@ MESES_ORDEN = [
 # ---------------------------- TALENTO HUMANO ---------------------------------
 #
 
-@login_required
+@group_required("Director Talento Humano")
 def definir_contrato(request, usuario_id):
     """
     Muestra el formulario para definir el contrato de un empleado.
@@ -82,7 +82,7 @@ def generar_detalles_contrato(request, contrato):
         valor_mensual = Decimal(valor_mensual)
 
         # 🔁 Aquí llamas a tu función separada
-        actualizar_detalles_contrato_existentes(contrato)
+        actualizar_detalles_contrato_existentes(request, contrato)
 
         dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
         meses_ordenados = sorted(dias_laborados_por_mes.keys())
@@ -108,8 +108,6 @@ def generar_detalles_contrato(request, contrato):
                     vigente=True
                 )
             )
-
-        return detalles
 
 
 @login_required
@@ -156,9 +154,7 @@ def definir_contrato_usuario(request, usuario_id):
                 )
 
                 if valor_mensual_contrato is not None:
-                    detalles = generar_detalles_contrato(request, contrato)
-
-                    DetalleContratro.objects.bulk_create(detalles)
+                    generar_detalles_contrato(request, contrato)
             if estado_contrato == "2":
                 # Editar contrato existente
                 print(data)
@@ -184,7 +180,7 @@ def definir_contrato_usuario(request, usuario_id):
 # ---------------------------- CONTRATOS DOCENTES ---------------------------------
 #
 
-@login_required
+@group_required("Contabilidad", "Rector", "Presidente")
 def gestion_contratos_docentes(request):
     """
     Muestra el módulo de contratos (Dpto Contablilidad)
@@ -210,7 +206,7 @@ def contratos_docentes(request):
 
     if request.method == "GET" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         # Filtrar docentes activos con los roles requeridos
-        docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4], fk_estado_revision=1, activo=True)
+        docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4, 8], fk_estado_revision=1, activo=True)
         periodo_actual = contexto['periodo_actual']
 
         # Si no hay docentes o periodo, retorna vacío
@@ -238,7 +234,7 @@ def contratos_docentes(request):
                 else:
                     valor_hora = ""
 
-            detalle_contrato = DetalleContratro.objects.filter(fk_contrato=c)
+            detalle_contrato = DetalleContratro.objects.filter(fk_contrato=c, vigente=True)
             detalle_list = [
                 {
                     "mes": d.mes_a_pagar,

@@ -11,7 +11,7 @@ from .utilidades import obtener_db_info
 from home.decorators import group_required
 
 # Importar Módelos
-from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, EPS, CajaCompensacion
+from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, EPS, CajaCompensacion, Contrato
 
 
 #
@@ -324,15 +324,18 @@ def detalle_usuario(request, usuario_id):
         template = "partials/detalle_usuario.html"
         detalles_academicos = DetalleAcademico.objects.filter(usuario=usuario)
         detalles_laborales = DetalleExperienciaLaboral.objects.filter(usuario=usuario)
+        contrato_usuario = Contrato.objects.filter(fk_usuario=usuario, vigencia_contrato=True)
     else:
         return HttpResponseNotFound("No se puede mostrar la información solicitada.")
 
     return render(
         request,
-        template, {
+        template,
+        {
             "usuario": usuario,
             "detalles_academicos": detalles_academicos,
-            "detalles_laborales": detalles_laborales
+            "detalles_laborales": detalles_laborales,
+            'contrato_usuario': contrato_usuario
         }
     )
 

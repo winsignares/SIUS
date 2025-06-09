@@ -2,6 +2,7 @@ from django.db import models
 from .usuarios import Empleado
 from .roles import Rol
 from ..carga_academica.datos_adicionales import Periodo
+from django.conf import settings
 
 # Create your models here.
 
@@ -34,6 +35,21 @@ class Contrato(models.Model):
     valor_mensual_contrato = models.IntegerField(verbose_name=('Valor del Contrato'), null=True, blank=True) # Solo para administrativos
     total_dias_laborados = models.IntegerField(verbose_name=('Total Dias Laborados'), null=True, blank=True)
     vigencia_contrato = models.BooleanField(verbose_name=('Vigencia del Contrato'), default=False)
+
+    # Aprobación Contabilidad
+    aprobado_contabilidad = models.BooleanField("Aprobado Contabilidad", default=False)
+    fk_aprobado_contabilidad = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_contabilidad', verbose_name="Aprobación Contabilidad", on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_aprobacion_contabilidad = models.DateTimeField("Fecha Aprobación Contabilidad", null=True, blank=True, default= None)
+
+    # Aprobación Rectoría
+    aprobado_rectoria = models.BooleanField("Aprobado Rectoría", default=False)
+    fk_aprobado_rectoria = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_rectoria', verbose_name="Aprobación Rectoría", on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_aprobacion_rectoria = models.DateTimeField("Fecha Aprobación Rectoría", null=True, blank=True, default= None)
+
+    # Aprobación Presidencia
+    aprobado_presidencia = models.BooleanField("Aprobado Presidencia", default=False)
+    fk_aprobado_presidencia = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='aprobacion_presidencia', verbose_name="Aprobación Presidencia", on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_aprobacion_presidencia = models.DateTimeField("Fecha Aprobación Presidencia", null=True, blank=True, default= None)
 
     class Meta:
         db_table = 'contratos'

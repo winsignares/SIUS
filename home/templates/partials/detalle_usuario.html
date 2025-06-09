@@ -108,25 +108,33 @@
                 <i class="bi bi-file-earmark-text"></i> Detalles de Contratación
             </div>
             <div class="card-body py-0">
-                {% if not usuario.contrato.all %}
+                {% if not contrato_usuario %}
                 <p class="text-center my-3">No se ha encontrado información relacionada</p>
                 {% else %}
-                    {% for contrato in usuario.contrato.all %}
+                    {% for contrato in contrato_usuario %}
                         <div class="card mb-4 mt-4">
                             <div class="card-body">
-                                <dl class="row">
-                                    <dt class="col-md-3 mb-2">Fecha Inicio:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.fecha_inicio|default:"No disponible" }}</dd>
+                                <div class="container">
+                                    <dl class="row mb-0">
+                                        <dt class="col-md-12 text-uppercase">{{ contrato.fk_tipo_contrato.descripcion|default:"No disponible" }} {% if usuario.fk_rol.id == 2 %}para docentes administrativos{% elif usuario.fk_rol.id == 4 %}para docentes{% elif usuario.fk_rol.id == 8 %}para docentes investigadores{% endif %} </dt>
 
-                                    <dt class="col-md-3 mb-2">Fecha Fin:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.fecha_fin|default:"No disponible" }}</dd>
+                                        <div class="d-flex justify-content-between">
+                                            <dt class="col-md-2 fs-small">Dedicación:</dt>
+                                            <dd class="col-md-3 mb-0 text-uppercase fs-small">{{ contrato.fk_dedicacion.nombre|default:"No disponible" }}</dd>
+                                            <dt class="col-md-2 fs-small">Días Laborados:</dt>
+                                            <dd class="col-md-1 mb-0 text-uppercase fs-small">{{ contrato.total_dias_laborados|default:"No disponible" }}</dd>
+                                        </div>
 
-                                    <dt class="col-md-3 mb-2">Tipo de Contrato:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.tipo_contrato|default:"No disponible" }}</dd>
+                                        <dt class="col-md-6 fs-small">Valor Mensual del Contrato:</dt>
+                                        <dd class="col-md-6 mb-0 text-uppercase fs-small">{{ contrato.valor_mensual_contrato|contabilidad_co|default:"No disponible" }}</dd>
 
-                                    <dt class="col-md-3 mb-2">Valor Contrato:</dt>
-                                    <dd class="col-md-9 mb-2 text-uppercase">{{ contrato.valor_contrato|default:"No disponible" }}</dd>
-                                </dl>
+                                        <dt class="col-md-2 fs-small">Fecha Inicio:</dt>
+                                        <dd class="col-md-4 mb-0 text-uppercase fs-small">{{ contrato.fecha_inicio|default:"No disponible" }}</dd>
+
+                                        <dt class="col-md-2 fs-small text-end">Fecha Fin:</dt>
+                                        <dd class="col-md-4 mb-0 text-uppercase fs-small text-end">{{ contrato.fecha_fin|default:"No disponible" }}</dd>
+                                    </dl>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}

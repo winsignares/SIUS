@@ -205,6 +205,24 @@
                     return cookieValue;
                 }
 
+                // Función para mostrar el modal de confirmación antes de un aprobado masivo
+                function ModalConfirmacion(checkboxId, modalId) {
+                    const checkbox = document.getElementById(checkboxId);
+                    if (!checkbox) return;
+
+                    checkbox.addEventListener("change", function (e) {
+                        if (e.target.checked) {
+                            const modalElement = document.getElementById(modalId);
+                            const modal = new bootstrap.Modal(modalElement);
+                            modal.show();
+
+                            modalElement.addEventListener("hidden.bs.modal", function () {
+                                checkbox.checked = false;
+                            }, { once: true });
+                        }
+                    });
+                }
+
             document.addEventListener("DOMContentLoaded", function () {
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
