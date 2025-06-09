@@ -443,7 +443,9 @@
                     ? programasSeleccionados.map(p => `<div>${p}</div>`).join("")
                     : "No aplica"}
                 </td>
-                <td><button type="button" class="btn fs-6 btn-alterno-dark eliminarFila"><i class="bi bi-trash"></i></button></td>
+                <td>
+                    <button type="button" class="btn fs-6 btn-alterno-dark eliminarFila"><i class="bi bi-trash"></i></button>
+                </td>
             `;
             tablaBody.appendChild(fila);
             toggleMensajeVacio();

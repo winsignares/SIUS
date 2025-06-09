@@ -60,7 +60,7 @@
                     <tfoot>
                         <tr class="fs-small">
                             <td colspan="8" class="text-end fw-bold">Total Semestre:</td>
-                            <td class="text-end" id="totalSemestreCell">$ 0</td>
+                            <td class="text-end" id="totalSemestre">$ 0</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -74,6 +74,7 @@
         const filtroPrograma = document.getElementById("filtroPrograma");
         const filtroSemestre = document.getElementById("filtroSemestre");
         const tablaBody = document.getElementById("tablaCargasBody");
+        const totalSemestre = document.getElementById("totalSemestre");
 
         function actualizarSemestres() {
             filtroSemestre.innerHTML = '<option value="">Seleccione</option>';
@@ -88,7 +89,7 @@
 
         function mostrarMensajePorDefecto() {
             tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">Seleccione filtros para ver las cargas académicas</td></tr>`;
-            document.getElementById("totalSemestreCell").textContent = "$ 0";
+            totalSemestre.textContent = "$ 0";
         }
 
         filtroPrograma.addEventListener("change", () => {
@@ -129,7 +130,7 @@
                 if (!data.cargas || data.cargas.length === 0) {
                     tablaBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay cargas académicas para los filtros seleccionados.</td></tr>`;
                     resetCheckbox("aprobarTodosVicerrectoria")
-                    document.getElementById("totalSemestreCell").textContent = "0";
+                    totalSemestre.textContent = "$ 0";
                     return;
                 }
 
@@ -146,8 +147,6 @@
                     } else {
                         compartidaHtml = `<span class="fst-italic">No aplica</span>`;
                     }
-
-                    let checksHtml = "";
 
                     tablaBody.innerHTML += `
                         <tr class="text-center fs-small">
@@ -166,7 +165,7 @@
                     `;
                 });
 
-                document.getElementById("totalSemestreCell").textContent = data.valor_total ? data.valor_total.toLocaleString('es-CO') : "0";
+                totalSemestre.textContent = data.valor_total ? data.valor_total.toLocaleString('es-CO') : "$ 0";
 
                 const checkVicer = document.getElementById("aprobarTodosVicerrectoria");
                 if (checkVicer) {

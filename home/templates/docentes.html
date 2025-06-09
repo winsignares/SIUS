@@ -1,6 +1,6 @@
 {% extends "dashboard.html" %}
 
-{% block title %}Consulta Contabilidad - SIUC{% endblock %}
+{% block title %}Contratos Docentes - SIUC{% endblock %}
 {% block container_class %}justify-content-start align-items-start{% endblock %}
 
 {% block content %}
@@ -21,12 +21,12 @@
             <table class="table table-striped table-hover mb-0 align-middle">
                 <thead class="align-middle text-warp">
                     <tr>
-                        <th colspan="4" class="col-4" scope="col">Información del Docente</th>
-                        <th colspan="1" class="col-1" scope="col">Duración Contrato</th>
+                        <th colspan="5" class="col-5" scope="col">Información del Docente</th>
+                        <th colspan="1" class="col-2" scope="col">Duración Contrato</th>
                         <th colspan="1" class="col-1" scope="col">Valor Hora</th>
                         <th colspan="1" class="col-1" scope="col">Valor Contrato</th>
-                        <th colspan="3">Detalles del Contrato</th>
-                        <th class="col-1" scope="col">
+                        <th colspan="1" class="col-1">Detalles del Contrato</th>
+                        <th colspan="1" class="col-1" scope="col">
                             {% if "Contabilidad" in user_groups %}
                                 <label for="aprobarTodosContabilidad" class="form-check-label fs-small">Aprobar todos</label>
                                 <input type="checkbox" id="aprobarTodosContabilidad" class="form-check-input fs-small" data-rol="contabilidad">
@@ -38,78 +38,159 @@
                                 <input type="checkbox" id="aprobarTodosPresidencia" class="form-check-input fs-small" data-rol="presidencia">
                             {% endif %}
                         </th>
+                        <th colspan="1" class="col-1">Ver Contrato</th>
                     </tr>
                 </thead>
                     <tbody id="tablaContratosDocentesBody">
+                        <tr>
+                            <td colspan="11" class="text-center">No hay contratos de docentes disponibles</td>
+                        </tr>
                     </tbody>
+                    <tfoot>
+                        <tr class="fs-small">
+                            <td colspan="10" class="text-end fw-bold">Total:</td>
+                            <td class="text-end" id="totalPlantaDocente">$ 0</td>
+                        </tr>
+                    </tfoot>
             </table>
         </div>
     </div>
 </div>
 
 <script>
+    const tbody = document.getElementById("tablaContratosDocentesBody");
+    const totalPlantaDocente = document.getElementById("totalPlantaDocente");
+    const rolActual = "{% if 'Contabilidad' in user_groups %}contabilidad{% elif 'Rector' in user_groups %}rectoria{% elif 'Presidente' in user_groups %}presidencia{% endif %}";
+
     document.addEventListener("DOMContentLoaded", function() {
-        fetch("/siuc/dashboard/docentes/contratos/", {
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.getElementById("tablaContratosDocentesBody");
-            tbody.innerHTML = "";
-            if (!data.contratos || data.contratos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center">No hay contratos de docentes.</td></tr>`;
-            } else {
+
+        function mostrarMensajePorDefecto() {
+            tbody.innerHTML = `<tr><td colspan="11" class="text-center">No hay contratos disponibles</td></tr>`;
+            totalPlantaDocente.textContent = "$ 0"
+        }
+
+        function cargarContratos() {
+            fetch("/siuc/dashboard/docentes/contratos/", {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                tbody.innerHTML = "";
+                if (!data.contratos || data.contratos.length === 0) {
+                    mostrarMensajePorDefecto();
+                }
+
+                let desaprobadasContabilidad = 0;
+                let desaprobadasRectoria = 0;
+                let desaprobadasPresidencia = 0;
+
                 data.contratos.forEach(contrato => {
                     let valorHoraHtml = contrato.tarifa_base_por_hora && contrato.tarifa_base_por_hora !== "" ? contrato.tarifa_base_por_hora : `<span class="fst-italic">No aplica</span>`;
+                    // Para ver el modal de detalles de contrato
                     let detallesDelContrato = "";
                     if (contrato.pago_por_mes && contrato.pago_por_mes.length > 0) {
-                        if (user_groups.includes("Contabilidad")) {
-                            detallesDelContrato = `
-                                <table class="table table-sm mb-0 w-100">
-                                    <thead>
-                                        <tr>
-                                            ${contrato.pago_por_mes.map(detalle => `<td class="text-center"><span class="fw-bold">${detalle.mes}</span> - <span class="fst-italic fs-small">${detalle.dias} días</span></td>`).join('')}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            ${contrato.pago_por_mes.map(detalle => `<td class="text-center">${detalle.valor}`).join('')}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        detallesDelContrato = `
+                                <a href="" id="verDetallesContrato" target="_blank" class="text-decoration-none">Ver detalles</a>
                             `;
-                            } else if (user_groups.includes("Presidente") || user_groups.includes("Rector")) {
-                                detallesDelContrato = `
-                                    <a href="#" class="text-decoration-none ver-detalles">Ver detalles</a>
-                                `;
-                            }
-                        }
                     } else {
                         detallesDelContrato = `<span class="fst-italic">Sin detalle</span>`;
                     }
+
+                    // Para mostrar el ckeck de aprobado individual dependiendo del rol del usuario logueado
+                    let columnaAprobacion = "";
+                    if (rolActual === "contabilidad") {
+                        columnaAprobacion = `
+                            <input type="checkbox" class="form-check-input aprobar-carga-contabilidad" data-carga-id="${contrato.id}" ${contrato.aprobado_contabilidad ? "checked" : ""}>
+                        `;
+                    } else if (rolActual === "rectoria") {
+                        columnaAprobacion = `
+                            <input type="checkbox" class="form-check-input aprobar-carga-rectoria" data-carga-id="${contrato.id}" ${contrato.aprobado_rectoria ? "checked" : ""}>
+                        `;
+                    } else if (rolActual === "presidencia") {
+                        columnaAprobacion = `
+                            <input type="checkbox" class="form-check-input aprobar-carga-presidencia" data-carga-id="${contrato.id}" ${contrato.aprobado_presidencia ? "checked" : ""}>
+                        `;
+                    }
+
+                    let verContratoHtml = "";
+                    if (contrato.aprobado_presidencia) {
+                        verContratoHtml = `
+                            <button type="button" class="btn fs-6 btn-alterno-red"><i class="bi bi-file-earmark-pdf" id="verContratoPdf"></i></button>
+                        `
+                    } else {
+                        verContratoHtml = `
+                            <span class="fst-italic">No disponible</span>
+                        `
+                    }
+
                     tbody.innerHTML += `
                         <tr class="text-center fs-small">
-                            <td colspan="1">${contrato.docente}</td>
+                            <td colspan="2">${contrato.docente}</td>
                             <td colspan="1">${contrato.documento}</td>
                             <td colspan="1">${contrato.ultimo_nivel_estudio}</td>
                             <td colspan="1">${contrato.dedicacion}</td>
                             <td colspan="1" class="d-flex flex-column">
-                                <span class="fw-bold">Inicio</span>${contrato.fecha_inicio}
-                                <span class="fw-bold">Fin</span>${contrato.fecha_fin}
+                                <span class="fw-bold">Inicio: <span class="fw-normal">${contrato.fecha_inicio}</span></span>
+                                <span class="fw-bold">Fin: <span class="fw-normal">${contrato.fecha_fin}</span></span>
                             </td>
                             <td colspan="1">${valorHoraHtml}</td>
                             <td colspan="1">${contrato.valor_mensual_contrato}</td>
-                            <td colspan="3">${detallesDelContrato}</td>
-                            <td>
-                                <input type="checkbox" class="form-check-input aprobar-carga-contabilidad" data-carga-id="${contrato.id}" ${contrato.aprobado_contabilidad ? 'checked' : ''}>
+                            <td colspan="1">${detallesDelContrato}</td>
+                            <td colspan="1">${columnaAprobacion}</td>
+                            <td colspan="1">
+                                ${verContratoHtml}
                             </td>
                         </tr>
                     `;
                 });
+            });
+        }
+
+        tbody.addEventListener("change", function (e) {
+            let endpoint = "";
+            let claseCheckbox = "";
+
+            if (rolActual === "contabilidad") {
+                claseCheckbox = "aprobar-carga-contabilidad";
+                endpoint = "/siuc/dashboard/docentes/aprobaciones/aprobar_contrato_contabilidad/";
+            } else if (rolActual === "rectoria") {
+                claseCheckbox = "aprobar-carga-rectoria";
+                endpoint = "/siuc/dashboard/docentes/aprobaciones/aprobar_contrato_rectoria/";
+            } else if (rolActual === "presidencia") {
+                claseCheckbox = "aprobar-carga-presidencia";
+                endpoint = "/siuc/dashboard/docentes/aprobaciones/aprobar_contrato_presidencia/";
+            }
+
+            if (e.target.classList.contains(claseCheckbox)) {
+                const contratoId = e.target.getAttribute("data-carga-id");
+                const aprobado = e.target.checked;
+
+                fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({
+                        contrato_id: contratoId,
+                        aprobado: aprobado
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showAlert(data.message, data.status === "success" ? "success" : "error");
+                })
+                .catch(err => {
+                    showAlert("Ocurrió un error inesperado.", "error");
+                    cargarContratos()
+                });
             }
         });
+
+        cargarContratos();
     });
 </script>
 {% endblock %}

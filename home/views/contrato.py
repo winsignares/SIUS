@@ -258,6 +258,10 @@ def contratos_docentes(request):
                 "fecha_fin": c.fecha_fin,
                 "valor_mensual_contrato": contabilidad_co(c.valor_mensual_contrato) or contabilidad_co(0),
                 "pago_por_mes": detalle_list,
+                "aprobado_contabilidad": c.aprobado_contabilidad,
+                "aprobado_rectoria": c.aprobado_rectoria,
+                "aprobado_presidencia": c.aprobado_presidencia,
+                "id": c.id
             })
         return JsonResponse({"contratos": data})
     return JsonResponse({"contratos": []})

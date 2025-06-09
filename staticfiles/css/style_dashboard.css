@@ -116,7 +116,7 @@ body {
 }
 
 /* Estilo de enlaces */
-#revisarHojaDeVida, #descargarCVInstitucional {
+#revisarHojaDeVida, #descargarCVInstitucional, #verDetallesContrato {
     color: var(--color-primario);
     transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
@@ -124,12 +124,12 @@ body {
 #descargarCVInstitucional {
     font-size: 0.7rem;
 }
-#revisarHojaDeVida:hover, #descargarCVInstitucional:hover {
+#revisarHojaDeVida:hover, #descargarCVInstitucional:hover, #verDetallesContrato:hover {
     color: var(--color-terciario);
     text-decoration: underline;
 }
 
-#revisarHojaDeVida:active, #descargarCVInstitucional:active {
+#revisarHojaDeVida:active, #descargarCVInstitucional:active, #verDetallesContrato:active {
     transform: scale(0.95);
 }
 
