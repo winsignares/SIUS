@@ -26,11 +26,29 @@
             </a>
         </li>
 
-        {% if "Rector" in user_groups %}
+        {% if "Presidente" in user_groups %}
+            <!-- Opciones para el rol Presidente -->
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-video3"></i>Contratos de Docentes
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center d-none">
+                    <i class="bi bi-briefcase-fill"></i>Contratos de Administrativos
+                </a>
+            </li>
+
+        {% elif "Rector" in user_groups %}
             <!-- Opciones para el rol Rector -->
             <li class="nav-item mb-2">
-                <a href="{% url 'gestion_cargas_aprobaciones' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
-                    <i class="bi bi-file-earmark-medical-fill"></i>Cargas Acádemicas
+                <a href="{% url 'gestion_contratos_docentes' %}" class="lh-sm d-flex gap-3 nav-link align-items-center">
+                    <i class="bi bi-person-video3"></i>Contratos de Docentes
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'gestion_contratos_administrativos' %}" class="lh-sm d-flex gap-3 nav-link align-items-center d-none">
+                    <i class="bi bi-briefcase-fill"></i>Contratos de Administrativos
                 </a>
             </li>
 

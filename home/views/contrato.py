@@ -265,8 +265,7 @@ def contratos_docentes(request):
 # ---------------------------- CONTRATOS DOCENTES ---------------------------------
 #
 
-
-@login_required
+@group_required("Contabilidad", "Rector", "Presidente")
 def gestion_contratos_administrativos(request):
     """
     Muestra el módulo de administrativos (Dpto Contablilidad)

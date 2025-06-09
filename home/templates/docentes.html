@@ -25,10 +25,18 @@
                         <th colspan="1" class="col-1" scope="col">Duración Contrato</th>
                         <th colspan="1" class="col-1" scope="col">Valor Hora</th>
                         <th colspan="1" class="col-1" scope="col">Valor Contrato</th>
-                        <th colspan="3">Pago por Mes</th>
+                        <th colspan="3">Detalles del Contrato</th>
                         <th class="col-1" scope="col">
-                            <label for="aprobarTodosContabilidad" class="form-check-label fs-small">Aprobar todos</label>
-                            <input type="checkbox" id="aprobarTodosContabilidad" class="form-check-input fs-small">
+                            {% if "Contabilidad" in user_groups %}
+                                <label for="aprobarTodosContabilidad" class="form-check-label fs-small">Aprobar todos</label>
+                                <input type="checkbox" id="aprobarTodosContabilidad" class="form-check-input fs-small" data-rol="contabilidad">
+                            {% elif "Rector" in user_groups %}
+                                <label for="aprobarTodosRector" class="form-check-label fs-small">Aprobar todos</label>
+                                <input type="checkbox" id="aprobarTodosRector" class="form-check-input fs-small" data-rol="rectoria">
+                            {% elif "Presidente" in user_groups %}
+                                <label for="aprobarTodosPresidencia" class="form-check-label fs-small">Aprobar todos</label>
+                                <input type="checkbox" id="aprobarTodosPresidencia" class="form-check-input fs-small" data-rol="presidencia">
+                            {% endif %}
                         </th>
                     </tr>
                 </thead>
@@ -53,43 +61,49 @@
             if (!data.contratos || data.contratos.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9" class="text-center">No hay contratos de docentes.</td></tr>`;
             } else {
-                data.contratos.forEach(c => {
-                    let valorHoraHtml = c.tarifa_base_por_hora && c.tarifa_base_por_hora !== "" ? c.tarifa_base_por_hora : `<span class="fst-italic">No aplica</span>`;
-                    let pagoPorMesHtml = "";
-                    if (c.pago_por_mes && c.pago_por_mes.length > 0) {
-                        pagoPorMesHtml = `
-                            <table class="table table-sm mb-0 w-100">
-                                <thead>
-                                    <tr>
-                                        ${c.pago_por_mes.map(det => `<td class="text-center"><span class="fw-bold">${det.mes}</span> - <span class="fst-italic fs-small">${det.dias} días</span></td>`).join('')}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        ${c.pago_por_mes.map(det => `<td class="text-center">${det.valor}`).join('')}
-                                    </tr>
-                                </tbody>
-                            </table>
+                data.contratos.forEach(contrato => {
+                    let valorHoraHtml = contrato.tarifa_base_por_hora && contrato.tarifa_base_por_hora !== "" ? contrato.tarifa_base_por_hora : `<span class="fst-italic">No aplica</span>`;
+                    let detallesDelContrato = "";
+                    if (contrato.pago_por_mes && contrato.pago_por_mes.length > 0) {
+                        if ("Contabilidad" in user_groups {
+                            detallesDelContrato = `
+                                <table class="table table-sm mb-0 w-100">
+                                    <thead>
+                                        <tr>
+                                            ${contrato.pago_por_mes.map(detalle => `<td class="text-center"><span class="fw-bold">${detalle.mes}</span> - <span class="fst-italic fs-small">${detalle.dias} días</span></td>`).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            ${contrato.pago_por_mes.map(detalle => `<td class="text-center">${detalle.valor}`).join('')}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            `;
+                        })
+                    } elif ("Presidente" in user_groups) {
+                        detallesDelContrato = `
+                            <a href="#" id="revisarDetallesContrato" target="_blank" class="text-decoration-none">Ver detalles</a>
                         `;
                     } else {
-                        pagoPorMesHtml = `<span class="fst-italic">Sin detalle</span>`;
+                        detallesDelContrato = `<span class="fst-italic">Sin detalle</span>`;
                     }
                     tbody.innerHTML += `
                         <tr class="text-center fs-small">
-                            <td colspan="1">${c.docente}</td>
-                            <td colspan="1">${c.documento}</td>
-                            <td colspan="1">${c.ultimo_nivel_estudio}</td>
-                            <td colspan="1">${c.dedicacion}</td>
+                            <td colspan="1">${contrato.docente}</td>
+                            <td colspan="1">${contrato.documento}</td>
+                            <td colspan="1">${contrato.ultimo_nivel_estudio}</td>
+                            <td colspan="1">${contrato.dedicacion}</td>
                             <td colspan="1" class="d-flex flex-column">
-                                <span class="fw-bold">Inicio</span>${c.fecha_inicio}
-                                <span class="fw-bold">Fin</span>${c.fecha_fin}
+                                <span class="fw-bold">Inicio</span>${contrato.fecha_inicio}
+                                <span class="fw-bold">Fin</span>${contrato.fecha_fin}
                             </td>
                             <td colspan="1">${valorHoraHtml}</td>
-                            <td colspan="1">${c.valor_mensual_contrato}</td>
-                            <td colspan="3">${pagoPorMesHtml}</td>
-                                <td>
-                                    <input type="checkbox" class="form-check-input aprobar-carga" data-carga-id=""}>
-                                </td>
+                            <td colspan="1">${contrato.valor_mensual_contrato}</td>
+                            <td colspan="3">${detallesDelContrato}</td>
+                            <td>
+                                <input type="checkbox" class="form-check-input aprobar-carga-contabilidad" data-carga-id="${contrato.id}" ${contrato.aprobado_contabilidad ? 'checked' : ''}>
+                            </td>
                         </tr>
                     `;
                 });

@@ -102,7 +102,22 @@
             </div>
         </div>
 
-        <!-- Modal de confirmación para aprobar todos -->
+        <!-- Modal para detalles del contrato y cargas acádemicas de docentes -->
+        <div class="modal fade" id="detalleDocentesModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="detalleDocentesModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="detalleDocentesModalLabel">Detalles del Docente</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-2" id="detalleUsuarioContent">
+                        <!-- El contenido se cargará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmación para aprobar todos (Cargas Académicas)-->
         <div class="modal fade" id="modalConfirmarAprobarTodos" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalConfirmarAprobarTodosLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-forms modal-content">
@@ -116,6 +131,25 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-alterno-dark" data-bs-dismiss="modal">Cancelar</button>
                         <button type="button" class="btn btn-primary" id="confirmarAprobarTodosBtn">Si</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmación para aprobar todos (Contratos)-->
+        <div class="modal fade" id="modalConfirmarAprobarTodosContratos" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalConfirmarAprobarTodosContratosLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-forms modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modalConfirmarAprobarTodosContratosLabel">Confirmar Aprobar Todos</h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Está seguro que desea aprobar todos los contratos mostrados?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-alterno-dark" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="confirmarAprobarTodosContratosBtn">Si</button>
                     </div>
                 </div>
             </div>
@@ -203,24 +237,6 @@
                         }
                     }
                     return cookieValue;
-                }
-
-                // Función para mostrar el modal de confirmación antes de un aprobado masivo
-                function ModalConfirmacion(checkboxId, modalId) {
-                    const checkbox = document.getElementById(checkboxId);
-                    if (!checkbox) return;
-
-                    checkbox.addEventListener("change", function (e) {
-                        if (e.target.checked) {
-                            const modalElement = document.getElementById(modalId);
-                            const modal = new bootstrap.Modal(modalElement);
-                            modal.show();
-
-                            modalElement.addEventListener("hidden.bs.modal", function () {
-                                checkbox.checked = false;
-                            }, { once: true });
-                        }
-                    });
                 }
 
             document.addEventListener("DOMContentLoaded", function () {
