@@ -1,0 +1,58 @@
+{% load format_extras %}
+
+<div class="container px-3 py-2">
+    <!-- Aquí va la Información -->
+    <h6 class="fw-bold">Pagos Mensuales</h6>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-hover">
+            <thead>
+                <tr class="text-center">
+                    <th>Mes</th>
+                    <th>Días</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in detalles %}
+                <tr class="text-center">
+                    <td>{{ d.mes_a_pagar }}</td>
+                    <td>{{ d.dias_laborados }}</td>
+                    <td>{{ d.valor_a_pagar|contabilidad_co }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h5 class="fw-bold mt-4">Cargas Académicas Asignadas</h5>
+    {% if cargas %}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped table-hover">
+                <thead>
+                    <tr class="text-center">
+                        <th>Materia</th>
+                        <th>Programa</th>
+                        <th>Horas Semanales</th>
+                        {% if contrato.fk_dedicacion.id == 1 %}
+                            <th>Valor a Pagar</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for carga in cargas %}
+                        <tr class="text-center">
+                            <td>{{ carga.fk_materia.materia }}</td>
+                            <td>{{ carga.fk_programa.programa }}</td>
+                            <td>{{ carga.horas_semanales }}</td>
+                            {% if contrato.fk_dedicacion.id == 1 %}
+                                <td>{{ carga.valor_a_pagar|contabilidad_co }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="fst-italic text-muted">Este docente no tiene cargas académicas registradas para este periodo.</p>
+    {% endif %}
+</div>

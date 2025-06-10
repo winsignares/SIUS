@@ -2,6 +2,7 @@
 from collections import defaultdict
 from itertools import chain
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import traceback
 import json
 from django.utils import timezone
@@ -164,9 +165,21 @@ def guardar_matriz(request):
                 if contrato and contrato.fk_dedicacion and contrato.fk_dedicacion.id == 1:
                     valor_a_pagar = calcular_valor_a_pagar(carga["total_horas"], fk_docente_asignado_inst.id)
 
-                    valor_actual_contrato = contrato.valor_mensual_contrato or 0
+                    fecha_inicio = contrato.fecha_inicio
+                    fecha_fin = contrato.fecha_fin
+
+                    # Organizar fechas si estan desordenadas
+                    if fecha_fin < fecha_inicio:
+                        fecha_inicio, fecha_fin = fecha_fin, fecha_inicio
+
+                    diferencia = relativedelta(fecha_fin, fecha_inicio)
+
+                    # Total de meses incluyendo años
+                    numeros_de_meses_laborados = diferencia.years * 12 + diferencia.months + 1  # +1 para contar el mes actual
+
+                    valor_actual_contrato = (contrato.valor_mensual_contrato) or 0
                     print(valor_actual_contrato)
-                    valor_a_pagar_actualizado = valor_actual_contrato + valor_a_pagar
+                    valor_a_pagar_actualizado = valor_actual_contrato + (valor_a_pagar / numeros_de_meses_laborados)
                     print(valor_a_pagar_actualizado)
 
                     contrato.valor_mensual_contrato = valor_a_pagar_actualizado

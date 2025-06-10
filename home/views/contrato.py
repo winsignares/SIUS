@@ -4,9 +4,10 @@ from decimal import Decimal
 import traceback
 import json
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 
 # Importar Vistas
 from .utilidades import obtener_db_info, calcular_dias_laborados_por_mes, calcular_dias_laborados_por_contrato, nombre_mes
@@ -14,7 +15,7 @@ from home.templatetags.format_extras import contabilidad_co, miles_co
 from home.decorators import group_required
 
 # Importar Módelos
-from home.models import Empleado, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro, NivelAcademicoHistorico
+from home.models import Empleado, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro, NivelAcademicoHistorico, CargaAcademica
 
 # Variables globales
 MESES_ORDEN = [
@@ -51,7 +52,7 @@ def definir_contrato(request, usuario_id):
 
     return render(
         request,
-        "partials/detalle_contrato.html",
+        "partials/definir_contrato.html",
         contexto,
     )
 
@@ -197,6 +198,32 @@ def gestion_contratos_docentes(request):
         'docentes.html',
         contexto
     )
+
+
+@login_required
+def detalles_contrato_docente(request, contrato_id):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            contrato = Contrato.objects.select_related("fk_usuario", "fk_dedicacion", "fk_periodo").get(id=contrato_id)
+            detalle = DetalleContratro.objects.filter(fk_contrato=contrato, vigente=True)
+
+            # Traer las cargas académicas del mismo docente y periodo
+            cargas = CargaAcademica.objects.filter(
+                    fk_docente_asignado=contrato.fk_usuario,
+                    fk_periodo=contrato.fk_periodo,
+                ).select_related("fk_materia", "fk_programa", "fk_docente_asignado")
+
+            html = render_to_string("partials/detalles_contrato_docentes.html", {
+                "contrato": contrato,
+                "detalles": detalle,
+                "cargas": cargas
+            }, request=request)
+
+            return HttpResponse(html)
+        except Contrato.DoesNotExist:
+            return HttpResponse("<p class='text-danger'>Contrato no encontrado.</p>")
+    return HttpResponse(status=400)
+
 
 
 @login_required

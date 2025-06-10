@@ -3,93 +3,11 @@
     <div class="container">
         <div class="container mb-3">
             <div class="d-flex gap-3 fs-5 fw-bold">
-                <i class="bi bi-clipboard2-check-fill"></i></i> Detalles de Contrato
+                <i class="bi bi-clipboard2-check-fill"></i></i> Asignar Funciones Sustantivas
             </div>
 
             <div class="row px-3 mb-3">
-                <!-- Periodo del Contrato -->
-                {% if usuario.fk_rol.id == 4 or usuario.fk_rol.id == 2 %}
-                <input type="hidden" name="fk_periodo" value="{{ periodo_actual.id }}">
-                {% endif %}
 
-                <!-- Tipo del Contrato -->
-                <div class="col-md-6 mb-2">
-                    <label for="tipo_contrato" class="form-label mb-0">Tipo de Contrato <span class='fw-bold fs-4'>*</span></label>
-                    <select class="form-select" id="tipo_contrato" name="tipo_contrato" required>
-                        <option value="">Seleccione</option>
-                        {% for tipo in tipos_contrato_list %}
-                            {% if tipo.id != 1  %}
-                                {% if usuario.fk_rol.id != 4 %}
-                                    <option value="{{ tipo.id }}">{{ tipo.tipo_contrato }}</option>
-                                {% endif %}
-                            {% else %}
-                                <option value="{{ tipo.id }}">{{ tipo.tipo_contrato }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Dedicación -->
-                <div class="col-md-6 mb-2">
-                    <label for="fk_dedicacion" class="form-label mb-0">Dedicación <span class='fw-bold fs-4'>*</span></label>
-                    <select class="form-select" id="fk_dedicacion" name="fk_dedicacion" required>
-                        <option value="">Seleccione</option>
-                        {% for dedicacion in dedicacion_list %}
-                            {% if dedicacion.id == 1 %}
-                                {% if usuario.fk_rol.id == 4 %}
-                                    <option value="{{ dedicacion.id }}" data-nombre-corto="{{ dedicacion.nombre_corto }}">{{ dedicacion.nombre_corto }} - {{ dedicacion.nombre }}</option>
-                                {% endif %}
-                            {% else %}
-                                <option value="{{ dedicacion.id }}" data-nombre-corto="{{ dedicacion.nombre_corto }}">{{ dedicacion.nombre_corto }} - {{ dedicacion.nombre }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Fecha Inicio del Contrato -->
-                <div class="col-md-6 mb-2">
-                    <label for="fecha_inicio_contrato" class="form-label mb-0">Fecha Inicio Contrato <span class='fw-bold fs-4'>*</span></label>
-                    <input type="date" class="form-control" id="fecha_inicio_contrato" name="fecha_inicio_contrato" {% if usuario.fk_estado_revision.id != 1 %}disabled{% endif %} required>
-                </div>
-
-                <!-- Fecha Fin del Contrato -->
-                <div class="col-md-6 mb-2">
-                    <label for="fecha_fin_contrato" class="form-label mb-0">Fecha Fin Contrato <span class='fw-bold fs-4'>*</span></label>
-                    <input type="date" class="form-control" id="fecha_fin_contrato" name="fecha_fin_contrato" {% if usuario.fk_estado_revision.id != 1 %}disabled{% endif %} required>
-                </div>
-
-                <!-- Valor del Contrato -->
-                <div class="col-md-12 mb-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <label for="valor_mensual_contrato" class="form-label mb-0">Valor Mensual a Pagar <span class='fw-bold fs-4'>*</span></label>
-                        <label class="form-label mb-0 text-end d-block fst-italic fs-small">El último nivel de estudio es <span class='fw-bold'>{{ usuario.fk_ultimo_nivel_estudio.nombre}}</span></label>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">$</span>
-                        <input type="number" class="form-control" id="valor_mensual_contrato" name="valor_mensual_contrato" {% if usuario.fk_estado_revision.id != 1 %}disabled{% endif %} required>
-                    </div>
-                </div>
-
-                <!-- Estado del contrato -->
-                <div class="col-md-12">
-                    <label for="estado_contrato" class="form-label mb-0 col-md-12">Estado del Contrato <span class='fw-bold fs-4'>*</span></label>
-                    <div class="col-md-12 d-flex justify-content-between align-items-center m-0">
-                        <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="nuevo_contrato" name="estado_contrato" value="1" {% if contrato_usuario and contrato_usuario.fk_usuario.id == usuario.id %}disabled{% endif %} required>
-                            <label class="form-check-label" for="nuevo_contrato">Nuevo Contrato</label>
-                        </div>
-
-                        <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="editar_contrato_existente" name="estado_contrato" value="2" {% if usuario.fk_estado_revision.id != 1 or not contrato_usuario %}disabled{% endif %} required>
-                            <label class="form-check-label" for="editar_contrato_existente">Editar Contrato Existente</label>
-                        </div>
-
-                        <div class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" id="agregar_otro_contrato" name="estado_contrato" value="3" {% if usuario.fk_estado_revision.id != 1 or not contrato_usuario %}disabled{% endif %} required>
-                            <label class="form-check-label" for="agregar_otro_contrato">Anexar Nuevo Contrato</label>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

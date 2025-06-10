@@ -28,9 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# Habilitar cuando se ejecte en el servidor
-# ALLOWED_HOSTS = ['192.168.1.29', '190.242.60.212']
-
 # Application definition
 
 INSTALLED_APPS = [

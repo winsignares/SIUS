@@ -1,16 +1,111 @@
+/* Estilos para PDF */
 @page {
     size: A4;
+    margin: 2.5cm;
 
     @top-center {
         content: element(header);
     }
 
-    @bottom-center {
+    @bottom-left {
         content: element(footer);
+    }
+
+    @bottom-right {
+        content: "Página " counter(page) " de " counter(pages);
+        font-size: var(--fs-5);
     }
 }
 
-/* Define el estilo del pie de página */
+:root {
+    --fs-1: 1.4rem;
+    --fs-2: 1.2rem;
+    --fs-3: 1rem;
+    --fs-4: 0.8rem;
+    --fs-4-5: 0.7rem;
+    --fs-5: 0.6rem;
+}
+
+/* Pie de página */
 #pdfFooter {
     position: running(footer);
+    font-size: var(--fs-5);
+    text-align: left;
+    padding: 0.3rem 0;
+}
+
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+}
+
+header {
+    text-align: center;
+}
+
+header img {
+    max-width: 50%;
+    height: auto;
+    margin: 0;
+}
+
+header h4 {
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+main p {
+    font-size: var(--fs-4-5);
+    text-align: justify;
+}
+
+/* Estilos para la tabla */
+table {
+    width: 90%;
+    max-width: 75%;
+    border-collapse: collapse;
+    font-size: var(--fs-4-5);
+    page-break-inside: avoid;
+    margin: 1.4rem auto; /* Centrado horizontal con margen */
+}
+
+table td {
+    border: 1px solid #000;
+    padding: 0.3rem 0.5rem;
+    vertical-align: center;
+}
+
+/* Primera columna (títulos) */
+table td:first-child {
+    width: 40%;
+}
+
+/* Segunda columna (valores) */
+table td:last-child {
+    width: 60%;
+    justify-content: center;
+}
+
+.vigencia-contrato span {
+    display: block;
+}
+
+/* Estilos predefinidos */
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.text-lowercase {
+    text-transform: lowercase;
+}
+
+.fst-italic {
+    font-style: italic;
+}
+
+.fw-bold {
+    font-weight: bold;
 }

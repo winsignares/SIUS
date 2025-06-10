@@ -32,10 +32,10 @@
                 <thead class="align-middle text-warp">
                     <tr>
                         <th colspan="5" class="col-5" scope="col">Información del Docente</th>
-                        <th colspan="1" class="col-2" scope="col">Duración Contrato</th>
+                        <th colspan="1" class="col-2" scope="col">Duración</th>
                         <th colspan="1" class="col-1" scope="col">Valor Hora</th>
-                        <th colspan="1" class="col-1" scope="col">Valor Contrato</th>
-                        <th colspan="1" class="col-1">Detalles del Contrato</th>
+                        <th colspan="1" class="col-1" scope="col">Asiganción Mensual</th>
+                        <th colspan="1" class="col-1">Detalles</th>
                         <th colspan="1" class="col-1" scope="col">
                             {% if "Contabilidad" in user_groups %}
                                 <label for="aprobarTodosContabilidad" class="form-check-label fs-small">Aprobar todos</label>
@@ -104,7 +104,7 @@
                     let detallesDelContrato = "";
                     if (contrato.pago_por_mes && contrato.pago_por_mes.length > 0) {
                         detallesDelContrato = `
-                                <a href="" id="verDetallesContrato" target="_blank" class="text-decoration-none">Ver detalles</a>
+                                <a href="#" id="verDetallesContrato" class="text-decoration-none ver-detalles-contrato" data-id="${contrato.id}" data-docente="${contrato.docente}">Ver detalles</a>
                             `;
                     } else {
                         detallesDelContrato = `<span class="fst-italic">Sin detalle</span>`;
@@ -161,9 +161,9 @@
                             <td colspan="1">${contrato.documento}</td>
                             <td colspan="1">${contrato.ultimo_nivel_estudio}</td>
                             <td colspan="1">${contrato.dedicacion}</td>
-                            <td colspan="1" class="d-flex flex-column">
-                                <span class="fw-bold">Inicio: <span class="fw-normal">${contrato.fecha_inicio}</span></span>
-                                <span class="fw-bold">Fin: <span class="fw-normal">${contrato.fecha_fin}</span></span>
+                            <td colspan="1" class="text-center">
+                                <div><strong>Inicio:</strong> ${contrato.fecha_inicio}</div>
+                                <div><strong>Fin:</strong> ${contrato.fecha_fin}</div>
                             </td>
                             <td colspan="1">${valorHoraHtml}</td>
                             <td colspan="1">${contrato.valor_mensual_contrato}</td>
@@ -312,6 +312,47 @@
         });
 
         cargarContratos();
+
+        // Para ver modal de detalles de contratos
+        tbody.addEventListener("click", function (e) {
+            if (e.target.classList.contains("ver-detalles-contrato")) {
+                e.preventDefault();
+                const contratoId = e.target.getAttribute("data-id");
+                const docenteNombre = e.target.getAttribute("data-docente");
+
+                const modal = new bootstrap.Modal(document.getElementById('detalleDocentesModal'));
+                const modalBody = document.querySelector("#detalleDocentesModal #detalleUsuarioContent");
+                const modalTitle = document.querySelector("#detalleDocentesModalLabel");
+
+                // Cambiar título dinámicamente
+                modalTitle.textContent = `Detalles de ${docenteNombre}`;
+
+                modalBody.innerHTML = `
+                    <div class="text-center my-3">
+                        <div class="spinner-border text-color-terciario" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                `;
+
+                modal.show();
+
+                fetch(`/siuc/dashboard/docentes/detalles_contrato/${contratoId}/`, {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    modalBody.innerHTML = html;
+                })
+                .catch(error => {
+                    modalBody.innerHTML = `<p class="text-danger">Error cargando detalles.</p>`;
+                    console.error("Error cargando detalles:", error);
+                });
+            }
+        });
     });
 </script>
 {% endblock %}
