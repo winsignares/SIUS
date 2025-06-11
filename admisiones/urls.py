@@ -42,7 +42,7 @@ urlpatterns = [
     path('validar_codigo/', views_matricula.validar_codigo, name='validar_codigo'),
     path('matriculas/validar_materias/', views_matricula.validar_materias, name='validar_materias'),
     path('matriculas/filtrar_estudiantes/', views_matricula.filtrar_estudiantes, name='filtrar_estudiantes'),
-
+    path('materias-matriculadas/', views_matricula.materias_matriculadas_por_estudiante, name='materias_matriculadas'),
 
     # Vistas de Materia Aprobada
     path('materia_aprobada/', views_materia_aprobada.materias_por_programa_semestre, name='materias_por_programa_semestre'),

@@ -93,7 +93,7 @@
                             <select name="numero_documento" id="numero_documento" class="form-select" required style="border-radius: var(--borde-redondo);">
                                 <option value="" disabled selected>Seleccione un estudiante</option>
                                 {% for estudiante in estudiantes %}
-                                    <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }}</option>
+                                    <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }} ({{estudiante.semestre}})</option>
                                 {% empty %}
                                     <option value="" disabled>No hay estudiantes disponibles</option>
                                 {% endfor %}
@@ -151,7 +151,7 @@
                 $.ajax({
                     url: "{% url 'filtrar_estudiantes' %}",
                     method: "GET",
-                    data: { programa: programaId, semestre: semestreId },
+                    data: { programa: programaId},
                     success: function (response) {
                         const selectEstudiantes = $('#numero_documento');
                         selectEstudiantes.empty().append('<option value="">Seleccione un estudiante</option>');
@@ -181,14 +181,37 @@
 
         $('#numero_documento').change(function () {
             const codigo = $(this).val();
+
             if (codigo) {
-                $('input[type="checkbox"]').prop('disabled', false);
-                $('#btnMatricular').prop('disabled', false);
                 $('#codigoError').hide();
+                $('#btnMatricular').prop('disabled', false);
+
+                $.ajax({
+                    url: "{% url 'materias_matriculadas' %}",
+                    method: "GET",
+                    data: { numero_documento: codigo },
+                    success: function (response) {
+                        const materiasExcluir = response.materias_excluir;
+
+                        $('input[name="materias"]').each(function () {
+                            const materiaId = parseInt($(this).val());
+                            if (materiasExcluir.includes(materiaId)) {
+                                $(this).closest('tr').hide();
+                                $(this).prop('disabled', true);
+                            } else {
+                                $(this).closest('tr').show();
+                                $(this).prop('disabled', false);
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('Error al verificar materias.');
+                    }
+                });
             } else {
-                $('input[type="checkbox"]').prop('disabled', true);
-                $('#btnMatricular').prop('disabled', true);
                 $('#codigoError').show();
+                $('#btnMatricular').prop('disabled', true);
+                $('input[name="materias"]').prop('disabled', true);
             }
         });
 

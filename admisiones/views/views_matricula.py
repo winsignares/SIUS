@@ -28,7 +28,7 @@ def seleccionar_programa_semestre(request):
         
         estudiantes = Estudiantes.objects.filter(
             programa_id=programa_id, 
-            semestre_id=semestre_id   
+              
         )
 
         for estudiante in estudiantes:
@@ -251,3 +251,35 @@ def eliminar_estudiante(request, materia_id, estudiante_id):
         return redirect('estudiantes_inscritos', materia_id=materia.id)
     
     return redirect('estudiantes_inscritos', materia_id=materia_id)
+
+@login_required
+def materias_matriculadas_por_estudiante(request):
+    numero_documento = request.GET.get('numero_documento')
+    
+    if not numero_documento:
+        return JsonResponse({"error": "Número de documento no proporcionado."}, status=400)
+
+    try:
+        estudiante = Estudiantes.objects.get(numero_documento=numero_documento)
+    except Estudiantes.DoesNotExist:
+        return JsonResponse({"error": "Estudiante no encontrado."}, status=404)
+
+    # Obtener materias ya matriculadas en el periodo activo
+    periodo_activo = Periodo.objects.filter(
+        fecha_apertura__lte=timezone.now(),
+        fecha_cierre__gte=timezone.now()
+    ).first()
+
+    materias_matriculadas = Matricula.objects.filter(
+        estudiante=estudiante,
+        periodo=periodo_activo
+    ).values_list('materia_id', flat=True) if periodo_activo else []
+
+    # Obtener materias ya cursadas (aprobadas o reprobadas)
+    materias_cursadas = MateriaAprobada.objects.filter(
+        estudiante=estudiante
+    ).values_list('materia_id', flat=True)
+
+    materias_excluir = list(set(materias_matriculadas).union(set(materias_cursadas)))
+
+    return JsonResponse({"materias_excluir": materias_excluir}, status=200)
