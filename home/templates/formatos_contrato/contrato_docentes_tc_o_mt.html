@@ -19,11 +19,14 @@
         <!-- Formato Contrato -->
         <header>
             <img src="{% static 'images/img_home.png' %}" id="primeraParte" alt="UNICORSALUD">
-            <h4>Contrato de trabajo para docentes tiempo completo o medio tiempo a término fijo inferior a un año</h4>
+            <h4>
+                Contrato de trabajo para docentes tiempo completo o medio tiempo a término fijo inferior a un año<br>
+                Periodo {{ contrato.fk_periodo.year }}-{{ contrato.fk_periodo.periodo }}
+            </h4>
         </header>
 
         <div>
-            <table>
+            <table id="infoDocente">
                 <tbody class="text-uppercase">
                     <tr>
                         <td class="fw-bold">1. Nombre del Docente</td>
@@ -68,6 +71,40 @@
             </table>
         </div>
 
+        <div>
+            <h5 class="text-uppercase">Carga Académica Contratada</h5>
+            <table id="infoCargasAcademicas">
+                <thead class="text-uppercase">
+                    <tr>
+                        <th>Asignatura</th>
+                        <th>Semestre</th>
+                        <th>N.° Horas Semanales (H)</th>
+                        <th>N.° de Semanas (S)</th>
+                        <th>Total (H x S)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-uppercase">
+                    {% for carga in cargas %}
+                        <tr>
+                            <td>{{ carga.fk_materia.materia }}</td>
+                            <td>{{ carga.fk_semestre.semestre }}</td>
+                            <td>{{ carga.horas_semanales }}</td>
+                            <td>16</td>
+                            <td>{{ carga.total_horas }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="fw-bold">Total:</td>
+                        <td colspan="1" class="fw-bold">{{ total_horas_semanales }}</td>
+                        <td colspan="1" class="fw-bold"></td>
+                        <td colspan="1" class="fw-bold">{{ total_horas_totales }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
         <main>
             <p>
                 Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD – UNICORSALUD - identificada con NIT No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 del 15 de julio de 1993 y Resolución No. 3597 del 30 de junio de 2006, expedida por el Ministerio de Educación Nacional, y quien en este CONTRATO se denominará la CORPORACIÓN , y <span class="text-uppercase fw-bold">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</span>, también mayor de edad, con domicilio en Barranquilla, identificado(a) como aparece al pie de la firma, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:
@@ -108,7 +145,7 @@
 
                 <strong>DÉCIMA OCTAVA: </strong>AUTORIZACIÓN DESCUENTOS: El DOCENTE responderá por todos los elementos que se le confíen, y en caso de pérdida, rotura, daño o deterioro de los mismos no imputables a su uso normal, pagará a la CORPORACIÓN el valor comercial en el momento de la reposición de dichos bienes. A su vez, el DOCENTE autoriza en forma expresa a la CORPORACIÓN para retener, deducir y compensar de su salario y prestaciones, si aquellos fueren insuficientes, cualquier suma de dinero que él llegare a adeudar por estos conceptos y/o a cualquier título, así como también el descuento por las horas no laboradas.
 
-                <strong>DÉCIMA NOVENA: </strong>TRATAMIENTO DE DATOS PERSONALES. En cumplimiento a lo estipulado en la Ley 1581 de 2012 y demás normas y decretos que la complementan, el titular de datos personales autoriza para que la información suministrada en nuestras bases de datos sea utilizada exclusivamente por CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD - UNICORSALUD, para el desarrollo de diversos procedimientos relacionados directamente con su objeto social. Para más información, lo invitamos a visitar nuestra Política de Privacidad en <span class="fst-italic">https://unicorsalud.edu.co/wp-content/uploads/2022/05/Politica-de-tratamiento-de-la-informacion-y-proteccion-de-datos.pdf </span>, donde podrá conocer cómo ejercer sus derechos de acceder, rectificar, actualizar, suprimir los datos o revocar la autorización.
+                <strong>DÉCIMA NOVENA: </strong>TRATAMIENTO DE DATOS PERSONALES. En cumplimiento a lo estipulado en la Ley 1581 de 2012 y demás normas y decretos que la complementan, el titular de datos personales autoriza para que la información suministrada en nuestras bases de datos sea utilizada exclusivamente por CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD - UNICORSALUD, para el desarrollo de diversos procedimientos relacionados directamente con su objeto social. Para más información, lo invitamos a visitar nuestra Política de Privacidad en <span class="fst-italic text-color-red"><u>https://unicorsalud.edu.co/wp-content/uploads/2022/05/Politica-de-tratamiento-de-la-informacion-y-proteccion-de-datos.pdf</u></span>, donde podrá conocer cómo ejercer sus derechos de acceder, rectificar, actualizar, suprimir los datos o revocar la autorización.
 
                 <strong>VIGÉSIMA: </strong>Toda modificación que se introduzca a las condiciones establecidas en este documento deberá constar por escrito.
 

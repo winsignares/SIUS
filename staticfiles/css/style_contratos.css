@@ -1,7 +1,8 @@
 /* Estilos para PDF */
 @page {
     size: A4;
-    margin: 2.5cm;
+    margin: 2cm;
+    font-family: 'Times New Roman', Times, serif;
 
     @top-center {
         content: element(header);
@@ -21,9 +22,11 @@
     --fs-1: 1.4rem;
     --fs-2: 1.2rem;
     --fs-3: 1rem;
+    --fs-3-medium: 0.9rem;
     --fs-4: 0.8rem;
-    --fs-4-5: 0.7rem;
+    --fs-4-medium: 0.7rem;
     --fs-5: 0.6rem;
+    --color-red: #ec5464;
 }
 
 /* Pie de página */
@@ -58,39 +61,111 @@ header h4 {
 }
 
 main p {
-    font-size: var(--fs-4-5);
+    font-size: var(--fs-4-medium);
     text-align: justify;
 }
 
-/* Estilos para la tabla */
-table {
+/* Estilos para la tabla infoDocente */
+#infoDocente {
     width: 90%;
-    max-width: 75%;
+    max-width: 90%;
     border-collapse: collapse;
-    font-size: var(--fs-4-5);
+    font-size: var(--fs-4-medium);
     page-break-inside: avoid;
     margin: 1.4rem auto; /* Centrado horizontal con margen */
 }
 
-table td {
+#infoDocente td {
     border: 1px solid #000;
     padding: 0.3rem 0.5rem;
     vertical-align: center;
 }
 
 /* Primera columna (títulos) */
-table td:first-child {
+#infoDocente td:first-child {
     width: 40%;
 }
 
 /* Segunda columna (valores) */
-table td:last-child {
+#infoDocente td:last-child {
     width: 60%;
     justify-content: center;
 }
 
-.vigencia-contrato span {
+.vigencia-contrato span, .total-salario-mensual span {
     display: block;
+}
+
+#vencimientoContrato {
+    font-size: var(--fs-3-medium);
+    text-align: justify;
+}
+
+/* Estilos para la tabla infoCargasAcademicas */
+#infoCargasAcademicas {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-5);
+    page-break-inside: avoid;
+    margin: 1.4rem auto; /* Centrado horizontal con margen */
+}
+
+div h5 {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#infoCargasAcademicas th {
+    border: 1px solid #000;
+    padding: 0.3rem 0.5rem;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center;
+    font-size: var(--fs-4-medium);
+}
+
+#infoCargasAcademicas td {
+    text-align: center;
+    border: 1px solid #000;
+    padding: 0.3rem 0.5rem;
+}
+
+#infoCargasAcademicas tfoot tr {
+    border: none;
+}
+
+#infoCargasAcademicas tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Estilos para el bloque de firmas */
+.firmas {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5rem;
+    font-size: var(--fs-4);
+    text-align: center;
+}
+
+.firma-representante,
+.firma-docente {
+    width: 45%;
+    border-top: 0.05rem solid #000;
+    padding-top: 0.4rem;
+}
+
+.firma-representante p,
+.firma-docente p {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.firma-presidente {
+    width: 45%;
+    margin-top: 6rem;
+    border-top: 0.05rem solid #000;
+    font-size: var(--fs-3-medium);
 }
 
 /* Estilos predefinidos */
@@ -108,4 +183,12 @@ table td:last-child {
 
 .fw-bold {
     font-weight: bold;
+}
+
+.page-break {
+    page-break-before: always;
+}
+
+.text-color-red {
+    color: var(--color-red);
 }

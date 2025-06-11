@@ -30,6 +30,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
 
         # Calcular totales
         total_horas_semanales = sum(int(carga.horas_semanales) for carga in cargas if carga.horas_semanales)
+        total_horas_totales = sum(int(carga.total_horas) for carga in cargas if carga.total_horas)
         total_valor_cargas = sum(int(carga.valor_a_pagar) for carga in cargas if carga.valor_a_pagar)
 
 
@@ -67,6 +68,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
             "fecha_actual": fecha_actual,
             "total_a_pagar": total_a_pagar,
             "total_horas_semanales": total_horas_semanales,
+            "total_horas_totales": total_horas_totales,
             "total_valor_cargas": total_valor_cargas,
             "cargas": cargas,
             "presidente": presidente
@@ -74,7 +76,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
 
         pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
-        nombre_archivo = slugify(f"{docente.primer_nombre}_{docente.segundo_apellido}_{docente.numero_documento}") + ".pdf"
+        nombre_archivo = slugify(f"{docente.primer_nombre}_{docente.segundo_nombre}_{docente.primer_apellido}_{docente.segundo_apellido}".lower()) + ".pdf"
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'inline; filename="{nombre_archivo}"'

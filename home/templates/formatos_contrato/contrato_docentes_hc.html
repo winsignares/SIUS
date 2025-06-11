@@ -6,32 +6,202 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ docente.primer_nombre }}_{{ docente.segundo_apellido }}_{{ docente.numero_documento|miles_co }}</title>
-        <!-- Importar CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <title>{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</title>
         <link rel="stylesheet" href="{% static 'css/style_contratos.css' %}">
-        <link rel="icon" href="{% static 'images/icon.png' %}" type="image/x-icon">
+
     </head>
-    <body class="container">
-        <!-- Pie de página para WeasyPrint -->
-        <div class="row">
-            <div id="pdf-footer" class="d-flex col-8 justify-content-between align-items-center fs-small">
-                <span>Página: counter(page) de counter(pages)</span>
-                <span>Documento generado electrónicamente - Fecha de emisión: {{ contrato.fecha_inicio|date:"d/m/Y" }}</span>
-            </div>
+    <body>
+        <!-- Pie de página -->
+        <div id="pdfFooter">
+            <span>Documento generado electrónicamente - Fecha de emisión: {{ fecha_actual|date:"d/m/Y" }}</span>
         </div>
 
-        <!-- Contenido visible -->
-        <header class="text-center mb-4">
-            <img src="{% static 'images/img_home.png' %}" class="img-fluid w-50" alt="Unicorsalud">
-            <h2 class="mt-2">Contrato Docente</h2>
+        <!-- Formato Contrato -->
+        <header>
+            <img src="{% static 'images/img_home.png' %}" id="primeraParte" alt="UNICORSALUD">
+            <h4>
+                Contrato de trabajo para docentes hora cátedra a término fijo inferior a un año<br>
+                Periodo {{ contrato.fk_periodo.year }}-{{ contrato.fk_periodo.periodo }}
+            </h4>
         </header>
 
+        <div>
+            <table id="infoDocente">
+                <tbody class="text-uppercase">
+                    <tr>
+                        <td class="fw-bold">1. Nombre del Docente</td>
+                        <td>{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">2. Cédula de Ciudadanía</td>
+                        <td>{{ docente.numero_documento|miles_co }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">3. Nacionalidad</td>
+                        <td>{{ docente.fk_pais_nacimiento.nacionalidad }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">4. Lugar donde desempeña sus Labores</td>
+                        <td>{{ docente.fk_sede_donde_labora.ciudad }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">5. Programa</td>
+                        <td class="fst-italic">Por definir</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">6. Vigencia del Contrato</td>
+                        <td class="vigencia-contrato">
+                            <span><strong>Fecha Ingreso:</strong> {{ contrato.fecha_inicio }}</span>
+                            <span><strong>Fecha Retiro:</strong> {{ contrato.fecha_fin }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">7. Valor Contrato</td>
+                        <td>{{ total_valor_cargas|contabilidad_co }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <h5 class="text-uppercase">Carga Académica Contratada</h5>
+            <table id="infoCargasAcademicas">
+                <thead class="text-uppercase">
+                    <tr>
+                        <th>Asignatura</th>
+                        <th>Semestre</th>
+                        <th>N.° Horas Semanales (H)</th>
+                        <th>N.° de Semanas (S)</th>
+                        <th>Total (H x S)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-uppercase">
+                    {% for carga in cargas %}
+                        <tr>
+                            <td>{{ carga.fk_materia.materia }}</td>
+                            <td>{{ carga.fk_semestre.semestre }}</td>
+                            <td>{{ carga.horas_semanales }}</td>
+                            <td>16</td>
+                            <td>{{ carga.total_horas }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="fw-bold">Total:</td>
+                        <td colspan="1" class="fw-bold">{{ total_horas_semanales }}</td>
+                        <td colspan="1" class="fw-bold"></td>
+                        <td colspan="1" class="fw-bold">{{ total_horas_totales }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
         <main>
-            <p>Este contrato es entre la institución y <strong>{{ docente.primer_nombre }} {{ docente.primer_apellido }} {{ docente.segundo_apellido }}</strong>.</p>
-            <!-- Agrega más info -->
+            <p>
+                Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD – UNICORSALUD - identificada con NIT No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 del 15 de julio de 1993 y Resolución No. 3597 del 30 de junio de 2006, expedida por el Ministerio de Educación Nacional, y quien en este CONTRATO se denominará la CORPORACIÓN , y <span class="text-uppercase fw-bold">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</span>, también mayor de edad, con domicilio en Barranquilla, identificado(a) como aparece al pie de la firma, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:
+
+                <strong>PRIMERA: </strong>El DOCENTE se obliga a poner al servicio de la CORPORACIÓN toda su capacidad normal de trabajo, en el desempeño de las funciones propias como docente.
+
+                <strong>SEGUNDA: </strong>El DOCENTE ha sido contratado en la ciudad de Barranquilla y cumplirá su jornada de trabajo en la misma ciudad, según horario y condiciones previamente acordados por las partes y según materias y/o funciones asignadas por el Programa, en todo caso respetando el horario establecido en el reglamento interno de trabajo de la CORPORACIÓN y/o régimen docente. Cuando el DOCENTE dicte un número mayor de horas cátedra a las inicialmente pactadas, estas se acordarán por escrito y se remunerarán previa autorización de su superior inmediato, de acuerdo con las directrices de la Rectoría. Cuando el DOCENTE supere el máximo de horas establecidas para docencia y/o investigación y/o extensión y proyección social a las inicialmente pactadas, estas se acordarán por escrito y no superarán el total de horas contratadas.
+
+                <strong>TERCERA: </strong>PERIODO: El DOCENTE prestará sus servicios a la CORPORACIÓN en la vigencia establecida en el inciso N.° 6 del encabezado del presente contrato.
+
+                <strong>CUARTA: </strong>FUNCIONES. El DOCENTE desarrollará actividades de docencia <span class="fw-bold"><u>hasta el 100% del total de horas contratadas</u></span>, según lo establecido en el inciso N.° 5 del encabezado del presente contrato, y en todas aquellas funciones específicas que sean determinadas por su superior. FUNCIONES DE DOCENCIA: Dentro del desempeño de sus funciones, el DOCENTE queda comprometido a: 1º. Dictar cátedra con carga docente determinada, cumpliendo a cabalidad con el número de horas contratadas y horario asignado; 2º. Diseñar experiencias de aprendizaje para sus estudiantes; 3º. Diseñar, realizar, supervisar y controlar el trabajo académico; 4º. Supervisar prácticas académicas; 5º. Evaluar el rendimiento académico o el logro de competencias alcanzadas por sus estudiantes; 6º. Ejercer de Tutor estudiantil; 7º. Participar en planes de capacitación docente; 8º. Participar en procesos de evaluación, autoevaluación, cumplimiento de estándares de calidad, acreditación previa y acreditación de programas a los que pertenece; 9°. Los docentes que no pertenezcan al área de investigación podrán, según su criterio, realizar artículos y ensayos sobre su disciplina y publicarlos en revistas de alto impacto, académicas e investigativas; 10°. Podrá actuar como conferencista; 11°. Contribuir a la materialización del Proyecto Educativo Institucional; 12°. Realizar cartas descriptivas y consignador académico; 13°. Ingresar oportunamente dentro del período académico las notas o evaluaciones exigidas por el Programa, incluyendo las calificaciones correspondientes al final del semestre; 14°. Asistir a las reuniones a las cuales sea convocado; 15°. Avisar oportunamente, con 48 horas de anticipación, si por cualquier causa justificada no pudiere concurrir a desempeñar sus funciones; 16°. Todas aquellas funciones específicas que sean determinadas por su superior.
+
+                <strong>QUINTA: </strong>El DOCENTE manifiesta que conoce y se compromete a cumplir los Estatutos y Reglamentos de la CORPORACIÓN, así como también las disposiciones emanadas del Ministerio de Educación Nacional, las cuales, para todos los efectos jurídicos, hacen parte integral de este Contrato de Trabajo. Asimismo, se entiende que el REGLAMENTO INTERNO DE TRABAJO es parte integrante del presente contrato y tiene también fuerza obligante de este último.
+
+                <strong>SEXTA: </strong>REMUNERACIÓN: La CORPORACIÓN pagará al DOCENTE, por la retribución directa de sus servicios, una suma por el valor total del contrato, que será dividido en cuatro (4) pagos mensuales. Las partes, de común acuerdo, establecen que el pago de las prestaciones sociales y demás derechos derivados de este contrato de trabajo se efectuará mediante transferencia a su cuenta de nómina al finalizar este contrato.
+
+                <strong>SÉPTIMA: </strong>PERIODICIDAD DEL PAGO: La remuneración, en la forma discriminada en la cláusula anterior, será cancelada por la empleadora mes vencido.
+
+                <strong>OCTAVA: </strong>DÍAS DE DESCANSO: En la correspondiente remuneración se entienden cancelados los días de descanso obligatorio establecidos por la ley.
+
+                <strong>NOVENA: </strong>FACTORES NO SALARIALES: Las partes, de común acuerdo y de conformidad con lo establecido en el Artículo 128 del C.S.T., subrogado por el Artículo 15 de la Ley 50/90, determinan que las sumas que por mera liberalidad reciba el DOCENTE, por parte de la CORPORACIÓN, no constituyen salario.
+
+                <strong>DÉCIMA: </strong>DURACIÓN: La duración del presente contrato es la establecida en este documento. En cumplimiento a lo establecido en el Art. 101 del C.S.T., para contratos de personal docente por periodos académicos, por otra parte, se deja constancia, a partir de la firma del presente documento, que la fecha de terminación está señalada en la parte inicial del contrato, <span class="fw-bold"><u>y por lo tanto no es necesaria nueva comunicación indicando dicha fecha</u></span>.
+
+                <strong>DÉCIMA PRIMERA: </strong>PERIODO DE PRUEBA: Las partes acuerdan un periodo de prueba que no podrá ser superior a la quinta parte del término inicial de este contrato. En caso de prórroga, se entenderá que no hay nuevo periodo de prueba. Durante este tiempo, tanto la CORPORACIÓN como el DOCENTE podrán terminar el contrato en cualquier momento, en forma unilateral, de conformidad con el Artículo 80 del Código Sustantivo del Trabajo.
+
+                <strong>DÉCIMA SEGUNDA: </strong>El trabajador se compromete a no atender durante las horas de trabajo asuntos particulares, a guardar estricta reserva de todo lo que llegue a su conocimiento por razón de su oficio y cuya revelación pudiere causar perjuicio a la CORPORACIÓN; y a trabajar todo el tiempo necesario para cumplir debidamente sus deberes.
+
+                <strong>DÉCIMA TERCERA: </strong>DERECHOS DE AUTOR. Las invenciones o descubrimientos realizados por el DOCENTE y las creaciones literarias, científicas o artísticas que le encomiende la CORPORACIÓN mientras le preste sus servicios, pertenecerán a esta. En consecuencia, tendrá la CORPORACIÓN el derecho de hacer patentar o registrar a su nombre esas obras, inventos, mejoras, creaciones, otorgándole el CRÉDITO correspondiente al autor del trabajo, si así lo desea. El DOCENTE accederá a facilitar el cumplimiento oportuno de las correspondientes formalidades, y hará su firma o extenderá los poderes y documentos necesarios para tal fin, según y cuando se lo solicite la CORPORACIÓN, sin que este quede obligado al pago de compensación alguna.
+
+                <strong>DÉCIMA CUARTA: </strong>SECRETOS EMPRESARIALES E INFORMACIÓN RESERVADA. En virtud de que el DOCENTE accederá a los desarrollos y actividades de la CORPORACIÓN en razón de su cargo, el DOCENTE se abstendrá, durante la vigencia del presente contrato o con posterioridad a su terminación por cualquier causa, de revelar, suministrar, vender, arrendar, publicar, copiar, reproducir, remover, disponer, transferir, alterar, eliminar, consultar y, en general, utilizar directa o indirectamente, a favor propio o de otras personas, en forma total o parcial, sin que medie autorización previa, expresa y escrita de la CORPORACIÓN para tal efecto. Dentro de esta estipulación se encuentra incluida la información confidencial o propiedad intelectual de la CORPORACIÓN que el DOCENTE manipule en ejercicio de sus funciones, y toda información confidencial a la que tenga acceso o tenga conocimiento dentro de la CORPORACIÓN. Las partes acuerdan expresamente que el incumplimiento de las disposiciones contenidas en el presente acuerdo es considerado como una falta grave y, en tal sentido, justa causa para la terminación del contrato de trabajo, de conformidad con lo dispuesto en el literal a), numeral 6, del Artículo 62 del C.S.T., subrogado por el Artículo 7 del Decreto 2351 de 1965. Lo anterior, sin perjuicio de las acciones civiles, comerciales o penales que puedan instaurarse en contra del DOCENTE por parte de la CORPORACIÓN o de terceros como consecuencia de dicho incumplimiento.
+
+                <strong>DÉCIMA QUINTA: </strong>JUSTAS CAUSAS. Además de las enumeradas en el Decreto 2351 de 1965, y de las normas legales concordantes, son justa causa para terminar el contrato en cualquier momento por parte del Empleador las siguientes, que aún ocurridas por primera vez se consideran faltas graves: 1º. La violación de cualquiera de sus obligaciones legales, contractuales o reglamentarias; 2º. El incumplimiento del horario o la no asistencia al trabajo sin justa causa, a juicio de la CORPORACIÓN; 3º. El abandono o retiro del sitio de trabajo sin el debido permiso del superior inmediato; 4º. No atender en debida forma cualquier orden de la CORPORACIÓN relacionada con el presente contrato; 5º. Todo acto inmoral o delictuoso, toda falta de respeto, disciplina o lealtad, todo acto de violencia, injuria o malos tratamientos en que incurra el trabajador contra sus jefes, directivos o compañeros de trabajo; 6º. Todo daño material causado intencionalmente o por descuido a las edificaciones, instrumentos, elementos de la CORPORACIÓN, o que pongan en grave peligro la seguridad de las personas; 7º. Llegar embriagado al sitio de trabajo o ingerir en éste bebidas embriagantes; 8º. Cualquier acto de deshonestidad o mala fe, y en general, todo vicio que altere la disciplina y la buena marcha de la CORPORACIÓN; 9º. La recepción por sí o por interpuesta persona de dineros o valores destinados a la CORPORACIÓN a cualquier título, sin previa autorización para hacerlo; 10º. El hecho de revelar procesos técnicos, industriales, comerciales o información que la CORPORACIÓN considere como reservados y que haya conocido con ocasión del servicio que preste para esta; 11º. Aprovecharse en su beneficio de los dineros que les sean entregados por la CORPORACIÓN o por sus representantes con destino a terceras personas para cancelar los compromisos adquiridos con estas; 12º. Fraude o intento de fraude en perjuicio de la Institución. La aplicación de faltas y sanciones deberá ser sometida al procedimiento administrativo previo previsto en el Reglamento Interno de Trabajo de la CORPORACIÓN.
+
+                <strong>DÉCIMA SEXTA: </strong>POLÍTICAS DE SEGURIDAD, SALUD EN EL TRABAJO Y MEDIO AMBIENTE. El DOCENTE hace constar que recibe de la CORPORACIÓN información del Sistema de Gestión de Seguridad y Salud en el Trabajo, el cual declara conocer, así como del Reglamento Interno de Trabajo, el cual se encuentra publicado en el portal web de la Institución. El DOCENTE se obliga a cumplir las políticas y normas de Seguridad, Salud en el Trabajo, Medio Ambiente y Calidad cuando su labor la ejecute ejerciendo el objeto del presente contrato. Se le aplicarán procesos disciplinarios cuando el DOCENTE, con previo conocimiento, realice actos inseguros en el sitio de trabajo.
+
+                <strong>DÉCIMA SÉPTIMA: </strong>DIRECCIÓN DEL DOCENTE. El DOCENTE, para todos los efectos legales y en especial para la aplicación del parágrafo 1 del Artículo 29 de la Ley 789 de 2002, norma que modificó el Artículo 65 del C.S.T., se compromete a informar por escrito y de manera inmediata a la CORPORACIÓN cualquier cambio en su dirección de residencia, teniéndose en todo caso como suya la última dirección registrada en su hoja de vida.
+
+                <strong>DÉCIMA OCTAVA: </strong>AUTORIZACIÓN DESCUENTOS: El DOCENTE responderá por todos los elementos que se le confíen, y en caso de pérdida, rotura, daño o deterioro de los mismos no imputables a su uso normal, pagará a la CORPORACIÓN el valor comercial en el momento de la reposición de dichos bienes. A su vez, el DOCENTE autoriza en forma expresa a la CORPORACIÓN para retener, deducir y compensar de su salario y prestaciones, si aquellos fueren insuficientes, cualquier suma de dinero que él llegare a adeudar por estos conceptos y/o a cualquier título, así como también el descuento por las horas no laboradas.
+
+                <strong>DÉCIMA NOVENA: </strong>TRATAMIENTO DE DATOS PERSONALES. En cumplimiento a lo estipulado en la Ley 1581 de 2012 y demás normas y decretos que la complementan, el titular de datos personales autoriza para que la información suministrada en nuestras bases de datos sea utilizada exclusivamente por CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD - UNICORSALUD, para el desarrollo de diversos procedimientos relacionados directamente con su objeto social. Para más información, lo invitamos a visitar nuestra Política de Privacidad en <span class="fst-italic text-color-red"><u>https://unicorsalud.edu.co/wp-content/uploads/2022/05/Politica-de-tratamiento-de-la-informacion-y-proteccion-de-datos.pdf</u></span>, donde podrá conocer cómo ejercer sus derechos de acceder, rectificar, actualizar, suprimir los datos o revocar la autorización.
+
+                <strong>VIGÉSIMA: </strong>Toda modificación que se introduzca a las condiciones establecidas en este documento deberá constar por escrito.
+
+                <strong>VIGÉSIMA PRIMERA: </strong>Este contrato queda sujeto, en todas sus partes, a las prescripciones legales que regulan las relaciones entre empleadores y trabajadores.
+            </p>
+            <div class="firmas">
+                <div class="firma-representante">
+                    <p>
+                        <strong>La CORPORACIÓN</strong><br>
+                        Representante Legal<br>
+                        <span>{{ presidente.fk_tipo_documento.tipo_documento }}</span> {{ presidente.numero_documento|miles_co }}
+                    </p>
+                </div>
+                <div class="firma-docente">
+                    <p>
+                        <strong>DOCENTE</strong><br>
+                        <span>{{ docente.fk_tipo_documento.tipo_documento }}</span> {{ docente.numero_documento|miles_co }}
+                    </p>
+                </div>
+            </div>
         </main>
+
+        <!-- Formato Vencimiento de Contrato -->
+        <div class="page-break">
+            <header>
+                <img src="{% static 'images/img_home.png' %}" id="segundaParte" alt="UNICORSALUD">
+            </header>
+
+            <div id="vencimientoContrato">
+                <p>Baranquilla, {{ fecha_actual }}<br><br>
+                <strong>Señor (a)</strong><br>
+                {{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}<br>
+                {{ docente.fk_sede_donde_labora.ciudad }}</p>
+
+                <p class="fst-italic"><strong>Ref:</strong> Vencimiento contrato a término fijo inferior un (1) año.</p>
+
+                <p>Cordial Saludo,</p>
+
+                <p>Para dar cumplimiento a lo señalado en el Artículo 3°, numeral 1, de la Ley 50 de 1990, y en el Artículo 2 del Decreto Reglamentario 1127 de 1991, me permito comunicarle, con antelación, que el vencimiento de su contrato a término fijo inferior a un (1) año será el {{ contrato.fecha_fin|date:"d/m/Y" }}.</p>
+
+                <p>Por lo anterior tener en cuenta lo siguiente:</p>
+
+                <ol>
+                    <li>
+                        Realizarse el examen ocupacional de egreso en el laboratorio con el que la Institución tenga convenio, dando cumplimiento a la Resolución No. 2346 de 2017. A partir de la fecha de vencimiento de su contrato, tiene cinco (5) días hábiles para la realización de este examen.
+                    </li>
+                    <li>
+                        En cumplimiento a lo estipulado en la Ley 1581 de 2012 y demás normas y decretos que la complementan, la <strong>CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD - UNICORSALUD</strong>, continuará dando tratamiento a sus datos personales para el desarrollo de diversos procedimientos relacionados directamente con su objeto social y en los casos exceptuados por la Ley.
+                    </li>
+                    <li>
+                        Diligenciar el paz y salvo y dejarlo en la Oficina de Contabilidad, para el pago de sus prestaciones sociales de Ley, el inventario, carnet y las llaves entregarlas en la Oficina de Talento Humano.
+                    </li>
+                </ol>
+
+                <p>Agradezco su noble colaboración y sus valiosos servicios prestados a la Corporación.<br><br>
+                Atentamente,</p>
+
+                <div class="firma-presidente">
+                    <p>
+                        <strong class="text-uppercase">{{ presidente.primer_nombre }} {% if presidente.segundo_nombre %}{{ presidente.segundo_nombre }} {% endif %}{{ presidente.primer_apellido }} {% if presidente.segundo_apellido %}{{ presidente.segundo_apellido }}{% endif %}</strong><br>
+                        Presidente
+                    </p>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
-

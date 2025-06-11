@@ -26,6 +26,7 @@
     --fs-4: 0.8rem;
     --fs-4-medium: 0.7rem;
     --fs-5: 0.6rem;
+    --color-red: #ec5464;
 }
 
 /* Pie de página */
@@ -64,34 +65,34 @@ main p {
     text-align: justify;
 }
 
-/* Estilos para la tabla */
-table {
+/* Estilos para la tabla infoDocente */
+#infoDocente {
     width: 90%;
-    max-width: 75%;
+    max-width: 90%;
     border-collapse: collapse;
     font-size: var(--fs-4-medium);
     page-break-inside: avoid;
     margin: 1.4rem auto; /* Centrado horizontal con margen */
 }
 
-table td {
+#infoDocente td {
     border: 1px solid #000;
     padding: 0.3rem 0.5rem;
     vertical-align: center;
 }
 
 /* Primera columna (títulos) */
-table td:first-child {
+#infoDocente td:first-child {
     width: 40%;
 }
 
 /* Segunda columna (valores) */
-table td:last-child {
+#infoDocente td:last-child {
     width: 60%;
     justify-content: center;
 }
 
-.vigencia-contrato span {
+.vigencia-contrato span, .total-salario-mensual span {
     display: block;
 }
 
@@ -100,11 +101,49 @@ table td:last-child {
     text-align: justify;
 }
 
+/* Estilos para la tabla infoCargasAcademicas */
+#infoCargasAcademicas {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-5);
+    page-break-inside: avoid;
+    margin: 1.4rem auto; /* Centrado horizontal con margen */
+}
+
+div h5 {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#infoCargasAcademicas th {
+    border: 1px solid #000;
+    padding: 0.3rem 0.5rem;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center;
+    font-size: var(--fs-4-medium);
+}
+
+#infoCargasAcademicas td {
+    text-align: center;
+    border: 1px solid #000;
+    padding: 0.3rem 0.5rem;
+}
+
+#infoCargasAcademicas tfoot tr {
+    border: none;
+}
+
+#infoCargasAcademicas tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
 /* Estilos para el bloque de firmas */
 .firmas {
     display: flex;
     justify-content: space-between;
-    margin-top: 6rem;
+    margin-top: 5rem;
     font-size: var(--fs-4);
     text-align: center;
 }
@@ -112,7 +151,7 @@ table td:last-child {
 .firma-representante,
 .firma-docente {
     width: 45%;
-    border-top: 0.01rem solid #000;
+    border-top: 0.05rem solid #000;
     padding-top: 0.4rem;
 }
 
@@ -123,7 +162,9 @@ table td:last-child {
 }
 
 .firma-presidente {
-    margin-top: 5rem;
+    width: 45%;
+    margin-top: 6rem;
+    border-top: 0.05rem solid #000;
     font-size: var(--fs-3-medium);
 }
 
@@ -146,4 +187,8 @@ table td:last-child {
 
 .page-break {
     page-break-before: always;
+}
+
+.text-color-red {
+    color: var(--color-red);
 }
