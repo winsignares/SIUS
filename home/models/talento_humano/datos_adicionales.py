@@ -1,6 +1,19 @@
 from django.db import models
 
 
+class Pais(models.Model):
+    nombre_pais = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    nacionalidad = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    codigo_pais = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'paises'
+        verbose_name = 'Pais'
+        verbose_name_plural = 'Paises'
+
+    def __str__(self):
+        return f"{self.nombre}"
+
 class Departamento(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255, unique=True)

@@ -148,10 +148,20 @@
                                 </tbody>
                                 <tfoot>
                                     <tr class="fs-small">
-                                        <td colspan="8" class="text-end fw-bold">Total Semestre:</td>
-                                        <td class="text-end">
+                                        <td colspan="4" class="text-start fw-bold">Total</td>
+                                        <td class="text-center">
+                                            THS
+                                        </td>
+                                        <td class="text-center">
+                                            TCR
+                                        </td>
+                                        <td class="text-center">
+                                            THM
+                                        </td>
+                                        <td class="text-center">
                                             {{ totales_por_semestre|get_item:semestre.semestre|default_if_none:"0"|contabilidad_co }}
                                         </td>
+                                        <td colspan="2"></td>
                                     </tr>
                                 </tfoot>
                             </table>

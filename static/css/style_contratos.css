@@ -1,7 +1,8 @@
 /* Estilos para PDF */
 @page {
     size: A4;
-    margin: 2.5cm;
+    margin: 2cm;
+    font-family: 'Times New Roman', Times, serif;
 
     @top-center {
         content: element(header);
@@ -21,8 +22,9 @@
     --fs-1: 1.4rem;
     --fs-2: 1.2rem;
     --fs-3: 1rem;
+    --fs-3-medium: 0.9rem;
     --fs-4: 0.8rem;
-    --fs-4-5: 0.7rem;
+    --fs-4-medium: 0.7rem;
     --fs-5: 0.6rem;
 }
 
@@ -58,7 +60,7 @@ header h4 {
 }
 
 main p {
-    font-size: var(--fs-4-5);
+    font-size: var(--fs-4-medium);
     text-align: justify;
 }
 
@@ -67,7 +69,7 @@ table {
     width: 90%;
     max-width: 75%;
     border-collapse: collapse;
-    font-size: var(--fs-4-5);
+    font-size: var(--fs-4-medium);
     page-break-inside: avoid;
     margin: 1.4rem auto; /* Centrado horizontal con margen */
 }
@@ -93,6 +95,38 @@ table td:last-child {
     display: block;
 }
 
+#vencimientoContrato {
+    font-size: var(--fs-3-medium);
+    text-align: justify;
+}
+
+/* Estilos para el bloque de firmas */
+.firmas {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6rem;
+    font-size: var(--fs-4);
+    text-align: center;
+}
+
+.firma-representante,
+.firma-docente {
+    width: 45%;
+    border-top: 0.01rem solid #000;
+    padding-top: 0.4rem;
+}
+
+.firma-representante p,
+.firma-docente p {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.firma-presidente {
+    margin-top: 5rem;
+    font-size: var(--fs-3-medium);
+}
+
 /* Estilos predefinidos */
 .text-uppercase {
     text-transform: uppercase;
@@ -108,4 +142,8 @@ table td:last-child {
 
 .fw-bold {
     font-weight: bold;
+}
+
+.page-break {
+    page-break-before: always;
 }

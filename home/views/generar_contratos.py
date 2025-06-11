@@ -9,7 +9,7 @@ from django.utils.text import slugify
 import traceback
 
 # Importar Modelos
-from home.models import Contrato, CargaAcademica
+from home.models import Contrato, CargaAcademica, EmpleadoUser
 
 
 @login_required
@@ -48,6 +48,19 @@ def ver_contrato_docente_pdf(request, contrato_id):
         # Valor total mensual + auxilio (si aplica)
         total_a_pagar = (contrato.valor_mensual_contrato or 0) + (contrato.fk_periodo.auxilio_transporte or 0)
 
+        # Obtener el usuario que aprobó el contrato (Presidente)
+        usuario_presidente = contrato.fk_aprobado_presidencia  # Es un User
+
+        # Buscar el Empleado asociado al usuario que aprobó
+        presidente_empleado = EmpleadoUser.objects.filter(fk_user=usuario_presidente).select_related("fk_empleado").first()
+
+        # Validar que exista el vínculo
+        if not presidente_empleado:
+            return HttpResponse("No se encontró el representante legal vinculado al usuario.", status=404)
+
+        # Extraer el empleado
+        presidente = presidente_empleado.fk_empleado
+
         html_string = render_to_string(plantilla, {
             "contrato": contrato,
             "docente": docente,
@@ -56,6 +69,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
             "total_horas_semanales": total_horas_semanales,
             "total_valor_cargas": total_valor_cargas,
             "cargas": cargas,
+            "presidente": presidente
         })
 
         pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()

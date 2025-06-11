@@ -2,7 +2,6 @@
 from collections import defaultdict
 from itertools import chain
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 import traceback
 import json
 from django.utils import timezone
@@ -14,7 +13,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 # Importar Vistas
-from .utilidades import obtener_db_info, calcular_valor_a_pagar
+from .utilidades import obtener_db_info, calcular_valor_a_pagar, contar_meses_completos
 from home.templatetags.format_extras import contabilidad_co, miles_co
 from home.decorators import group_required
 from .contrato import generar_detalles_contrato
@@ -168,14 +167,9 @@ def guardar_matriz(request):
                     fecha_inicio = contrato.fecha_inicio
                     fecha_fin = contrato.fecha_fin
 
-                    # Organizar fechas si estan desordenadas
-                    if fecha_fin < fecha_inicio:
-                        fecha_inicio, fecha_fin = fecha_fin, fecha_inicio
-
-                    diferencia = relativedelta(fecha_fin, fecha_inicio)
-
                     # Total de meses incluyendo años
-                    numeros_de_meses_laborados = diferencia.years * 12 + diferencia.months + 1  # +1 para contar el mes actual
+                    numeros_de_meses_laborados = numeros_de_meses_laborados = contar_meses_completos(fecha_inicio, fecha_fin)
+                    print(numeros_de_meses_laborados)
 
                     valor_actual_contrato = (contrato.valor_mensual_contrato) or 0
                     print(valor_actual_contrato)

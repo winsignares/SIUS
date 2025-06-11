@@ -15,8 +15,6 @@ class DetalleAcademico(models.Model):
     ies_codigo = models.PositiveIntegerField(null=True, blank=True)
     codigo_pais = models.PositiveIntegerField(null=True, blank=True)
     fecha_graduacion = models.DateField(null=True, blank=True)
-    
-
     class Meta:
         db_table = 'detalles_academicos'
         verbose_name = 'Detalle Académico'

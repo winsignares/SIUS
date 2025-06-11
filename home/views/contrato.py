@@ -1,8 +1,10 @@
 # Importar Librerías
+import calendar
 from datetime import datetime
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 import traceback
 import json
+from django.db.models import Sum
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -15,7 +17,7 @@ from home.templatetags.format_extras import contabilidad_co, miles_co
 from home.decorators import group_required
 
 # Importar Módelos
-from home.models import Empleado, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro, NivelAcademicoHistorico, CargaAcademica
+from home.models import Empleado, TipoContrato, Contrato, Periodo, Dedicacion, DetalleContratro, NivelAcademicoHistorico, CargaAcademica, MateriaCompartida
 
 # Variables globales
 MESES_ORDEN = [
@@ -88,29 +90,25 @@ def generar_detalles_contrato(request, contrato):
         actualizar_detalles_contrato_existentes(request, contrato)
 
         dias_laborados_por_mes = calcular_dias_laborados_por_mes(fecha_inicio, fecha_fin)
-        meses_ordenados = sorted(dias_laborados_por_mes.keys())
-        valor_dia = valor_mensual / 30
 
         detalles = []
-
-        for idx, mes in enumerate(meses_ordenados):
-            dias = dias_laborados_por_mes[mes]
-
-            if idx == 0 or idx == len(meses_ordenados) - 1:
-                valor_mes = valor_mensual if dias == 30 else round(dias * valor_dia, 2)
-            else:
-                dias = 30
-                valor_mes = valor_mensual
+        for (year, month), dias_laborados in sorted(dias_laborados_por_mes.items()):
+            dias_en_el_mes = calendar.monthrange(year, month)[1]
+            valor_dia = valor_mensual / Decimal(dias_en_el_mes)
+            valor_mes = (valor_dia * Decimal(dias_laborados)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
             detalles.append(
                 DetalleContratro.objects.create(
                     fk_contrato=contrato,
-                    mes_a_pagar=nombre_mes(mes),
-                    dias_laborados=dias,
+                    mes_a_pagar=nombre_mes(month),
+                    dias_laborados=dias_laborados,
                     valor_a_pagar=valor_mes,
                     vigente=True
                 )
             )
+
+            print(f"{nombre_mes(month)} {year} - {dias_laborados} días trabajados - valor mensual: {valor_mensual}, valor día: {valor_dia}, total: {valor_mes}")
+
 
 
 @login_required
@@ -205,18 +203,31 @@ def detalles_contrato_docente(request, contrato_id):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
             contrato = Contrato.objects.select_related("fk_usuario", "fk_dedicacion", "fk_periodo").get(id=contrato_id)
-            detalle = DetalleContratro.objects.filter(fk_contrato=contrato, vigente=True)
+            detalles = DetalleContratro.objects.filter(fk_contrato=contrato, vigente=True)
 
-            # Traer las cargas académicas del mismo docente y periodo
+            # Cargas académicas del mismo docente y periodo
             cargas = CargaAcademica.objects.filter(
-                    fk_docente_asignado=contrato.fk_usuario,
-                    fk_periodo=contrato.fk_periodo,
-                ).select_related("fk_materia", "fk_programa", "fk_docente_asignado")
+                fk_docente_asignado=contrato.fk_usuario,
+                fk_periodo=contrato.fk_periodo,
+            ).select_related("fk_materia", "fk_programa", "fk_docente_asignado")
+
+            # Diccionario de programas compartidos por carga
+            materias_compartidas_dict = {
+                carga.id: list(
+                    MateriaCompartida.objects.filter(fk_carga_academica=carga).values_list("fk_programa__programa", flat=True)
+                )
+                for carga in cargas
+            }
+
+            # Total del valor a pagar de las cargas del docente
+            total_valor_cargas = cargas.aggregate(total=Sum("valor_a_pagar"))["total"] or 0
 
             html = render_to_string("partials/detalles_contrato_docentes.html", {
                 "contrato": contrato,
-                "detalles": detalle,
-                "cargas": cargas
+                "detalles": detalles,
+                "cargas": cargas,
+                "materias_compartidas_dict": materias_compartidas_dict,
+                "total_valor_cargas": total_valor_cargas
             }, request=request)
 
             return HttpResponse(html)

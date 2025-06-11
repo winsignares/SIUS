@@ -1,7 +1,7 @@
 from django.db import models
 from .roles import Rol
 from .tipo_documentos import TipoDocumento
-from .datos_adicionales import EPS, AFP, ARL, CajaCompensacion, Departamento, Sede
+from .datos_adicionales import EPS, AFP, ARL, CajaCompensacion, Departamento, Sede, Pais
 from .niveles_academicos import NivelAcademico
 from django.conf import settings
 
@@ -32,6 +32,7 @@ class Empleado(models.Model):
     segundo_nombre = models.CharField(max_length=255, null=True, blank=True) # ✅
     segundo_apellido = models.CharField(max_length=255, null=True, blank=True) # ✅
     fecha_nacimiento = models.DateField(null=True, blank=True) # ✅
+    fk_pais_nacimiento = models.ForeignKey(Pais, on_delete=models.CASCADE, null=True, blank=True) # ✅
     lugar_nacimiento = models.CharField(max_length=255, null=True, blank=True) # ✅
     fecha_expedicion_documento = models.DateField(null=True, blank=True) # ✅
     lugar_expedicion_documento = models.CharField(max_length=255, null=True, blank=True) # ✅

@@ -1,5 +1,8 @@
 # Importar Librerías
-from datetime import datetime
+from collections import defaultdict
+import calendar
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Exists, OuterRef
@@ -159,33 +162,13 @@ def calcular_dias_laborados_por_mes(fecha_inicio, fecha_final):
     """
     Calcula los días laborados en cada mes del contrato, con un máximo de 30 días por mes.
     """
-    dias_laborados_por_mes = {}
-    fecha_actual = fecha_inicio
+    dias_laborados_por_mes = defaultdict(int)
+    current = fecha_inicio
 
-    while fecha_actual <= fecha_final:
-        year = fecha_actual.year
-        month = fecha_actual.month
-        clave_mes = f"{year}-{month:02d}"
-
-        # Calcular el primer y último día a considerar en este mes
-        if fecha_actual.year == fecha_inicio.year and fecha_actual.month == fecha_inicio.month:
-            dia_inicio = fecha_actual.day
-        else:
-            dia_inicio = 1
-
-        if fecha_actual.year == fecha_final.year and fecha_actual.month == fecha_final.month:
-            dia_fin = fecha_final.day
-        else:
-            dia_fin = 30  # Siempre 30 días por mes
-
-        dias_trabajados = dia_fin - dia_inicio + 1
-        dias_laborados_por_mes[clave_mes] = dias_trabajados
-
-        # Avanzar al siguiente mes
-        if month == 12:
-            fecha_actual = fecha_actual.replace(year=year + 1, month=1, day=1)
-        else:
-            fecha_actual = fecha_actual.replace(month=month + 1, day=1)
+    while current <= fecha_final:
+        key = (current.year, current.month)
+        dias_laborados_por_mes[key] += 1
+        current += timedelta(days=1)
 
     return dias_laborados_por_mes
 
@@ -202,13 +185,36 @@ def calcular_valor_a_pagar(total_horas, id_docente):
     return valor_a_pagar
 
 
-def nombre_mes(mes_str):
-    mes_num = int(mes_str.split('-')[1])
-    meses = [
-        '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ]
-    return meses[mes_num]
+def contar_meses_completos(fecha_inicio, fecha_fin):
+    if fecha_fin < fecha_inicio:
+        fecha_inicio, fecha_fin = fecha_fin, fecha_inicio
+
+    # Ajustar al inicio y fin de mes
+    fecha_inicio = fecha_inicio.replace(day=1)
+    fecha_fin = fecha_fin.replace(day=1)
+
+    diferencia = relativedelta(fecha_fin, fecha_inicio)
+    meses = diferencia.years * 12 + diferencia.months + 1
+
+    return meses
+
+
+def nombre_mes(mes):
+    meses = {
+        1: "Enero",
+        2: "Febrero",
+        3: "Marzo",
+        4: "Abril",
+        5: "Mayo",
+        6: "Junio",
+        7: "Julio",
+        8: "Agosto",
+        9: "Septiembre",
+        10: "Octubre",
+        11: "Noviembre",
+        12: "Diciembre"
+    }
+    return meses.get(mes, "Mes inválido")
 
 
 def no_autorizado(request):

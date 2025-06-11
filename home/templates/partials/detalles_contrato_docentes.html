@@ -40,7 +40,7 @@
                 </thead>
                 <tbody>
                     {% for carga in cargas %}
-                        <tr class="text-center">
+                        <tr class="text-center fs-small">
                             <td>{{ carga.fk_materia.materia }}</td>
                             <td>{{ carga.fk_programa.programa }}</td>
                             <td>{{ carga.horas_semanales }}</td>
@@ -50,6 +50,16 @@
                         </tr>
                     {% endfor %}
                 </tbody>
+                {% if contrato.fk_dedicacion.id == 1 %}
+                    <tfoot>
+                        <tr class="fs-small">
+                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                            <td class="text-center">
+                                {{ total_valor_cargas|contabilidad_co }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                {% endif %}
             </table>
         </div>
     {% else %}
