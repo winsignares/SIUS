@@ -22,26 +22,35 @@ def ver_contrato_docente_pdf(request, contrato_id):
 
         docente = contrato.fk_usuario
 
-        # Traer las cargas académicas del mismo docente y periodo
         cargas = CargaAcademica.objects.filter(
             fk_docente_asignado=docente,
             fk_periodo=contrato.fk_periodo,
-        ).select_related("fk_materia", "fk_programa", "fk_docente_asignado").order_by('fk_semestre__semestre')
+        ).select_related(
+            "fk_materia", "fk_programa", "fk_docente_asignado"
+        ).order_by('fk_semestre__semestre')
+
+        # Set para evitar duplicados
+        programas_vinculados = set()
 
         for carga in cargas:
+            programa_madre = carga.fk_programa
+            if programa_madre:
+                programas_vinculados.add(f"{programa_madre.programa} - {programa_madre.sede or 'Sin Sede'}")
+
+            # Buscar programas compartidos por esta carga
             programas_compartidos = MateriaCompartida.objects.filter(
                 fk_carga_academica=carga
-            ).values_list('fk_programa__nombre_corto', flat=True)
+            ).select_related("fk_programa")
 
-            # Programa madre
-            programa_madre = carga.fk_programa.nombre_corto
+            for pc in programas_compartidos:
+                if pc.fk_programa:
+                    programas_vinculados.add(f"{pc.fk_programa.programa} - {pc.fk_programa.sede or 'Sin Sede'}")
 
-            # Si hay programas compartidos, armar el string "madre - compartido1 - compartido2 ..."
-            if programas_compartidos:
-                programas_unificados = [programa_madre] + [p for p in programas_compartidos if p != programa_madre]
-                carga.programas_compartidos_str = " - ".join(programas_unificados)
-            else:
-                carga.programas_compartidos_str = programa_madre
+            # Para tabla individual: string de todos los programas asociados a esa carga
+            todos_los_programas = [f"{programa_madre.nombre_corto}"] + [
+                pc.fk_programa.nombre_corto for pc in programas_compartidos if pc.fk_programa
+            ]
+            carga.programas_compartidos_str = " - ".join(todos_los_programas)
 
 
         # Calcular totales
@@ -87,7 +96,8 @@ def ver_contrato_docente_pdf(request, contrato_id):
             "total_horas_totales": total_horas_totales,
             "total_valor_cargas": total_valor_cargas,
             "cargas": cargas,
-            "presidente": presidente
+            "presidente": presidente,
+            "programas_dictados": sorted(programas_vinculados),
         })
 
         pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()

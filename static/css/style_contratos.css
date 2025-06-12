@@ -18,6 +18,10 @@
     }
 }
 
+@page :first {
+    margin: 1cm 2cm 3cm 2cm;
+}
+
 :root {
     --fs-1: 1.4rem;
     --fs-2: 1.2rem;
@@ -61,8 +65,15 @@ header h4 {
 }
 
 main p {
-    font-size: var(--fs-4-medium);
+    font-size: var(--fs-4);
     text-align: justify;
+}
+
+table ol {
+    padding-left: 1rem; /* o el valor que necesites */
+    margin: 0;
+    text-align: left;
+    list-style-position: outside;
 }
 
 /* Estilos para la tabla infoDocente */
@@ -72,7 +83,7 @@ main p {
     border-collapse: collapse;
     font-size: var(--fs-4-medium);
     page-break-inside: avoid;
-    margin: 1.4rem auto; /* Centrado horizontal con margen */
+    margin: 1rem auto; /* Centrado horizontal con margen */
 }
 
 #infoDocente td {
@@ -108,7 +119,7 @@ main p {
     border-collapse: collapse;
     font-size: var(--fs-5);
     page-break-inside: avoid;
-    margin: 1.4rem auto; /* Centrado horizontal con margen */
+    margin: 1rem auto; /* Centrado horizontal con margen */
 }
 
 div h5 {
@@ -131,8 +142,17 @@ div h5 {
     padding: 0.3rem 0.5rem;
 }
 
-#infoCargasAcademicas tfoot tr {
+#infoCargasAcademicas td:first-child {
+    text-align: start;
+}
+
+#infoCargasAcademicas tfoot td:first-child {
+    text-align: end;
+}
+
+#infoCargasAcademicas tfoot td {
     border: none;
+    text-align: center;
 }
 
 #infoCargasAcademicas tbody tr:nth-child(even) {
@@ -163,7 +183,7 @@ div h5 {
 
 .firma-presidente {
     width: 45%;
-    margin-top: 6rem;
+    margin-top: 5rem;
     border-top: 0.05rem solid #000;
     font-size: var(--fs-3-medium);
 }

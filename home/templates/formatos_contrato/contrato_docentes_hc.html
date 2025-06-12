@@ -46,7 +46,13 @@
                     </tr>
                     <tr>
                         <td class="fw-bold">5. Programa</td>
-                        <td class="fst-italic">Por definir</td>
+                        <td>
+                            <ol>
+                                {% for programa in programas_dictados %}
+                                    <li>{{ programa }}</li>
+                                {% endfor %}
+                            </ol>
+                        </td>
                     </tr>
                     <tr>
                         <td class="fw-bold">6. Vigencia del Contrato</td>
@@ -68,30 +74,34 @@
             <table id="infoCargasAcademicas">
                 <thead class="text-uppercase">
                     <tr>
-                        <th class="col-4">Asignatura</th>
-                        <th>Semestre</th>
-                        <th>N.° Horas Semanales (H)</th>
-                        <th>N.° de Semanas (S)</th>
-                        <th>Total (H * S)</th>
+                        <th class="col-5">Asignatura</th>
+                        <th class="col-1">Semestre</th>
+                        <th class="col-2">Horas Semanales (H)</th>
+                        <th class="col-2">Semanas (S)</th>
+                        <th class="col-1">Total (H * S)</th>
                     </tr>
                 </thead>
                 <tbody class="text-uppercase">
                     {% for carga in cargas %}
                         <tr>
-                            <td>{{ carga.fk_materia.materia }}<br>({{ carga.programas_compartidos_str }})</td>
+                            <td>{{ carga.fk_materia.materia }} ({{ carga.programas_compartidos_str }})</td>
                             <td>{{ carga.fk_semestre.semestre }}</td>
                             <td>{{ carga.horas_semanales }}</td>
-                            <td>16</td>
+
+                            {% if forloop.first %}
+                                <td rowspan="{{ cargas|length }}">16</td>
+                            {% endif %}
+
                             <td>{{ carga.total_horas }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="2" class="fw-bold">Total:</td>
-                        <td colspan="1" class="fw-bold">{{ total_horas_semanales }}</td>
-                        <td colspan="1" class="fw-bold"></td>
-                        <td colspan="1" class="fw-bold">{{ total_horas_totales }}</td>
+                        <td colspan="2" class="fw-bold text-uppercase">Total:</td>
+                        <td colspan="1">{{ total_horas_semanales }}</td>
+                        <td colspan="1"></td>
+                        <td colspan="1">{{ total_horas_totales }}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -99,11 +109,11 @@
 
         <main>
             <p>
-                Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD – UNICORSALUD - identificada con NIT No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 del 15 de julio de 1993 y Resolución No. 3597 del 30 de junio de 2006, expedida por el Ministerio de Educación Nacional, y quien en este CONTRATO se denominará la CORPORACIÓN , y <span class="text-uppercase fw-bold">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</span>, también mayor de edad, con domicilio en Barranquilla, identificado(a) como aparece al pie de la firma, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:
+                Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD – UNICORSALUD - identificada con NIT No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 del 15 de julio de 1993 y Resolución No. 3597 del 30 de junio de 2006, expedida por el Ministerio de Educación Nacional, y quien en este CONTRATO se denominará la CORPORACIÓN , y <span class="text-uppercase fw-bold">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</span>, también mayor de edad, con domicilio en {{ docente.fk_sede_donde_labora.ciudad }}, identificado(a) como aparece al pie de la firma, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:
 
                 <strong>PRIMERA: </strong>El DOCENTE se obliga a poner al servicio de la CORPORACIÓN toda su capacidad normal de trabajo, en el desempeño de las funciones propias como docente.
 
-                <strong>SEGUNDA: </strong>El DOCENTE ha sido contratado en la ciudad de Barranquilla y cumplirá su jornada de trabajo en la misma ciudad, según horario y condiciones previamente acordados por las partes y según materias y/o funciones asignadas por el Programa, en todo caso respetando el horario establecido en el reglamento interno de trabajo de la CORPORACIÓN y/o régimen docente. Cuando el DOCENTE dicte un número mayor de horas cátedra a las inicialmente pactadas, estas se acordarán por escrito y se remunerarán previa autorización de su superior inmediato, de acuerdo con las directrices de la Rectoría. Cuando el DOCENTE supere el máximo de horas establecidas para docencia y/o investigación y/o extensión y proyección social a las inicialmente pactadas, estas se acordarán por escrito y no superarán el total de horas contratadas.
+                <strong>SEGUNDA: </strong>El DOCENTE ha sido contratado en la ciudad de Barranquilla y cumplirá su jornada de trabajo {% if docente.fk_sede_donde_labora.ciudad == "Barranquilla" %}en la misma ciudad{% else %}en {{ docente.fk_sede_donde_labora.ciudad }}{% endif %}, según horario y condiciones previamente acordados por las partes y según materias y/o funciones asignadas por el Programa, en todo caso respetando el horario establecido en el reglamento interno de trabajo de la CORPORACIÓN y/o régimen docente. Cuando el DOCENTE dicte un número mayor de horas cátedra a las inicialmente pactadas, estas se acordarán por escrito y se remunerarán previa autorización de su superior inmediato, de acuerdo con las directrices de la Rectoría. Cuando el DOCENTE supere el máximo de horas establecidas para docencia y/o investigación y/o extensión y proyección social a las inicialmente pactadas, estas se acordarán por escrito y no superarán el total de horas contratadas.
 
                 <strong>TERCERA: </strong>PERIODO: El DOCENTE prestará sus servicios a la CORPORACIÓN en la vigencia establecida en el inciso N.° 6 del encabezado del presente contrato.
 
@@ -167,7 +177,7 @@
             </header>
 
             <div id="vencimientoContrato">
-                <p>Baranquilla, {{ fecha_actual }}<br><br>
+                <p>{{ docente.fk_sede_donde_labora.ciudad }}, {{ fecha_actual }}<br><br>
                 <strong>Señor (a)</strong><br>
                 {{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}<br>
                 {{ docente.fk_sede_donde_labora.ciudad }}</p>
