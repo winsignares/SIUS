@@ -78,7 +78,7 @@
                 <tbody class="text-uppercase">
                     {% for carga in cargas %}
                         <tr>
-                            <td>{{ carga.fk_materia.materia }}</td>
+                            <td>{{ carga.fk_materia.materia }}<br>({{ carga.programas_compartidos_str }})</td>
                             <td>{{ carga.fk_semestre.semestre }}</td>
                             <td>{{ carga.horas_semanales }}</td>
                             <td>16</td>

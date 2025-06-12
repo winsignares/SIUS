@@ -20,7 +20,7 @@
         <header>
             <img src="{% static 'images/img_home.png' %}" id="primeraParte" alt="UNICORSALUD">
             <h4>
-                Contrato de trabajo para docentes tiempo completo o medio tiempo a término fijo inferior a un año<br>
+                Contrato de trabajo para docentes {{ contrato.fk_dedicacion.nombre }} a término fijo inferior a un año<br>
                 Periodo {{ contrato.fk_periodo.year }}-{{ contrato.fk_periodo.periodo }}
             </h4>
         </header>
@@ -46,7 +46,7 @@
                     </tr>
                     <tr>
                         <td class="fw-bold">5. Número de Horas</td>
-                        <td>{{ total_horas_semanales }} horas</td>
+                        <td>{% if contrato.fk_dedicacion.id == 2 %}40{% else %}20{% endif %} horas</td>
                     </tr>
                     <tr>
                         <td class="fw-bold">6. Programa</td>
@@ -86,7 +86,7 @@
                 <tbody class="text-uppercase">
                     {% for carga in cargas %}
                         <tr>
-                            <td>{{ carga.fk_materia.materia }}</td>
+                            <td>{{ carga.fk_materia.materia }}<br>({{ carga.programas_compartidos_str }})</td>
                             <td>{{ carga.fk_semestre.semestre }}</td>
                             <td>{{ carga.horas_semanales }}</td>
                             <td>16</td>

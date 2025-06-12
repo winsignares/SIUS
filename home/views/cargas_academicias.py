@@ -276,14 +276,13 @@ def filtrar_cargas_academicas(request):
 
         # Prepara el diccionario de materias compartidas
         materias_compartidas_dict = {}
+        data = []
         for carga in cargas:
             programas = MateriaCompartida.objects.filter(
                 fk_carga_academica=carga
             ).values_list('fk_programa__programa', flat=True)
             materias_compartidas_dict[carga.id] = list(programas)
 
-        data = []
-        for carga in cargas:
             # Programas compartidos (nombres)
             programas = materias_compartidas_dict.get(carga.id, [])
             # Programa madre

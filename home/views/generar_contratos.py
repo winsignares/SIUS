@@ -9,7 +9,7 @@ from django.utils.text import slugify
 import traceback
 
 # Importar Modelos
-from home.models import Contrato, CargaAcademica, EmpleadoUser
+from home.models import Contrato, CargaAcademica, EmpleadoUser, MateriaCompartida
 
 
 @login_required
@@ -26,7 +26,23 @@ def ver_contrato_docente_pdf(request, contrato_id):
         cargas = CargaAcademica.objects.filter(
             fk_docente_asignado=docente,
             fk_periodo=contrato.fk_periodo,
-        ).select_related("fk_materia", "fk_programa", "fk_docente_asignado")
+        ).select_related("fk_materia", "fk_programa", "fk_docente_asignado").order_by('fk_semestre__semestre')
+
+        for carga in cargas:
+            programas_compartidos = MateriaCompartida.objects.filter(
+                fk_carga_academica=carga
+            ).values_list('fk_programa__nombre_corto', flat=True)
+
+            # Programa madre
+            programa_madre = carga.fk_programa.nombre_corto
+
+            # Si hay programas compartidos, armar el string "madre - compartido1 - compartido2 ..."
+            if programas_compartidos:
+                programas_unificados = [programa_madre] + [p for p in programas_compartidos if p != programa_madre]
+                carga.programas_compartidos_str = " - ".join(programas_unificados)
+            else:
+                carga.programas_compartidos_str = programa_madre
+
 
         # Calcular totales
         total_horas_semanales = sum(int(carga.horas_semanales) for carga in cargas if carga.horas_semanales)
