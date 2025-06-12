@@ -204,7 +204,7 @@ def evaluar_docente(request, docente_id):
             messages.warning(request, "Ya realizaste esta evaluación para el periodo activo.")
             return redirect('evaluacion:listado_docentes')
 
-        # Procesar las respuestas enviadas en el formulario
+        
         respuestas = {}
         for categoria, preguntas in preguntas_por_categoria.items():
             for pregunta in preguntas:
@@ -224,14 +224,16 @@ def evaluar_docente(request, docente_id):
             respuestas=respuestas
         )
 
-        messages.success(request, f"Evaluación registrada correctamente para el docente {docente_evaluado.primer_apellido}.")
+       
         return redirect('evaluacion:listado_docentes')
 
-    
-    context = {
+    context = obtener_db_info(request)
+
+    context.update({
         'docente': docente_evaluado,
         'preguntas_por_categoria': preguntas_por_categoria,
         'evaluacion_existente': evaluacion_existente,
+        'request':request,
         'periodo': periodo_activo
-    }
+    })
     return render(request, 'core/evaluar_docente.html', context)

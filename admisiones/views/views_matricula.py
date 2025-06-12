@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
+from django.db.models import Q
 @login_required
 def seleccionar_programa_semestre(request):
     programas = Programa.objects.all()
@@ -40,52 +41,50 @@ def seleccionar_programa_semestre(request):
                 estudiante.nombre_completo = "Usuario no encontrado"
                 estudiante.correo_personal = "Correo no disponible"
 
+    busqueda_realizada = bool(programa_id and semestre_id)
     contexto = obtener_db_info(request)
     contexto.update({
         'programas': programas,
         'semestres': semestres,
         'materias': materias,
-        'estudiantes': estudiantes,  
+        'estudiantes': estudiantes,
+        'busqueda_realizada': busqueda_realizada,  
         'request': request  
     })
 
     return render(request, 'core/matricular_estudiantes.html', contexto)
 
+
 @login_required
-def filtrar_estudiantes(request):
-    programa_id = request.GET.get('programa')
-    
+def buscar_estudiantes(request):
+    query = request.GET.get('q', '').strip()
+    programa_id = request.GET.get('programa', '').strip()
 
-    if not programa_id :
-        return JsonResponse({"error": "Faltan parámetros"}, status=400)
+    if not programa_id:
+        return JsonResponse({'error': 'Debe seleccionar un programa'}, status=400)
 
-    try:
-        programa_id = int(programa_id)
-        
+    estudiantes = Estudiantes.objects.select_related('estudiante').filter(programa_id=programa_id)
 
-        programa = get_object_or_404(Programa, id=programa_id)
-        
-        estudiantes = Estudiantes.objects.filter(
-            programa=programa,
-            
+    if query:
+        estudiantes = estudiantes.filter(
+            Q(numero_documento__icontains=query) |
+            Q(estudiante__first_name__icontains=query) |
+            Q(estudiante__last_name__icontains=query)
         )
 
-        estudiantes_data = [
-            {
-                "numero_documento": estudiante.numero_documento,
-                "nombre_completo": User.objects.get(username=estudiante.estudiante).get_full_name() 
-            }
-            for estudiante in estudiantes
-        ]
-        
+    resultado = []
+    for est in estudiantes:
+        user = est.estudiante
+        if user:
+            resultado.append({
+                'id': est.id,
+                'nombre_completo': f"{user.first_name} {user.last_name}",
+                'numero_documento': est.numero_documento,
+                'semestre':str(est.semestre),
+                'correo': user.email,
+            })
 
-        return JsonResponse({"estudiantes": estudiantes_data}, status=200)
-
-    except ValueError:
-        return JsonResponse({"error": "Parámetros inválidos"}, status=400)
-
-    except Exception as e:
-        return JsonResponse({"error": f"Error interno: {str(e)}"}, status=500)
+    return JsonResponse({'estudiantes': resultado})
 
 @login_required
 def validar_codigo(request):
@@ -218,13 +217,21 @@ def estudiantes_inscritos(request, materia_id):
     estudiantes = [matricula.estudiante for matricula in matriculas]
 
     for estudiante in estudiantes:
-        estudiante.nombre_completo = User.objects.get(username=estudiante.estudiante).get_full_name() 
-        estudiante.correo_personal = User.objects.get(username=estudiante.estudiante).email 
+        try:
+            user = User.objects.get(username=estudiante.estudiante)
+            estudiante.nombre_completo = user.get_full_name()
+            estudiante.correo_personal = user.email
+        except User.DoesNotExist:
+            estudiante.nombre_completo = "Usuario no encontrado"
+            estudiante.correo_personal = "Correo no disponible"
 
-    context = {
+    context = obtener_db_info(request)
+    context.update({
         'materia': materia,
         'estudiantes': estudiantes,
-    }
+        'request': request
+    })
+
     return render(request, 'core/listado_estudiantes_inscritos.html', context)
 
 @login_required

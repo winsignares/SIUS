@@ -12,249 +12,244 @@
     font-size: 0.85rem !important;
     padding: 4px 10px !important;
   }
+  #sugerencias {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
 </style>
 
 <div class="container mt-5">
-    <h2 class="text-color-primario mb-4 text-uppercase">Gestión de Matrículas</h2>
+  <h2 class="text-color-primario mb-4 text-uppercase">Gestión de Matrículas</h2>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}" style="border-radius: var(--borde-redondo); font-weight: bold;">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}" style="border-radius: var(--borde-redondo); font-weight: bold;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
-            Filtrar Materias
-        </div>
-        <div class="card-body">
-            <form method="GET">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="programa" class="form-label text-uppercase" style="color: var(--color-primario);">Programa</label>
-                        <select name="programa" id="programa" class="form-select" required style="border-radius: var(--borde-redondo);">
-                            <option value="">Seleccione un programa</option>
-                            {% for programa in programas %}
-                                <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ programa.programa }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="semestre" class="form-label text-uppercase" style="color: var(--color-primario);">Semestre</label>
-                        <select name="semestre" id="semestre" class="form-select" required style="border-radius: var(--borde-redondo);">
-                            <option value="">Seleccione un semestre</option>
-                            {% for semestre in semestres %}
-                                <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ semestre.semestre }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-12 d-flex justify-content-end">
-                        <button id="btnBuscarMaterias" type="submit" class="btn btn-alterno-dark text-uppercase" style="border-radius: var(--borde-redondo);">
-                            Buscar Materias
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
+      Filtrar Materias
     </div>
-
-    {% if materias %}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
-            Materias Encontradas
+    <div class="card-body">
+      <form method="GET">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="programa" class="form-label text-uppercase" style="color: var(--color-primario);">Programa</label>
+            <select name="programa" id="programa" class="form-select" required style="border-radius: var(--borde-redondo);">
+              <option value="">Seleccione un programa</option>
+              {% for programa in programas %}
+                <option value="{{ programa.id }}" {% if request.GET.programa == programa.id|stringformat:"s" %}selected{% endif %}>{{ programa.programa }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="semestre" class="form-label text-uppercase" style="color: var(--color-primario);">Semestre</label>
+            <select name="semestre" id="semestre" class="form-select" required style="border-radius: var(--borde-redondo);">
+              <option value="">Seleccione un semestre</option>
+              {% for semestre in semestres %}
+                <option value="{{ semestre.id }}" {% if request.GET.semestre == semestre.id|stringformat:"s" %}selected{% endif %}>{{ semestre.semestre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12 d-flex justify-content-end">
+            <button id="btnBuscarMaterias" type="submit" class="btn btn-alterno-dark text-uppercase" style="border-radius: var(--borde-redondo);">
+              Buscar Materias
+            </button>
+          </div>
         </div>
-        <div class="card-body">
-            <div class="d-flex justify-content-start">
-                <button type="button" id="btnAbrirModal" class="btn btn-alterno-dark text-uppercase" data-bs-toggle="modal" data-bs-target="#modalMaterias" style="border-radius: var(--borde-redondo);">
-                    Seleccionar Materias
-                </button>
-            </div>
-        </div>
+      </form>
     </div>
+  </div>
 
-    <div class="modal fade modal-forms" id="modalMaterias" tabindex="-1" aria-labelledby="modalMateriasLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content" style="border-radius: var(--borde-redondo);">
-                <div class="modal-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
-                    <h5 class="modal-title text-uppercase" id="modalMateriasLabel">Materias Disponibles</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formMatricular" method="POST" action="{% url 'matricular_estudiante' %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="numero_documento" class="form-label text-uppercase" style="color: var(--color-primario);">Estudiante</label>
-                            <select name="numero_documento" id="numero_documento" class="form-select" required style="border-radius: var(--borde-redondo);">
-                                <option value="" disabled selected>Seleccione un estudiante</option>
-                                {% for estudiante in estudiantes %}
-                                    <option value="{{ estudiante.numero_documento }}">{{ estudiante.nombre_completo }} ({{estudiante.semestre}})</option>
-                                {% empty %}
-                                    <option value="" disabled>No hay estudiantes disponibles</option>
-                                {% endfor %}
-                            </select>
-                            <div class="text-danger text-uppercase fs-small" id="codigoError" style="display: none;">
-                                Estudiante no válido.
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered align-middle">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="text-center text-uppercase">Seleccionar</th>
-                                        <th scope="col" class="text-uppercase">Materia</th>
-                                        <th scope="col" class="text-uppercase">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for materia in materias %}
-                                        <tr>
-                                            <td class="text-center">
-                                                <input type="checkbox" name="materias" value="{{ materia.id }}" class="form-check-input" {% if materia.id in materias_matriculadas %}disabled{% endif %} style="cursor:pointer;">
-                                            </td>
-                                            <td>{{ materia.materia }}</td>
-                                            <td>
-                                                <a href="{% url 'estudiantes_inscritos' materia.id %}" class="btn btn-alterno-dark btn-sm text-uppercase" style="border-radius: var(--borde-redondo);">
-                                                    Inscritos
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="text-end mt-3">
-                            <button type="submit" class="btn btn-alterno-dark text-uppercase" id="btnMatricular" style="border-radius: var(--borde-redondo);">
-                                Matricular
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+  {% if materias %}
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
+      Materias Encontradas
     </div>
-    {% endif %}
+    <div class="card-body">
+      <div class="d-flex justify-content-start">
+        <button type="button" id="btnAbrirModal" class="btn btn-alterno-dark text-uppercase" data-bs-toggle="modal" data-bs-target="#modalMaterias" style="border-radius: var(--borde-redondo);">
+          Seleccionar Materias
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade modal-forms" id="modalMaterias" tabindex="-1" aria-labelledby="modalMateriasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" style="border-radius: var(--borde-redondo);">
+        <div class="modal-header" style="background-color: var(--color-primario); color: var(--color-secundario);">
+          <h5 class="modal-title text-uppercase" id="modalMateriasLabel">Materias Disponibles</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formMatricular" method="POST" action="{% url 'matricular_estudiante' %}">
+            {% csrf_token %}
+
+            <div class="mb-3 position-relative">
+              <label for="busqueda_estudiante" class="form-label text-uppercase" style="color: var(--color-primario);">Buscar Estudiante</label>
+              <input type="text" id="busqueda_estudiante" class="form-control" placeholder="Nombre, apellido o documento" autocomplete="off">
+              <ul id="sugerencias" class="list-group"></ul>
+              <input type="hidden" name="numero_documento" id="numero_documento">
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-bordered align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-center text-uppercase">Seleccionar</th>
+                    <th scope="col" class="text-uppercase">Materia</th>
+                    <th scope="col" class="text-uppercase">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for materia in materias %}
+                  <tr>
+                    <td class="text-center">
+                      <input type="checkbox" name="materias" value="{{ materia.id }}" class="form-check-input">
+                    </td>
+                    <td>{{ materia.materia }}</td>
+                    <td>
+                      <a href="{% url 'estudiantes_inscritos' materia.id %}" class="btn btn-alterno-dark btn-sm text-uppercase" style="border-radius: var(--borde-redondo);">
+                        Inscritos
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-alterno-dark text-uppercase" id="btnMatricular" style="border-radius: var(--borde-redondo);">
+                Matricular
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% elif busqueda_realizada %}
+  <div class="alert alert-warning mt-4" style="border-radius: var(--borde-redondo); font-weight: bold;">
+    No se encontraron materias para el programa y semestre seleccionados.
+  </div>
+  {% endif %}
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-    function cargarEstudiantes(programaId, semestreId) {
-        if (!programaId) return;
+$(document).ready(function () {
+  const $inputBusqueda = $('#busqueda_estudiante');
+  const $sugerencias = $('#sugerencias');
+  const $programa = $('#programa');
+  const $numeroDocumento = $('#numero_documento');
 
-        $.ajax({
-            url: "{% url 'filtrar_estudiantes' %}",
-            method: "GET",
-            data: { programa: programaId },
-            beforeSend: function () {
-                $('#numero_documento').prop('disabled', true).empty()
-                    .append('<option>Cargando...</option>');
-            },
-            success: function (response) {
-                const select = $('#numero_documento');
-                select.empty().append('<option value="">Seleccione un estudiante</option>');
+  $inputBusqueda.on('input', function () {
+    const query = $(this).val().trim();
+    const programaId = $programa.val();
 
-                if (response.estudiantes?.length > 0) {
-                    response.estudiantes.forEach(est => {
-                        select.append(
-                            `<option value="${est.numero_documento}">${est.nombre_completo}</option>`
-                        );
-                    });
-                } else {
-                    select.append('<option disabled>No hay estudiantes disponibles</option>');
-                }
-
-                select.prop('disabled', false);
-            }
-        });
+    if (!programaId || query.length < 2) {
+      $sugerencias.empty();
+      return;
     }
 
-    function limpiarMaterias() {
-        $('input[name="materias"]').each(function () {
-            const row = $(this).closest('tr');
-            row.show();
-            $(this).prop('disabled', false);
-        });
-    }
-
-    $('#programa, #semestre').change(function () {
-        const programaId = $('#programa').val();
-        const semestreId = $('#semestre').val();
-        $('#btnAbrirModal').hide();
-        cargarEstudiantes(programaId, semestreId);
-    });
-
-    $('#numero_documento').change(function () {
-        const codigo = $(this).val();
-        $('#btnAbrirModal').hide();
-        limpiarMaterias();
-        $('#btnMatricular').show().prop('disabled', true).text('Matricular');
-
-        if (!codigo) {
-            $('#codigoError').show();
-            $('input[name="materias"]').prop('disabled', true);
-            return;
+    $.ajax({
+      url: '{% url "buscar_estudiantes" %}',
+      method: 'GET',
+      data: { q: query, programa: programaId },
+      success: function (data) {
+        $sugerencias.empty();
+        if (data.estudiantes && data.estudiantes.length > 0) {
+          data.estudiantes.forEach(est => {
+            const item = `<li class="list-group-item list-group-item-action" 
+                            data-doc="${est.numero_documento}" 
+                            data-nombre="${est.nombre_completo}">
+                            ${est.nombre_completo} (${est.numero_documento}) (${est.semestre})
+                          </li>`;
+            $sugerencias.append(item);
+          });
+        } else {
+          $sugerencias.append('<li class="list-group-item text-muted">No se encontraron resultados</li>');
         }
+      },
+      error: function () {
+        $sugerencias.html('<li class="list-group-item text-danger">Error al buscar estudiantes</li>');
+      }
+    });
+  });
 
-        $('#codigoError').hide();
+  $sugerencias.on('click', 'li', function () {
+    const nombre = $(this).data('nombre');
+    const documento = $(this).data('doc');
 
-        $.ajax({
-            url: "{% url 'materias_matriculadas' %}",
-            method: "GET",
-            data: { numero_documento: codigo },
-            beforeSend: function () {
-                $('#btnMatricular').prop('disabled', true).text('Cargando...');
-            },
-            success: function (response) {
-                const materiasExcluir = response.materias_excluir || [];
-                let materiasDisponibles = 0;
+    $inputBusqueda.val(nombre);
+    $numeroDocumento.val(documento);
+    $sugerencias.empty();
 
-                $('input[name="materias"]').each(function () {
-                    const materiaId = parseInt($(this).val());
-                    const row = $(this).closest('tr');
+    actualizarMateriasDisponibles(documento);
+  });
 
-                    if (materiasExcluir.includes(materiaId)) {
-                        row.hide();
-                        $(this).prop('disabled', true);
-                    } else {
-                        row.show();
-                        $(this).prop('disabled', false);
-                        materiasDisponibles += 1;
-                    }
-                });
+  $('#modalMaterias').on('hidden.bs.modal', function () {
+    $inputBusqueda.val('');
+    $numeroDocumento.val('');
+    $sugerencias.empty();
+    $('table tbody tr').show();
 
-                if (materiasDisponibles > 0) {
-                    $('#btnMatricular').prop('disabled', false).text('Matricular');
-                } else {
-                    $('#btnMatricular').prop('disabled', true).text('Sin materias disponibles');
-                }
+    $('#btnAbrirModal').hide();
+  });
 
-                
-                $('#btnAbrirModal').show();
-            },
-            error: function () {
-                $('#btnMatricular').prop('disabled', true).text('Matricular');
+  $inputBusqueda.on('focus', function () {
+    if (!$programa.val()) {
+      alert('Por favor, seleccione un programa antes de buscar un estudiante.');
+      $inputBusqueda.blur();
+    }
+  });
+
+  function actualizarMateriasDisponibles(documento) {
+    const tabla = $('table tbody');
+
+    $.ajax({
+      url: '{% url "materias_matriculadas" %}',
+      data: { numero_documento: documento },
+      success: function (data) {
+        if (data.materias_excluir) {
+          tabla.find('tr').each(function () {
+            const checkbox = $(this).find('input[type="checkbox"]');
+            const materiaId = checkbox.val();
+
+            if (data.materias_excluir.includes(parseInt(materiaId))) {
+              $(this).hide();
+            } else {
+              $(this).show();
             }
-        });
-    });
+          });
 
-    $('#btnBuscarMaterias').click(function () {
-        
-        
+          if (Object.keys(data.mensajes_rechazo).length > 0) {
+            let mensajeHtml = '<ul>';
+            $.each(data.mensajes_rechazo, function (key, mensaje) {
+              mensajeHtml += `<li>${mensaje}</li>`;
+            });
+            mensajeHtml += '</ul>';
+            alert("Algunas materias no están disponibles:\n" + $(mensajeHtml).text());
+          }
+        }
+      },
+      error: function () {
+        alert("Error al obtener materias excluidas.");
+      }
     });
-
-    $('#modalMaterias').on('hidden.bs.modal', function () {
-        limpiarMaterias();
-        $('#btnMatricular').show().prop('disabled', true).text('Matricular');
-        $('#btnAbrirModal').hide(); // Esto es lo que tú querías que suceda al cerrar
-    });
+  }
 });
 </script>
+
 {% endblock %}

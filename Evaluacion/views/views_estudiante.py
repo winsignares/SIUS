@@ -134,12 +134,13 @@ def evaluar_materia(request, materia_id):
         messages.success(request, "Evaluación guardada correctamente.")
         return redirect('evaluacion:materias_estudiante')
 
-    # Contexto para el template
-    context = {
+    context = obtener_db_info(request)
+    context.update({
         'estudiante': estudiante,
         'materia': materia,
         'preguntas_por_categoria': preguntas_por_categoria,
         'periodo': periodo_activo,
         'docente': docente_evaluado,
-    }
+        'request':request
+    })
     return render(request, 'core/evaluacion_materia.html', context)
