@@ -3,17 +3,17 @@
 
 {% block content %}
 <style>
-  
   .btn, .btn-primary, .btn-alterno-red, .btn-alterno-dark, .btn-sm {
-    font-size: 1rem !important; 
-    padding: 6px 12px !important; 
-    border-radius: 7px !important; 
+    font-size: 1rem !important;
+    padding: 6px 12px !important;
+    border-radius: 7px !important;
   }
   .btn-sm {
     font-size: 0.85rem !important;
     padding: 4px 10px !important;
   }
 </style>
+
 <div class="container mt-5">
     <h2 class="text-color-primario mb-4 text-uppercase">Gestión de Matrículas</h2>
 
@@ -55,7 +55,7 @@
                         </select>
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-alterno-dark text-uppercase" style="border-radius: var(--borde-redondo);">
+                        <button id="btnBuscarMaterias" type="submit" class="btn btn-alterno-dark text-uppercase" style="border-radius: var(--borde-redondo);">
                             Buscar Materias
                         </button>
                     </div>
@@ -71,7 +71,7 @@
         </div>
         <div class="card-body">
             <div class="d-flex justify-content-start">
-                <button class="btn btn-alterno-dark text-uppercase" data-bs-toggle="modal" data-bs-target="#modalMaterias" style="border-radius: var(--borde-redondo);">
+                <button type="button" id="btnAbrirModal" class="btn btn-alterno-dark text-uppercase" data-bs-toggle="modal" data-bs-target="#modalMaterias" style="border-radius: var(--borde-redondo);">
                     Seleccionar Materias
                 </button>
             </div>
@@ -146,78 +146,115 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        function cargarEstudiantes(programaId, semestreId) {
-            if (programaId && semestreId) {
-                $.ajax({
-                    url: "{% url 'filtrar_estudiantes' %}",
-                    method: "GET",
-                    data: { programa: programaId},
-                    success: function (response) {
-                        const selectEstudiantes = $('#numero_documento');
-                        selectEstudiantes.empty().append('<option value="">Seleccione un estudiante</option>');
+    function cargarEstudiantes(programaId, semestreId) {
+        if (!programaId) return;
 
-                        if (response.estudiantes.length > 0) {
-                            response.estudiantes.forEach(est => {
-                                selectEstudiantes.append(
-                                    `<option value="${est.numero_documento}">${est.nombre_completo}</option>`
-                                );
-                            });
-                        } else {
-                            selectEstudiantes.append('<option value="" disabled>No hay estudiantes disponibles</option>');
-                        }
-                    },
-                    error: function () {
-                        alert('Error al cargar estudiantes.');
-                    }
-                });
+        $.ajax({
+            url: "{% url 'filtrar_estudiantes' %}",
+            method: "GET",
+            data: { programa: programaId },
+            beforeSend: function () {
+                $('#numero_documento').prop('disabled', true).empty()
+                    .append('<option>Cargando...</option>');
+            },
+            success: function (response) {
+                const select = $('#numero_documento');
+                select.empty().append('<option value="">Seleccione un estudiante</option>');
+
+                if (response.estudiantes?.length > 0) {
+                    response.estudiantes.forEach(est => {
+                        select.append(
+                            `<option value="${est.numero_documento}">${est.nombre_completo}</option>`
+                        );
+                    });
+                } else {
+                    select.append('<option disabled>No hay estudiantes disponibles</option>');
+                }
+
+                select.prop('disabled', false);
             }
+        });
+    }
+
+    function limpiarMaterias() {
+        $('input[name="materias"]').each(function () {
+            const row = $(this).closest('tr');
+            row.show();
+            $(this).prop('disabled', false);
+        });
+    }
+
+    $('#programa, #semestre').change(function () {
+        const programaId = $('#programa').val();
+        const semestreId = $('#semestre').val();
+        $('#btnAbrirModal').hide();
+        cargarEstudiantes(programaId, semestreId);
+    });
+
+    $('#numero_documento').change(function () {
+        const codigo = $(this).val();
+        $('#btnAbrirModal').hide();
+        limpiarMaterias();
+        $('#btnMatricular').show().prop('disabled', true).text('Matricular');
+
+        if (!codigo) {
+            $('#codigoError').show();
+            $('input[name="materias"]').prop('disabled', true);
+            return;
         }
 
-        $('#programa, #semestre').change(function () {
-            const programaId = $('#programa').val();
-            const semestreId = $('#semestre').val();
-            cargarEstudiantes(programaId, semestreId);
-        });
+        $('#codigoError').hide();
 
-        $('#numero_documento').change(function () {
-            const codigo = $(this).val();
+        $.ajax({
+            url: "{% url 'materias_matriculadas' %}",
+            method: "GET",
+            data: { numero_documento: codigo },
+            beforeSend: function () {
+                $('#btnMatricular').prop('disabled', true).text('Cargando...');
+            },
+            success: function (response) {
+                const materiasExcluir = response.materias_excluir || [];
+                let materiasDisponibles = 0;
 
-            if (codigo) {
-                $('#codigoError').hide();
-                $('#btnMatricular').prop('disabled', false);
+                $('input[name="materias"]').each(function () {
+                    const materiaId = parseInt($(this).val());
+                    const row = $(this).closest('tr');
 
-                $.ajax({
-                    url: "{% url 'materias_matriculadas' %}",
-                    method: "GET",
-                    data: { numero_documento: codigo },
-                    success: function (response) {
-                        const materiasExcluir = response.materias_excluir;
-
-                        $('input[name="materias"]').each(function () {
-                            const materiaId = parseInt($(this).val());
-                            if (materiasExcluir.includes(materiaId)) {
-                                $(this).closest('tr').hide();
-                                $(this).prop('disabled', true);
-                            } else {
-                                $(this).closest('tr').show();
-                                $(this).prop('disabled', false);
-                            }
-                        });
-                    },
-                    error: function () {
-                        alert('Error al verificar materias.');
+                    if (materiasExcluir.includes(materiaId)) {
+                        row.hide();
+                        $(this).prop('disabled', true);
+                    } else {
+                        row.show();
+                        $(this).prop('disabled', false);
+                        materiasDisponibles += 1;
                     }
                 });
-            } else {
-                $('#codigoError').show();
-                $('#btnMatricular').prop('disabled', true);
-                $('input[name="materias"]').prop('disabled', true);
+
+                if (materiasDisponibles > 0) {
+                    $('#btnMatricular').prop('disabled', false).text('Matricular');
+                } else {
+                    $('#btnMatricular').prop('disabled', true).text('Sin materias disponibles');
+                }
+
+                
+                $('#btnAbrirModal').show();
+            },
+            error: function () {
+                $('#btnMatricular').prop('disabled', true).text('Matricular');
             }
         });
-
-        $('#modalMaterias').on('hidden.bs.modal', function () {
-            $('.btn[data-bs-target="#modalMaterias"]').hide();
-        });
     });
+
+    $('#btnBuscarMaterias').click(function () {
+        
+        
+    });
+
+    $('#modalMaterias').on('hidden.bs.modal', function () {
+        limpiarMaterias();
+        $('#btnMatricular').show().prop('disabled', true).text('Matricular');
+        $('#btnAbrirModal').hide(); // Esto es lo que tú querías que suceda al cerrar
+    });
+});
 </script>
 {% endblock %}

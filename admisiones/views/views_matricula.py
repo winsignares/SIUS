@@ -7,7 +7,7 @@ from ..models import Estudiantes, Matricula, Prerrequisito, MateriaAprobada
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import Prefetch
 @login_required
 def seleccionar_programa_semestre(request):
     programas = Programa.objects.all()
@@ -54,21 +54,20 @@ def seleccionar_programa_semestre(request):
 @login_required
 def filtrar_estudiantes(request):
     programa_id = request.GET.get('programa')
-    semestre_id = request.GET.get('semestre')
+    
 
-    if not programa_id or not semestre_id:
+    if not programa_id :
         return JsonResponse({"error": "Faltan parámetros"}, status=400)
 
     try:
         programa_id = int(programa_id)
-        semestre_id = int(semestre_id)
+        
 
         programa = get_object_or_404(Programa, id=programa_id)
-        semestre = get_object_or_404(Semestre, id=semestre_id)
-
+        
         estudiantes = Estudiantes.objects.filter(
             programa=programa,
-            semestre=semestre
+            
         )
 
         estudiantes_data = [
@@ -252,34 +251,71 @@ def eliminar_estudiante(request, materia_id, estudiante_id):
     
     return redirect('estudiantes_inscritos', materia_id=materia_id)
 
+
+
 @login_required
 def materias_matriculadas_por_estudiante(request):
     numero_documento = request.GET.get('numero_documento')
-    
+
     if not numero_documento:
         return JsonResponse({"error": "Número de documento no proporcionado."}, status=400)
 
     try:
-        estudiante = Estudiantes.objects.get(numero_documento=numero_documento)
+        estudiante = Estudiantes.objects.select_related('programa').get(numero_documento=numero_documento)
     except Estudiantes.DoesNotExist:
         return JsonResponse({"error": "Estudiante no encontrado."}, status=404)
 
-    # Obtener materias ya matriculadas en el periodo activo
     periodo_activo = Periodo.objects.filter(
         fecha_apertura__lte=timezone.now(),
         fecha_cierre__gte=timezone.now()
     ).first()
 
-    materias_matriculadas = Matricula.objects.filter(
+    if not periodo_activo:
+        return JsonResponse({
+            "materias_excluir": [],
+            "mensajes_rechazo": {},
+            "info": "No hay periodo activo"
+        }, status=200)
+
+   
+    materias_matriculadas_ids = set(Matricula.objects.filter(
         estudiante=estudiante,
         periodo=periodo_activo
-    ).values_list('materia_id', flat=True) if periodo_activo else []
+    ).values_list('materia_id', flat=True))
 
-    # Obtener materias ya cursadas (aprobadas o reprobadas)
-    materias_cursadas = MateriaAprobada.objects.filter(
-        estudiante=estudiante
-    ).values_list('materia_id', flat=True)
+   
+    materias_cursadas_qs = MateriaAprobada.objects.filter(estudiante=estudiante)
+    materias_cursadas_ids = set(materias_cursadas_qs.values_list('materia_id', flat=True))
+    materias_aprobadas_ids = set(materias_cursadas_qs.filter(
+        estado_aprobacion='aprobada'
+    ).values_list('materia_id', flat=True))
 
-    materias_excluir = list(set(materias_matriculadas).union(set(materias_cursadas)))
+    materias_prerrequisito_no_aprobado = set()
+    mensajes_rechazo = {}
 
-    return JsonResponse({"materias_excluir": materias_excluir}, status=200)
+    
+    materias = Materia.objects.filter(
+        fk_programa=estudiante.programa
+    ).prefetch_related(
+        Prefetch('materia_principal', queryset=Prerrequisito.objects.select_related('prerequisito'))
+    )
+
+    for materia in materias:
+        for prereq in materia.materia_principal.all():
+            if prereq.prerequisito_id not in materias_aprobadas_ids:
+                materias_prerrequisito_no_aprobado.add(materia.id)
+                mensajes_rechazo[materia.id] = (
+                    f"No puedes matricular '{materia.materia}' porque no has aprobado "
+                    f"su prerrequisito: '{prereq.prerequisito.materia}'."
+                )
+                break  
+
+    materias_excluir = materias_matriculadas_ids.union(
+        materias_cursadas_ids,
+        materias_prerrequisito_no_aprobado
+    )
+
+    return JsonResponse({
+        "materias_excluir": list(materias_excluir),
+        "mensajes_rechazo": mensajes_rechazo
+    })
