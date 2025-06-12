@@ -27,6 +27,7 @@ class Programa(models.Model):
     nivel_formacion = models.CharField("Nivel de Formación", max_length=255, null=True, blank=True)
     sede = models.CharField("Sede", max_length=255, null=True, blank=True)
     numero_semestres = models.CharField("Número de Semestres", max_length=255, null=True, blank=True)
+    nombre_corto = models.CharField("Nombre Corto", max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = 'programas'
