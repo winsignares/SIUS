@@ -11,7 +11,7 @@ from .utilidades import obtener_db_info
 from home.decorators import group_required
 
 # Importar Módelos
-from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, EPS, CajaCompensacion, Contrato
+from home.models import Empleado, Rol, TipoDocumento, DetalleAcademico, DetalleExperienciaLaboral, NivelAcademico, Departamento, Sede, EstadoRevision, AFP, ARL, EPS, CajaCompensacion, Contrato, Pais
 
 
 #
@@ -105,6 +105,7 @@ def agregar_aspirante(request):
             fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia'))
             fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora'))
             fk_estado_revision_ins = EstadoRevision.objects.get(id=data.get('fk_estado_revision'))
+            fk_pais_ins = Pais.objects.get(id=data.get('fk_pais'))
 
             nuevo_usuario = Empleado.objects.create(
                 # Campos obligatorios
@@ -120,6 +121,7 @@ def agregar_aspirante(request):
                 segundo_nombre=data.get('segundo_nombre'),
                 segundo_apellido=data.get('segundo_apellido'),
                 fecha_nacimiento=data.get('fecha_nacimiento'),
+                fk_pais_nacimiento=fk_pais_ins,
                 lugar_nacimiento=data.get('lugar_nacimiento'),
                 fecha_expedicion_documento=data.get('fecha_expedicion_documento'),
                 lugar_expedicion_documento=data.get('lugar_expedicion_documento'),
@@ -252,6 +254,7 @@ def agregar_empleado(request):
             fk_departamento_residencia_ins = Departamento.objects.get(id=data.get('fk_departamento_residencia_emp'))
             fk_sede_donde_labora_ins = Sede.objects.get(id=data.get('fk_sede_donde_labora_emp'))
             fk_estado_revision_ins = EstadoRevision.objects.get(id=data.get('fk_estado_revision_emp'))
+            fk_pais_ins = Pais.objects.get(id=data.get('fk_pais_emo'))
 
             nuevo_usuario = Empleado.objects.create(
                 # Campos obligatorios
@@ -267,6 +270,7 @@ def agregar_empleado(request):
                 segundo_nombre=data.get('segundo_nombre_emp'),
                 segundo_apellido=data.get('segundo_apellido_emp'),
                 fecha_nacimiento=data.get('fecha_nacimiento_emp'),
+                fk_pais_nacimiento=fk_pais_ins,
                 lugar_nacimiento=data.get('lugar_nacimiento_emp'),
                 fecha_expedicion_documento=data.get('fecha_expedicion_documento_emp'),
                 lugar_expedicion_documento=data.get('lugar_expedicion_documento_emp'),
@@ -402,6 +406,8 @@ def actualizar_usuario(request, usuario_id):
             usuario.segundo_apellido = request.POST.get("segundo_apellido", usuario.segundo_apellido)
             usuario.fecha_nacimiento = request.POST.get("fecha_nacimiento", usuario.fecha_nacimiento)
             usuario.lugar_nacimiento = request.POST.get("lugar_nacimiento", usuario.lugar_nacimiento)
+            if pais_id := request.POST.get("fk_pais"):
+                usuario.fk_pais_nacimiento = Pais.objects.get(id=pais_id)
             usuario.fecha_expedicion_documento = request.POST.get("fecha_expedicion_documento", usuario.fecha_expedicion_documento)
             usuario.lugar_expedicion_documento = request.POST.get("lugar_expedicion_documento", usuario.lugar_expedicion_documento)
             usuario.sexo = request.POST.get("sexo", usuario.sexo)

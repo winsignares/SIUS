@@ -32,7 +32,7 @@
 
                     <div class="col-md-6 mb-2">
                         <dt>Lugar y Fecha de Nacimiento:</dt>
-                        <dd><span class="fst-italic">{{ usuario.lugar_nacimiento|default:"No disponible" }} </span>  - {{ usuario.fecha_nacimiento|date:'d/m/Y'|default:"No disponible" }}</dd>
+                        <dd><span class="fst-italic">{{ usuario.lugar_nacimiento|default:"No disponible" }}, {{ usuario.fk_pais_nacimiento.nombre_pais|default:"No disponible" }}</span>  - {{ usuario.fecha_nacimiento|date:'d/m/Y'|default:"No disponible" }}</dd>
                     </div>
 
                     <div class="col-md-6 mb-2">

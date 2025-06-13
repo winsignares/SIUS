@@ -103,12 +103,12 @@
         <ul class="pagination justify-content-end">
             {% if page_obj_pendientes.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page_pendientes=1&aspirante_pendiente={{ query }}">
+                <a class="page-link" href="?page_pendientes=1">
                     <i class="bi bi-chevron-double-left"></i>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.previous_page_number }}&aspirante_pendiente={{ query }}">
+                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.previous_page_number }}">
                     <i class="bi bi-caret-left-fill"></i>
                 </a>
             </li>
@@ -118,12 +118,12 @@
             </li>
             {% if page_obj_pendientes.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.next_page_number }}&aspirante_pendiente={{ query }}">
+                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.next_page_number }}">
                     <i class="bi bi-caret-right-fill"></i>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.paginator.num_pages }}&aspirante_pendiente={{ query }}">
+                <a class="page-link" href="?page_pendientes={{ page_obj_pendientes.paginator.num_pages }}">
                     <i class="bi bi-chevron-double-right"></i>
                 </a>
             </li>
@@ -136,7 +136,7 @@
         <hr class="w-100">
     </div>
 
-<!-- Tabla de aspirantes en estado 'Rechazado' -->
+    <!-- Tabla de aspirantes en estado 'Rechazado' -->
     <h4 id="aspirantesRechazados" class="mb-3">Aspirantes Rechazados</h4>
 
     <!-- Formulario de búsqueda -->
@@ -225,7 +225,12 @@
         <ul class="pagination justify-content-end">
             {% if page_obj_rechazados.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.previous_page_number }}&aspirante_rechazados={{ query }}">
+                <a class="page-link" href="?page_rechazados=1">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.previous_page_number }}">
                     <i class="bi bi-caret-left-fill"></i>
                 </a>
             </li>
@@ -235,8 +240,13 @@
             </li>
             {% if page_obj_rechazados.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.next_page_number }}&aspirante_rechazados={{ query }}">
+                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.next_page_number }}">
                     <i class="bi bi-caret-right-fill"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page_rechazados={{ page_obj_rechazados.paginator.num_pages }}">
+                    <i class="bi bi-chevron-double-right"></i>
                 </a>
             </li>
             {% endif %}
@@ -300,6 +310,16 @@
                                 <div class="col-md-6 mb-2">
                                     <label for="fecha_nacimiento" class="form-label mb-0">Fecha de Nacimiento <span class='fw-bold fs-4'>*</span></label>
                                     <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label for="fk_pais" class="form-label mb-0">País de Nacimiento <span class='fw-bold fs-4'>*</span></label>
+                                    <select class="form-select" id="fk_pais" name="fk_pais" required>
+                                        <option value="" selected>Seleccione</option>
+                                        {% for pais in paises_list %}
+                                            <option value="{{ pais.id }}">{{ pais.nombre_pais }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
 
                                 <div class="col-md-6 mb-2">
@@ -434,7 +454,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <label for="url_hoja_de_vida" class="form-label mb-0">URL Hoja de Vida <span class='fw-bold fs-4'>*</span></label>
                                     <input type="url" class="form-control text-lowercase" id="url_hoja_de_vida" name="url_hoja_de_vida" required>
                                 </div>
@@ -475,7 +495,7 @@
     </div>
 </div>
 
-<!-- Modal Información Adicional -->
+<!-- Modal Información Adicional - FALTA CONFIGURAR -->
 <div class="modal fade" id="infoAdicionalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="infoAdicionalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-forms modal-content">

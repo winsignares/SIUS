@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db.models import Exists, OuterRef
 
 # Importar Modelos
-from home.models import Empleado, EmpleadoUser, EstadoRevision, TipoDocumento, NivelAcademico, EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede, Rol, Contrato, Dedicacion, CargaAcademica, Materia, Periodo, Programa, ProgramaUser, Semestre, NivelAcademicoHistorico
+from home.models import Empleado, EmpleadoUser, EstadoRevision, TipoDocumento, NivelAcademico, EPS, AFP, ARL, Departamento, CajaCompensacion, Institucion, Sede, Rol, Contrato, Dedicacion, CargaAcademica, Materia, Periodo, Programa, ProgramaUser, Semestre, NivelAcademicoHistorico, Pais
 
 
 def obtener_db_info(request, incluir_datos_adicionales=False):
@@ -133,7 +133,8 @@ def obtener_db_info(request, incluir_datos_adicionales=False):
             'cargas_academicas': cargas_academicas,
             'periodo_actual': periodo_actual,
             'dedicacion_list': Dedicacion.objects.all(),
-            'estado_revision_list': EstadoRevision.objects.all()
+            'estado_revision_list': EstadoRevision.objects.all(),
+            'paises_list': Pais.objects.all()
         })
 
     return contexto

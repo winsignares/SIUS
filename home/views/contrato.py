@@ -236,29 +236,34 @@ def detalles_contrato_docente(request, contrato_id):
     return HttpResponse(status=400)
 
 
-
 @login_required
 def contratos_docentes(request):
-    contexto = obtener_db_info(
-        request,
-        incluir_datos_adicionales=True
-    )
+    contexto = obtener_db_info(request, incluir_datos_adicionales=True)
 
     if request.method == "GET" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # Filtrar docentes activos con los roles requeridos
-        docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4, 8], fk_estado_revision=1, activo=True)
+        user = request.user
         periodo_actual = contexto['periodo_actual']
 
-        # Si no hay docentes o periodo, retorna vacío
-        if not docentes or not periodo_actual:
+        # Si no hay periodo, retornar vacío
+        if not periodo_actual:
             return JsonResponse({"contratos": []})
 
-        # Filtrar contratos por los docentes y el periodo actual
-        contratos = Contrato.objects.filter(
-            fk_usuario__in=docentes,
-            fk_periodo=periodo_actual,
-            vigencia_contrato=True
-        ).select_related('fk_usuario', 'fk_tipo_contrato', 'fk_dedicacion')
+        # Docentes con contrato vigente
+        docentes = Empleado.objects.filter(fk_rol_id__in=[2, 4, 8], fk_estado_revision=1, activo=True)
+        contratos = Contrato.objects.filter(fk_usuario__in=docentes, fk_periodo=periodo_actual, vigencia_contrato=True)
+
+        # Aplicar filtro adicional por rol
+        if user.groups.filter(name="Contabilidad").exists():
+            contratos = contratos.filter(
+                fk_usuario__in=Empleado.objects.filter(
+                    cargaacademica__fk_periodo=periodo_actual,
+                    cargaacademica__aprobado_vicerrectoria=True
+                ).distinct()
+            )
+        elif user.groups.filter(name="Rector").exists():
+            contratos = contratos.filter(aprobado_contabilidad=True)
+        elif user.groups.filter(name="Presidente").exists():
+            contratos = contratos.filter(aprobado_rectoria=True)
 
         data = []
         for c in contratos:

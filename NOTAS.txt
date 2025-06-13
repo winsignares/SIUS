@@ -2,63 +2,45 @@
 
 SECRETARIA TALENTO HUMANO
 
-Reportes
+- Falta el campo de nacionalidad
+- Corregir la forma de agregar información académica y experiencia laboral
+
+- Reportes
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 DIRECCIÓN TALENTO HUMANO
 
-Flujo de trabajo:
-
-1. Se presiona el botón de Editar Usuario
-2. Si se selecciona la opción "Contratado" en el select de "Estado de revisión" se mostrarán los siguientes campos:
-	- Un select para definir la AFP
-	- Un select para definir la EPS
-
-2.1. En el apartado de información de contrato debe mostrarse los siguientes campos:
-	- Un select para definir el Tipo de Contrato
-	- Un input date para definir la fecha de inicio del contrato
-	- Un input date para definir la fecha de fin del contrato
-	- Si es administrativo, un input para agregar el valor a pagar mensualmente
+Reportes
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 DIRECTORES DE PROGRAMA
 
-	PENDIENTES:
-	1. Definir como se va a colocar la dedicación del docente (Tiempo Completo - Medio Tiempo - Hora Cátedra)
-	2. Guardar la información de la tabla en la base de datos
-	3. Calcular el valor a pagar por la carga (total de horas x valor a pagar del ultimo nivel de estudio del docente)
+Reportes
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 CONTABILIDAD
 
-Checkbox para aprobar o no el total a pagar en los contratos (individual).
-
-Pregunta de confirmación
-
-Luego de que esté aprobado, se podrían generar los contratos y descargarlos desde Dir. Talento Humano
-
 Reportes
-
-Quitar el Valor Hora de TC y MT
-
-
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 VICERRECTORIA
 
-Aprobación de cargas académicas
-Asignación de funciones sustantivas
+Reportes
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+RECTORIA
 
 Reportes
 
+---------------------------------------------------------------------------------------------------------------------------------------------------
 
-const periodoId = document.getElementById('periodoActualId').value;
-const docenteId = document.getElementById("fk_docente_dropdown_matriz").querySelector(".dropdown-item.active")?.getAttribute("data-value") || "";
+PRESIDENCIA
 
-
+Reportes
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------

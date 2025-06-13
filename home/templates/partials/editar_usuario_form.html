@@ -69,6 +69,18 @@
                 </div>
 
                 <div class="col-md-6 mb-2">
+                    <label for="fk_pais" class="form-label {% if not usuario.fk_pais_nacimiento %}text-color-terciario{% endif %} mb-0">País de Nacimiento <span class='fw-bold fs-4'>*</span></label>
+                    <select class="form-select" id="fk_pais" name="fk_pais" required>
+                        <option value="" {% if not usuario.fk_pais_nacimiento %}selected{% endif %}>Seleccione</option>
+                        {% for pais in paises_list %}
+                            <option value="{{ pais.id }}" {% if usuario.fk_pais_nacimiento.id == pais.id %}selected{% endif %}>
+                                {{ pais.nombre_pais }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
                     <label for="lugar_nacimiento" class="form-label {% if not usuario.lugar_nacimiento %}text-color-terciario{% endif %} mb-0">Lugar de Nacimiento<span class='fw-bold fs-4'></span></label>
                     <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{% if usuario.lugar_nacimiento %}{{ usuario.lugar_nacimiento }}{% endif %}">
                 </div>
