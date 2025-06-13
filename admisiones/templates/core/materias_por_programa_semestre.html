@@ -46,8 +46,8 @@
                         <td>{{ materia.codigo }}</td>
                         <td>{{ materia.materia }}</td>
                         <td>
-                            <a href="{% url 'gestionar_estudiantes' materia.id %}" class="btn btn-success btn-sm">Aprobar/Reprobar</a>
-                            <a href="{% url 'estados_estudiantes' materia.id %}" class="btn btn-info btn-sm">Estados</a>
+                            <a href="{% url 'gestionar_estudiantes' materia.id %}" class="btn btn-alterno-dark btn-sm">Aprobar/Reprobar</a>
+                            <a href="{% url 'estados_estudiantes' materia.id %}" class="btn btn-alterno-red btn-sm">Estados</a>
                         </td>
                     </tr>
                 {% endfor %}

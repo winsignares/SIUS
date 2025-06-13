@@ -55,7 +55,7 @@ def autoevaluacion_docente(request):
         )
 
         messages.success(request, "Autoevaluación registrada correctamente.")
-        return redirect('evaluacion:autoevaluacion_docente')
+        return redirect('evaluacion:seleccion_autoevaluacion_docente')
 
     contexto = obtener_db_info(request)
 
