@@ -91,7 +91,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
             "contrato": contrato,
             "docente": docente,
             "fecha_actual": fecha_actual,
-            "total_a_pagar": total_a_pagar,
+            "total_a_pagar": total_a_pagar if docente.fk_rol_id == 2 else contrato.valor_mensual_contrato,
             "total_horas_semanales": total_horas_semanales,
             "total_horas_totales": total_horas_totales,
             "total_valor_cargas": total_valor_cargas,
