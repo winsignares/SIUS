@@ -9,6 +9,8 @@ from django.conf import settings
 class Dedicacion(models.Model):
     nombre_corto = models.CharField("Nombre Corto", max_length=10)
     nombre = models.CharField("Nombre Corto", max_length=100)
+    horas_minimas = models.IntegerField(verbose_name=('Horas Mínimas'), null=True, blank=True)
+    horas_maximas = models.IntegerField(verbose_name=('Horas Máximas'), null=True, blank=True)
     class Meta:
         db_table = 'dedicacion'
         verbose_name = 'Dedicación'

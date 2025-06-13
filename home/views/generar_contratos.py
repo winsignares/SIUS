@@ -35,7 +35,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
         for carga in cargas:
             programa_madre = carga.fk_programa
             if programa_madre:
-                programas_vinculados.add(f"{programa_madre.programa} - {programa_madre.sede or 'Sin Sede'}")
+                programas_vinculados.add(f"{programa_madre.programa} - {programa_madre.sede or 'Sin Sede'} ({programa_madre.nombre_corto})")
 
             # Buscar programas compartidos por esta carga
             programas_compartidos = MateriaCompartida.objects.filter(
@@ -44,7 +44,7 @@ def ver_contrato_docente_pdf(request, contrato_id):
 
             for pc in programas_compartidos:
                 if pc.fk_programa:
-                    programas_vinculados.add(f"{pc.fk_programa.programa} - {pc.fk_programa.sede or 'Sin Sede'}")
+                    programas_vinculados.add(f"{pc.fk_programa.programa} - {pc.fk_programa.sede or 'Sin Sede'} ({pc.fk_programa.nombre_corto})")
 
             # Para tabla individual: string de todos los programas asociados a esa carga
             todos_los_programas = [f"{programa_madre.nombre_corto}"] + [
