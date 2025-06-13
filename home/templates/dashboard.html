@@ -24,7 +24,10 @@
 
         <div class="d-flex" id="contenidoDashboard">
             <!-- Panel lateral -->
-            <div class="side-panel d-flex flex-column p-3 vh-100 col-md-2">
+             <button id="menuToggle" class="btn btn-primary menu-toggle" style="font-size: .9rem;">
+                ☰
+            </button>
+            <div class="side-panel flex-column p-3 vh-100 col-md-2" id="sidePanel">
                 {% include "side_panel.html" %}
             </div>
 
@@ -564,18 +567,69 @@
                 function checkScreenWidth() {
                     const mobileAlert = document.getElementById('alertaDashboard');
                     const mainContent = document.getElementById('contenidoDashboard');
+                    const sidePanel = document.getElementById('sidePanel');
+                    const menuToggle = document.getElementById('menuToggle');
+                    
 
-                    if (window.innerWidth <= 1024) {
-                        if(mobileAlert) mobileAlert.style.display = 'flex';
-                        if(mainContent) mainContent.style.display = 'none';
+                    // Verificar si estamos en la ruta excluida
+                    const excludedPaths = ['/siuc/evaluacion/materias_listado/', '/siuc/dashboard/home/', '/siuc/evaluacion/evaluacion/'];
+                    const isExcludedPath = excludedPaths.some(path => window.location.pathname.startsWith(path));
+
+                    // Mostrar alerta de pantalla pequeña si no está en ruta excluida
+                    if (window.innerWidth <= 1024 && !isExcludedPath) {
+                        if (mobileAlert) mobileAlert.style.display = 'flex';
+                        if (mainContent) mainContent.style.display = 'none';
                     } else {
-                        if(mobileAlert) mobileAlert.style.display = 'none';
-                        if(mainContent) mainContent.style.display = 'block';
+                        if (mobileAlert) mobileAlert.style.display = 'none';
+                        if (mainContent) mainContent.style.display = 'block';
                     }
+
+                    // Lógica para ocultar side-panel en rutas excluidas
+                    if (isExcludedPath && window.innerWidth <= 1024) {
+                        if (menuToggle){ 
+                            menuToggle.style.display = 'block';
+                            menuToggle.style.visibility = 'visible'
+                    }
+                    } else {
+                        if (menuToggle) menuToggle.style.display = 'none';
+                    }
+
+
                 }
 
                 window.addEventListener('load', checkScreenWidth);
                 window.addEventListener('resize', checkScreenWidth);
+
+
+                // Mostrar el panel lateral al hacer clic en el botón
+                document.getElementById('menuToggle').addEventListener('click', () => {
+                    const sidePanel = document.getElementById('sidePanel');
+                    if (sidePanel) {
+                         if (
+                            sidePanel &&
+                            sidePanel.classList.contains('open')
+                        ) {
+                            sidePanel.classList.remove('open');
+                        }
+                        else {
+                            sidePanel.classList.add('open');
+                        }
+                    }
+                });
+
+                // Cerrar panel si haces clic fuera de él (opcional)
+                document.addEventListener('click', (e) => {
+                    const sidePanel = document.getElementById('sidePanel');
+                    const menuToggle = document.getElementById('menuToggle');
+                    if (
+                        sidePanel &&
+                        sidePanel.classList.contains('open') &&
+                        !sidePanel.contains(e.target) &&
+                        e.target !== menuToggle
+                    ) {
+                        sidePanel.classList.remove('open');
+                    }
+                });
             });
         </script>
     </body>

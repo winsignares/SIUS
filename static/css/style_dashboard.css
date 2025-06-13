@@ -33,6 +33,7 @@ body {
     top: 0;
     left: 0;
     overflow-y: auto;
+    display: flex;
 }
 
 .bi-person-circle {
@@ -67,6 +68,29 @@ body {
 
 .side-panel .logout {
     margin-top: auto;
+}
+
+.side-panel.open {
+    display: flex;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 70%;
+    z-index: 99;
+}
+
+.menu-toggle {
+    display: none;
+    visibility: hidden;
+    position: fixed;
+    top: .7rem;
+    left: .7rem;
+    z-index: 1000;
+    border-radius: 99px;
+    font-weight: 900;
+    padding: 8px;
+    line-height: .9;
 }
 
 .main-container {
@@ -450,4 +474,10 @@ table.table tbody td {
         visibility: visible;
         display: flex;
     }
+
+    /* Ocultar todo el contenido principal */
+    .side-panel {
+        display: none;
+    }
 }
+
