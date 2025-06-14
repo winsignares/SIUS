@@ -69,6 +69,7 @@ header h4 {
 main p {
     font-size: var(--fs-4);
     text-align: justify;
+    line-height: unset;
 }
 
 table ol {
@@ -159,6 +160,8 @@ div h5 {
 #infoCargasAcademicas tfoot td {
     border: none;
     text-align: center;
+    vertical-align: top;
+    line-height: normal;
 }
 
 /* Estilos para el bloque de firmas */

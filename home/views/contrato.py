@@ -265,6 +265,8 @@ def contratos_docentes(request):
         elif user.groups.filter(name="Presidente").exists():
             contratos = contratos.filter(aprobado_rectoria=True)
 
+        contratos = contratos.select_related('fk_usuario').order_by('fk_usuario__primer_nombre', 'fk_usuario__segundo_nombre', 'fk_usuario__primer_apellido', 'fk_usuario__segundo_apellido')
+
         data = []
         for c in contratos:
             tarifa = None

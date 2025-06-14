@@ -98,11 +98,14 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="1" class="fst-italic"><span class="fw-bold text-uppercase">Nota: </span> Si la materia es compartida, entre paréntesis se muestran todos los programas con los que se comparte</td>
+                        <td colspan="1"></td>
                         <td colspan="1" class="fw-bold text-uppercase">Total:</td>
                         <td colspan="1">{{ total_horas_semanales }}</td>
                         <td colspan="1"></td>
                         <td colspan="1">{{ total_horas_totales }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5"><span class="fw-bold text-uppercase">Nota: </span> Entre paréntesis se indica el programa académico al que pertenece la asignatura. Si esta es compartida, se incluyen los demás programas en los que será dictada.</td>
                     </tr>
                 </tfoot>
             </table>
@@ -110,7 +113,7 @@
 
         <main>
             <p>
-                Entre laS CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD – UNICORSALUD - identificada con NIT No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 del 15 de julio de 1993 y Resolución No. 3597 del 30 de junio de 2006, expedida por el Ministerio de Educación Nacional, y quien en este CONTRATO se denominará LA CORPORACIÓN , y <span class="text-uppercase fw-bold">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</span>, también mayor de edad, con domicilio en {{ docente.fk_sede_donde_labora.ciudad }}, identificado(a) como aparece al pie de la firma, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:
+                Entre la CORPORACIÓN UNIVERSITARIA DE CIENCIAS EMPRESARIALES, EDUCACIÓN Y SALUD – UNICORSALUD - identificada con NIT No. 800.248.926-2, Institución de Educación Superior sin ánimo de lucro con Personería Jurídica No. 03514 del 15 de julio de 1993 y Resolución No. 3597 del 30 de junio de 2006, expedida por el Ministerio de Educación Nacional, y quien en este CONTRATO se denominará LA CORPORACIÓN , y <span class="text-uppercase fw-bold">{{ docente.primer_nombre }} {% if docente.segundo_nombre %}{{ docente.segundo_nombre }} {% endif %}{{ docente.primer_apellido }} {% if docente.segundo_apellido %}{{ docente.segundo_apellido }}{% endif %}</span>, también mayor de edad, con domicilio en {{ docente.fk_sede_donde_labora.ciudad }}, identificado(a) como aparece al pie de la firma, quien para estos efectos se denominará el DOCENTE, se ha celebrado el Contrato de Trabajo regido por las siguientes cláusulas:
 
                 <strong>PRIMERA: </strong>El DOCENTE se obliga a poner al servicio de LA CORPORACIÓN toda su capacidad normal de trabajo, en el desempeño de las funciones propias como docente.
 
