@@ -4,7 +4,6 @@ from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
 import traceback
 import json
-from django.db.models import Sum
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -205,29 +204,44 @@ def detalles_contrato_docente(request, contrato_id):
             contrato = Contrato.objects.select_related("fk_usuario", "fk_dedicacion", "fk_periodo").get(id=contrato_id)
             detalles = DetalleContratro.objects.filter(fk_contrato=contrato, vigente=True)
 
-            # Cargas académicas del mismo docente y periodo
+            total_dias_laborados = sum(int(detalle.dias_laborados) for detalle in detalles if detalle.dias_laborados)
+            total_asigancion_mensual = sum(int(detalle.valor_a_pagar) for detalle in detalles if detalle.valor_a_pagar)
+
+            docente = contrato.fk_usuario
+
             cargas = CargaAcademica.objects.filter(
-                fk_docente_asignado=contrato.fk_usuario,
+                fk_docente_asignado=docente,
                 fk_periodo=contrato.fk_periodo,
-            ).select_related("fk_materia", "fk_programa", "fk_docente_asignado")
+            ).select_related(
+                "fk_materia", "fk_programa", "fk_docente_asignado"
+            ).order_by('fk_semestre__semestre')
 
-            # Diccionario de programas compartidos por carga
-            materias_compartidas_dict = {
-                carga.id: list(
-                    MateriaCompartida.objects.filter(fk_carga_academica=carga).values_list("fk_programa__programa", flat=True)
-                )
-                for carga in cargas
-            }
+            for carga in cargas:
+                programa_madre = carga.fk_programa
 
-            # Total del valor a pagar de las cargas del docente
-            total_valor_cargas = cargas.aggregate(total=Sum("valor_a_pagar"))["total"] or 0
+                # Buscar programas compartidos por esta carga
+                programas_compartidos = MateriaCompartida.objects.filter(
+                    fk_carga_academica=carga
+                ).select_related("fk_programa")
+
+                # Para tabla individual: string de todos los programas asociados a esa carga
+                todos_los_programas = [f"{programa_madre.nombre_corto}"] + [
+                    pc.fk_programa.nombre_corto for pc in programas_compartidos if pc.fk_programa
+                ]
+                carga.programas_compartidos_str = " - ".join(todos_los_programas)
+
+                # Total del valor a pagar de las cargas del docente
+                total_valor_cargas = sum(int(carga.valor_a_pagar) for carga in cargas if carga.valor_a_pagar)
+                total_horas_semanales = sum(int(carga.horas_semanales) for carga in cargas if carga.horas_semanales)
 
             html = render_to_string("partials/detalles_contrato_docentes.html", {
                 "contrato": contrato,
                 "detalles": detalles,
                 "cargas": cargas,
-                "materias_compartidas_dict": materias_compartidas_dict,
-                "total_valor_cargas": total_valor_cargas
+                "total_valor_cargas": total_valor_cargas,
+                "total_horas_semanales": total_horas_semanales,
+                "total_dias_laborados": total_dias_laborados,
+                "total_asigancion_mensual": total_asigancion_mensual,
             }, request=request)
 
             return HttpResponse(html)
@@ -313,7 +327,7 @@ def contratos_docentes(request):
 
 
 #
-# ---------------------------- CONTRATOS DOCENTES ---------------------------------
+# ---------------------------- CONTRATOS ADMINISTRATIVOS ---------------------------------
 #
 
 @group_required("Contabilidad", "Rector", "Presidente")
